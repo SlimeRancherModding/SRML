@@ -13,5 +13,10 @@ namespace SampleMod
         {
             Debug.Log("We did it!");
         }
+
+        public override void PostLoad()
+        {
+            Debug.Log("We did it! Again!");
+        }
     }
 }

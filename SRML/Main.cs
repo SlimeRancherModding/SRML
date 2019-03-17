@@ -19,6 +19,8 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
+            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
+                new HarmonyMethod(typeof(Main).GetMethod("PostLoad",BindingFlags.NonPublic|BindingFlags.Static)));
             try
             {
                 SRModLoader.LoadMods();
@@ -29,8 +31,7 @@ namespace SRML
                 Debug.LogError(e);
             }
 
-            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
-                new HarmonyMethod(typeof(Main).GetMethod("PostLoad")));
+
         }
         
         private static bool isPostInitialized;
