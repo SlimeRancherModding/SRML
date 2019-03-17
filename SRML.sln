@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML", "SRML\SRML.csproj", "{5733599A-5318-4A2C-9998-F7E0CDC664DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5733599A-5318-4A2C-9998-F7E0CDC664DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5733599A-5318-4A2C-9998-F7E0CDC664DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5733599A-5318-4A2C-9998-F7E0CDC664DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5733599A-5318-4A2C-9998-F7E0CDC664DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12CCE9B0-6BE0-4FB5-883E-72BBD9B374AD}
+	EndGlobalSection
+EndGlobal
