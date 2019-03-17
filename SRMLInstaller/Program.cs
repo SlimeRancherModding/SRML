@@ -15,20 +15,38 @@ namespace SRMLInstaller
         {
             try
             {
-                string filename = args[0];
-                string root = Directory.GetParent(filename).ToString();
-                string currentAssembly = Directory.GetParent(Assembly.GetEntryAssembly().Location).ToString();
-                var currentSRML = Path.Combine(currentAssembly,SRML);
-                if(!File.Exists(currentSRML)) throw new Exception($"Couldn't find {SRML}!");
-                var combine = Path.Combine(root, SRML);
-                if (File.Exists(combine))
+                string filename = "";
+                if (args.Length == 0)
                 {
-                    Console.WriteLine($"Found old {SRML}! Replacing...");
-                    File.Delete(combine);
+                    Console.Write("Please enter Assembly-CSharp.dll path: ");
+                    filename = Console.ReadLine();
                 }
-                File.Copy(currentSRML,combine);
+                else
+                {
+                    filename  = args[0];
+                }
                 
-                var patcher = new Patcher(filename,GetOnLoad(combine));
+                string root = Path.GetDirectoryName(filename);
+                string currentAssembly = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location); //TODO: make it so it copies dependencies too
+                var libFolder = Path.Combine(currentAssembly, "Libs");
+                var currentSRML = Path.Combine(libFolder,SRML);
+                if(!File.Exists(currentSRML)) throw new Exception($"Couldn't find {SRML}!");
+                foreach (var v in Directory.GetFiles(libFolder))
+                {
+                    var file = Path.GetFileName(v);
+                    var combine = Path.Combine(root, file);
+                    var libPath = Path.Combine(libFolder, file);
+                    if (File.Exists(combine))
+                    {
+                        Console.WriteLine($"Found old {file}! Replacing...");
+                        File.Delete(combine);
+                    }
+
+                    File.Copy(libPath, combine);
+                }
+                var srmlPath = Path.Combine(root, SRML);
+
+                var patcher = new Patcher(filename,GetOnLoad(srmlPath));
 
                 if (patcher.IsPatched())
                 {
