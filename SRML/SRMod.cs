@@ -79,7 +79,7 @@ namespace SRML
         }
 
         
-
+        
         public static SRMod CreateFromEntryPoint(ModEntryPoint entryPoint)
         {
             SRMod newMod = new SRMod(entryPoint.GetModInfo());

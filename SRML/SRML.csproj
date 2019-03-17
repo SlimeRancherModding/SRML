@@ -63,7 +63,7 @@
   <ItemGroup>
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="HarmonyPatcher.cs" />
-    <Compile Include="IModEntryPoint.cs" />
+    <Compile Include="ModEntryPoint.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
     <Compile Include="SR\IExtendedModel.cs" />

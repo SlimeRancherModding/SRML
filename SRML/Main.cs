@@ -13,11 +13,11 @@ namespace SRML
     internal static class Main
     {
         private static bool isPreInitialized;
-        static void PreLoad()
+        public static void PreLoad()
         {
             if (isPreInitialized) return;
             isPreInitialized = true;
-            Debug.Log("VeesusTools has successfully invaded the game!");
+            Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 new HarmonyMethod(typeof(Main).GetMethod("PostLoad")));
