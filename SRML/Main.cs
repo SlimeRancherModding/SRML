@@ -39,8 +39,7 @@ namespace SRML
         {
             if (isPostInitialized) return;
             isPostInitialized = true;
-            HarmonyPatcher.Instance.Patch(typeof(AutoSaveDirector).GetMethod("PushSavedGame",BindingFlags.NonPublic|BindingFlags.Instance), null,
-                new HarmonyMethod(typeof(Main).GetMethod("OnGameLoad"))); 
+            SRModLoader.PostLoadMods();
 
         }
 
