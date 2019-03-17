@@ -52,21 +52,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.AnimationModule">
-      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyChecker.cs" />
     <Compile Include="EnumPatcher.cs" />
+    <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="Main.cs" />
@@ -75,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
+    <Compile Include="SR\IExtendedModel.cs" />
     <Compile Include="Utils\GameObjectUtils.cs" />
     <Compile Include="Utils\BinaryUtils.cs" />
     <Compile Include="Utils\LogUtils.cs" />
@@ -82,9 +80,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SR\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>

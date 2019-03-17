@@ -24,7 +24,7 @@ namespace SRML
                 var mod = ProtoMod.ParseFromJson(v);
                 if (!foundMods.Add(mod))
                 {
-                    throw new Exception($"Found mod with duplicate id '{mod.id}' in {v}!");
+                    throw new Exception("Found mod with duplicate id '"+mod.id+"' in "+v+"!");
                 }
 
 
@@ -50,7 +50,7 @@ namespace SRML
                     goto foundmod;
                 }
 
-                throw new EntryPointNotFoundException($"Could not find assembly for mod '{mod.id}'");
+                throw new EntryPointNotFoundException($"Could not find assembly for mod '{mod}'");
 
                 foundmod:
                 continue;
@@ -102,6 +102,11 @@ namespace SRML
                 proto.ValidateFields();
                 return proto;
 
+            }
+
+            public override String ToString()
+            {
+                return $"{id} {version}";
             }
 
             void ValidateFields()

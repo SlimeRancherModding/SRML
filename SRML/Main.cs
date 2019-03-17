@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using Harmony;
 using SRML.Utils;
+using TMPro;
 using UnityEngine;
 
 namespace SRML
@@ -19,18 +20,19 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
+            
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 new HarmonyMethod(typeof(Main).GetMethod("PostLoad",BindingFlags.NonPublic|BindingFlags.Static)));
             try
             {
                 SRModLoader.LoadMods();
-                SRModLoader.PreLoadMods();
+
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}\nAborting mod loading...");
             }
-
+            SRModLoader.PreLoadMods();
 
         }
         
@@ -41,7 +43,6 @@ namespace SRML
             if (isPostInitialized) return;
             isPostInitialized = true;
             SRModLoader.PostLoadMods();
-
         }
 
     }
