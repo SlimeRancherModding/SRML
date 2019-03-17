@@ -60,7 +60,7 @@ namespace SRMLInstaller
         }
         public void Save()
         {
-            var pathRoot = Directory.GetParent(filename).ToString();
+            var pathRoot = Path.GetDirectoryName(filename);
             string patchedname = Path.Combine(pathRoot,
                 Path.GetFileNameWithoutExtension(filename) + "_patched.dll");
             string oldname = Path.Combine(pathRoot,

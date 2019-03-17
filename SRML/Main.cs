@@ -19,6 +19,16 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
+            try
+            {
+                SRModLoader.LoadMods();
+                SRModLoader.PreLoadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 new HarmonyMethod(typeof(Main).GetMethod("PostLoad")));
         }

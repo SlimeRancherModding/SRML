@@ -17,7 +17,6 @@ namespace SRML
 
         }
 
-        public virtual SRModInfo GetModInfo() { return new SRModInfo("NULL","NULL",SRModInfo.ModVersion.DEFAULT);}
 
     }
 }
