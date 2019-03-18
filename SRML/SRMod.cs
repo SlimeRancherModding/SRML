@@ -100,7 +100,7 @@ namespace SRML
 
         public void PreLoad()
         {
-            entryPoint.PreLoad(HarmonyInstance);
+            entryPoint.PreLoad(HarmonyPatcher.Instance);
         }
 
         public void PostLoad()
