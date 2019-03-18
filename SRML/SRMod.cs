@@ -98,9 +98,14 @@ namespace SRML
             this.entryPoint = entryPoint;
         }
 
+        public SRMod(SRModInfo info, ModEntryPoint entryPoint, String path) : this(info, entryPoint)
+        {
+            this.Path = path;
+        }
+
         public void PreLoad()
         {
-            entryPoint.PreLoad(HarmonyPatcher.Instance);
+            entryPoint.PreLoad(HarmonyInstance);
         }
 
         public void PostLoad()

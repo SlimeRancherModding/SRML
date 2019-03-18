@@ -32,8 +32,10 @@ namespace SRML
             {
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}\nAborting mod loading...");
             }
-            SRModLoader.PreLoadMods();
 
+
+            SRModLoader.PreLoadMods();
+            Debug.Log(FileSystem.GetMyPath());
         }
         
         private static bool isPostInitialized;

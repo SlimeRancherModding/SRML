@@ -87,11 +87,22 @@ namespace SRML
                 AppDomain.CurrentDomain.AssemblyResolve -= FindAssembly;
             }
         }
-         
+
+        public static SRMod GetMod(string id)
+        {
+            return Mods[id];
+        }
+
+        public static SRMod GetModForAssembly(Assembly a)
+        {
+            return Mods.First((x) => x.Value.EntryType.Assembly == a).Value;
+        }
+
         static void AddMod(ProtoMod modInfo, Type entryType)
         {
             ModEntryPoint entryPoint = (ModEntryPoint) Activator.CreateInstance(entryType);
-            Mods.Add(modInfo.id,new SRMod(modInfo.ToModInfo(),entryPoint));
+            var newmod = new SRMod(modInfo.ToModInfo(), entryPoint,modInfo.path);
+            Mods.Add(modInfo.id,newmod);
         }
 
         public static void PreLoadMods()

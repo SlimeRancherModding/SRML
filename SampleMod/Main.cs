@@ -18,7 +18,7 @@ namespace SampleMod
 
         public override void PostLoad()
         {
-            Debug.Log("We did it! Again!");
+            Debug.Log("We did it! Again! "+FileSystem.GetMyPath());
         }
     }
 
