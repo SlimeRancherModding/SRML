@@ -17,7 +17,7 @@ namespace SRML.Patches
         }
         static object FixMono(Type enumType, object mono)
         {
-            IEnumPatcher patch;
+            EnumPatcher.EnumPatch patch;
             if (EnumPatcher.TryGetRawPatch(enumType, out patch))
             {
                 var namesField = mono.GetType().GetField("names", BindingFlags.Instance | BindingFlags.NonPublic);

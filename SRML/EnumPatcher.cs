@@ -10,25 +10,20 @@ namespace SRML
 {
     public static class EnumPatcher
     {
-        private static Dictionary<Type, IEnumPatcher> patches = new Dictionary<Type, IEnumPatcher>();
+        private static Dictionary<Type, EnumPatch> patches = new Dictionary<Type, EnumPatch>();
 
         public static void AddEnumValue(Type enumType, object value, string name)
         {
-            IEnumPatcher patch;
+            EnumPatch patch;
             if (!patches.TryGetValue(enumType, out patch))
             {
                 patch = new EnumPatch();
                 patches.Add(enumType, patch);
             }
 
-            if (!(patch is EnumPatch))
-            {
-                throw new NotImplementedException();
-            }
-
             ClearEnumCache(enumType);
 
-            (patch as EnumPatch).AddValue(value, name);
+            patch.AddValue(value, name);
         }
 
         public static void ClearEnumCache(Type enumType)
@@ -53,12 +48,12 @@ namespace SRML
             }
         }
         
-        public static bool TryGetRawPatch(Type enumType, out IEnumPatcher patch)
+        internal static bool TryGetRawPatch(Type enumType, out EnumPatch patch)
         {
             return patches.TryGetValue(enumType, out patch);
         }
 
-        public class EnumPatch : IEnumPatcher
+        public class EnumPatch 
         {
             private Dictionary<object, String> values = new Dictionary<object, String>();
             public void AddValue(object enumValue, string name)
@@ -75,9 +70,6 @@ namespace SRML
         }
     }
 
-    public interface IEnumPatcher
-    {
-        void GetArrays(out string[] names, out int[] values);
-    }
+
 }
     

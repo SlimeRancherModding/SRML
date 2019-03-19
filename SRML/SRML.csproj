@@ -73,7 +73,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
-    <Compile Include="SR\Editor\LookupGameObjectReplacer.cs" />
+    <Compile Include="SR\Editor\Replacers\LookupGameObjectReplacer.cs" />
+    <Compile Include="SR\Editor\Replacers\LookupGameObjectReplacerWithName.cs" />
     <Compile Include="SR\IExtendedModel.cs" />
     <Compile Include="Utils\GameObjectUtils.cs" />
     <Compile Include="Utils\BinaryUtils.cs" />

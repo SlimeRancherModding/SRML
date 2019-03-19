@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SRML.Editor;
 using UnityEngine;
 
-namespace SRML.SR.Editor
+namespace SRML.SR.Editor.Replacers
 {
     public class LookupGameObjectReplacer : GameObjectReplacer
     {
