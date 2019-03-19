@@ -95,7 +95,7 @@ namespace SRML
 
         public static SRMod GetModForAssembly(Assembly a)
         {
-            return Mods.First((x) => x.Value.EntryType.Assembly == a).Value;
+            return Mods.FirstOrDefault((x) => x.Value.EntryType.Assembly == a).Value;
         }
 
         static void AddMod(ProtoMod modInfo, Type entryType)

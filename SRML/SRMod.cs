@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Harmony;
+using SRML.Utils;
 
 namespace SRML
 {
@@ -22,6 +23,11 @@ namespace SRML
         public String Author { get; private set; }
         public ModVersion Version { get; private set; }
 
+        public static SRModInfo GetMyInfo()
+        {
+            var assembly = ReflectionUtils.GetRelevantAssembly();
+            return SRModLoader.GetModForAssembly(assembly).ModInfo;
+        }
 
         public struct ModVersion : IComparable<ModVersion>
         {
@@ -55,13 +61,17 @@ namespace SRML
                 throw new Exception($"Invalid Version String: {s}");
             }
 
+
+
             public int CompareTo(ModVersion other)
             {
                 if (Major > other.Major) return -1;
+                if (Major < other.Major) return 1;
                 if (Minor > other.Minor) return -1;
+                if (Minor < other.Minor) return 1;
                 if (Revision > other.Revision) return -1;
-                if (Major == other.Major && Minor == other.Minor && Revision == other.Revision) return 0;
-                return 1;
+                if (Revision < other.Revision) return 1;
+                return 0;
             }
         }
     }

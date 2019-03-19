@@ -17,6 +17,7 @@ namespace SampleMod
         {
             Debug.Log("We did it! "+TestDependency.Main.depended_on_value);
             instance.PatchAll(Assembly.GetExecutingAssembly());
+            Debug.Log(SRModInfo.GetMyInfo().Author);
         }
 
         public override void PostLoad()

@@ -25,11 +25,31 @@ namespace SRML.Utils
                         if (obj.GetComponent<GameObjectReplacer>())
                         {
                             var g = obj.GetComponent<GameObjectReplacer>().GetReplacement();
-                            field.SetValue(c,g);
+                            field.SetValue(c, g);
                             GameObject.Destroy(obj);
                         }
                     }
                 }
+            }
+        }
+
+        public static void ReplaceFieldsWith<T>(GameObject prefab, T original, T newValue)
+        {
+            var components = prefab.GetComponentsInChildren<Component>(true);
+
+            foreach (var c in components)
+            {
+                if (!c) continue;
+                foreach (var field in c.GetType().GetFields())
+                {
+                    if (field.FieldType == typeof(T))
+                    {
+                        T t = (T)field.GetValue(c);
+                        if (!t.Equals(original)) continue;
+                        field.SetValue(c,newValue);
+                    }
+                }
+
             }
         }
     }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-
+using SRML.Utils;
+using UnityEngine;
 namespace SRML
 {
     public static class FileSystem
@@ -20,23 +20,10 @@ namespace SRML
             }
         }
 
-        private static Assembly ourAssembly = Assembly.GetExecutingAssembly();
         public static String GetMyPath()
         {
-            StackTrace trace = new StackTrace();
-
-            var frames = trace.GetFrames();
-            try // TODO: Clean this up, choose a better solution (check for non mod or srml dlls)
-            {
-                foreach (var frame in frames)
-                {
-                    var theirAssembly = frame.GetMethod().DeclaringType.Assembly;
-                    if (theirAssembly != ourAssembly) return SRModLoader.GetModForAssembly(theirAssembly).Path;
-                }
-            }
-            catch { }
-
-            return Path.GetDirectoryName(ourAssembly.Location);
+            var assembly = ReflectionUtils.GetRelevantAssembly();
+            return SRModLoader.GetModForAssembly(assembly)?.Path ?? Path.GetDirectoryName(assembly.Location);
         }
     }
 }

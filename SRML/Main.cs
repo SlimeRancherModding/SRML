@@ -26,7 +26,7 @@ namespace SRML
             try
             {
                 SRModLoader.LoadMods();
-
+                SRModLoader.PreLoadMods();
             }
             catch (Exception e)
             {
@@ -34,8 +34,7 @@ namespace SRML
             }
 
 
-            SRModLoader.PreLoadMods();
-            Debug.Log(FileSystem.GetMyPath());
+
         }
         
         private static bool isPostInitialized;
