@@ -1,6 +1,9 @@
 {
   "id": "example_mod",
   "name": "Example Mod",
-  "version": "1.0.0", 
-  "author": "veesus mikel heir" 
+  "version": "1.0.0",
+  "author": "veesus mikel heir",
+  "dependencies": [
+    "test_dependency 1.0.0"
+  ] 
 }

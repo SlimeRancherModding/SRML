@@ -22,7 +22,8 @@ namespace SRML
         public String Author { get; private set; }
         public ModVersion Version { get; private set; }
 
-        public struct ModVersion
+
+        public struct ModVersion : IComparable<ModVersion>
         {
             public int Major;
             public int Minor;
@@ -53,10 +54,19 @@ namespace SRML
                 uhoh:
                 throw new Exception($"Invalid Version String: {s}");
             }
+
+            public int CompareTo(ModVersion other)
+            {
+                if (Major > other.Major) return -1;
+                if (Minor > other.Minor) return -1;
+                if (Revision > other.Revision) return -1;
+                if (Major == other.Major && Minor == other.Minor && Revision == other.Revision) return 0;
+                return 1;
+            }
         }
     }
 
-    internal class SRMod
+    internal class SRMod 
     {
 
         public SRModInfo ModInfo { get; private set; }
