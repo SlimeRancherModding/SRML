@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Exception = System.Exception;
 
 namespace SRML
 {
@@ -107,9 +108,17 @@ namespace SRML
 
         public static void PreLoadMods()
         {
+
             foreach (var mod in Mods)
             {
-                mod.Value.PreLoad();
+                try
+                {
+                    mod.Value.PreLoad();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                }
 
             }
         }

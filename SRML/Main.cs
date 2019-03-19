@@ -26,14 +26,22 @@ namespace SRML
             try
             {
                 SRModLoader.LoadMods();
-                SRModLoader.PreLoadMods();
+                
             }
             catch (Exception e)
             {
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}\nAborting mod loading...");
+                return;
             }
 
-
+            try
+            {
+                SRModLoader.PreLoadMods();
+            }
+            catch (Exception e)
+            {
+                ErrorGUI.CreateError($"{e.Message}\nAborting mod loading...");
+            }
 
         }
         

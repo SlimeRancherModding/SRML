@@ -18,8 +18,7 @@ namespace SRMLInstaller
                 string filename = "";
                 if (args.Length == 0)
                 {
-                    Console.Write("Please enter Assembly-CSharp.dll path: ");
-                    filename = Console.ReadLine();
+                    filename = GameFinder.FindGame();
                 }
                 else
                 {
@@ -50,7 +49,7 @@ namespace SRMLInstaller
 
                 if (patcher.IsPatched())
                 {
-                    throw new Exception($"{filename} is already patched!");
+                    throw new Exception($"Game is already patched!");
                 }
 
                 Console.WriteLine("Patching...");
@@ -63,8 +62,8 @@ namespace SRMLInstaller
             {
                 Console.WriteLine(e.Message);
             }
-
-            Console.ReadLine();
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
         }
 
         static MethodReference GetOnLoad(string path)

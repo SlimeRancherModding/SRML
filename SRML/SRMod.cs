@@ -108,7 +108,7 @@ namespace SRML
 
         public String GetHarmonyName()
         {
-            return $"net.{Regex.Replace(ModInfo.Author, @"\s+", "")}.{ModInfo.Id}";
+            return $"net.{(ModInfo.Author==null||ModInfo.Author.Length==0?"srml":Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
 
         public SRMod(SRModInfo info,ModEntryPoint entryPoint)
