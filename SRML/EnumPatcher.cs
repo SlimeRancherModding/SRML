@@ -6,11 +6,25 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Reflection;
+using Harmony;
+
 namespace SRML
 {
     public static class EnumPatcher
     {
+        private static PropertyInfo cache;
+        private static FieldInfo global_cache_monitor;
+        private static FieldInfo global_cache;
+        
         private static Dictionary<Type, EnumPatch> patches = new Dictionary<Type, EnumPatch>();
+
+        static EnumPatcher()
+        {
+            var t = AccessTools.TypeByName("System.MonoEnumInfo");
+            cache = AccessTools.Property(t, "Cache");
+            global_cache_monitor = AccessTools.Field(t,"global_cache_monitor");
+            global_cache = AccessTools.Field(t, "global_cache");
+        }
 
         public static void AddEnumValue(Type enumType, object value, string name)
         {
@@ -29,12 +43,9 @@ namespace SRML
 
         public static void ClearEnumCache(Type enumType)
         {
-            var cache = (Hashtable)Type.GetType("System.MonoEnumInfo")
-                .GetProperty("Cache", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null, null);
-            var global_cache_monitor = Type.GetType("System.MonoEnumInfo")
-                .GetField("global_cache_monitor", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-            var global_cache = (Hashtable)Type.GetType("System.MonoEnumInfo")
-                .GetField("global_cache", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+            var cache = (Hashtable)EnumPatcher.cache.GetValue(null, null);
+            var global_cache_monitor = EnumPatcher.global_cache_monitor.GetValue(null);
+            var global_cache = (Hashtable)EnumPatcher.global_cache.GetValue(null);
             if (cache.Contains(enumType))
             {
                 cache.Remove(enumType);

@@ -10,29 +10,34 @@ namespace SRML.Patches
     [HarmonyPatch]
     internal static class EnumInfoPatch
     {
+        private static FieldInfo values;
+        private static FieldInfo names;
+        static EnumInfoPatch()
+        {
+            var t = AccessTools.TypeByName("System.MonoEnumInfo");
+            names = AccessTools.Field(t, "names");
+            values = AccessTools.Field(t,"values");
+        }
         static MethodBase TargetMethod(HarmonyInstance instance)
         {
-            return Type.GetType("System.MonoEnumInfo")
-                .GetMethod("GetInfo", BindingFlags.NonPublic | BindingFlags.Static);
+            return AccessTools.Method(Type.GetType("System.MonoEnumInfo"),"GetInfo");
+
         }
         static object FixMono(Type enumType, object mono)
         {
             EnumPatcher.EnumPatch patch;
             if (EnumPatcher.TryGetRawPatch(enumType, out patch))
             {
-                var namesField = mono.GetType().GetField("names", BindingFlags.Instance | BindingFlags.NonPublic);
-                var valuesField = mono.GetType().GetField("values", BindingFlags.Instance | BindingFlags.NonPublic);
-                var oldValues = (int[]) valuesField.GetValue(mono);
-                var oldNames = (string[]) namesField.GetValue(mono);
-                string[] toBePatchedNames;
-                int[] toBePatchedValues;
-                patch.GetArrays(out toBePatchedNames,out toBePatchedValues);
+
+                var oldValues = (int[])values.GetValue(mono);
+                var oldNames = (string[])names.GetValue(mono);
+                patch.GetArrays(out string[] toBePatchedNames,out int[] toBePatchedValues);
                 Array.Resize(ref toBePatchedNames, toBePatchedNames.Length + oldNames.Length);
                 Array.Resize(ref toBePatchedValues, toBePatchedValues.Length + oldValues.Length);
                 Array.Copy(oldNames, 0, toBePatchedNames, toBePatchedNames.Length - oldNames.Length, oldNames.Length);
                 Array.Copy(oldValues, 0, toBePatchedValues, toBePatchedValues.Length - oldValues.Length, oldValues.Length);
-                namesField.SetValue(mono, toBePatchedNames);
-                valuesField.SetValue(mono, toBePatchedValues);
+                names.SetValue(mono,toBePatchedNames);
+                values.SetValue(mono,toBePatchedValues);
             }
             return mono;
         }
@@ -46,7 +51,7 @@ namespace SRML.Patches
                 {
                     var v = enumerator.Current;
                     curindex++;
-                    if (curindex == 38)
+                    if (v.operand is MethodInfo me&&me.Name=="get_enum_info")
                     {
                         yield return v;
                         enumerator.MoveNext();
