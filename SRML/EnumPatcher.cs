@@ -14,6 +14,7 @@ namespace SRML
 
         public static void AddEnumValue(Type enumType, object value, string name)
         {
+            if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
             EnumPatch patch;
             if (!patches.TryGetValue(enumType, out patch))
             {
