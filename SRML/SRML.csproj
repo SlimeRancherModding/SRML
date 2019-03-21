@@ -74,9 +74,14 @@
     <Compile Include="ModEntryPoint.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\IdentifiablePatcher.cs" />
     <Compile Include="SR\Patches\LookupAwakePatch.cs" />
     <Compile Include="SR\LookupRegistry.cs" />
+    <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
+    <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SRCallbacks.cs" />
+    <Compile Include="SR\TranslationPatcher.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />

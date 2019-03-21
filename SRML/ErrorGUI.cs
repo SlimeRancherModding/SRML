@@ -26,7 +26,6 @@ namespace SRML
             if (GUILayout.Button("Ok"))
             {
                 Destroy(this.gameObject);
-                Debug.Log("Destroyed " +errorString);
             }
         }
 
