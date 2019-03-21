@@ -11,7 +11,8 @@ namespace SRML.SR.Patches
     {
         public static void Prefix(LookupDirector __instance)
         {
-            __instance.identifiablePrefabs.AddRange(PrefabRegistry.objectsToPatch);
+            __instance.identifiablePrefabs.AddRange(LookupRegistry.objectsToPatch);
+            __instance.vacEntries.AddRange(LookupRegistry.vacEntriesToPatch);
         }
     }
 }
