@@ -15,7 +15,7 @@ namespace SampleMod
     {
         public override void PreLoad(HarmonyInstance instance)
         {
-            Debug.Log("We did it! "+TestDependency.Main.depended_on_value);
+            Debug.Log("We did it!");
             instance.PatchAll(Assembly.GetExecutingAssembly());
             Debug.Log(SRModInfo.GetMyInfo().Author);
         }

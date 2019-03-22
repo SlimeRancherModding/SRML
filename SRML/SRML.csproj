@@ -65,7 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyChecker.cs" />
-    <Compile Include="Editor\GameObjectReplacer.cs" />
+    <Compile Include="Editor\ReplacerCache.cs" />
+    <Compile Include="Editor\ResolvedInstance.cs" />
+    <Compile Include="Editor\ResolvedReplacer.cs" />
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
@@ -85,8 +87,6 @@
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
-    <Compile Include="SR\Editor\Replacers\LookupGameObjectReplacer.cs" />
-    <Compile Include="SR\Editor\Replacers\LookupGameObjectReplacerWithName.cs" />
     <Compile Include="SR\IExtendedModel.cs" />
     <Compile Include="Utils\GameObjectUtils.cs" />
     <Compile Include="Utils\BinaryUtils.cs" />
@@ -96,7 +96,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SMRL.Editor\SRML.Editor.csproj">
+      <Project>{d462e179-1c78-452b-94bf-64abaaf2ab35}</Project>
+      <Name>SRML.Editor</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>

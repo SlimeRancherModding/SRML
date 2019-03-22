@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Harmony;
+using SRML.Editor;
 using SRML.Utils;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace SRML
             {
                 ErrorGUI.CreateError($"{e.Message}\nAborting mod loading...");
             }
+            ReplacerCache.ClearCache();
 
         }
         
@@ -51,6 +53,7 @@ namespace SRML
         {
             if (isPostInitialized) return;
             isPostInitialized = true;
+            PrefabUtils.ProcessReplacements();
             SRModLoader.PostLoadMods();
         }
 

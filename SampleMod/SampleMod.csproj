@@ -68,10 +68,6 @@
       <Name>SRML</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\TestDependency\TestDependency.csproj">
-      <Project>{01e41e1d-2a2a-4959-95e1-59faa217a244}</Project>
-      <Name>TestDependency</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="modinfo.json">

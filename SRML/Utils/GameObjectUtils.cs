@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -28,7 +29,10 @@ namespace SRML.Utils
             indent = indent + "    ";
             builder.AppendLine(indent + "components:");
             string indent2 = indent + "    ";
-            foreach (var v in obj.GetComponents<Component>())
+            var h = obj.GetComponents<Component>().ToList();
+            var c = StringComparer.Create(CultureInfo.CurrentCulture, true);
+            h.Sort((component, component1) => c.Compare(component.GetType().Name, component1.GetType().Name));
+            foreach (var v in h)
             {
                 MeshRenderer rend = v as MeshRenderer;
                 SkinnedMeshRenderer rend2 = v as SkinnedMeshRenderer;

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{01E41E1D-2A2A-4959-95E1-59FAA217A244}</ProjectGuid>
+    <ProjectGuid>{D462E179-1C78-452B-94BF-64ABAAF2AB35}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestDependency</RootNamespace>
-    <AssemblyName>TestDependency</AssemblyName>
+    <RootNamespace>SRML.Editor</RootNamespace>
+    <AssemblyName>SRML.Editor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -37,22 +37,16 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Main.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SRML\SRML.csproj">
-      <Project>{5733599a-5318-4a2c-9998-f7e0cdc664de}</Project>
-      <Name>SRML</Name>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
-    </ProjectReference>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="modinfo.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Compile Include="FieldReplacer.cs" />
+    <Compile Include="FieldReplacerContainer.cs" />
+    <Compile Include="InstanceInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
