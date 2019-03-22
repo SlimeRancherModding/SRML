@@ -68,6 +68,9 @@
     <Compile Include="Editor\ReplacerCache.cs" />
     <Compile Include="Editor\ResolvedInstance.cs" />
     <Compile Include="Editor\ResolvedReplacer.cs" />
+    <Compile Include="Editor\Runtime\FieldReplacement.cs" />
+    <Compile Include="Editor\Runtime\FieldReplacer.cs" />
+    <Compile Include="Editor\Runtime\InstanceInfo.cs" />
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />

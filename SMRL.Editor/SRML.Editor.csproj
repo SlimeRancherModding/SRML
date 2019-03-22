@@ -43,9 +43,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FieldReplacer.cs" />
+    <Compile Include="BundleFieldReplacer.cs" />
     <Compile Include="FieldReplacerContainer.cs" />
-    <Compile Include="InstanceInfo.cs" />
+    <Compile Include="BundleInstanceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

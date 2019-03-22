@@ -8,6 +8,6 @@ namespace SRML.Editor
 {
     public class FieldReplacerContainer : MonoBehaviour
     {
-        public FieldReplacer Replacer;
+        public BundleFieldReplacer Replacer;
     }
 }

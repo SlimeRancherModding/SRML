@@ -9,17 +9,17 @@ namespace SRML.Utils
 {
     public static class PrefabUtils
     {
-        static List<KeyValuePair<GameObject, FieldReplacer>> replacers = new List<KeyValuePair<GameObject, FieldReplacer>>();
-        public static void FixPrefabFields(GameObject prefab, FieldReplacer replacer)
+        static List<KeyValuePair<GameObject, IFieldReplacer>> replacers = new List<KeyValuePair<GameObject, IFieldReplacer>>();
+        public static void FixPrefabFields(GameObject prefab, IFieldReplacer replacer)
         {
-            replacers.Add(new KeyValuePair<GameObject, FieldReplacer>(prefab,replacer));
+            replacers.Add(new KeyValuePair<GameObject, IFieldReplacer>(prefab,replacer));
         }
 
         internal static void ProcessReplacements()
         {
             replacers.ForEach((x)=>FixPrefabFieldsInternal(x.Key,x.Value));
         }
-        static void FixPrefabFieldsInternal(GameObject prefab,FieldReplacer replacementInfo)
+        static void FixPrefabFieldsInternal(GameObject prefab, IFieldReplacer replacementInfo)
         {
 
             var replacer = ReplacerCache.GetReplacer(replacementInfo);
@@ -31,7 +31,8 @@ namespace SRML.Utils
                 if (!c) continue;
                 foreach (var field in replacer.FieldToField.Where((x)=>x.Value.DeclaringType==c.GetType()))
                 {
-                    field.Value.SetValue(c,field.Key.GetValue((replacer.InstanceInfo.Instance as GameObject).GetComponent(c.GetType())));
+                    Debug.Log(field.Value.Name+" "+field.Key.Name+" "+(replacer.InstanceInfo.Instance as GameObject).GetComponent<SlimeEyeComponents>());
+                    field.Value.SetValue(c,field.Key.GetValue((replacer.InstanceInfo.Instance as GameObject).GetComponentInChildren(c.GetType())));
                 }
             }
         }

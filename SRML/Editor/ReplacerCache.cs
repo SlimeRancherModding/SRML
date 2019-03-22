@@ -8,9 +8,9 @@ namespace SRML.Editor
 {
     internal static class ReplacerCache
     {
-        static Dictionary<FieldReplacer, ResolvedReplacer> replacers = new Dictionary<FieldReplacer, ResolvedReplacer>();
+        static Dictionary<IFieldReplacer, ResolvedReplacer> replacers = new Dictionary<IFieldReplacer, ResolvedReplacer>();
 
-        public static ResolvedReplacer GetReplacer(FieldReplacer replacer)
+        public static ResolvedReplacer GetReplacer(IFieldReplacer replacer)
         {
             if (replacers.TryGetValue(replacer, out var resolved)) return resolved;
             var newreplacer = ResolvedReplacer.Resolve(replacer);
