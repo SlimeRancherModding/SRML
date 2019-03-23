@@ -91,7 +91,7 @@ namespace SRML
 
         public static SRMod GetMod(string id)
         {
-            return Mods[id];
+            return Mods.ContainsKey(id)?Mods[id]:null;
         }
 
         public static SRMod GetModForAssembly(Assembly a)

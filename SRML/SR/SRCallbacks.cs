@@ -11,13 +11,20 @@ namespace SRML.SR
         public delegate void OnSaveGameLoadedDelegate(SceneContext t);
 
         public static event OnSaveGameLoadedDelegate OnSaveGameLoaded;
+        public static event OnSaveGameLoadedDelegate PreSaveGameLoad;
 
 
         internal static void OnSceneLoaded(SceneContext t)
         {
             if (Levels.isMainMenu()) return;
-            OnSaveGameLoaded.Invoke(t);
+            OnSaveGameLoaded(t);
             
+        }
+
+        internal static void PreSceneLoad(SceneContext t)
+        {
+            if (Levels.isMainMenu()) return;
+            PreSaveGameLoad(t);
         }
 
     }

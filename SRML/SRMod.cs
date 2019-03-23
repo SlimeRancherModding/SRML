@@ -85,7 +85,11 @@ namespace SRML
         private HarmonyInstance _harmonyInstance;
 
         private ModEntryPoint entryPoint;
-        
+
+        public static SRMod GetCurrentMod()
+        {
+            return SRModLoader.GetModForAssembly(ReflectionUtils.GetRelevantAssembly());
+        }
 
         public HarmonyInstance HarmonyInstance
         {

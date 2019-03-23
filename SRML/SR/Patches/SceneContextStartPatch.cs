@@ -13,5 +13,10 @@ namespace SRML.SR.Patches
         {
             SRCallbacks.OnSceneLoaded(__instance);
         }
+
+        static void Prefix(SceneContext __instance)
+        {
+            SRCallbacks.PreSceneLoad(__instance);
+        }
     }
 }

@@ -75,7 +75,7 @@ namespace SRML.Utils
             mesh.boneWeights = ReadArray(reader, ReadBoneWeight);
         }
 
-        static void WriteBoneWeight(BinaryWriter writer, BoneWeight weight)
+        public static void WriteBoneWeight(BinaryWriter writer, BoneWeight weight)
         {
             writer.Write(weight.boneIndex0);
             writer.Write(weight.boneIndex1);
@@ -87,7 +87,7 @@ namespace SRML.Utils
             writer.Write(weight.weight3);
         }
 
-        static BoneWeight ReadBoneWeight(BinaryReader reader)
+        public static BoneWeight ReadBoneWeight(BinaryReader reader)
         {
             var weight = new BoneWeight();
 
@@ -104,7 +104,7 @@ namespace SRML.Utils
             return weight;
         }
 
-        static void WriteColor(BinaryWriter writer, Color color)
+        public static void WriteColor(BinaryWriter writer, Color color)
         {
             writer.Write(color.r);
             writer.Write(color.g);
@@ -112,24 +112,24 @@ namespace SRML.Utils
             writer.Write(color.a);
         }
 
-        static Color ReadColor(BinaryReader reader)
+        public static Color ReadColor(BinaryReader reader)
         {
             return new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
-        static void WriteTransform(BinaryWriter writer,Transform transform)
+        public static void WriteTransform(BinaryWriter writer,Transform transform)
         {
             WriteVector3(writer, transform.localScale);
             WriteVector3(writer, transform.position);
             WriteQuaternion(writer, transform.rotation);
         }
 
-        static void ReadTransform(BinaryReader reader,Transform trans)
+        public static void ReadTransform(BinaryReader reader,Transform trans)
         {
             trans.localScale = ReadVector3(reader);
             trans.SetPositionAndRotation(ReadVector3(reader),ReadQuaternion(reader));
         }
 
-        static void WriteQuaternion(BinaryWriter writer, Quaternion quat)
+        public static void WriteQuaternion(BinaryWriter writer, Quaternion quat)
         {
             writer.Write(quat.x);
             writer.Write(quat.y);
@@ -137,34 +137,34 @@ namespace SRML.Utils
             writer.Write(quat.w);
         }
 
-        static Quaternion ReadQuaternion(BinaryReader reader)
+        public static Quaternion ReadQuaternion(BinaryReader reader)
         {
             return new Quaternion(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         }
 
-        static void WriteVector3(BinaryWriter writer, Vector3 vec)
+        public static void WriteVector3(BinaryWriter writer, Vector3 vec)
         {
             writer.Write(vec.x);
             writer.Write(vec.y);
             writer.Write(vec.z);
         }
-        static Vector3 ReadVector3(BinaryReader reader)
+        public static Vector3 ReadVector3(BinaryReader reader)
         {
             return new Vector3(reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle());
         }
 
-        static void WriteVector2(BinaryWriter writer, Vector2 vec)
+        public static void WriteVector2(BinaryWriter writer, Vector2 vec)
         {
             writer.Write(vec.x);
             writer.Write(vec.y);
         }
 
-        static Vector2 ReadVector2(BinaryReader reader)
+        public static Vector2 ReadVector2(BinaryReader reader)
         {
             return new Vector2(reader.ReadSingle(), reader.ReadSingle());
         }
 
-        static void WriteVector4(BinaryWriter writer, Vector4 vec)
+        public static void WriteVector4(BinaryWriter writer, Vector4 vec)
         {
             writer.Write(vec.x);
             writer.Write(vec.y);
@@ -172,12 +172,12 @@ namespace SRML.Utils
             writer.Write(vec.w);
         }
 
-        static Vector4 ReadVector4(BinaryReader reader)
+        public static Vector4 ReadVector4(BinaryReader reader)
         {
             return new Vector4(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),reader.ReadSingle());
         }
 
-        static void WriteMatrix4(BinaryWriter writer, Matrix4x4 matrix)
+        public static void WriteMatrix4(BinaryWriter writer, Matrix4x4 matrix)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -186,12 +186,12 @@ namespace SRML.Utils
             
         }
 
-        static Matrix4x4 ReadMatrix4(BinaryReader reader)
+        public static Matrix4x4 ReadMatrix4(BinaryReader reader)
         {
             return new Matrix4x4(ReadVector4(reader), ReadVector4(reader), ReadVector4(reader), ReadVector4(reader));
         }
 
-        static void WriteArray(BinaryWriter writer, Array array, Action<BinaryWriter,object> writeAction)
+        public static void WriteArray(BinaryWriter writer, Array array, Action<BinaryWriter,object> writeAction)
         {
             writer.Write(array.Length);
             for (int i = 0; i < array.Length; i++)
@@ -200,7 +200,7 @@ namespace SRML.Utils
             }
         }
 
-        static T[] ReadArray<T>(BinaryReader reader, Func<BinaryReader, T> readAction)
+        public static T[] ReadArray<T>(BinaryReader reader, Func<BinaryReader, T> readAction)
         {
             int length = reader.ReadInt32();
             T[] output = new T[length];

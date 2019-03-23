@@ -13,7 +13,7 @@ namespace SRML.SR.Patches
     {
         static void Postfix(string path, Dictionary<string, string> __result)
         {
-            if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) return;
+            if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) return;    
             foreach (var v in dict)
             {
                 __result[v.Key] = v.Value;

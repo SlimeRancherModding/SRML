@@ -21,7 +21,7 @@ namespace SRML.SR
 
         static AmmoRegistry()
         {
-            SRCallbacks.OnSaveGameLoaded += ((t) =>
+            SRCallbacks.PreSaveGameLoad += ((t) =>
             {
                 foreach (var v in inventoryPrefabsToPatch)
                 {
