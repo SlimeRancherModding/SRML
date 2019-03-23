@@ -16,6 +16,13 @@ namespace SRML.SR.SaveSystem
             return modToSaveInfo[mod];
         }
 
+        internal static ModSaveInfo GetSaveInfo()
+        {
+            return GetSaveInfo(SRMod.GetCurrentMod());
+        }
+
+
+
 
 
     }

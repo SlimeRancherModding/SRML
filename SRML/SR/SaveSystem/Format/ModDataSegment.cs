@@ -25,14 +25,30 @@ namespace SRML.SR.SaveSystem.Format
 
             for (int i = 0; i < count; i++)
             {
-                int version = reader.ReadInt32();
                 int dataId = reader.ReadInt32();
 
                 var newData = saveInfo.CustomActorDataRegistry.GetDataForID(dataId);
 
-                newData.LoadData(reader);
+                newData.Load(reader.BaseStream);
 
                 customActorData.Add(newData);
+            }
+        }
+
+        public void Write(BinaryWriter writer)
+        {
+            writer.Write(version);
+            writer.Write(modid);
+
+            if (!(SRModLoader.GetMod(modid) is SRMod mod)) throw new Exception($"Unrecognized mod id: {modid}");
+            var saveInfo = SaveRegistry.GetSaveInfo(mod);
+
+            writer.Write(customActorData.Count);
+
+            foreach (var v in customActorData)
+            {
+                writer.Write(saveInfo.CustomActorDataRegistry.GetIDForModel(v.GetModelType()));
+                v.Write(writer.BaseStream);
             }
         }
     }
