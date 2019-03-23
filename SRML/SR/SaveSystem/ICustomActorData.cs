@@ -9,13 +9,15 @@ using MonomiPark.SlimeRancher.Persist;
 
 namespace SRML.SR.SaveSystem
 {
-    public interface ICustomActorData<T>  where T:ActorModel
+    public interface ICustomActorData<T> where T:ActorModel
     {
         void PullCustomModel(T model);
         void PushCustomModel(T model);
 
-        void WriteData(BinaryWriter writer);
-        void LoadData(BinaryReader reader);
+        void WriteCustomData(BinaryWriter writer);
+        void LoadCustomData(BinaryReader reader);
+
+        VanillaActorData GetVanillaDataPortion();
     }
 
     internal class ActorDataWrapper<T> : ICustomActorData<ActorModel> where T : ActorModel
@@ -36,59 +38,53 @@ namespace SRML.SR.SaveSystem
             wrappedObject.PushCustomModel((T)model);
         }
 
-        public void WriteData(BinaryWriter writer)
+        public void WriteCustomData(BinaryWriter writer)
         {
-            wrappedObject.WriteData(writer);
+            wrappedObject.WriteCustomData(writer);
         }
 
-        public void LoadData(BinaryReader reader)
+        public void LoadCustomData(BinaryReader reader)
         {
-            wrappedObject.LoadData(reader);
+            wrappedObject.LoadCustomData(reader);
+        }
+
+        public VanillaActorData GetVanillaDataPortion()
+        {
+            return wrappedObject.GetVanillaDataPortion();
         }
     }
 
-    public abstract class CustomActorData<T> : ActorDataV07, ICustomActorData<T> where T : ActorModel
+    public class VanillaActorData : ActorDataV07 { } // this is so we can easily replace which actordata version we're extending from
+
+    public abstract class CustomActorData<T> : VanillaActorData, ICustomActorData<T> where T : ActorModel
     {
+        public VanillaActorData GetVanillaDataPortion()
+        {
+            return this;
+        }
+
+        public abstract void LoadCustomData(BinaryReader reader);
+
         public abstract void PullCustomModel(T model);
 
         public abstract void PushCustomModel(T model);
 
-    }
+        public abstract void WriteCustomData(BinaryWriter writer);
 
-    public class BinaryActorData<T> : CustomActorData<T> where T : ActorModel, ISerializableModel
-    {
-        private byte[] data;
-
-        public override void PullCustomModel(T model)
+        public override void Load(Stream stream, bool skipPayloadEnd)
         {
-            using (var stream = new MemoryStream())
-            {
-                model.WriteData(new BinaryWriter(stream));
-                data = stream.GetBuffer();
-            }
-        }
-
-        public override void PushCustomModel(T model)
-        {
-            using (var reader = new BinaryReader(new MemoryStream(data)))
-            {
-                model.LoadData(reader);
-            }
-        }
-
-        public override void LoadData(BinaryReader reader)
-        {
-            base.LoadData(reader);
-            int byteLength = reader.ReadInt32();
-            data = reader.ReadBytes(byteLength);
+            base.Load(stream,false);
+            var reader = new BinaryReader(stream);
+            LoadCustomData(reader);
+            ReadDataPayloadEnd(reader);
         }
 
         public override void WriteData(BinaryWriter writer)
         {
             base.WriteData(writer);
-            writer.Write(data.Length);
-            writer.Write(data);
+            WriteDataPayloadEnd(writer);
+            WriteCustomData(writer);
         }
-    }
 
+    }
 }
