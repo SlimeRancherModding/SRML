@@ -24,9 +24,9 @@ namespace SRML.SR
 
         public static void RegisterCustomActorModel(Identifiable.Id id, Type actorType)
         {
-            if (!actorType.IsAssignableFrom(typeof(ActorModel)))
+            if (!typeof(ActorModel).IsAssignableFrom(actorType))
                 throw new Exception("Given type is not a valid ActorModel!");
-            RegisterCustomActorModel(id,(x,y,z)=>(ActorModel)Activator.CreateInstance(actorType,x,y,z));
+            RegisterCustomActorModel(id,(x,y,z)=>(ActorModel)Activator.CreateInstance(actorType,x,y,z.transform));
         }
     }
 }

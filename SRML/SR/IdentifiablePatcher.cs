@@ -8,12 +8,25 @@ namespace SRML.SR
 {
     public static class IdentifiablePatcher
     {
+        internal static Dictionary<Identifiable.Id,SRMod> moddedIdentifiables = new Dictionary<Identifiable.Id, SRMod>();
+        
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
             var id = (Identifiable.Id) value;
-            EnumPatcher.AddEnumValue(typeof(Identifiable.Id),id,name);         
+            if (moddedIdentifiables.ContainsKey(id))
+                throw new Exception(
+                    $"Identifiable {value} is already registered to {moddedIdentifiables[id].ModInfo.Id}");
+            var sr = SRMod.GetCurrentMod();
+            if (sr != null) moddedIdentifiables[id] = sr;
+            EnumPatcher.AddEnumValue(typeof(Identifiable.Id), id, name);
+            
             if (shouldCategorize) CategorizeId(id);
             return id;
+        }
+
+        public static bool IsModdedIdentifiable(Identifiable.Id id)
+        {
+            return moddedIdentifiables.ContainsKey(id);
         }
 
         public static void CategorizeId(Identifiable.Id id)

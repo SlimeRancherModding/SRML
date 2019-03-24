@@ -17,14 +17,14 @@ namespace SRML.SR
         internal static void OnSceneLoaded(SceneContext t)
         {
             if (Levels.isMainMenu()) return;
-            OnSaveGameLoaded(t);
-            
+            OnSaveGameLoaded?.Invoke(t);
+
         }
 
         internal static void PreSceneLoad(SceneContext t)
         {
             if (Levels.isMainMenu()) return;
-            PreSaveGameLoad(t);
+            PreSaveGameLoad?.Invoke(t);
         }
 
     }

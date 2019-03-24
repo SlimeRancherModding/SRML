@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -87,11 +88,21 @@
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PushActorDataPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\WriteGameDataPatch.cs" />
+    <Compile Include="SR\SaveSystem\BinaryActorData.cs" />
+    <Compile Include="SR\SaveSystem\CustomActorData.cs" />
+    <Compile Include="SR\SaveSystem\Patches\BuildActorDataPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\LoadFallBackSavePatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\LoadSavePatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SaveGamePatch.cs" />
+    <Compile Include="SR\SaveSystem\Registry\ActorDataRegistry.cs" />
     <Compile Include="SR\SaveSystem\ICustomActorData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModDataSegment.cs" />
     <Compile Include="SR\SaveSystem\Format\ModdedSaveData.cs" />
     <Compile Include="SR\SaveSystem\ISerializableModel.cs" />
-    <Compile Include="SR\SaveSystem\ModSaveInfo.cs" />
+    <Compile Include="SR\SaveSystem\Registry\ModSaveInfo.cs" />
+    <Compile Include="SR\SaveSystem\SaveHandler.cs" />
     <Compile Include="SR\SaveSystem\SaveRegistry.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />

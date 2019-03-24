@@ -25,8 +25,7 @@ namespace SRML.Patches
         }
         static object FixMono(Type enumType, object mono)
         {
-            EnumPatcher.EnumPatch patch;
-            if (EnumPatcher.TryGetRawPatch(enumType, out patch))
+            if (EnumPatcher.TryGetRawPatch(enumType, out var patch))
             {
 
                 var oldValues = (int[])values.GetValue(mono);
@@ -44,13 +43,11 @@ namespace SRML.Patches
         
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            int curindex = -1;
             using (var enumerator = instructions.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
                     var v = enumerator.Current;
-                    curindex++;
                     if (v.operand is MethodInfo me&&me.Name=="get_enum_info")
                     {
                         yield return v;

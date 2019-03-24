@@ -6,10 +6,10 @@ using System.Text;
 using Microsoft.SqlServer.Server;
 using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
-
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem
 {
-    public interface ICustomActorData<T> : Persistable where T:ActorModel
+    public interface ICustoasdmActorData<T> : Persistable where T:ActorModel
     {
         void PullCustomModel(T model);
         void PushCustomModel(T model);
@@ -22,54 +22,40 @@ namespace SRML.SR.SaveSystem
         VanillaActorData GetVanillaDataPortion();
     }
 
-    internal class ActorDataWrapper<T> : ICustomActorData<ActorModel> where T : ActorModel
+    internal class ActorDataWrapper<T> : CustomActorData<ActorModel> where T : ActorModel
     {
-        public ActorDataWrapper(ICustomActorData<T> wrapped)
+        public ActorDataWrapper(CustomActorData<T> wrapped)
         {
             wrappedObject = wrapped;
         }
-        public ICustomActorData<T> wrappedObject;
 
-        public void PullCustomModel(ActorModel model)
+        public CustomActorData<T> wrappedObject;
+
+        public override void PullCustomModel(ActorModel model)
         {
-            wrappedObject.PushCustomModel((T)model);
+            wrappedObject.PullCustomModel((T) model);
         }
 
-        public void PushCustomModel(ActorModel model)
+        public override void PushCustomModel(ActorModel model)
         {
-            wrappedObject.PushCustomModel((T)model);
+            wrappedObject.PushCustomModel((T) model);
         }
 
-        public void WriteCustomData(BinaryWriter writer)
+        public override void WriteCustomData(BinaryWriter writer)
         {
             wrappedObject.WriteCustomData(writer);
         }
 
-        public void LoadCustomData(BinaryReader reader)
+        public override void LoadCustomData(BinaryReader reader)
         {
             wrappedObject.LoadCustomData(reader);
         }
 
-        public VanillaActorData GetVanillaDataPortion()
-        {
-            return wrappedObject.GetVanillaDataPortion();
-        }
 
-        public void Load(Stream stream)
-        {
-            wrappedObject.Load(stream);
-        }
-
-        public long Write(Stream stream)
-        {
-            return wrappedObject.Write(stream);
-        }
-
-        public Type GetModelType()
+        public override Type GetModelType()
         {
             return wrappedObject.GetModelType();
         }
     }
 
-    public class VanillaActorData : ActorDataV07 { } // this is so we can easily replace which actordata version we're extending from
 }

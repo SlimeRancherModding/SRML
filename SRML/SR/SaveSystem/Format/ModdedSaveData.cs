@@ -4,46 +4,94 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SRML.Utils;
+using UnityEngine;
+
 namespace SRML.SR.SaveSystem.Format
 {
     class ModdedSaveData
     {
         public int version;
-        public long dataSegmentStartOffset;
-        public Dictionary<string, long> modToOffset = new Dictionary<string, long>();
         public List<ModDataSegment> segments = new List<ModDataSegment>();
         public void ReadHeader(BinaryReader reader)
         {
             version = reader.ReadInt32();
-            dataSegmentStartOffset = reader.ReadInt64();
-            modToOffset.Clear();
 
-            int count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
-            {
-                modToOffset.Add(reader.ReadString(),reader.ReadInt64());
-            }
-            
+
         }
 
         public void WriteHeader(BinaryWriter writer)
         {
-            long start = writer.BaseStream.Position;
             writer.Write(version);
-            writer.Write(dataSegmentStartOffset);
 
-            writer.Write(modToOffset.Count);
-            foreach (var v in modToOffset)
-            {
-                writer.Write(v.Key);
-                writer.Write(v.Value);
-            }
 
-            long current = writer.BaseStream.Position;
-            writer.BaseStream.Seek(start + sizeof(Int32), SeekOrigin.Begin);
-            writer.Write(current-start);
-            writer.BaseStream.Seek(current,SeekOrigin.Begin);
         }
 
+        public void ReadData(BinaryReader reader)
+        {
+            segments.Clear();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                long start = reader.BaseStream.Position;
+                var mod = new ModDataSegment();
+                try
+                {
+                    mod.Read(reader);
+                    segments.Add(mod);
+                }
+                catch(Exception e)
+                {
+                    Debug.Log($"Encountered exception {e}\nskipping loading {mod.modid} skipping {mod.byteLength} bytes in the stream");
+                    reader.BaseStream.Seek(start + mod.byteLength,SeekOrigin.Begin);
+                }
+            }
+        }
+
+        public void WriteData(BinaryWriter writer)
+        {
+            writer.Write(segments.Count);
+            foreach (var mod in segments)
+            {
+                using (var container = new MemoryStream())
+                {
+                    try
+                    {
+                        mod.Write(new BinaryWriter(container));
+                        writer.Write(container.GetBuffer());
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.Log($"Encountered exception {e}\n skipping saving {mod.modid}");
+                    }
+                }
+            }
+        }
+
+        public void Write(BinaryWriter writer)
+        {
+            WriteHeader(writer);
+            WriteData(writer);
+        }
+
+        public void Read(BinaryReader reader)
+        {
+            ReadHeader(reader);
+            ReadData(reader);
+        }
+
+        public ModDataSegment GetSegmentForMod(SRMod mod)
+        {
+            if (!(segments.FirstOrDefault((x) => x.modid == mod.ModInfo.Id) is ModDataSegment seg))
+            {
+                var segment = new ModDataSegment();
+                segment.modid = mod.ModInfo.Id;
+                segments.Add(segment);
+                return segment;
+            }
+
+            return seg;
+        }
+
+        
     }
 }
