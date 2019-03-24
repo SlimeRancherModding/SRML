@@ -4,7 +4,7 @@ using MonomiPark.SlimeRancher.DataModel;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem
 {
-    public abstract class CustomActorData<T> : VanillaActorData where T : ActorModel
+    internal abstract class CustomActorData<T> : VanillaActorData where T : ActorModel
     {
         public virtual VanillaActorData GetVanillaDataPortion()
         {
@@ -24,7 +24,7 @@ namespace SRML.SR.SaveSystem
 
         public abstract void WriteCustomData(BinaryWriter writer);
 
-        public override void Load(Stream stream, bool skipPayloadEnd)
+        public sealed override void Load(Stream stream, bool skipPayloadEnd)
         {
             base.Load(stream,false);
             var reader = new BinaryReader(stream);
@@ -32,7 +32,7 @@ namespace SRML.SR.SaveSystem
             if(!skipPayloadEnd) ReadDataPayloadEnd(reader);
         }
 
-        public override void WriteData(BinaryWriter writer)
+        public sealed override void WriteData(BinaryWriter writer)
         {
             base.WriteData(writer);
             WriteDataPayloadEnd(writer);

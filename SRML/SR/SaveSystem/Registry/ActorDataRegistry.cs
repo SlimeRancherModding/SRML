@@ -12,10 +12,10 @@ namespace SRML.SR.SaveSystem.Registry
 
         public void AddCustomActorData<T>(int id, Type dataType) where T : ActorModel
         {
-            AddCustomActorData<T>(id, () => ((CustomActorData<T>)Activator.CreateInstance(dataType)));
+            AddCustomActorData<T>(id, () => ((ICustomActorData<T>)Activator.CreateInstance(dataType)));
         }
 
-        public void AddCustomActorData<T>(int id, Func<CustomActorData<T>> creator) where T : ActorModel
+        public void AddCustomActorData<T>(int id, Func<ICustomActorData<T>> creator) where T : ActorModel
         {
             actorDataIds.Add(id,()=>new ActorDataWrapper<T>(creator()));
             modelTypeToIds.Add(typeof(T),id);

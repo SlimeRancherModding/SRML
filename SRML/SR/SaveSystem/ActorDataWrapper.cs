@@ -9,27 +9,24 @@ using MonomiPark.SlimeRancher.Persist;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem
 {
-    public interface ICustoasdmActorData<T> : Persistable where T:ActorModel
+    public interface ICustomActorData<T> where T : ActorModel
     {
         void PullCustomModel(T model);
+
         void PushCustomModel(T model);
 
         void WriteCustomData(BinaryWriter writer);
+
         void LoadCustomData(BinaryReader reader);
-
-        Type GetModelType();
-
-        VanillaActorData GetVanillaDataPortion();
     }
-
     internal class ActorDataWrapper<T> : CustomActorData<ActorModel> where T : ActorModel
     {
-        public ActorDataWrapper(CustomActorData<T> wrapped)
+        public ActorDataWrapper(ICustomActorData<T> wrapped)
         {
             wrappedObject = wrapped;
         }
 
-        public CustomActorData<T> wrappedObject;
+        public ICustomActorData<T> wrappedObject;
 
         public override void PullCustomModel(ActorModel model)
         {
@@ -54,7 +51,7 @@ namespace SRML.SR.SaveSystem
 
         public override Type GetModelType()
         {
-            return wrappedObject.GetModelType();
+            return typeof(T);
         }
     }
 

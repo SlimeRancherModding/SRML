@@ -3,11 +3,11 @@ using MonomiPark.SlimeRancher.DataModel;
 
 namespace SRML.SR.SaveSystem
 {
-    public class BinaryActorData<T> : CustomActorData<T> where T : ActorModel, ISerializableModel
+    public class BinaryActorData<T> : ICustomActorData<T> where T : ActorModel, ISerializableModel
     {
         private byte[] data;
 
-        public override void PullCustomModel(T model)
+        public void PullCustomModel(T model)
         {
             using (var stream = new MemoryStream())
             {
@@ -16,7 +16,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public override void PushCustomModel(T model)
+        public void PushCustomModel(T model)
         {
             using (var reader = new BinaryReader(new MemoryStream(data)))
             {
@@ -24,13 +24,13 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public override void LoadCustomData(BinaryReader reader)
+        public void LoadCustomData(BinaryReader reader)
         {
             int byteLength = reader.ReadInt32();
             data = reader.ReadBytes(byteLength);
         }
 
-        public override void WriteCustomData(BinaryWriter writer)
+        public void WriteCustomData(BinaryWriter writer)
         {
             writer.Write(data.Length);
             writer.Write(data);
