@@ -50,7 +50,7 @@ namespace SRML.SR.SaveSystem.Patches
         public static void CheckModel(ActorModel model, VanillaActorData data)
         {
             
-            if (data is CustomActorData<ActorModel> customData)
+            if (data is CustomActorData customData)
             {
 
                 customData.PushCustomModel(model);

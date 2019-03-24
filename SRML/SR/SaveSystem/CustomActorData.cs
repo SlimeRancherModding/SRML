@@ -4,25 +4,32 @@ using MonomiPark.SlimeRancher.DataModel;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem
 {
-    internal abstract class CustomActorData<T> : VanillaActorData where T : ActorModel
+    internal abstract class CustomActorData<T> : CustomActorData where T : ActorModel
     {
         public virtual VanillaActorData GetVanillaDataPortion()
         {
             return this;
         }
 
-        public virtual Type GetModelType()
+        public override Type GetModelType()
         {
             return typeof(T);
         }
 
-        public abstract void LoadCustomData(BinaryReader reader);
 
         public abstract void PullCustomModel(T model);
 
         public abstract void PushCustomModel(T model);
 
-        public abstract void WriteCustomData(BinaryWriter writer);
+        public sealed override void PushCustomModel(ActorModel model)
+        {
+            this.PushCustomModel((T) model);
+        }
+
+        public sealed override void PullCustomModel(ActorModel model)
+        {
+            this.PullCustomModel((T) model);
+        }
 
         public sealed override void Load(Stream stream, bool skipPayloadEnd)
         {
@@ -39,5 +46,17 @@ namespace SRML.SR.SaveSystem
             WriteCustomData(writer);
         }
 
+    }
+    public abstract class CustomActorData : VanillaActorData
+    {
+        public abstract void PullCustomModel(ActorModel model);
+
+        public abstract void PushCustomModel(ActorModel model);
+
+        public abstract void WriteCustomData(BinaryWriter writer);
+
+        public abstract void LoadCustomData(BinaryReader reader);
+
+        public abstract Type GetModelType();
     }
 }

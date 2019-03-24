@@ -25,7 +25,7 @@ namespace SRML.SR.SaveSystem
 
         public static bool IsCustom(VanillaActorData data)
         {
-            return data is CustomActorData<ActorModel> || IdentifiablePatcher.IsModdedIdentifiable((Identifiable.Id)data.typeId);
+            return data is CustomActorData || IdentifiablePatcher.IsModdedIdentifiable((Identifiable.Id)data.typeId);
         }
 
         internal static SRMod ModForModelType(Type model)
@@ -41,7 +41,7 @@ namespace SRML.SR.SaveSystem
         internal static SRMod ModForData(VanillaActorData data)
         {
             if (!IsCustom(data)) return null;
-            if (data is CustomActorData<ActorModel> model) return ModForModelType(model.GetModelType());
+            if (data is CustomActorData model) return ModForModelType(model.GetModelType());
             return IdentifiablePatcher.moddedIdentifiables[(Identifiable.Id) data.typeId];
         }
 

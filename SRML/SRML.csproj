@@ -97,7 +97,6 @@
     <Compile Include="SR\SaveSystem\Patches\LoadSavePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SaveGamePatch.cs" />
     <Compile Include="SR\SaveSystem\Registry\ActorDataRegistry.cs" />
-    <Compile Include="SR\SaveSystem\ActorDataWrapper.cs" />
     <Compile Include="SR\SaveSystem\Format\ModDataSegment.cs" />
     <Compile Include="SR\SaveSystem\Format\ModdedSaveData.cs" />
     <Compile Include="SR\SaveSystem\ISerializableModel.cs" />

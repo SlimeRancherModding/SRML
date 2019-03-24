@@ -15,7 +15,7 @@ namespace SRML.SR.SaveSystem.Format
         public int version;
         public string modid;
         public long byteLength;
-        public List<CustomActorData<ActorModel>> customActorData = new List<CustomActorData<ActorModel>>();
+        public List<CustomActorData> customActorData = new List<CustomActorData>();
         public List<VanillaActorData> normalActorData = new List<VanillaActorData>();
         public void Read(BinaryReader reader)
         {

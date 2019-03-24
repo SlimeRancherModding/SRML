@@ -20,7 +20,7 @@ namespace SRML.SR.SaveSystem
             foreach (var v in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
                 var segment = data.GetSegmentForMod(SaveRegistry.ModForData(v));
-                if (v is CustomActorData<ActorModel> model) segment.customActorData.Add(model);
+                if (v is CustomActorData model) segment.customActorData.Add(model);
                 else segment.normalActorData.Add(v);
             }
         }
