@@ -78,7 +78,8 @@ namespace SRML.SR.SaveSystem.Format
 
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);
-            writer.Write(cur-(overwritePosition+sizeof(long)));
+            byteLength = cur - (start);
+            writer.Write(byteLength);
             writer.BaseStream.Seek(cur, SeekOrigin.Begin);
 
         }
