@@ -5,12 +5,15 @@ using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Registry;
+using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem
 {
     public static class SaveRegistry
     {
         internal static Dictionary<SRMod,ModSaveInfo> modToSaveInfo = new Dictionary<SRMod, ModSaveInfo>();
+
+
 
         internal static ModSaveInfo GetSaveInfo(SRMod mod)
         {
@@ -22,6 +25,8 @@ namespace SRML.SR.SaveSystem
         {
             return GetSaveInfo(SRMod.GetCurrentMod());
         }
+
+
 
 
         public static bool IsCustom(object data)
@@ -56,6 +61,17 @@ namespace SRML.SR.SaveSystem
         public static void RegisterSerializableModel<T>(int id) where T : ActorModel, ISerializableModel
         {
             GetSaveInfo().GetRegistryFor<CustomActorData>().AddCustomData<T>(id, () => new BinaryActorData<T>());
+        }
+
+        public static void RegisterComponentForTag<T>(string key) where T : Component, ExtendedData.Participant
+        {
+            GetSaveInfo().onExtendedActorDataLoaded += (model, obj, tag) =>
+            {
+                if (tag.HasPiece(key))
+                {
+                    obj.AddComponent<T>();
+                }
+            };
         }
 
     }

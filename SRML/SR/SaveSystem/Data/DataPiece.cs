@@ -10,26 +10,114 @@ namespace SRML.SR.SaveSystem.Data
 {
     public class CompoundDataPiece : DataPiece
     {
-        public CompoundDataPiece() { }
-
-        public List<DataPiece> dataList
+        public CompoundDataPiece(string key)
         {
-            get { return data as List<DataPiece>; }
+            this.typeId = DataType.COMPOUND;
+            this.data = new HashSet<DataPiece>();
+            this.key = key;
+        }
+
+        internal CompoundDataPiece() { }
+
+        public HashSet<DataPiece> dataList
+        {
+            get { return data as HashSet<DataPiece>; }
         }
 
         public DataPiece this[string index]
         {
             get { return dataList.First((x) => x.key == index); }
         }
+
+        public object GetValue(string key)
+        {
+            return this[key].GetValue();
+        }
+
+        public T GetValue<T>(string key)
+        {
+            return (T)GetValue(key);
+        }
+
+        public DataPiece AddPiece(DataPiece piece)
+        {
+            dataList.Add(piece);
+            return piece;
+        }
+
+        public bool HasPiece(string key)
+        {
+            return dataList.Any((x) => x.key == key);
+        }
+
+        public DataPiece GetPiece(string key,Type type)
+        {
+            if (HasPiece(key)) return this[key];
+            return AddPiece(new DataPiece(key, type));
+        }
+
+        public DataPiece SetPiece(string key, object val)
+        {
+            var p = GetPiece(key, val.GetType());
+            p.SetValue(val);
+
+            return p;
+        }
+
+        public CompoundDataPiece GetCompoundPiece(string key)
+        {
+            //Debug.Log($"Trying to get compound piece {key} on {this.key}");
+            if (dataList.FirstOrDefault((x) => x.key == key) is DataPiece piece)
+            {
+                if (!(piece is CompoundDataPiece p)) throw new Exception("Piece is not compound data piece");
+                return p;
+            }
+
+            return AddPiece(new CompoundDataPiece(key)) as CompoundDataPiece;
+        }
+
+        public DataPiece GetPiece<T>(string key)
+        {
+            return GetPiece(key, typeof(T));
+        }
+
+
+        public void SetValue(string key, object value)
+        {
+            this[key].SetValue(value);
+        }
+
+        public void Stringify(StringBuilder builder, Action<String> adder=null)
+        {
+            
+            if (adder == null)
+            {
+                adder = (x) => builder.AppendLine(x);
+            }
+
+            adder($"COMPOUND {key} = ");
+            Action<String> newadder = (x) => adder("    " + x);
+            foreach (var v in dataList)
+            {
+                if (v is CompoundDataPiece piece)
+                {
+                    piece.Stringify(builder, newadder);
+                }
+                else
+                {
+                    newadder(v.ToString());
+                }
+            }
+        }
     }
 
     public class DataPiece
     {
-        public DataType typeId;
-        public string key;
-        public object data;
+        public DataType typeId { get; internal set; }
+        public string key { get; internal set; }
+        internal object data { get; set; }
 
-        public static Dictionary<DataType, SerializerPair> serializerPairs = new Dictionary<DataType, SerializerPair>()
+        internal static readonly Dictionary<DataType, SerializerPair> serializerPairs = new Dictionary<DataType, SerializerPair>()
         {
 
             {DataType.INT32,new SerializerPair<int>((x,y)=>x.Write(y),(x)=>x.ReadInt32()) },
@@ -45,7 +133,7 @@ namespace SRML.SR.SaveSystem.Data
             {DataType.QUATERNION,new SerializerPair<Quaternion>(BinaryUtils.WriteQuaternion,BinaryUtils.ReadQuaternion) },
             {DataType.MATRIX4,new SerializerPair<Matrix4x4>(BinaryUtils.WriteMatrix4,BinaryUtils.ReadMatrix4) },
             {DataType.STRING,new SerializerPair<string>((x,y)=>x.Write(y),(x)=>x.ReadString()) },
-            {DataType.COMPOUND,new SerializerPair<List<DataPiece>>((x, y) =>
+            {DataType.COMPOUND,new SerializerPair<HashSet<DataPiece>>((x, y) =>
             {
                 x.Write(y.Count);
                 foreach (var v in y)
@@ -55,7 +143,7 @@ namespace SRML.SR.SaveSystem.Data
             },
             (x) =>
             {
-                var newList = new List<DataPiece>();
+                var newList = new HashSet<DataPiece>();
                 int count = x.ReadInt32();
                 for (int i = 0; i < count; i++)
                 {
@@ -65,10 +153,42 @@ namespace SRML.SR.SaveSystem.Data
                 return newList;
 
             }
-            ) }
+            ) },
+            {DataType.ARRAY, new SerializerPair<Array>((x, y) =>
+            {
+                var arrayType = y.GetType().GetElementType();
+                if (!typeToDataType.TryGetValue(arrayType, out var typeId))
+                    throw new Exception("Array holds type that is invalid!");
+
+                if(!serializerPairs.TryGetValue(typeId,out var serializer))throw new Exception($"Unrecognized Data Type {typeId}");
+
+                x.Write((int)typeId);
+                x.Write(y.Length);
+                foreach (var v in y)
+                {
+                    serializer.Serialize(x, v);
+                }
+            },
+            (x) =>
+            {
+                var typeId = (DataType)x.ReadInt32();
+                var arrayType = typeToDataType.FirstOrDefault((g) => g.Value == typeId).Key;
+                if (arrayType == null) throw new Exception($"Unrecognized Data Type {typeId}");
+                if(!serializerPairs.TryGetValue(typeId,out var serializer)) throw new Exception($"Unrecognized Data Type {typeId}");
+                int count = x.ReadInt32();
+                var array = Array.CreateInstance(arrayType, count);
+
+                for (int i = 0; i < count; i++)
+                {
+                    array.SetValue(serializer.Deserialize(x), i);
+                }
+
+                return array;
+            }) },
+            {DataType.BOOLEAN,new SerializerPair<bool>((x,y)=>x.Write(y),(x)=>x.ReadBoolean()) }
         };
 
-        public static Dictionary<Type, DataType> typeToDataType = new Dictionary<Type, DataType>();
+        internal static readonly Dictionary<Type, DataType> typeToDataType = new Dictionary<Type, DataType>();
 
         static DataPiece()
         {
@@ -78,14 +198,19 @@ namespace SRML.SR.SaveSystem.Data
             }
         }
 
-        public static DataPiece GetNewDataPiece(DataType forType)
+        internal static DataPiece GetNewDataPiece(DataType forType)
         {
             if (forType == DataType.COMPOUND) return new CompoundDataPiece();
             return new DataPiece();
 
         }
 
-        public static DataPiece Deserialize(BinaryReader reader)
+        public override string ToString()
+        {
+            return $"{typeId} {key} = {data.ToString()};";
+        }
+
+        internal static DataPiece Deserialize(BinaryReader reader)
         {
             var type = (DataType)reader.ReadInt32();
             if (!serializerPairs.TryGetValue(type, out var serializer))
@@ -97,7 +222,7 @@ namespace SRML.SR.SaveSystem.Data
             return piece;
         }
 
-        public static void Serialize(BinaryWriter writer, DataPiece piece)
+        internal static void Serialize(BinaryWriter writer, DataPiece piece)
         {
 
             if (!serializerPairs.TryGetValue(piece.typeId, out var serializer))
@@ -107,9 +232,74 @@ namespace SRML.SR.SaveSystem.Data
             serializer.Serialize(writer, piece.data);
         }
 
-        public void Serialize(BinaryWriter writer)
+        internal void Serialize(BinaryWriter writer)
         {
             Serialize(writer, this);
+        }
+
+        internal DataPiece() { }
+
+        public DataPiece(string key, object value) : this(key, value.GetType())
+        {
+            this.data = value;
+        }
+
+        public object GetValue()
+        {
+            return data;
+
+        }
+
+        public T GetValue<T>()
+        {
+            return (T) data;
+
+        }
+
+        public void SetValue(object b)
+        {
+            if (typeId != GetTypeID(b))
+                throw new Exception($"Tried to set data piece to a value invalid for its type ID");
+            this.data = b;
+        }
+
+        public void SetValue<T>(T b)
+        {
+            SetValue(b);
+        }
+
+
+        public DataPiece(string key, Type valueType)
+        {
+            this.key = key;
+            this.typeId = GetTypeID(valueType);
+        }
+
+        public static DataType GetTypeID(Type type)
+        {
+            return typeToDataType[type];
+        }
+
+        public static DataType GetTypeID(object val)
+        {
+            return GetTypeID(val.GetType());
+        }
+
+        public Type GetDataType()
+        {
+            return typeToDataType.FirstOrDefault((g) => g.Value == typeId).Key;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var piece = obj as DataPiece;
+            return piece != null &&
+                   key == piece.key&&typeId==piece.typeId&&data==piece.data;
+        }
+
+        public override int GetHashCode()
+        {
+            return 249886028 + EqualityComparer<string>.Default.GetHashCode(key);
         }
     }
 
@@ -129,6 +319,8 @@ namespace SRML.SR.SaveSystem.Data
         MATRIX4,
         QUATERNION,
         STRING,
-        COMPOUND
+        COMPOUND,
+        ARRAY,
+        BOOLEAN
     }
 }

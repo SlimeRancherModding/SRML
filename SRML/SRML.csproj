@@ -88,7 +88,12 @@
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SaveSystem\Data\DataPiece.cs" />
+    <Compile Include="SR\SaveSystem\ExtendedData.cs" />
+    <Compile Include="SR\SaveSystem\Format\ExtendedDataTree.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushActorDataPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\RegisterActorPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SavedGamePushPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\WriteGameDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Data\Actor\BinaryActorData.cs" />
     <Compile Include="SR\SaveSystem\Data\Actor\CustomActorData.cs" />

@@ -18,6 +18,9 @@ namespace SRML.SR.SaveSystem.Format
         public long byteLength;
         public List<CustomActorData> customActorData = new List<CustomActorData>();
         public List<VanillaActorData> normalActorData = new List<VanillaActorData>();
+
+        public List<ExtendedDataTree> extendedData = new List<ExtendedDataTree>();
+
         public void Read(BinaryReader reader)
         {
             version = reader.ReadInt32();
@@ -34,7 +37,7 @@ namespace SRML.SR.SaveSystem.Format
 
                 var newData = registry.GetDataForID(dataId);
 
-                
+
                 newData.Load(reader.BaseStream);
 
                 customActorData.Add(newData);
@@ -49,6 +52,17 @@ namespace SRML.SR.SaveSystem.Format
                 var v = new VanillaActorData();
                 v.Load(reader.BaseStream);
                 normalActorData.Add(v);
+            }
+
+            extendedData.Clear();
+
+            count = reader.ReadInt32();
+
+            for (int i = 0; i < count; i++)
+            {
+                var e = new ExtendedDataTree();
+                e.Read(reader);
+                extendedData.Add(e);
             }
         }
 
@@ -75,6 +89,13 @@ namespace SRML.SR.SaveSystem.Format
             foreach (var v in normalActorData)
             {
                 v.Write(writer.BaseStream);
+            }
+
+            writer.Write(extendedData.Count);
+
+            foreach (var data in extendedData)
+            {
+                data.Write(writer);
             }
 
             var cur = writer.BaseStream.Position;

@@ -24,6 +24,8 @@ namespace SRML.SR.SaveSystem
                 if (v is CustomActorData model) segment.customActorData.Add(model);
                 else segment.normalActorData.Add(v);
             }
+
+            ExtendedData.Push(data);
         }
 
         public static void PushModdedData(GameV09 game)
@@ -34,6 +36,8 @@ namespace SRML.SR.SaveSystem
                 game.actors.AddRange(v.customActorData.Select((x)=>(ActorDataV07)x));
                 game.actors.AddRange(v.normalActorData.Select((x)=>(ActorDataV07)x));
             }
+
+            ExtendedData.Pull(data);
         }
 
         public static void LoadModdedSave(AutoSaveDirector director, string savename)
