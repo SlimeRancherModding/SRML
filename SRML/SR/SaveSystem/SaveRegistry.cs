@@ -34,6 +34,7 @@ namespace SRML.SR.SaveSystem
             return (data is VanillaActorData dat && IdentifiablePatcher.IsModdedIdentifiable((Identifiable.Id)dat.typeId));
         }
 
+
         internal static SRMod ModForModelType(Type model)
         {
             foreach (var v in modToSaveInfo)

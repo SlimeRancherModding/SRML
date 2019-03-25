@@ -6,8 +6,12 @@ using System.Text;
 using UnityEngine;
 namespace SRML.Utils
 {
+    public delegate void BinarySerializer<T>(BinaryWriter writer, T obj);
+
+    public delegate T BinaryDeserializer<T>(BinaryReader reader);
     public static class BinaryUtils
     {
+
 
         public static void SwapPattern(byte[] bytes, byte[] pattern, byte[] replacement)
         {
@@ -212,5 +216,44 @@ namespace SRML.Utils
 
             return output;
         }
+        
+    }
+
+    public class SerializerPair<T> : SerializerPair
+    {
+
+
+        public override object Deserialize(BinaryReader reader)
+        {
+            return deserializerFunc(reader);
+        }
+
+
+        public override void Serialize(BinaryWriter writer, object b)
+        {
+            serializerFunc(writer, (T) b);
+        }
+
+        private BinarySerializer<T> serializerFunc;
+        private BinaryDeserializer<T> deserializerFunc;
+
+        public SerializerPair(BinarySerializer<T> serializer,
+            BinaryDeserializer<T> deserializer)
+        {
+            this.serializerFunc = serializer;
+            this.deserializerFunc = deserializer;
+        }
+
+        public override Type GetSerializedType()
+        {
+            return typeof(T);
+        }
+    }
+
+    public abstract class SerializerPair
+    {
+        public abstract object Deserialize(BinaryReader reader);
+        public abstract void Serialize(BinaryWriter writer,object b);
+        public abstract Type GetSerializedType();
     }
 }
