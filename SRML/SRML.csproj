@@ -90,13 +90,13 @@
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushActorDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\WriteGameDataPatch.cs" />
-    <Compile Include="SR\SaveSystem\BinaryActorData.cs" />
-    <Compile Include="SR\SaveSystem\CustomActorData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Actor\BinaryActorData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Actor\CustomActorData.cs" />
     <Compile Include="SR\SaveSystem\Patches\BuildActorDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LoadFallBackSavePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LoadSavePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SaveGamePatch.cs" />
-    <Compile Include="SR\SaveSystem\Registry\ActorDataRegistry.cs" />
+    <Compile Include="SR\SaveSystem\Registry\DataRegistry.cs" />
     <Compile Include="SR\SaveSystem\Format\ModDataSegment.cs" />
     <Compile Include="SR\SaveSystem\Format\ModdedSaveData.cs" />
     <Compile Include="SR\SaveSystem\ISerializableModel.cs" />

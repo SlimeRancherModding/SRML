@@ -7,6 +7,7 @@ using System.Text;
 using Harmony;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Data.Actor;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 
@@ -26,7 +27,7 @@ namespace SRML.SR.SaveSystem.Patches
             var mod = SaveRegistry.ModForModelType(actorModel.GetType());
             if (mod != null)
             {  
-                var info = SaveRegistry.GetSaveInfo(mod).CustomActorDataRegistry;
+                var info = SaveRegistry.GetSaveInfo(mod).GetRegistryFor<CustomActorData>();
                 var newmodel = info.GetDataForID(info.GetIDForModel(actorModel.GetType()));
                 newmodel.PullCustomModel(actorModel);
                 return (VanillaActorData)newmodel;

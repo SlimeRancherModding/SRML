@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Registry;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
-namespace SRML.SR.SaveSystem
+namespace SRML.SR.SaveSystem.Data.Actor
 {
     internal abstract class CustomActorData<T> : CustomActorData where T : ActorModel
     {
@@ -47,7 +48,7 @@ namespace SRML.SR.SaveSystem
         }
 
     }
-    public abstract class CustomActorData : VanillaActorData
+    public abstract class CustomActorData : VanillaActorData, IDataRegistryMember
     {
         public abstract void PullCustomModel(ActorModel model);
 

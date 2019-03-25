@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using MonomiPark.SlimeRancher.DataModel;
 
-namespace SRML.SR.SaveSystem
+namespace SRML.SR.SaveSystem.Data.Actor
 {
     class BinaryActorData<T> : CustomActorData<T> where T : ActorModel, ISerializableModel
     {

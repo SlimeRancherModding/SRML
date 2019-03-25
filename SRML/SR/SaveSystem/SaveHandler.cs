@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Format;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Registry;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem
@@ -23,31 +24,37 @@ namespace SRML.SR.SaveSystem
         }
 
 
-        public static bool IsCustom(VanillaActorData data)
+        public static bool IsCustom(object data)
         {
-            return data is CustomActorData || IdentifiablePatcher.IsModdedIdentifiable((Identifiable.Id)data.typeId);
+            return modToSaveInfo.Any((x)=>x.Value.BelongsToMe(data)) || HasModdedID(data);
+        }
+
+        public static bool HasModdedID(object data)
+        {
+            return (data is VanillaActorData dat && IdentifiablePatcher.IsModdedIdentifiable((Identifiable.Id)dat.typeId));
         }
 
         internal static SRMod ModForModelType(Type model)
         {
             foreach (var v in modToSaveInfo)
             {
-                if (v.Value.CustomActorDataRegistry.modelTypeToIds.ContainsKey(model)) return v.Key;
+                if (v.Value.IsModelRegistered(model)) return v.Key;
             }
 
             return null;
         }
 
-        internal static SRMod ModForData(VanillaActorData data)
+        internal static SRMod ModForData(object data)
         {
             if (!IsCustom(data)) return null;
-            if (data is CustomActorData model) return ModForModelType(model.GetModelType());
-            return IdentifiablePatcher.moddedIdentifiables[(Identifiable.Id) data.typeId];
+            if (data is IDataRegistryMember model) return ModForModelType(model.GetModelType());
+            if(data is VanillaActorData dat) return IdentifiablePatcher.moddedIdentifiables[(Identifiable.Id) dat.typeId];
+            return null;
         }
 
         public static void RegisterSerializableModel<T>(int id) where T : ActorModel, ISerializableModel
         {
-            GetSaveInfo().CustomActorDataRegistry.AddCustomActorData(id, () => new BinaryActorData<T>());
+            GetSaveInfo().GetRegistryFor<CustomActorData>().AddCustomData<T>(id, () => new BinaryActorData<T>());
         }
 
     }

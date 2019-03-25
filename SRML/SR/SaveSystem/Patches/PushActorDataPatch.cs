@@ -8,6 +8,7 @@ using System.Text;
 using Harmony;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Data.Actor;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem.Patches

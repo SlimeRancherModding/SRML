@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using rail;
+using SRML.SR.SaveSystem.Data.Actor;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 using UnityEngine;
 
@@ -24,14 +25,14 @@ namespace SRML.SR.SaveSystem.Format
             byteLength = reader.ReadInt64();
             if (!(SRModLoader.GetMod(modid) is SRMod mod)) throw new Exception($"Unrecognized mod id: {modid}");
             var saveInfo = SaveRegistry.GetSaveInfo(mod);
-
+            var registry = saveInfo.GetRegistryFor<CustomActorData>();
             customActorData.Clear();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
                 int dataId = reader.ReadInt32();
 
-                var newData = saveInfo.CustomActorDataRegistry.GetDataForID(dataId);
+                var newData = registry.GetDataForID(dataId);
 
                 
                 newData.Load(reader.BaseStream);
@@ -62,10 +63,10 @@ namespace SRML.SR.SaveSystem.Format
             var saveInfo = SaveRegistry.GetSaveInfo(mod);
 
             writer.Write(customActorData.Count);
-
+            var registry = saveInfo.GetRegistryFor<CustomActorData>();
             foreach (var v in customActorData)
             {
-                writer.Write(saveInfo.CustomActorDataRegistry.GetIDForModel(v.GetModelType()));
+                writer.Write(registry.GetIDForModel(v.GetModelType()));
                 v.Write(writer.BaseStream);
             }
 
