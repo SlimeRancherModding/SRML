@@ -23,7 +23,6 @@ namespace SRML.SR.SaveSystem
             foreach (var mod in data.segments)
             {
                 Debug.Log($"mod {mod.modid} has {mod.extendedData.Count} extended actor datas");
-                LogUtils.CloseLogSession();
                 foreach (var v in mod.extendedData)
                 {
                     switch (v.idType)
@@ -34,8 +33,6 @@ namespace SRML.SR.SaveSystem
                             {
                                 list.Add(h);
                             }
-
-
                             break;
                         default:
                             throw new NotImplementedException();
@@ -49,18 +46,27 @@ namespace SRML.SR.SaveSystem
         {
             if (Identifiable.GetId(gameObject) == Identifiable.Id.NONE) return;
 
-            if (extendedActorData.ContainsKey(actorId))
+            if (IsRegistered(actorId))
             {
                 foreach (var v in SaveRegistry.modToSaveInfo)
                 {
-                    
                     if(extendedActorData[actorId].HasPiece(v.Key.ModInfo.Id)) v.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, GetPieceForMod(v.Key.ModInfo.Id, extendedActorData[actorId]));
                 }
 
                 
                 foreach (var p in gameObject.GetComponentsInChildren<Participant>())
                 {
-                    SetParticipant(p,(extendedActorData[actorId]));
+                    try
+                    {
+                        SetParticipant(p, (extendedActorData[actorId]));
+                    }
+                    catch(InvalidOperationException e)
+                    {
+                        Debug.Log($"Yipes! seems like {p.GetType()} isn't initialized!");
+                        // a bit gross hack but it'll help when mods add new participants to things that already have actor data stored
+                        InitParticipant(p, (extendedActorData[actorId]));
+                        SetParticipant(p, (extendedActorData[actorId]));
+                    }
                 }
 
             }
@@ -73,7 +79,7 @@ namespace SRML.SR.SaveSystem
                 }
             }
             
-              
+            
 
 
         }
@@ -154,7 +160,7 @@ namespace SRML.SR.SaveSystem
 
         public static void RegisterExtendedActorData(long actorId, GameObject obj,bool skipNotify)
         {
-            if (IsRegistered(obj)) return;
+            if (IsRegistered(actorId)) return;
             var tag = GetDataForActor(actorId);
             var participants = obj.GetComponents<Participant>();
             foreach (var v in participants)
@@ -171,7 +177,7 @@ namespace SRML.SR.SaveSystem
 
         static CompoundDataPiece GetDataForActor(long actorId)
         {
-            if (!extendedActorData.ContainsKey(actorId)) extendedActorData.Add(actorId, new CompoundDataPiece("root"));
+            if (!IsRegistered(actorId)) extendedActorData.Add(actorId, new CompoundDataPiece("root"));
             return extendedActorData[actorId];
         }
 
@@ -192,13 +198,13 @@ namespace SRML.SR.SaveSystem
 
         static void SetParticipant(Participant p, CompoundDataPiece piece)
         {
-            var modid = GetModForParticipant(p).ModInfo.Id;
+            var modid = GetModForParticipant(p)?.ModInfo.Id ?? "srml";
             p.SetData(GetPieceForMod(modid, piece));
         }
 
         static void InitParticipant(Participant p, CompoundDataPiece piece)
         {
-            var modid = GetModForParticipant(p).ModInfo.Id;
+            var modid = GetModForParticipant(p)?.ModInfo.Id ?? "srml";
             p.InitData(GetPieceForMod(modid, piece));
         }
 

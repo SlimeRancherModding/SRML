@@ -88,6 +88,7 @@
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SaveSystem\Data\CompoundDataPiece.cs" />
     <Compile Include="SR\SaveSystem\Data\DataPiece.cs" />
     <Compile Include="SR\SaveSystem\ExtendedData.cs" />
     <Compile Include="SR\SaveSystem\Format\ExtendedDataTree.cs" />
