@@ -27,7 +27,6 @@ namespace SRML.SR.SaveSystem.Format
         {
             writer.Write((int)idType);
             writer.Write(identifier);
-            dataPiece.key = "root";
             DataPiece.Serialize(writer, dataPiece);
         }
 

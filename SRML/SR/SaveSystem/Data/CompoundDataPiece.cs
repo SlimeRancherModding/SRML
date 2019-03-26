@@ -21,9 +21,38 @@ namespace SRML.SR.SaveSystem.Data
             get { return data as HashSet<DataPiece>; }
         }
 
+        private Dictionary<string, DataPiece> _cache = new Dictionary<string, DataPiece>();
+
+        DataPiece GetCachedPiece(string key)
+        {
+            if (!_cache.TryGetValue(key, out var piece)||piece==null)
+            {
+                var p = dataList.FirstOrDefault((x) => key == x.key);
+                if (p != null) _cache[key] = piece;
+                return p;
+            }
+            else
+            {
+                if (!dataList.Contains(piece))
+                {
+                    _cache.Remove(key);
+                    return null;
+                }
+
+                if (piece.key != key)
+                {
+                    _cache.Remove(key);
+                    _cache[key] = piece;
+                }
+                return piece;
+            }
+        }
+
+        
+
         public DataPiece this[string index]
         {
-            get { return dataList.First((x) => x.key == index); }
+            get { return GetCachedPiece(index); }
         }
 
         public object GetValue(string key)

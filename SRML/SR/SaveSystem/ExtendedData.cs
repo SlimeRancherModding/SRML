@@ -70,8 +70,6 @@ namespace SRML.SR.SaveSystem
                     }
                 }
 
-                Debug.Log(gameObject.name + " is returning to us!");
-
             }
             else
             {

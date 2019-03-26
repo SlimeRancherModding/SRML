@@ -9,8 +9,8 @@ namespace SRML.SR.SaveSystem.Data
 {
     public class DataPiece
     {
-        public DataType typeId { get; internal set; }
-        public string key { get; internal set; }
+        public DataType typeId { get; protected set; }
+        public string key { get; protected set; }
         internal object data { get; set; }
 
         internal static readonly Dictionary<DataType, SerializerPair> serializerPairs = new Dictionary<DataType, SerializerPair>()
