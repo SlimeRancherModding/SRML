@@ -52,16 +52,8 @@ namespace SRML.SR.SaveSystem.Format
             writer.Write(segments.Count);
             foreach (var mod in segments)
             {
-                
-                
-
-                mod.Write(writer); //new BinaryWriter(container));
-                Debug.Log($"Saving mod {mod.modid} which has {mod.normalActorData.Count} normal actors and is {mod.byteLength} bytes long");
-                //writer.Write(//container.GetBuffer());
-
-                //Debug.Log($"Encountered exception {e}\n skipping saving {mod.modid}");
-
-
+                mod.Write(writer);
+                Debug.Log($"Saving mod {mod.modid} which has {mod.normalActorData.Count} normal actors (with custom ID's), {mod.customActorData.Count} custom actors, and is {mod.byteLength} bytes long");
             }
         }
 

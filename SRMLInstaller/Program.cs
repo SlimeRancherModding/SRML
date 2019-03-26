@@ -11,6 +11,8 @@ namespace SRMLInstaller
     class Program
     {
         public const String SRML = "SRML.dll";
+        public const String embeddedResourcePath = "SRMLInstaller.Libs.";
+        public const String embeddedResourceProject = "SRMLInstaller.";
         static void Main(string[] args)
         {
             try
@@ -26,22 +28,23 @@ namespace SRMLInstaller
                 }
                 
                 string root = Path.GetDirectoryName(filename);
-                string currentAssembly = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location); //TODO: make it so it copies dependencies too
-                var libFolder = Path.Combine(currentAssembly, "Libs");
-                var currentSRML = Path.Combine(libFolder,SRML);
-                if(!File.Exists(currentSRML)) throw new Exception($"Couldn't find {SRML}!");
-                foreach (var v in Directory.GetFiles(libFolder))
+
+                
+                foreach (var v in Assembly.GetExecutingAssembly().GetManifestResourceNames().Where((x)=>x.Length>embeddedResourceProject.Length&&x.Substring(0,embeddedResourceProject.Length)==embeddedResourceProject))
                 {
-                    var file = Path.GetFileName(v);
+                    var file = v.Substring(embeddedResourcePath.Length);
                     var combine = Path.Combine(root, file);
-                    var libPath = Path.Combine(libFolder, file);
+                    //var libPath = Path.Combine(libFolder, file);
                     if (File.Exists(combine))
                     {
                         Console.WriteLine($"Found old {file}! Replacing...");
                         File.Delete(combine);
                     }
-
-                    File.Copy(libPath, combine);
+                    var str = File.Create(combine);
+                    var otherStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Program),  v.Substring(embeddedResourceProject.Length));
+                    otherStream.CopyTo(str);
+                    otherStream.Close();
+                    str.Close();
                 }
                 var srmlPath = Path.Combine(root, SRML);
 
@@ -49,7 +52,9 @@ namespace SRMLInstaller
 
                 if (patcher.IsPatched())
                 {
-                    throw new Exception($"Game is already patched!");
+                    
+                    Console.WriteLine($"Game is already patched! Assuming installation/update is complete...");
+                    goto onsuccess;
                 }
 
                 Console.WriteLine("Patching...");
@@ -57,10 +62,17 @@ namespace SRMLInstaller
                 Console.WriteLine("Patching Successful!");
                 patcher.Save();
                 Console.WriteLine($"Installation complete! (old assembly stored as {Path.GetFileNameWithoutExtension(filename)}_old.dll)");
+                
+
+                onsuccess:
+                var modpath = Path.Combine(Directory.GetParent(root).Parent.Parent.FullName, "SRML", "Mods");
+                if (!Directory.Exists(modpath)) Directory.CreateDirectory(modpath);
+                Console.WriteLine($"Mods can be installed at {modpath}");
+
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
             }
             Console.Write("Press any key to continue...");
             Console.ReadKey();

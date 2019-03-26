@@ -72,7 +72,7 @@ namespace SRML.SR.SaveSystem
 
             }
             else
-            {
+            {   
                 var participants = gameObject.GetComponents<Participant>();
                 if (participants != null && participants.Length > 0)
                 {
@@ -108,6 +108,7 @@ namespace SRML.SR.SaveSystem
 
         internal static void DestroyActor(GameObject b)
         {
+            if (b?.GetComponent<Identifiable>()?.model == null) return;
             long id = Identifiable.GetActorId(b);
             if (IsRegistered(id)) extendedActorData.Remove(id);
         }

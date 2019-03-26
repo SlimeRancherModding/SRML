@@ -32,7 +32,7 @@ namespace SRML.SR.SaveSystem
         {
             foreach (var v in data.segments)
             {
-                Debug.Log($"Splicing data from mod {v.modid}, it has {v.customActorData.Count} custom actors");
+                Debug.Log($"Splicing data from mod {v.modid}, it has {v.customActorData.Count} custom actors and {v.normalActorData.Count} normal actors with custom ID's");
                 game.actors.AddRange(v.customActorData.Select((x)=>(ActorDataV07)x));
                 game.actors.AddRange(v.normalActorData.Select((x)=>(ActorDataV07)x));
             }

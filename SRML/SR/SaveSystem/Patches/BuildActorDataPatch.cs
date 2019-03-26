@@ -23,7 +23,6 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static VanillaActorData ActorCreator(GameModel gameModel, int typeId, long actorId, ActorModel actorModel)
         {
-            //Debug.Log($"We got a hit! {typeId} {actorId} {actorModel.GetType().Name}");
             var mod = SaveRegistry.ModForModelType(actorModel.GetType());
             if (mod != null)
             {  

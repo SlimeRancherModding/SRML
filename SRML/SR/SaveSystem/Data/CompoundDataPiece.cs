@@ -73,7 +73,7 @@ namespace SRML.SR.SaveSystem.Data
 
         public bool HasPiece(string key)
         {
-            return dataList.Any((x) => x.key == key);
+            return this[key] != null;
         }
 
         public DataPiece GetPiece(string key,Type type)
@@ -93,7 +93,7 @@ namespace SRML.SR.SaveSystem.Data
         public CompoundDataPiece GetCompoundPiece(string key)
         {
             //Debug.Log($"Trying to get compound piece {key} on {this.key}");
-            if (dataList.FirstOrDefault((x) => x.key == key) is DataPiece piece)
+            if (this[key] is DataPiece piece)
             {
                 if (!(piece is CompoundDataPiece p)) throw new Exception("Piece is not compound data piece");
                 return p;

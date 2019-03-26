@@ -53,7 +53,6 @@ namespace SRML.SR.SaveSystem.Patches
             
             if (data is CustomActorData customData)
             {
-
                 customData.PushCustomModel(model);
             }
         }
