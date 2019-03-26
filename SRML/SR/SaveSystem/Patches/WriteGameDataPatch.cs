@@ -30,7 +30,6 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static void Postfix(GameV09 __instance, ref List<VanillaActorData> __state)
         {
-            LogUtils.Log($"we have {__state.Count} things to add back in gamev09");
             foreach (var v in __state)
             {
                 __instance.actors.Add(v);
