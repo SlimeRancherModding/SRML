@@ -92,6 +92,7 @@
     <Compile Include="SR\SaveSystem\Data\DataPiece.cs" />
     <Compile Include="SR\SaveSystem\ExtendedData.cs" />
     <Compile Include="SR\SaveSystem\Format\ExtendedDataTree.cs" />
+    <Compile Include="SR\SaveSystem\Patches\DeleteGameDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushActorDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\RegisterActorPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SavedGamePushPatch.cs" />

@@ -48,12 +48,13 @@ namespace SRML.SR.SaveSystem
 
             if (IsRegistered(actorId))
             {
-                foreach (var v in SaveRegistry.modToSaveInfo)
+                   foreach (var v in SaveRegistry.modToSaveInfo)
                 {
                     if(extendedActorData[actorId].HasPiece(v.Key.ModInfo.Id)) v.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, GetPieceForMod(v.Key.ModInfo.Id, extendedActorData[actorId]));
                 }
 
-                
+                foreach(var p in gameObject.GetComponentsInChildren<Participant>()) if (!ValidateParticipant(p, (extendedActorData[actorId])))
+                    InitParticipant(p, (extendedActorData[actorId]));
                 foreach (var p in gameObject.GetComponentsInChildren<Participant>())
                 {
                     try
@@ -68,6 +69,8 @@ namespace SRML.SR.SaveSystem
                         SetParticipant(p, (extendedActorData[actorId]));
                     }
                 }
+
+                Debug.Log(gameObject.name + " is returning to us!");
 
             }
             else
@@ -153,22 +156,28 @@ namespace SRML.SR.SaveSystem
             RegisterExtendedActorData(b);
             var newPart = b.AddComponent<T>();
             var id = Identifiable.GetActorId(b);
-            InitParticipant(newPart, GetDataForActor(id));
+            if (!ValidateParticipant(newPart, GetDataForActor(id))) InitParticipant(newPart, GetDataForActor(id));
             SetParticipant(newPart, GetDataForActor(id));
             return newPart;
         }
 
         public static void RegisterExtendedActorData(long actorId, GameObject obj,bool skipNotify)
         {
-            if (IsRegistered(actorId)) return;
-            var tag = GetDataForActor(actorId);
-            var participants = obj.GetComponents<Participant>();
-            foreach (var v in participants)
+
+            if (IsRegistered(actorId))
             {
-                InitParticipant(v,tag);
+                Debug.LogWarning(obj.name + " is already registered!");
+                return;
             }
 
-            if (skipNotify) return;
+
+            var tag = GetDataForActor(actorId);
+            var participants = obj.GetComponents<Participant>();    
+            foreach (var v in participants)
+            {
+                if(!ValidateParticipant(v,tag)) InitParticipant(v,tag);
+            }
+
             foreach (var v in participants)
             {
                 SetParticipant(v, tag);
@@ -208,10 +217,17 @@ namespace SRML.SR.SaveSystem
             p.InitData(GetPieceForMod(modid, piece));
         }
 
+        static bool ValidateParticipant(Participant p, CompoundDataPiece piece)
+        {
+            var modid = GetModForParticipant(p)?.ModInfo.Id ?? "srml";
+            return p.IsDataValid(GetPieceForMod(modid, piece));
+        }
+
         public interface Participant
         {
             void InitData(CompoundDataPiece piece);
             void SetData(CompoundDataPiece piece);
+            bool IsDataValid(CompoundDataPiece piece);
         }
     }
 }

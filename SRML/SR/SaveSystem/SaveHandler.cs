@@ -40,11 +40,16 @@ namespace SRML.SR.SaveSystem
             ExtendedData.Pull(data);
         }
 
+        public static string GetModdedPath(FileStorageProvider provider, string savename)
+        {
+            return Path.ChangeExtension(provider.GetFullFilePath(savename), ".mod");
+        }
+
         public static void LoadModdedSave(AutoSaveDirector director, string savename)
         {
             var storageprovider = director.storageProvider as FileStorageProvider;
             if (storageprovider == null) return;
-            var modpath = Path.ChangeExtension(storageprovider.GetFullFilePath(savename), ".mod");
+            var modpath = GetModdedPath(storageprovider, savename);
             Debug.Log(modpath+" is our modded path");
             if (!File.Exists(modpath)) return;
             using (var reader = new BinaryReader(new FileStream(modpath, FileMode.Open)))
@@ -59,7 +64,7 @@ namespace SRML.SR.SaveSystem
         {
             var storageprovider = director.storageProvider as FileStorageProvider;
             if (storageprovider == null) return;
-            var modpath = Path.ChangeExtension(storageprovider.GetFullFilePath(nextfilename), ".mod");
+            var modpath = GetModdedPath(storageprovider, nextfilename);
             Debug.Log(modpath + " is our modded path");
             PullModdedData(director.savedGame.gameState);
             if (File.Exists(modpath)) File.Delete(modpath);
