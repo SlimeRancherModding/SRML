@@ -78,17 +78,17 @@ namespace SRML.SR.SaveSystem.Format
 
             writer.Write(customActorData.Count);
             var registry = saveInfo.GetRegistryFor<CustomActorData>();
-            foreach (var v in customActorData)
+            foreach (var actorData in customActorData)
             {
-                writer.Write(registry.GetIDForModel(v.GetModelType()));
-                v.Write(writer.BaseStream);
+                writer.Write(registry.GetIDForModel(actorData.GetModelType()));
+                actorData.Write(writer.BaseStream);
             }
 
             writer.Write(normalActorData.Count);
 
-            foreach (var v in normalActorData)
+            foreach (var actorData in normalActorData)
             {
-                v.Write(writer.BaseStream);
+                actorData.Write(writer.BaseStream);
             }
 
             writer.Write(extendedData.Count);

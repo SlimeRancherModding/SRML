@@ -18,11 +18,11 @@ namespace SRML.SR.SaveSystem
         public static void PullModdedData(GameV09 game)
         {
             data.segments.Clear();
-            foreach (var v in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
+            foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
-                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(v));
-                if (v is CustomActorData model) segment.customActorData.Add(model);
-                else segment.normalActorData.Add(v);
+                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(actor));
+                if (actor is CustomActorData model) segment.customActorData.Add(model);
+                else segment.normalActorData.Add(actor);
             }
 
             ExtendedData.Push(data);
@@ -30,11 +30,11 @@ namespace SRML.SR.SaveSystem
 
         public static void PushModdedData(GameV09 game)
         {
-            foreach (var v in data.segments)
+            foreach (var mod in data.segments)
             {
-                Debug.Log($"Splicing data from mod {v.modid}, it has {v.customActorData.Count} custom actors and {v.normalActorData.Count} normal actors with custom ID's");
-                game.actors.AddRange(v.customActorData.Select((x)=>(ActorDataV07)x));
-                game.actors.AddRange(v.normalActorData.Select((x)=>(ActorDataV07)x));
+                Debug.Log($"Splicing data from mod {mod.modid}, it has {mod.customActorData.Count} custom actors and {mod.normalActorData.Count} normal actors with custom ID's");
+                game.actors.AddRange(mod.customActorData.Select((x)=>(ActorDataV07)x));
+                game.actors.AddRange(mod.normalActorData.Select((x)=>(ActorDataV07)x));
             }
 
             ExtendedData.Pull(data);

@@ -16,11 +16,11 @@ namespace SRML.SR.Patches
             GameObject gameObj)
         {
             __result = null;
-            var g = DataModelRegistry.actorOverrideMapping.FirstOrDefault((x) => x.Key(ident));
-            if (g.Value==null)
+            var _override = DataModelRegistry.actorOverrideMapping.FirstOrDefault((x) => x.Key(ident));
+            if (_override.Value==null)
                 return true;
 
-            __result = g.Value(actorId, ident, gameObj);
+            __result = _override.Value(actorId, ident, gameObj);
             return false;
         }
     }

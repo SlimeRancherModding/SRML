@@ -21,12 +21,12 @@ namespace SRML
         {
             FileSystem.CheckDirectory(FileSystem.ModPath);
             HashSet<ProtoMod> foundMods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
-            foreach (var v in Directory.GetFiles(FileSystem.ModPath, ModJson, SearchOption.AllDirectories))
+            foreach (var jsonFile in Directory.GetFiles(FileSystem.ModPath, ModJson, SearchOption.AllDirectories))
             {
-                var mod = ProtoMod.ParseFromJson(v);
+                var mod = ProtoMod.ParseFromJson(jsonFile);
                 if (!foundMods.Add(mod))
                 {
-                    throw new Exception("Found mod with duplicate id '"+mod.id+"' in "+v+"!");
+                    throw new Exception("Found mod with duplicate id '"+mod.id+"' in "+jsonFile+"!");
                 }
 
 
@@ -66,13 +66,13 @@ namespace SRML
             {
                 foreach (var mod in protomods)
                 {
-                    foreach (var v in foundAssemblies.Where((x)=>x.mod==mod))
+                    foreach (var assembly in foundAssemblies.Where((x)=>x.mod==mod))
                     {
-                        var a = v.LoadAssembly();
+                        var a = assembly.LoadAssembly();
                         Type entryType = a.ManifestModule.GetTypes()
                             .FirstOrDefault((x) => (x.BaseType?.FullName ?? "") == "SRML.ModEntryPoint");
                         if (entryType == default(Type)) continue;
-                        AddMod(v.mod, entryType);
+                        AddMod(assembly.mod, entryType);
 
                         goto foundmod;
                     }

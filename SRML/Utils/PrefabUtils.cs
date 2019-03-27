@@ -26,13 +26,13 @@ namespace SRML.Utils
 
             var components = replacementInfo.ReplaceInChildren? prefab.GetComponentsInChildren<Component>(true):prefab.GetComponents<Component>();
 
-            foreach (var c in components)
+            foreach (var comp in components)
             {
-                if (!c) continue;
-                foreach (var field in replacer.FieldToField.Where((x)=>x.Value.DeclaringType==c.GetType()))
+                if (!comp) continue;
+                foreach (var field in replacer.FieldToField.Where((x)=>x.Value.DeclaringType==comp.GetType()))
                 {
                     Debug.Log(field.Value.Name+" "+field.Key.Name+" "+(replacer.InstanceInfo.Instance as GameObject).GetComponent<SlimeEyeComponents>());
-                    field.Value.SetValue(c,field.Key.GetValue((replacer.InstanceInfo.Instance as GameObject).GetComponentInChildren(c.GetType())));
+                    field.Value.SetValue(comp,field.Key.GetValue((replacer.InstanceInfo.Instance as GameObject).GetComponentInChildren(comp.GetType())));
                 }
             }
         }
@@ -52,16 +52,16 @@ namespace SRML.Utils
         {
             var components = prefab.GetComponentsInChildren<Component>(true);
 
-            foreach (var c in components)
+            foreach (var comp in components)
             {
-                if (!c) continue;
-                foreach (var field in c.GetType().GetFields())
+                if (!comp) continue;
+                foreach (var field in comp.GetType().GetFields())
                 {
                     if (field.FieldType == typeof(T))
                     {
-                        T t = (T)field.GetValue(c);
+                        T t = (T)field.GetValue(comp);
                         if (!t.Equals(original)) continue;
-                        field.SetValue(c,newValue);
+                        field.SetValue(comp,newValue);
                     }
                 }
 

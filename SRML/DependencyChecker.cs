@@ -9,14 +9,14 @@ namespace SRML
     {
         public static bool CheckDependencies(HashSet<SRModLoader.ProtoMod> mods)
         {
-            foreach (var v in mods)
+            foreach (var mod in mods)
             {
-                if (!v.HasDependencies) continue;
-                foreach (var dep in v.dependencies.Select((x) => Dependency.ParseFromString(x)))
+                if (!mod.HasDependencies) continue;
+                foreach (var dep in mod.dependencies.Select((x) => Dependency.ParseFromString(x)))
                 {
                     if (!mods.Any((x) => dep.SatisfiedBy(x)))
                         throw new Exception(
-                            $"Unresolved dependency for '{v.id}'! Cannot find '{dep.mod_id} {dep.mod_version}'");
+                            $"Unresolved dependency for '{mod.id}'! Cannot find '{dep.mod_id} {dep.mod_version}'");
                 }
             }
 

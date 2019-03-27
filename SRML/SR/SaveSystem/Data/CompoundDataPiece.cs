@@ -27,9 +27,9 @@ namespace SRML.SR.SaveSystem.Data
         {
             if (!_cache.TryGetValue(key, out var piece)||piece==null)
             {
-                var p = dataList.FirstOrDefault((x) => key == x.key);
-                if (p != null) _cache[key] = piece;
-                return p;
+                var cachedPiece = dataList.FirstOrDefault((x) => key == x.key);
+                if (cachedPiece != null) _cache[key] = piece;
+                return cachedPiece;
             }
             else
             {
@@ -92,7 +92,6 @@ namespace SRML.SR.SaveSystem.Data
 
         public CompoundDataPiece GetCompoundPiece(string key)
         {
-            //Debug.Log($"Trying to get compound piece {key} on {this.key}");
             if (this[key] is DataPiece piece)
             {
                 if (!(piece is CompoundDataPiece p)) throw new Exception("Piece is not compound data piece");
@@ -123,15 +122,15 @@ namespace SRML.SR.SaveSystem.Data
 
             adder($"COMPOUND {key} = ");
             Action<String> newadder = (x) => adder("    " + x);
-            foreach (var v in dataList)
+            foreach (var dataPiece in dataList)
             {
-                if (v is CompoundDataPiece piece)
+                if (dataPiece is CompoundDataPiece compoundDataPiece)
                 {
-                    piece.Stringify(builder, newadder);
+                    compoundDataPiece.Stringify(builder, newadder);
                 }
                 else
                 {
-                    newadder(v.ToString());
+                    newadder(dataPiece.ToString());
                 }
             }
         }

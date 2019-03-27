@@ -23,13 +23,13 @@ namespace SRML.SR.SaveSystem
             foreach (var mod in data.segments)
             {
                 Debug.Log($"mod {mod.modid} has {mod.extendedData.Count} extended actor datas");
-                foreach (var v in mod.extendedData)
+                foreach (var extendedDataTree in mod.extendedData)
                 {
-                    switch (v.idType)
+                    switch (extendedDataTree.idType)
                     {
-                        case ExtendedDataTree.IdentifierType.ACTOR:
-                            var list = GetPieceForMod(mod.modid,GetDataForActor(v.identifier)).dataList;
-                            foreach (var h in v.dataPiece.dataList)
+                        case IdentifierType.ACTOR:
+                            var list = GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.identifier)).dataList;
+                            foreach (var h in extendedDataTree.dataPiece.dataList)
                             {
                                 list.Add(h);
                             }
@@ -48,25 +48,26 @@ namespace SRML.SR.SaveSystem
 
             if (IsRegistered(actorId))
             {
-                   foreach (var v in SaveRegistry.modToSaveInfo)
+                foreach (var saveInfoPair in SaveRegistry.modToSaveInfo)
                 {
-                    if(extendedActorData[actorId].HasPiece(v.Key.ModInfo.Id)) v.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, GetPieceForMod(v.Key.ModInfo.Id, extendedActorData[actorId]));
+                    if(extendedActorData[actorId].HasPiece(saveInfoPair.Key.ModInfo.Id)) saveInfoPair.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, GetPieceForMod(saveInfoPair.Key.ModInfo.Id, extendedActorData[actorId]));
                 }
 
-                foreach(var p in gameObject.GetComponentsInChildren<Participant>()) if (!ValidateParticipant(p, (extendedActorData[actorId])))
-                    InitParticipant(p, (extendedActorData[actorId]));
-                foreach (var p in gameObject.GetComponentsInChildren<Participant>())
+                foreach(var participant in gameObject.GetComponentsInChildren<Participant>())
+                    if (!ValidateParticipant(participant, (extendedActorData[actorId])))
+                        InitParticipant(participant, (extendedActorData[actorId]));
+                foreach (var participant in gameObject.GetComponentsInChildren<Participant>())
                 {
                     try
                     {
-                        SetParticipant(p, (extendedActorData[actorId]));
+                        SetParticipant(participant, (extendedActorData[actorId]));
                     }
                     catch(InvalidOperationException e)
                     {
-                        Debug.Log($"Yipes! seems like {p.GetType()} isn't initialized!");
+                        Debug.Log($"Yipes! seems like {participant.GetType()} isn't initialized!");
                         // a bit gross hack but it'll help when mods add new participants to things that already have actor data stored
-                        InitParticipant(p, (extendedActorData[actorId]));
-                        SetParticipant(p, (extendedActorData[actorId]));
+                        InitParticipant(participant, (extendedActorData[actorId]));
+                        SetParticipant(participant, (extendedActorData[actorId]));
                     }
                 }
 
@@ -97,9 +98,9 @@ namespace SRML.SR.SaveSystem
                 }
             }
 
-            foreach (var v in toRemove)
+            foreach (var actor in toRemove)
             {
-                extendedActorData.Remove(v);
+                extendedActorData.Remove(actor);
             }
 
             if (toRemove.Count > 0)
@@ -172,14 +173,14 @@ namespace SRML.SR.SaveSystem
 
             var tag = GetDataForActor(actorId);
             var participants = obj.GetComponents<Participant>();    
-            foreach (var v in participants)
+            foreach (var participant in participants)
             {
-                if(!ValidateParticipant(v,tag)) InitParticipant(v,tag);
+                if(!ValidateParticipant(participant,tag)) InitParticipant(participant,tag);
             }
 
-            foreach (var v in participants)
+            foreach (var participant in participants)
             {
-                SetParticipant(v, tag);
+                SetParticipant(participant, tag);
             }
         }
 
