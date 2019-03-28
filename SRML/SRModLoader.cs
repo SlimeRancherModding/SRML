@@ -17,6 +17,8 @@ namespace SRML
 
         static readonly Dictionary<String,SRMod> Mods = new Dictionary<string, SRMod>();
 
+        internal static LoadingStep CurrentLoadingStep { get; private set; }
+
         public static void LoadMods()
         {
             FileSystem.CheckDirectory(FileSystem.ModPath);
@@ -91,7 +93,7 @@ namespace SRML
 
         public static SRMod GetMod(string id)
         {
-            return Mods.ContainsKey(id)?Mods[id]:null;
+            return Mods.TryGetValue(id,out var mod)?mod:null;
         }
 
         public static SRMod GetModForAssembly(Assembly a)
@@ -125,10 +127,13 @@ namespace SRML
 
         public static void PostLoadMods()
         {
+            CurrentLoadingStep = LoadingStep.POSTLOAD;
             foreach (var mod in Mods)
             {
                 mod.Value.PostLoad();
             }
+
+            CurrentLoadingStep = LoadingStep.FINISHED;
         }
 
         internal struct AssemblyInfo
@@ -153,6 +158,14 @@ namespace SRML
                 return Assembly.LoadFrom(Path);
             }
         }
+
+        internal enum LoadingStep
+        {
+            PRELOAD,
+            POSTLOAD,
+            FINISHED
+        }
+
         internal class ProtoMod
         {
             public string id;

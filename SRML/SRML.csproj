@@ -96,10 +96,18 @@
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\AmmoGetSelectedStoredPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\AmmoMaybeAddToSlotPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\DecrementSelectedAmmoPatch.cs" />
+    <Compile Include="SR\SaveSystem\PersistentAmmo.cs" />
+    <Compile Include="SR\SaveSystem\Data\Ammo\AmmoIdentifier.cs" />
+    <Compile Include="SR\SaveSystem\Data\Ammo\PersistentAmmoModel.cs" />
+    <Compile Include="SR\SaveSystem\Data\Ammo\PersistentAmmoSlot.cs" />
     <Compile Include="SR\SaveSystem\Data\CompoundDataPiece.cs" />
     <Compile Include="SR\SaveSystem\Data\DataPiece.cs" />
     <Compile Include="SR\SaveSystem\ExtendedData.cs" />
     <Compile Include="SR\SaveSystem\Format\ExtendedDataTree.cs" />
+    <Compile Include="SR\SaveSystem\Format\IdentifiableAmmoData.cs" />
     <Compile Include="SR\SaveSystem\Patches\DeleteGameDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushActorDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\RegisterActorPatch.cs" />
@@ -111,6 +119,7 @@
     <Compile Include="SR\SaveSystem\Patches\LoadFallBackSavePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LoadSavePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SaveGamePatch.cs" />
+    <Compile Include="SR\SaveSystem\PersistentAmmoManager.cs" />
     <Compile Include="SR\SaveSystem\Registry\DataRegistry.cs" />
     <Compile Include="SR\SaveSystem\Format\ModDataSegment.cs" />
     <Compile Include="SR\SaveSystem\Format\ModdedSaveData.cs" />

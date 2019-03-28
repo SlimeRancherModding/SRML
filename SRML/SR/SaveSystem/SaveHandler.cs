@@ -26,6 +26,7 @@ namespace SRML.SR.SaveSystem
             }
 
             ExtendedData.Push(data);
+            PersistentAmmoManager.Push(data);
         }
 
         public static void PushModdedData(GameV09 game)
@@ -38,6 +39,7 @@ namespace SRML.SR.SaveSystem
             }
 
             ExtendedData.Pull(data);
+            PersistentAmmoManager.Pull(data);
         }
 
         public static string GetModdedPath(FileStorageProvider provider, string savename)
@@ -58,6 +60,7 @@ namespace SRML.SR.SaveSystem
             }
 
             PushModdedData(director.savedGame.gameState);
+
         }
 
         public static void SaveModdedSave(AutoSaveDirector director, string nextfilename)

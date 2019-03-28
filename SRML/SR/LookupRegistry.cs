@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
+using static SRML.SRModLoader;
 
 namespace SRML.SR
 {
@@ -13,7 +14,16 @@ namespace SRML.SR
         internal static HashSet<LookupDirector.VacEntry> vacEntriesToPatch = new HashSet<LookupDirector.VacEntry>();
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
-            objectsToPatch.Add(b);
+            switch (CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    objectsToPatch.Add(b);
+                    break;
+                default:
+                    GameContext.Instance.LookupDirector.identifiablePrefabs.Add(b);
+                    GameContext.Instance.LookupDirector.identifiablePrefabDict[Identifiable.GetId(b)] = b;
+                    break;
+            }
         }
 
         public static void RegisterIdentifiablePrefab(Identifiable b)
@@ -23,7 +33,16 @@ namespace SRML.SR
 
         public static void RegisterVacEntry(LookupDirector.VacEntry entry)
         {
-            vacEntriesToPatch.Add(entry);
+            switch (CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    vacEntriesToPatch.Add(entry);
+                    break;
+                default:
+                    GameContext.Instance.LookupDirector.vacEntries.Add(entry);
+                    GameContext.Instance.LookupDirector.vacEntryDict[entry.id] = entry;
+                    break;
+            }
         }
 
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)

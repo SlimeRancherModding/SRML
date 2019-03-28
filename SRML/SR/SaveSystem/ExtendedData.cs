@@ -28,8 +28,8 @@ namespace SRML.SR.SaveSystem
                     switch (extendedDataTree.idType)
                     {
                         case IdentifierType.ACTOR:
-                            var list = GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.identifier)).dataList;
-                            foreach (var h in extendedDataTree.dataPiece.dataList)
+                            var list = GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.identifier)).DataList;
+                            foreach (var h in extendedDataTree.dataPiece.DataList)
                             {
                                 list.Add(h);
                             }
@@ -40,6 +40,31 @@ namespace SRML.SR.SaveSystem
                     }
                 }
             }
+        }
+
+        public static void InstantiateActorWithData(GameObject prefab, Vector3 pos, Quaternion rot,
+            CompoundDataPiece data)
+        {
+            long actorId;
+            SceneContext.Instance.GameModel.nextActorId = (actorId = SceneContext.Instance.GameModel.nextActorId) + 1L;
+            InstantiateActorWithData(actorId,prefab,pos,rot,data);
+        }
+
+        public static void InstantiateActorWithData(long actorId, GameObject prefab, Vector3 pos, Quaternion rot,CompoundDataPiece data)
+        {
+            extendedActorData[actorId] = data;
+            SceneContext.Instance.GameModel.InstantiateActor(actorId, prefab, pos, rot, false, false);
+        }
+            
+        internal static void CullMissingModsFromData(CompoundDataPiece piece)
+        {
+            List<DataPiece> toRemove = new List<DataPiece>();
+            foreach (var v in piece.DataList)
+            {
+                if(SRModLoader.GetMod(v.key) == null) toRemove.Add(v);
+            }
+
+            piece.DataList.RemoveWhere((x) => toRemove.Contains(x));
         }
 
         internal static void OnRegisterActor(GameModel model,long actorId, GameObject gameObject,bool skipNotify)
@@ -56,13 +81,14 @@ namespace SRML.SR.SaveSystem
                 foreach(var participant in gameObject.GetComponentsInChildren<Participant>())
                     if (!ValidateParticipant(participant, (extendedActorData[actorId])))
                         InitParticipant(participant, (extendedActorData[actorId]));
+
                 foreach (var participant in gameObject.GetComponentsInChildren<Participant>())
                 {
                     try
                     {
                         SetParticipant(participant, (extendedActorData[actorId]));
                     }
-                    catch(InvalidOperationException e)
+                    catch(InvalidOperationException)
                     {
                         Debug.Log($"Yipes! seems like {participant.GetType()} isn't initialized!");
                         // a bit gross hack but it'll help when mods add new participants to things that already have actor data stored
@@ -116,20 +142,20 @@ namespace SRML.SR.SaveSystem
 
         internal static void Push(ModdedSaveData data)
         {
-            foreach (var v in extendedActorData)
+            foreach (var actorData in extendedActorData)
             {
-                foreach (CompoundDataPiece h in v.Value.dataList)
+                foreach (CompoundDataPiece modPiece in actorData.Value.DataList)
                 {
-                    var seg = data.GetSegmentForMod(SRModLoader.GetMod(h.key));
+                    var seg = data.GetSegmentForMod(SRModLoader.GetMod(modPiece.key));
                     var newCompound = new CompoundDataPiece("root");
-                    foreach (var dat in h.dataList)
+                    foreach (var dat in modPiece.DataList)
                     {
-                        newCompound.dataList.Add(dat);
+                        newCompound.DataList.Add(dat);
                     }
                     seg.extendedData.Add(new ExtendedDataTree()
                     {
                         dataPiece = newCompound,
-                        identifier = v.Key,
+                        identifier = actorData.Key,
                         idType = IdentifierType.ACTOR
                     });
                 }
@@ -151,11 +177,11 @@ namespace SRML.SR.SaveSystem
             return IsRegistered(Identifiable.GetActorId(b));
         }
 
-        public static T AddNewParticipant<T>(GameObject b) where T : Component, Participant
+        public static T AddNewParticipant<T>(GameObject gameObj) where T : Component, Participant
         {
-            RegisterExtendedActorData(b);
-            var newPart = b.AddComponent<T>();
-            var id = Identifiable.GetActorId(b);
+            RegisterExtendedActorData(gameObj);
+            var newPart = gameObj.AddComponent<T>();
+            var id = Identifiable.GetActorId(gameObj);
             if (!ValidateParticipant(newPart, GetDataForActor(id))) InitParticipant(newPart, GetDataForActor(id));
             SetParticipant(newPart, GetDataForActor(id));
             return newPart;

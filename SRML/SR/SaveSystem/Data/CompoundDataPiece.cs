@@ -16,7 +16,7 @@ namespace SRML.SR.SaveSystem.Data
 
         internal CompoundDataPiece() { }
 
-        public HashSet<DataPiece> dataList
+        public HashSet<DataPiece> DataList
         {
             get { return data as HashSet<DataPiece>; }
         }
@@ -27,13 +27,13 @@ namespace SRML.SR.SaveSystem.Data
         {
             if (!_cache.TryGetValue(key, out var piece)||piece==null)
             {
-                var cachedPiece = dataList.FirstOrDefault((x) => key == x.key);
+                var cachedPiece = DataList.FirstOrDefault((x) => key == x.key);
                 if (cachedPiece != null) _cache[key] = piece;
                 return cachedPiece;
             }
             else
             {
-                if (!dataList.Contains(piece))
+                if (!DataList.Contains(piece))
                 {
                     _cache.Remove(key);
                     return null;
@@ -67,7 +67,7 @@ namespace SRML.SR.SaveSystem.Data
 
         public DataPiece AddPiece(DataPiece piece)
         {
-            dataList.Add(piece);
+            DataList.Add(piece);
             return piece;
         }
 
@@ -122,7 +122,7 @@ namespace SRML.SR.SaveSystem.Data
 
             adder($"COMPOUND {key} = ");
             Action<String> newadder = (x) => adder("    " + x);
-            foreach (var dataPiece in dataList)
+            foreach (var dataPiece in DataList)
             {
                 if (dataPiece is CompoundDataPiece compoundDataPiece)
                 {

@@ -31,9 +31,11 @@ namespace SRML
             public static Dependency ParseFromString(String s)
             {
                 var strings = s.Split(' ');
-                var dep = new Dependency();
-                dep.mod_id = strings[0];
-                dep.mod_version = SRModInfo.ModVersion.Parse(strings[1]);
+                var dep = new Dependency
+                {
+                    mod_id = strings[0],
+                    mod_version = SRModInfo.ModVersion.Parse(strings[1])
+                };
                 return dep;
             }
 

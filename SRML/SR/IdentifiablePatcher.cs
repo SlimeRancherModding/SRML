@@ -12,6 +12,8 @@ namespace SRML.SR
         
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
+            if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
+                throw new Exception("Can't register identifiables outside of the PreLoad step");
             var id = (Identifiable.Id) value;
             if (moddedIdentifiables.ContainsKey(id))
                 throw new Exception(

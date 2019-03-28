@@ -13,10 +13,10 @@ namespace SampleMod
 {
     public class Main : ModEntryPoint
     {
-        public override void PreLoad(HarmonyInstance instance)
+        public override void PreLoad()
         {
             Debug.Log("We did it!");
-            instance.PatchAll(Assembly.GetExecutingAssembly());
+            HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
             Debug.Log(SRModInfo.GetMyInfo().Author);
         }
 

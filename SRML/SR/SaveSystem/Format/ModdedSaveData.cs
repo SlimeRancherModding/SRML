@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SRML.SR.SaveSystem.Data.Ammo;
 using SRML.Utils;
 using UnityEngine;
 
@@ -12,6 +13,11 @@ namespace SRML.SR.SaveSystem.Format
     {
         public int version;
         public List<ModDataSegment> segments = new List<ModDataSegment>();
+
+        public List<IdentifiableAmmoData> ammoDataEntries = new List<IdentifiableAmmoData>();
+
+
+
         public void ReadHeader(BinaryReader reader)
         {
             version = reader.ReadInt32();
@@ -28,8 +34,21 @@ namespace SRML.SR.SaveSystem.Format
 
         public void ReadData(BinaryReader reader)
         {
-            segments.Clear();
+
+            ammoDataEntries.Clear();
+
             int count = reader.ReadInt32();
+
+            for (int i = 0; i < count; i++)
+            {
+                var newEntry = new IdentifiableAmmoData();
+                newEntry.Read(reader);
+
+                ammoDataEntries.Add(newEntry);
+            }
+            
+            segments.Clear();
+            count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
                 long start = reader.BaseStream.Position;
@@ -49,6 +68,11 @@ namespace SRML.SR.SaveSystem.Format
 
         public void WriteData(BinaryWriter writer)
         {
+            writer.Write(ammoDataEntries.Count);
+            foreach (var entry in ammoDataEntries)
+            {
+                entry.Write(writer);
+            }
             writer.Write(segments.Count);
             foreach (var mod in segments)
             {

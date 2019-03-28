@@ -129,7 +129,8 @@ namespace SRML
 
         public void PreLoad()
         {
-            entryPoint.PreLoad(HarmonyInstance);
+            entryPoint.HarmonyInstance = HarmonyInstance;
+            entryPoint.PreLoad();
         }
 
         public void PostLoad()

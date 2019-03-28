@@ -7,7 +7,9 @@ namespace SRML
 {
     public abstract class ModEntryPoint 
     {
-        public virtual void PreLoad(HarmonyInstance instance)
+        public HarmonyInstance HarmonyInstance { get; internal set; }
+
+        public virtual void PreLoad()
         {
 
         }
