@@ -57,7 +57,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         {
             if (realAmount - lastKnownAmount != 0)
             {
-                Debug.Log("Compensating for a difference of "+(realAmount-lastKnownAmount));
+                Debug.Log("Compensating for an apparent ammo difference of "+(realAmount-lastKnownAmount));
             }
 
             while (realAmount > lastKnownAmount)
@@ -70,6 +70,14 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 PopBottom();
             }
 
+        }
+
+        public bool HasNoData()
+        {
+            foreach(var v in data)
+                if (v != null)
+                    return false;
+            return true;
         }
 
 
@@ -89,6 +97,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 {
                     var piece = DataPiece.Deserialize(reader) as CompoundDataPiece;
                     ExtendedData.CullMissingModsFromData(piece);
+                    if (piece.DataList.Count == 0) piece = null;
                     data.Add(piece);
                 }
             }

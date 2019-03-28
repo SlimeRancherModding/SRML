@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data.Ammo
 {
@@ -18,6 +19,15 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 slots[i] = new PersistentAmmoSlot();
                 slots[i].UpdateFromExistingSlot(ammoSlots[i]);
             }
+        }
+
+        public bool HasNoData()
+        {
+            foreach (var v in slots)
+            {
+                if (!v.HasNoData()) return false;
+            }
+            return true;
         }
 
         public void UpdateFromExistingSlots(global::Ammo.Slot[] ammoSlots)

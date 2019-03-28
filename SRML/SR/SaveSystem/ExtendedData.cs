@@ -64,7 +64,10 @@ namespace SRML.SR.SaveSystem
                 if(SRModLoader.GetMod(v.key) == null) toRemove.Add(v);
             }
 
-            piece.DataList.RemoveWhere((x) => toRemove.Contains(x));
+            foreach (var v in toRemove)
+            {
+                piece.DataList.Remove(v);
+            }
         }
 
         internal static void OnRegisterActor(GameModel model,long actorId, GameObject gameObject,bool skipNotify)

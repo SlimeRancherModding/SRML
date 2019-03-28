@@ -18,6 +18,7 @@ namespace SRML.SR.SaveSystem
         public static void PullModdedData(GameV09 game)
         {
             data.segments.Clear();
+            data.ammoDataEntries.Clear();
             foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
                 var segment = data.GetSegmentForMod(SaveRegistry.ModForData(actor));
