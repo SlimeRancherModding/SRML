@@ -14,23 +14,40 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         static readonly Dictionary<AmmoIdentifier,AmmoModel> _cache = new Dictionary<AmmoIdentifier, AmmoModel>();
 
         public AmmoType AmmoType;
-        public ulong Identifier;
+        public ulong longIdentifier;
+        public string stringIdentifier;
 
         public AmmoIdentifier(AmmoType type, ulong id)
         {
             this.AmmoType = type;
-            this.Identifier = id;
+            this.longIdentifier = id;
+            this.stringIdentifier = "";
+        }
+
+        public AmmoIdentifier(AmmoType type, string id)
+        {
+            this.AmmoType = type;
+            this.longIdentifier = ulong.MaxValue;
+            this.stringIdentifier = id;
+        }
+
+        public AmmoIdentifier(AmmoType type, ulong longId, string stringId)
+        {
+            this.AmmoType = type;
+            this.longIdentifier = longId;
+            this.stringIdentifier = stringId;
         }
 
         public static void Write(AmmoIdentifier identifier, BinaryWriter writer)
         {
             writer.Write((int)identifier.AmmoType);
-            writer.Write(identifier.Identifier);
+            writer.Write(identifier.longIdentifier);
+            writer.Write(identifier.stringIdentifier);
         }
 
         public static AmmoIdentifier Read(BinaryReader reader)
         {
-            return new AmmoIdentifier((Ammo.AmmoType) reader.ReadInt32(), reader.ReadUInt64());
+            return new AmmoIdentifier((Ammo.AmmoType) reader.ReadInt32(), reader.ReadUInt64(),reader.ReadString());
         }
 
         public static AmmoIdentifier GetIdentifier(global::Ammo ammo)
@@ -57,7 +74,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
             foreach (var candidate in SceneContext.Instance.GameModel.gadgetSites.Where((x)=>x.Value.HasAttached()))
             {
-                var potentialKey = new AmmoIdentifier(AmmoType.GADGET, ((ulong)candidate.Key.GetHashCode())<<32);
+                var potentialKey = new AmmoIdentifier(AmmoType.GADGET, candidate.Key);
                 if (candidate.Value.attached is DroneModel drone)
                 {
                     if (drone.ammo == ammoModel)
@@ -77,7 +94,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             {
                 foreach (var ammo in candidate.Value.siloAmmo) { 
                     if (ammo.Value == ammoModel)
-                        return new AmmoIdentifier(AmmoType.LANDPLOT, (((ulong) candidate.Key.GetHashCode()) << 32)|(uint)ammo.Key);
+                        return new AmmoIdentifier(AmmoType.LANDPLOT, (ulong)ammo.Key,candidate.Key);
                 }
             }
 
@@ -103,18 +120,18 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             {
                 case AmmoType.PLAYER:
                     return SceneContext.Instance.GameModel.player.ammoDict
-                        [(PlayerState.AmmoMode) identifier.Identifier];
+                        [(PlayerState.AmmoMode) identifier.longIdentifier];
 
                 case AmmoType.GADGET:
-                    var gadget =  SceneContext.Instance.GameModel.gadgetSites.First((x) =>
-                        (ulong)x.Key.GetHashCode() == (identifier.Identifier >> 32)).Value.attached;
+                    var gadget =  SceneContext.Instance.GameModel.gadgetSites[identifier.stringIdentifier].attached;
                     if (gadget is DroneModel drone) return drone.ammo;
                     if (gadget is WarpDepotModel depot) return depot.ammo;
                     return null;
                 case AmmoType.LANDPLOT:
                     var plot = SceneContext.Instance.GameModel.landPlots
-                        .First((x) => (ulong) x.Key.GetHashCode() == (identifier.Identifier >> 32)).Value;
-                    var type = (SiloStorage.StorageType)(uint)identifier.Identifier;
+                        [identifier.stringIdentifier];  
+                    
+                    var type = (SiloStorage.StorageType)(uint)identifier.longIdentifier;
                     return plot.siloAmmo[type];
                 default:
                     throw new NotImplementedException();
@@ -126,7 +143,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             switch (identifier.AmmoType)
             {
                 case AmmoType.PLAYER:
-                   return SceneContext.Instance.PlayerState.ammoDict[(PlayerState.AmmoMode)identifier.Identifier];
+                   return SceneContext.Instance.PlayerState.ammoDict[(PlayerState.AmmoMode)identifier.longIdentifier];
                 default:
                     throw new NotImplementedException();
             }
@@ -146,7 +163,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
             var identifier = (AmmoIdentifier)obj;
             return AmmoType == identifier.AmmoType &&
-                   Identifier == identifier.Identifier;
+                   longIdentifier == identifier.longIdentifier;
         }
 
         public static bool TryGetIdentifier(AmmoModel model, out AmmoIdentifier identifier)
@@ -164,7 +181,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         {
             var hashCode = 1655372237;
             hashCode = hashCode * -1521134295 + AmmoType.GetHashCode();
-            hashCode = hashCode * -1521134295 + Identifier.GetHashCode();
+            hashCode = hashCode * -1521134295 + longIdentifier.GetHashCode();
             return hashCode;
         }
     }

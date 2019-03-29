@@ -11,16 +11,6 @@ namespace SRML.SR.SaveSystem.Data.Ammo
     {
         public PersistentAmmoSlot[] slots;
 
-        public void InitializeFromExistingSlots(global::Ammo.Slot[] ammoSlots)
-        {
-            slots = new PersistentAmmoSlot[ammoSlots.Length];
-            for (int i = 0; i < ammoSlots.Length; i++)
-            {
-                slots[i] = new PersistentAmmoSlot();
-                slots[i].UpdateFromExistingSlot(ammoSlots[i]);
-            }
-        }
-
         public bool HasNoData()
         {
             foreach (var v in slots)
@@ -30,13 +20,26 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             return true;
         }
 
+        public void AdjustSlotCount(int newCount)
+        {
+            var slotList = slots!=null?slots.ToList():new List<PersistentAmmoSlot>();
+
+            while (slotList.Count > newCount)
+            {
+                slotList.RemoveAt(slotList.Count-1);
+            }
+
+            while (slotList.Count < newCount)
+            {
+                slotList.Add(new PersistentAmmoSlot());
+            }
+
+            slots = slotList.ToArray();
+        }
+
         public void UpdateFromExistingSlots(global::Ammo.Slot[] ammoSlots)
         {
-            if (slots == null)
-            {
-                InitializeFromExistingSlots(ammoSlots);
-                return;
-            }
+            AdjustSlotCount(ammoSlots.Length);
             for (int i = 0; i < ammoSlots.Length; i++)
             {
                 slots[i].UpdateFromExistingSlot(ammoSlots[i]);
@@ -45,7 +48,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
         public PersistentAmmoModel(AmmoModel model)
         {
-            InitializeFromExistingSlots(model.slots);
+            UpdateFromExistingSlots(model.slots);
         }
 
         public PersistentAmmoModel() { }

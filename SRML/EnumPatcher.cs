@@ -12,6 +12,12 @@ namespace SRML
 {
     public static class EnumPatcher
     {
+
+        private static readonly HashSet<Type> BANNED_ENUMS = new HashSet<Type>()
+        {
+            typeof(Identifiable.Id)
+        };
+
         private static PropertyInfo cache;
         private static FieldInfo global_cache_monitor;
         private static FieldInfo global_cache;
@@ -28,6 +34,7 @@ namespace SRML
 
         public static void AddEnumValue(Type enumType, object value, string name)
         {
+            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.Contains(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
             EnumPatch patch;
             if (!patches.TryGetValue(enumType, out patch))

@@ -24,6 +24,9 @@ namespace SRML
             
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 new HarmonyMethod(typeof(Main).GetMethod("PostLoad",BindingFlags.NonPublic|BindingFlags.Static)));
+
+            
+
             try
             {
                 SRModLoader.LoadMods();

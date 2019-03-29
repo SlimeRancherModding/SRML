@@ -20,8 +20,7 @@ namespace SRML.SR.SaveSystem.Patches
 
             if((new StackFrame(2)).GetMethod().DeclaringType==typeof(VacColorAnimator)) return;
 
-            var identifier = AmmoIdentifier.GetIdentifier(__instance);
-            if (identifier.AmmoType != AmmoType.NONE)
+            if (AmmoIdentifier.TryGetIdentifier(__instance,out var identifier))
             {
                 if (PersistentAmmoManager.HasPersistentAmmo(identifier))
                 {

@@ -71,6 +71,10 @@
       <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyChecker.cs" />
@@ -90,12 +94,22 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\GadgetPatcher.cs" />
     <Compile Include="SR\IdentifiablePatcher.cs" />
     <Compile Include="SR\Patches\GameModelActorCreatePatch.cs" />
+    <Compile Include="SR\Patches\GameModelGadgetCreatePatch.cs" />
     <Compile Include="SR\Patches\LookupAwakePatch.cs" />
     <Compile Include="SR\LookupRegistry.cs" />
+    <Compile Include="SR\Patches\MainMenuStartPatch.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SaveSystem\Data\Gadget\BinaryGadgetData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Gadget\CustomGadgetData.cs" />
+    <Compile Include="SR\SaveSystem\Data\DataIdentifier.cs" />
+    <Compile Include="SR\SaveSystem\Format\IdentifiedData.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoGetSelectedStoredPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoMaybeAddToSlotPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\DecrementSelectedAmmoPatch.cs" />
@@ -129,6 +143,8 @@
     <Compile Include="SR\SaveSystem\SaveRegistry.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />
+    <Compile Include="SR\UI\ModMenuUIHandler.cs" />
+    <Compile Include="SR\UI\Utils\MainMenuUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />

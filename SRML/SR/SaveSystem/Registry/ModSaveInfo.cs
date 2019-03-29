@@ -4,6 +4,7 @@ using System.Linq;
 using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
+using SRML.SR.SaveSystem.Data.Gadget;
 using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Registry
@@ -11,10 +12,12 @@ namespace SRML.SR.SaveSystem.Registry
     internal class ModSaveInfo 
     {
         DataRegistry<CustomActorData> CustomActorDataRegistry = new DataRegistry<CustomActorData>();
+        DataRegistry<CustomGadgetData> CustomGadgetDataRegisty = new DataRegistry<CustomGadgetData>();
+
         public readonly HashSet<DataRegistry> Registries = new HashSet<DataRegistry>();
 
-        public delegate void ExtendedActorDataLoaded(ActorModel actor, GameObject obj, CompoundDataPiece data);
 
+        public delegate void ExtendedActorDataLoaded(ActorModel actor, GameObject obj, CompoundDataPiece data);
 
         public ExtendedActorDataLoaded onExtendedActorDataLoaded;
 
@@ -27,6 +30,7 @@ namespace SRML.SR.SaveSystem.Registry
         public ModSaveInfo()
         {
             Registries.Add(CustomActorDataRegistry);
+            Registries.Add(CustomGadgetDataRegisty);
         }
 
         public bool BelongsToMe(object b)

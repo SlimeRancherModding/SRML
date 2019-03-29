@@ -13,7 +13,7 @@ namespace SRMLInstaller
         private const String gameDLL = "Assembly-CSharp.dll";
         
         private const String gameName = "SlimeRancher";
-
+            
         private const String gameNameWithSpace = "Slime Rancher";
 
         private static String dataFolder = gameName + "_Data";
@@ -42,7 +42,8 @@ namespace SRMLInstaller
 
             Console.WriteLine($"Not in a game folder! Searching for {gameName}...");
 
-            
+            Console.WriteLine();
+
             List<String> candidates = new List<String>();
 
             void AddIfCandidate(String path)

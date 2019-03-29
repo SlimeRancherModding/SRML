@@ -33,7 +33,8 @@ namespace SRML.SR.SaveSystem.Format
         internal enum IdentifierType
         {
             ACTOR,
-            GADGET
+            GADGET,
+            LANDPLOT
         }
     }
 

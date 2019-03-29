@@ -17,7 +17,7 @@ namespace SRML.SR.SaveSystem.Patches
             {
                 if (PersistentAmmoManager.HasPersistentAmmo(identifier))
                 {
-                    PersistentAmmoManager.PersistentAmmoData[identifier].OnDecrement(__instance.selectedAmmoIdx,amount);
+                    PersistentAmmoManager.OnAmmoDecrement(identifier,__instance.selectedAmmoIdx,amount);
                 }
             }
         }

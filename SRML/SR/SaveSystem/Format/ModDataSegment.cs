@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MonomiPark.SlimeRancher.Persist;
 using rail;
+using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 using UnityEngine;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using SRML.SR.SaveSystem.Data.Gadget;
+using SRML.SR.SaveSystem.Registry;
 
 namespace SRML.SR.SaveSystem.Format
 {
@@ -16,8 +21,8 @@ namespace SRML.SR.SaveSystem.Format
         public int version;
         public string modid;
         public long byteLength;
-        public List<CustomActorData> customActorData = new List<CustomActorData>();
-        public List<VanillaActorData> normalActorData = new List<VanillaActorData>();
+
+        public List<IdentifiedData> identifiableData = new List<IdentifiedData>();
 
         public List<ExtendedDataTree> extendedData = new List<ExtendedDataTree>();
 
@@ -28,36 +33,18 @@ namespace SRML.SR.SaveSystem.Format
             byteLength = reader.ReadInt64();
             if (!(SRModLoader.GetMod(modid) is SRMod mod)) throw new Exception($"Unrecognized mod id: {modid}");
             var saveInfo = SaveRegistry.GetSaveInfo(mod);
-            var registry = saveInfo.GetRegistryFor<CustomActorData>();
-            customActorData.Clear();
+
+            identifiableData.Clear();
             int count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
-                int dataId = reader.ReadInt32();
-
-                var newData = registry.GetDataForID(dataId);
-
-
-                newData.Load(reader.BaseStream);
-
-                customActorData.Add(newData);
-            }
-
-            normalActorData.Clear();
-
-            count = reader.ReadInt32();
-
-            for (int i = 0; i < count; i++)
-            {
-                var v = new VanillaActorData();
-                v.Load(reader.BaseStream);
-                normalActorData.Add(v);
+                var e = new IdentifiedData();
+                e.Read(reader,saveInfo);
+                identifiableData.Add(e);
             }
 
             extendedData.Clear();
-
             count = reader.ReadInt32();
-
             for (int i = 0; i < count; i++)
             {
                 var e = new ExtendedDataTree();
@@ -76,23 +63,13 @@ namespace SRML.SR.SaveSystem.Format
             if (!(SRModLoader.GetMod(modid) is SRMod mod)) throw new Exception($"Unrecognized mod id: {modid}");
             var saveInfo = SaveRegistry.GetSaveInfo(mod);
 
-            writer.Write(customActorData.Count);
-            var registry = saveInfo.GetRegistryFor<CustomActorData>();
-            foreach (var actorData in customActorData)
+            writer.Write(identifiableData.Count);
+            foreach (var data in identifiableData)
             {
-                writer.Write(registry.GetIDForModel(actorData.GetModelType()));
-                actorData.Write(writer.BaseStream);
-            }
-
-            writer.Write(normalActorData.Count);
-
-            foreach (var actorData in normalActorData)
-            {
-                actorData.Write(writer.BaseStream);
+                data.Write(writer,saveInfo);
             }
 
             writer.Write(extendedData.Count);
-
             foreach (var data in extendedData)
             {
                 data.Write(writer);
@@ -105,5 +82,9 @@ namespace SRML.SR.SaveSystem.Format
             writer.BaseStream.Seek(cur, SeekOrigin.Begin);
 
         }
+
+        
     }
+
+    
 }

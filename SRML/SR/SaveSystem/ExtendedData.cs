@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SRML.SR.SaveSystem.Utils;
 using UnityEngine;
 using static SRML.SR.SaveSystem.Format.ExtendedDataTree;
 
@@ -27,8 +28,8 @@ namespace SRML.SR.SaveSystem
                 {
                     switch (extendedDataTree.idType)
                     {
-                        case IdentifierType.ACTOR:
-                            var list = GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.identifier)).DataList;
+                        case ExtendedDataTree.IdentifierType.ACTOR:
+                            var list = ExtendedDataUtils.GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.identifier)).DataList;
                             foreach (var h in extendedDataTree.dataPiece.DataList)
                             {
                                 list.Add(h);
@@ -42,18 +43,18 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public static void InstantiateActorWithData(GameObject prefab, Vector3 pos, Quaternion rot,
+        public static GameObject InstantiateActorWithData(GameObject prefab, Vector3 pos, Quaternion rot,
             CompoundDataPiece data)
         {
             long actorId;
             SceneContext.Instance.GameModel.nextActorId = (actorId = SceneContext.Instance.GameModel.nextActorId) + 1L;
-            InstantiateActorWithData(actorId,prefab,pos,rot,data);
+            return InstantiateActorWithData(actorId,prefab,pos,rot,data);
         }
 
-        public static void InstantiateActorWithData(long actorId, GameObject prefab, Vector3 pos, Quaternion rot,CompoundDataPiece data)
+        public static GameObject InstantiateActorWithData(long actorId, GameObject prefab, Vector3 pos, Quaternion rot,CompoundDataPiece data)
         {
             extendedActorData[actorId] = data;
-            SceneContext.Instance.GameModel.InstantiateActor(actorId, prefab, pos, rot, false, false);
+            return SceneContext.Instance.GameModel.InstantiateActor(actorId, prefab, pos, rot, false, false);
         }
             
         internal static void CullMissingModsFromData(CompoundDataPiece piece)
@@ -78,14 +79,14 @@ namespace SRML.SR.SaveSystem
             {
                 foreach (var saveInfoPair in SaveRegistry.modToSaveInfo)
                 {
-                    if(extendedActorData[actorId].HasPiece(saveInfoPair.Key.ModInfo.Id)) saveInfoPair.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, GetPieceForMod(saveInfoPair.Key.ModInfo.Id, extendedActorData[actorId]));
+                    if(extendedActorData[actorId].HasPiece(saveInfoPair.Key.ModInfo.Id)) saveInfoPair.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, ExtendedDataUtils.GetPieceForMod(saveInfoPair.Key.ModInfo.Id, extendedActorData[actorId]));
                 }
 
-                foreach(var participant in gameObject.GetComponentsInChildren<Participant>())
+                foreach(var participant in gameObject.GetComponentsInChildren<ExtendedData.Participant>())
                     if (!ValidateParticipant(participant, (extendedActorData[actorId])))
                         InitParticipant(participant, (extendedActorData[actorId]));
 
-                foreach (var participant in gameObject.GetComponentsInChildren<Participant>())
+                foreach (var participant in gameObject.GetComponentsInChildren<ExtendedData.Participant>())
                 {
                     try
                     {
@@ -103,7 +104,7 @@ namespace SRML.SR.SaveSystem
             }
             else
             {   
-                var participants = gameObject.GetComponents<Participant>();
+                var participants = gameObject.GetComponents<ExtendedData.Participant>();
                 if (participants != null && participants.Length > 0)
                 {
                     RegisterExtendedActorData(actorId, gameObject,skipNotify);
@@ -149,7 +150,8 @@ namespace SRML.SR.SaveSystem
             {
                 foreach (CompoundDataPiece modPiece in actorData.Value.DataList)
                 {
-                    var seg = data.GetSegmentForMod(SRModLoader.GetMod(modPiece.key));
+                    var mod = SRModLoader.GetMod(modPiece.key);
+                    var seg = data.GetSegmentForMod(mod);
                     var newCompound = new CompoundDataPiece("root");
                     foreach (var dat in modPiece.DataList)
                     {
@@ -159,10 +161,16 @@ namespace SRML.SR.SaveSystem
                     {
                         dataPiece = newCompound,
                         identifier = actorData.Key,
-                        idType = IdentifierType.ACTOR
+                        idType = ExtendedDataTree.IdentifierType.ACTOR
                     });
                 }
             }
+        }
+
+        internal static CompoundDataPiece GetDataForCurrentMod(CompoundDataPiece piece)
+        {
+            var strin = SRMod.GetCurrentMod().ModInfo.Id;
+            return ExtendedDataUtils.GetPieceForMod(strin, piece);
         }
 
         public static void RegisterExtendedActorData(GameObject obj)
@@ -180,9 +188,9 @@ namespace SRML.SR.SaveSystem
             return IsRegistered(Identifiable.GetActorId(b));
         }
 
-        public static T AddNewParticipant<T>(GameObject gameObj) where T : Component, Participant
+        public static T AddNewParticipant<T>(GameObject gameObj) where T : Component, ExtendedData.Participant
         {
-            RegisterExtendedActorData(gameObj);
+            if(!IsRegistered(gameObj)) RegisterExtendedActorData(gameObj);
             var newPart = gameObj.AddComponent<T>();
             var id = Identifiable.GetActorId(gameObj);
             if (!ValidateParticipant(newPart, GetDataForActor(id))) InitParticipant(newPart, GetDataForActor(id));
@@ -201,7 +209,7 @@ namespace SRML.SR.SaveSystem
 
 
             var tag = GetDataForActor(actorId);
-            var participants = obj.GetComponents<Participant>();    
+            var participants = obj.GetComponents<ExtendedData.Participant>();    
             foreach (var participant in participants)
             {
                 if(!ValidateParticipant(participant,tag)) InitParticipant(participant,tag);
@@ -223,33 +231,24 @@ namespace SRML.SR.SaveSystem
         {
             return SceneContext.Instance.GameModel.actors.ContainsKey(actorId);
         }
-        
-        static SRMod GetModForParticipant(Participant p)
+
+
+        static void SetParticipant(ExtendedData.Participant p, CompoundDataPiece piece)
         {
-            return SRModLoader.GetModForAssembly(p.GetType().Assembly);
+            var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
+            p.SetData(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid,p, piece));
         }
 
-        static CompoundDataPiece GetPieceForMod(String modid, CompoundDataPiece piece)
+        static void InitParticipant(ExtendedData.Participant p, CompoundDataPiece piece)
         {
-            return piece.GetCompoundPiece(modid);
+            var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
+            p.InitData(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid, p, piece));
         }
 
-        static void SetParticipant(Participant p, CompoundDataPiece piece)
+        static bool ValidateParticipant(ExtendedData.Participant p, CompoundDataPiece piece)
         {
-            var modid = GetModForParticipant(p)?.ModInfo.Id ?? "srml";
-            p.SetData(GetPieceForMod(modid, piece));
-        }
-
-        static void InitParticipant(Participant p, CompoundDataPiece piece)
-        {
-            var modid = GetModForParticipant(p)?.ModInfo.Id ?? "srml";
-            p.InitData(GetPieceForMod(modid, piece));
-        }
-
-        static bool ValidateParticipant(Participant p, CompoundDataPiece piece)
-        {
-            var modid = GetModForParticipant(p)?.ModInfo.Id ?? "srml";
-            return p.IsDataValid(GetPieceForMod(modid, piece));
+            var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
+            return p.IsDataValid(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid, p, piece));
         }
 
         public interface Participant

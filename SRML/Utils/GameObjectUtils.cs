@@ -62,7 +62,7 @@ namespace SRML.Utils
 
             builder.AppendLine(indent + "children: ");
            
-            for (int i = obj.transform.childCount-1; i >= 0; i--)
+            for (int i = 0; i < obj.transform.childCount; i++)
             {
                 PrintObjectTreeInternal(obj.transform.GetChild(i).gameObject, indent2, builder);
             }

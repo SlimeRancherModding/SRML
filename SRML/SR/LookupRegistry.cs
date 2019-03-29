@@ -12,6 +12,7 @@ namespace SRML.SR
     {
         internal static HashSet<GameObject> objectsToPatch = new HashSet<GameObject>();
         internal static HashSet<LookupDirector.VacEntry> vacEntriesToPatch = new HashSet<LookupDirector.VacEntry>();
+        internal static HashSet<LookupDirector.GadgetEntry> gadgetEntriesToPatch = new HashSet<LookupDirector.GadgetEntry>();
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -41,6 +42,20 @@ namespace SRML.SR
                 default:
                     GameContext.Instance.LookupDirector.vacEntries.Add(entry);
                     GameContext.Instance.LookupDirector.vacEntryDict[entry.id] = entry;
+                    break;
+            }
+        }
+
+        public static void RegisterGadget(LookupDirector.GadgetEntry entry)
+        {
+            switch (CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    gadgetEntriesToPatch.Add(entry);
+                    break;
+                case LoadingStep.POSTLOAD:
+                    GameContext.Instance.LookupDirector.gadgetEntries.Add(entry);
+                    GameContext.Instance.LookupDirector.gadgetEntryDict[entry.id] = entry;
                     break;
             }
         }

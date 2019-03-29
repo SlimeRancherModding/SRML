@@ -1,11 +1,14 @@
-﻿using System;
-using System.IO;
-using MonomiPark.SlimeRancher.DataModel;
+﻿using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Registry;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
-namespace SRML.SR.SaveSystem.Data.Actor
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+namespace SRML.SR.SaveSystem.Data.Gadget
 {
-    internal abstract class CustomActorData<T> : CustomActorData where T : ActorModel
+    internal abstract class CustomGadgetData<T> : CustomGadgetData where T : GadgetModel
     {
 
         public override Type GetModelType()
@@ -18,22 +21,22 @@ namespace SRML.SR.SaveSystem.Data.Actor
 
         public abstract void PushCustomModel(T model);
 
-        public sealed override void PushCustomModel(ActorModel model)
+        public sealed override void PushCustomModel(GadgetModel model)
         {
-            this.PushCustomModel((T) model);
+            this.PushCustomModel((T)model);
         }
 
-        public sealed override void PullCustomModel(ActorModel model)
+        public sealed override void PullCustomModel(GadgetModel model)
         {
-            this.PullCustomModel((T) model);
+            this.PullCustomModel((T)model);
         }
 
         public sealed override void Load(Stream stream, bool skipPayloadEnd)
         {
-            base.Load(stream,false);
+            base.Load(stream, false);
             var reader = new BinaryReader(stream);
             LoadCustomData(reader);
-            if(!skipPayloadEnd) ReadDataPayloadEnd(reader);
+            if (!skipPayloadEnd) ReadDataPayloadEnd(reader);
         }
 
         public sealed override void WriteData(BinaryWriter writer)
@@ -44,11 +47,11 @@ namespace SRML.SR.SaveSystem.Data.Actor
         }
 
     }
-    public abstract class CustomActorData : VanillaActorData, IDataRegistryMember
+    public abstract class CustomGadgetData : VanillaGadgetData, IDataRegistryMember
     {
-        public abstract void PullCustomModel(ActorModel model);
+        public abstract void PullCustomModel(GadgetModel model);
 
-        public abstract void PushCustomModel(ActorModel model);
+        public abstract void PushCustomModel(GadgetModel model);
 
         public abstract void WriteCustomData(BinaryWriter writer);
 

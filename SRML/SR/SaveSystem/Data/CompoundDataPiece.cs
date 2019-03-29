@@ -112,9 +112,19 @@ namespace SRML.SR.SaveSystem.Data
             this[key].SetValue(value);
         }
 
-        public void Stringify(StringBuilder builder, Action<String> adder=null)
+        public override String ToString()
         {
+            var build = new StringBuilder();
+
+            Stringify(build);
+
+            return build.ToString();
+
             
+        }
+        void Stringify(StringBuilder builder, Action<String> adder = null)
+        {
+
             if (adder == null)
             {
                 adder = (x) => builder.AppendLine(x);

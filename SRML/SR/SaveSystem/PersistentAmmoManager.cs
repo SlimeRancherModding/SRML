@@ -27,6 +27,12 @@ namespace SRML.SR.SaveSystem
             }
         }
 
+        internal static void OnAmmoDecrement(AmmoIdentifier id, int slot, int count)
+        {
+            PersistentAmmoData[id].OnDecrement(slot,count);
+            if (PersistentAmmoData[id].DataModel.HasNoData()) PersistentAmmoData.Remove(id);
+        }
+
         internal static CompoundDataPiece GetPotentialDataTag(GameObject obj)
         {
             var id = Identifiable.GetId(obj);
@@ -69,7 +75,7 @@ namespace SRML.SR.SaveSystem
 
         internal static void Push(ModdedSaveData data)
         {
-            foreach (var v in PersistentAmmoData)
+            foreach (var v in PersistentAmmoData.Where((x)=>!x.Value.DataModel.HasNoData()))
             {
                 data.ammoDataEntries.Add(new IdentifiableAmmoData(){identifier = v.Key,model = v.Value.DataModel});
             }

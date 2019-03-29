@@ -29,6 +29,7 @@ namespace SRMLInstaller
 
                 string root = Path.GetDirectoryName(filename);
 
+                Console.WriteLine();
 
                 foreach (var v in Assembly.GetExecutingAssembly().GetManifestResourceNames().Where((x) =>
                     x.Length > embeddedResourceProject.Length &&
@@ -51,6 +52,8 @@ namespace SRMLInstaller
                     str.Close();
                 }
 
+                Console.WriteLine();
+
                 var srmlPath = Path.Combine(root, SRML);
 
                 var patcher = new Patcher(filename, GetOnLoad(srmlPath));
@@ -58,7 +61,7 @@ namespace SRMLInstaller
                 if (patcher.IsPatched())
                 {
 
-                    Console.WriteLine($"Game is already patched! Assuming installation/update is complete...");
+                    Console.WriteLine($"Game is already patched! Update complete!");
                     goto onsuccess;
                 }
 
@@ -66,6 +69,7 @@ namespace SRMLInstaller
                 patcher.Patch();
                 Console.WriteLine("Patching Successful!");
                 patcher.Save();
+                Console.WriteLine();
                 Console.WriteLine(
                     $"Installation complete! (old assembly stored as {Path.GetFileNameWithoutExtension(filename)}_old.dll)");
 

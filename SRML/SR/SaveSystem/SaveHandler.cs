@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Format;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
 namespace SRML.SR.SaveSystem
 {
     internal static class SaveHandler
@@ -22,8 +24,23 @@ namespace SRML.SR.SaveSystem
             foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
                 var segment = data.GetSegmentForMod(SaveRegistry.ModForData(actor));
-                if (actor is CustomActorData model) segment.customActorData.Add(model);
-                else segment.normalActorData.Add(actor);
+                segment.identifiableData.Add(new IdentifiedData()
+                {
+                    data = actor,
+                    dataID = new DataIdentifier() { longID = actor.actorId,stringID = "",Type=IdentifierType.ACTOR}
+                });
+            }
+
+            foreach (var gadget in game.world.placedGadgets.Where((x) => SaveRegistry.IsCustom(x.Value)))
+            {
+                Debug.Log("We got a modded gadget!");
+                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(gadget.Value));
+                segment.identifiableData.Add(new IdentifiedData()
+                {
+                    data = gadget.Value,
+                    dataID = new DataIdentifier() {longID = 0, stringID = gadget.Key, Type = IdentifierType.GADGET}
+                });
+
             }
 
             ExtendedData.Push(data);
@@ -34,9 +51,21 @@ namespace SRML.SR.SaveSystem
         {
             foreach (var mod in data.segments)
             {
-                Debug.Log($"Splicing data from mod {mod.modid}, it has {mod.customActorData.Count} custom actors and {mod.normalActorData.Count} normal actors with custom ID's");
-                game.actors.AddRange(mod.customActorData.Select((x)=>(ActorDataV07)x));
-                game.actors.AddRange(mod.normalActorData.Select((x)=>(ActorDataV07)x));
+                Debug.Log($"Splicing data from mod {mod.modid} which {mod.identifiableData.Count} pieces of identifiable data");
+                foreach (var customData in mod.identifiableData)
+                {
+                    switch (customData.dataID.Type)
+                    {
+                        case IdentifierType.ACTOR:
+                            game.actors.Add((VanillaActorData)customData.data);
+                            break;
+                        case IdentifierType.GADGET:
+                            game.world.placedGadgets[customData.dataID.stringID] = (VanillaGadgetData) customData.data;
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
             }
 
             ExtendedData.Pull(data);

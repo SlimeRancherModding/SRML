@@ -77,7 +77,7 @@ namespace SRML.SR.SaveSystem.Format
             foreach (var mod in segments)
             {
                 mod.Write(writer);
-                Debug.Log($"Saving mod {mod.modid} which has {mod.normalActorData.Count} normal actors (with custom ID's), {mod.customActorData.Count} custom actors, and is {mod.byteLength} bytes long");
+                Debug.Log($"Saving mod {mod.modid} which is {mod.byteLength} bytes long");
             }
         }
 

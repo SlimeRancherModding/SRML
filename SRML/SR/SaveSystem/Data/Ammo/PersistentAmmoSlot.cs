@@ -11,8 +11,6 @@ namespace SRML.SR.SaveSystem.Data.Ammo
     {
         private List<CompoundDataPiece> data= new List<CompoundDataPiece>();
 
-        private int lastKnownAmount;
-
         public int Count => data.Count;
 
         public void UpdateFromExistingSlot(global::Ammo.Slot slot)
@@ -24,7 +22,6 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         {
             var temp = data.First();
             data.Remove(temp);
-            lastKnownAmount--;
             return temp;
         }
 
@@ -32,7 +29,6 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         {
             var temp = data.Last();
             data.Remove(temp);
-            lastKnownAmount--;
             return temp;
         }
 
@@ -44,28 +40,26 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         public void PushBottom(CompoundDataPiece piece)
         {
             data.Insert(0,piece);
-            lastKnownAmount++;
         }
 
         public void PushTop(CompoundDataPiece piece)
         {
             data.Add(piece);
-            lastKnownAmount++;
         }
 
         public void CompensateForExternalChanges(int realAmount)
         {
-            if (realAmount - lastKnownAmount != 0)
+            if (realAmount - Count != 0)
             {
-                Debug.Log("Compensating for an apparent ammo difference of "+(realAmount-lastKnownAmount));
+                Debug.Log("Compensating for an apparent ammo difference of "+(realAmount-Count));
             }
 
-            while (realAmount > lastKnownAmount)
+            while (realAmount > Count)
             {
                 PushBottom(null);
             }
 
-            while (realAmount < lastKnownAmount)
+            while (realAmount < Count)
             {
                 PopBottom();
             }
@@ -84,7 +78,6 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         public void Read(BinaryReader reader)
         {
             data.Clear();
-            lastKnownAmount = reader.ReadInt32();
             var count = reader.ReadInt32();
             for (int i = 0; i < count; i++)
             {
@@ -105,7 +98,6 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
         public void Write(BinaryWriter writer)
         {
-            writer.Write(lastKnownAmount);
             writer.Write(data.Count);
             foreach (var piece in data)
             {
