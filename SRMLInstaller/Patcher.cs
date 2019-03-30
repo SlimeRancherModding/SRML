@@ -8,7 +8,7 @@ using Mono.Cecil.Cil;
 
 namespace SRMLInstaller
 {
-    class Patcher
+    class Patcher : IDisposable
     {
         private AssemblyDefinition curAssembly;
         private MethodDefinition target;
@@ -45,6 +45,11 @@ namespace SRMLInstaller
             target.Body.GetILProcessor().InsertBefore(target.Body.Instructions[0],target.Body.GetILProcessor().Create(OpCodes.Call,curAssembly.MainModule.ImportReference(methodToPatchIn)));
         }
 
+        public void Unpatch()
+        {
+            target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
+        }
+
         bool CheckOrDelete(String path)
         {
             if (!File.Exists(path)) return true;
@@ -67,10 +72,43 @@ namespace SRMLInstaller
                 Path.GetFileNameWithoutExtension(filename) + "_old.dll");
             if(!CheckOrDelete(patchedname)||!CheckOrDelete(oldname)) throw new Exception();
             curAssembly.Write(patchedname);
-            curAssembly.Dispose();
+            Dispose();
             File.Move(filename,oldname);
             File.Move(patchedname,filename);
             
+        }
+
+        public void Dispose()
+        {
+            curAssembly?.Dispose();
+            methodToPatchIn?.Module?.Assembly?.Dispose();
+        }
+
+        public void Uninstall()
+        {
+            var pathRoot = Path.GetDirectoryName(filename);
+            string oldname = Path.Combine(pathRoot,
+                Path.GetFileNameWithoutExtension(filename) + "_old.dll");
+            string patchedname = Path.Combine(pathRoot,
+                Path.GetFileNameWithoutExtension(filename) + "_time_to_delete_it.dll");
+            if (!File.Exists(oldname))
+            {
+                Console.WriteLine($"Couldn't find old {Path.GetFileName(filename)}!");
+                Console.WriteLine("Attempting forceful uninstallation...");
+                Unpatch();
+                if (!CheckOrDelete(patchedname)) throw new Exception();
+                curAssembly.Write(patchedname);
+                Dispose();
+                File.Delete(filename);
+                File.Move(patchedname,filename);
+            }
+            else
+            {
+                Dispose();
+                File.Delete(filename);
+                File.Move(oldname,filename);
+            }
+            Console.WriteLine("Unpatching Successful!");
         }
     }
 }

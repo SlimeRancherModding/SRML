@@ -68,8 +68,9 @@ namespace SRMLInstaller
                 return Path.Combine(SelectFromList(candidates), candidatetoDLL);
             }
 
-
-            return Path.Combine(candidates[0], candidatetoDLL);
+            var p = Path.Combine(candidates[0], candidatetoDLL);
+            Console.WriteLine($"Found {p}!");
+            return p;
         }
 
         static bool CheckPathForGame(String path,string gameName)
