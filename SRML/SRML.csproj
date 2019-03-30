@@ -62,6 +62,9 @@
       <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\SampleMod\bin\Debug\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\UnityEngine.CoreModule.dll</HintPath>
@@ -71,9 +74,15 @@
       <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +152,7 @@
     <Compile Include="SR\SaveSystem\SaveRegistry.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />
+    <Compile Include="SR\UI\ModMenuUI.cs" />
     <Compile Include="SR\UI\ModMenuUIHandler.cs" />
     <Compile Include="SR\UI\Utils\MainMenuUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
@@ -155,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="SR\UI\srml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SMRL.Editor\SRML.Editor.csproj">

@@ -2,38 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SRML.SR;
+using SRML.SR.UI.Utils;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRML
 {
     internal class ErrorGUI : MonoBehaviour
     {
-        public String errorString;
-        private Rect windowRect=new Rect(0,0,Screen.width/4,Screen.height/4);
-        void OnGUI()
-        {
 
-            GUILayout.Window(1234, windowRect, DrawError,"Mod Loader Error");
-            windowRect.x = (int) (Screen.width * .5f - windowRect.width * .5f);
-            windowRect.y = (int)(Screen.height * .5f - windowRect.height * .5f);
-            GUILayout.Window(1234, windowRect, DrawError, "Mod Loader Error");
-        }
 
-        void DrawError(int id)
+        public static void CreateError(string error)
         {
-            GUILayout.Label(errorString);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Ok"))
+            SRCallbacks.OnMainMenuLoaded+=((u) =>
             {
-                Destroy(this.gameObject);
-            }
-        }
 
-        public static GameObject CreateError(string error)
-        {
-            var g = new GameObject();
-            g.AddComponent<ErrorGUI>().errorString = error;
-            return g;
+
+                var mainmen = MainMenuUtils.DisplayBlankPanel<BaseUI>(u, "SRML ERROR", () => Application.Quit());
+                var g = GameObject.Instantiate(mainmen.transform.GetChild(0).Find("Title").gameObject);
+                MonoBehaviour.Destroy(g.GetComponent<XlateText>());
+                g.GetComponent<TMP_Text>().text = error;
+                g.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;
+                g.GetComponent<TMP_Text>().fontSize *= .8f;
+                g.transform.SetParent(mainmen.transform.GetChild(0), false);
+                var rect = g.GetComponent<RectTransform>();
+                rect.anchorMin = new Vector2(0, 0);
+                rect.anchorMax = new Vector2(1,1);
+                rect.offsetMax = new Vector2(-50, -100);
+                rect.offsetMin = new Vector2(50,30);
+            });
         }
     }
 

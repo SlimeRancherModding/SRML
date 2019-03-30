@@ -101,6 +101,11 @@ namespace SRML
             return Mods.FirstOrDefault((x) => x.Value.EntryType.Assembly == a).Value;
         }
 
+        internal static ICollection<SRMod> GetMods()
+        {
+            return Mods.Values;
+        }
+
         static void AddMod(ProtoMod modInfo, Type entryType)
         {
             ModEntryPoint entryPoint = (ModEntryPoint) Activator.CreateInstance(entryType);
