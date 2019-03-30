@@ -14,7 +14,7 @@ namespace SRML
     {
 
 
-        public static void CreateError(string error)
+        public static void CreateError(string error, bool doAbort=true)
         {
             SRCallbacks.OnMainMenuLoaded+=((u) =>
             {
@@ -26,6 +26,21 @@ namespace SRML
                 g.GetComponent<TMP_Text>().text = error;
                 g.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;
                 g.GetComponent<TMP_Text>().fontSize *= .8f;
+
+                if (doAbort)
+                {
+                    var h = GameObject.Instantiate(mainmen.transform.GetChild(0).Find("Title").gameObject);
+                    MonoBehaviour.Destroy(h.GetComponent<XlateText>());
+                    h.GetComponent<TMP_Text>().text = "Aborting mod loading...";
+                    h.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Bottom;
+                    h.transform.SetParent(mainmen.transform.GetChild(0), false);
+                    var rect2 = h.GetComponent<RectTransform>();
+                    rect2.anchorMin = new Vector2(0, 0);
+                    rect2.anchorMax = new Vector2(1, 1);
+                    rect2.offsetMax = new Vector2(-50, -100);
+                    rect2.offsetMin = new Vector2(50, 30);
+                }
+
                 g.transform.SetParent(mainmen.transform.GetChild(0), false);
                 var rect = g.GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0, 0);

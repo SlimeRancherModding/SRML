@@ -124,7 +124,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error pre-loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
                 }
 
             }
@@ -135,7 +135,14 @@ namespace SRML
             CurrentLoadingStep = LoadingStep.POSTLOAD;
             foreach (var mod in Mods)
             {
-                mod.Value.PostLoad();
+                try
+                {
+                    mod.Value.PostLoad();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error post-loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                }
             }
 
             CurrentLoadingStep = LoadingStep.FINISHED;

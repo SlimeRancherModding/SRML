@@ -28,13 +28,13 @@ namespace SRML
             
 
             try
-            {     
+            {
                 SRModLoader.LoadMods();
                 
             }
             catch (Exception e)
             {
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}\n\nAborting mod loading...");
+                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
 
@@ -44,7 +44,7 @@ namespace SRML
             }
             catch (Exception e)
             {
-                ErrorGUI.CreateError($"{e.Message}\n\nAborting mod loading...");
+                ErrorGUI.CreateError($"{e.Message}");
             }
             ReplacerCache.ClearCache();
 
@@ -63,7 +63,7 @@ namespace SRML
             }
             catch (Exception e)
             {
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}\n\nAborting mod loading...");
+                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
         }
