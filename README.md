@@ -10,3 +10,4 @@ N/A
 
 ## Acknowledgements ##
 * CabbageCrow and his wonderful [Assembly Publicizer](https://github.com/CabbageCrow/AssemblyPublicizer)
+* The amazing [Harmony Runtime Patching Library](https://github.com/pardeike/Harmony)

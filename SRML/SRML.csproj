@@ -105,6 +105,9 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\GadgetPatcher.cs" />
     <Compile Include="SR\IdentifiablePatcher.cs" />
+    <Compile Include="SR\Patches\EconomyPatch.cs" />
+    <Compile Include="SR\Patches\MarketPatch.cs" />
+    <Compile Include="SR\PlortRegistry.cs" />
     <Compile Include="SR\Patches\GameModelActorCreatePatch.cs" />
     <Compile Include="SR\Patches\GameModelGadgetCreatePatch.cs" />
     <Compile Include="SR\Patches\LookupAwakePatch.cs" />
