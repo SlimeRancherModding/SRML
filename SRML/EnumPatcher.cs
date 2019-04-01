@@ -15,7 +15,8 @@ namespace SRML
 
         private static readonly HashSet<Type> BANNED_ENUMS = new HashSet<Type>()
         {
-            typeof(Identifiable.Id)
+            typeof(Identifiable.Id),
+            typeof(Gadget.Id)
         };
 
         private static PropertyInfo cache;

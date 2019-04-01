@@ -37,17 +37,72 @@ namespace SRMLInstaller
 
         public bool IsPatched()
         {
-            return target.Body.Instructions[0].OpCode == OpCodes.Call && target.Body.Instructions[0].Operand is MethodReference methRef && methRef.FullName==methodToPatchIn.FullName;
+            return target.Body.Instructions[0].OpCode == OpCodes.Call && target.Body.Instructions[0].Operand is MethodReference methRef && methRef.Name=="LoadSRML";
+        }
+
+        public MethodDefinition AddLoadMethod()
+        {
+            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRML") is MethodDefinition d
+            ) return d;
+
+            var method = new MethodDefinition("LoadSRML",MethodAttributes.Public|MethodAttributes.Static,target.Module.TypeSystem.Void);
+            var proc = method.Body.GetILProcessor();
+            var maincall = target.Body.GetILProcessor().Create(OpCodes.Call, curAssembly.MainModule.ImportReference(methodToPatchIn));
+            if (!curAssembly.MainModule.TryGetTypeReference("UnityEngine.Debug", out var reference))
+                throw new Exception("Couldn't find UnityEngine.Debug");
+            var logref = new MethodReference("Log", curAssembly.MainModule.TypeSystem.Void, reference);
+            logref.Parameters.Add(new ParameterDefinition(curAssembly.MainModule.TypeSystem.Object));
+            var onfailwrite = proc.Create(OpCodes.Call,logref);
+
+            if (!curAssembly.MainModule.TryGetTypeReference("UnityEngine.Application", out var quitreference))
+                throw new Exception("Couldn't find UnityEngine.Application");
+
+            var applicationquit = proc.Create(OpCodes.Call,new MethodReference("Quit",curAssembly.MainModule.TypeSystem.Void,quitreference));
+
+            var ret = proc.Create(OpCodes.Ret);
+            var leave = proc.Create(OpCodes.Leave, ret);
+
+            var mainret = proc.Create(OpCodes.Ret);
+
+            proc.Append(maincall);
+            proc.InsertAfter(maincall, mainret);
+            proc.InsertAfter(mainret,onfailwrite);
+            proc.InsertAfter(onfailwrite,applicationquit);
+            proc.InsertAfter(applicationquit,leave);
+            proc.InsertAfter(leave,ret);
+
+            var handler = new ExceptionHandler(ExceptionHandlerType.Catch)
+            {
+                TryStart = method.Body.Instructions.First(),
+                TryEnd = onfailwrite,
+                HandlerStart = onfailwrite,
+                HandlerEnd = ret,
+                CatchType = curAssembly.MainModule.ImportReference(typeof(Exception)),
+            };
+            
+
+
+            method.Body.ExceptionHandlers.Add(handler);
+
+            target.DeclaringType.Methods.Add(method);
+
+            return method;
         }
 
         public void Patch()
         {
-            target.Body.GetILProcessor().InsertBefore(target.Body.Instructions[0],target.Body.GetILProcessor().Create(OpCodes.Call,curAssembly.MainModule.ImportReference(methodToPatchIn)));
+            var proc = target.Body.GetILProcessor();
+            proc.InsertBefore(target.Body.Instructions[0],proc.Create(OpCodes.Call,AddLoadMethod()));
+
         }
 
         public void Unpatch()
         {
             target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
+            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRML") is MethodDefinition d)
+            {
+                target.DeclaringType.Methods.Remove(d);
+            }
         }
 
         bool CheckOrDelete(String path)

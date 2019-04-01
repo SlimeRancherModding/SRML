@@ -44,6 +44,7 @@ namespace SRML.SR.SaveSystem
             }
 
             ExtendedData.Push(data);
+            PersistentAmmoManager.SyncAll();
             PersistentAmmoManager.Push(data);
         }
 

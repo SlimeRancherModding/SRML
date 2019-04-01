@@ -122,7 +122,7 @@ namespace SRML.SR.SaveSystem
             List<long> toRemove = new List<long>();
             foreach (var actor in extendedActorData)
             {
-                if (!model.actors.ContainsKey(actor.Key))
+                if (!model.actors.ContainsKey(actor.Key)||actor.Value.DataList.Count==0)
                 {
                     toRemove.Add(actor.Key);
                 }
@@ -134,7 +134,7 @@ namespace SRML.SR.SaveSystem
             }
 
             if (toRemove.Count > 0)
-                Debug.Log($"Culled {toRemove.Count} extended actor data's without any respective actormodel");
+                Debug.Log($"Culled {toRemove.Count} invalid actor datas");
         }
 
         internal static void DestroyActor(GameObject b)

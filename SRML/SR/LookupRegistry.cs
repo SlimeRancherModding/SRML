@@ -13,6 +13,10 @@ namespace SRML.SR
         internal static HashSet<GameObject> objectsToPatch = new HashSet<GameObject>();
         internal static HashSet<LookupDirector.VacEntry> vacEntriesToPatch = new HashSet<LookupDirector.VacEntry>();
         internal static HashSet<LookupDirector.GadgetEntry> gadgetEntriesToPatch = new HashSet<LookupDirector.GadgetEntry>();
+
+        internal static HashSet<LookupDirector.UpgradeEntry> upgradeEntriesToPatch =
+            new HashSet<LookupDirector.UpgradeEntry>();
+
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -63,6 +67,30 @@ namespace SRML.SR
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)
         {
             RegisterVacEntry(new LookupDirector.VacEntry(){id=id,color=color,icon=icon});
+        }
+
+        public static void RegisterUpgradeEntry(LookupDirector.UpgradeEntry entry)
+        {
+            switch (CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    upgradeEntriesToPatch.Add(entry);
+                    break;
+                case LoadingStep.POSTLOAD:
+                    GameContext.Instance.LookupDirector.upgradeEntries.Add(entry);
+                    GameContext.Instance.LookupDirector.upgradeEntryDict[entry.upgrade] = entry;
+                    break;
+            }
+        }
+
+        public static void RegisterUpgradeEntry(PlayerState.Upgrade upgrade, Sprite icon, int cost)
+        {
+            RegisterUpgradeEntry(new LookupDirector.UpgradeEntry()
+            {
+                cost = cost,
+                icon = icon,
+                upgrade = upgrade
+            });
         }
     }
 }

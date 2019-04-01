@@ -107,6 +107,7 @@
     <Compile Include="SR\IdentifiablePatcher.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
+    <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
     <Compile Include="SR\PlortRegistry.cs" />
     <Compile Include="SR\Patches\GameModelActorCreatePatch.cs" />
     <Compile Include="SR\Patches\GameModelGadgetCreatePatch.cs" />
@@ -158,6 +159,7 @@
     <Compile Include="SR\UI\ModMenuUI.cs" />
     <Compile Include="SR\UI\ModMenuUIHandler.cs" />
     <Compile Include="SR\UI\Utils\MainMenuUtils.cs" />
+    <Compile Include="SR\PersonalUpgradeRegistry.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />

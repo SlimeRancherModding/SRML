@@ -14,6 +14,7 @@ namespace SRML.SR.Patches
             __instance.identifiablePrefabs.AddRange(LookupRegistry.objectsToPatch);
             __instance.vacEntries.AddRange(LookupRegistry.vacEntriesToPatch);
             __instance.gadgetEntries.AddRange(LookupRegistry.gadgetEntriesToPatch);
+            __instance.upgradeEntries.AddRange(LookupRegistry.upgradeEntriesToPatch);
         }
     }
 }
