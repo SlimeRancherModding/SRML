@@ -37,6 +37,10 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhere(__instance.player.gadgets,__state.gadgets,(x)=>SaveRegistry.IsCustom(x.Key));
 
             __state.AddAndRemoveWhere(__instance.player.craftMatCounts,__state.craftMatCounts,(x)=>SaveRegistry.IsCustom(x.Key));
+
+            __state.AddAndRemoveWhere(__instance.pedia.unlockedIds,__state.unlockedIds,(x)=>SaveRegistry.IsCustom(Enum.Parse(typeof(PediaDirector.Id),x)));
+            __state.AddAndRemoveWhere(__instance.pedia.completedTuts, __state.completedTuts, (x) => SaveRegistry.IsCustom(Enum.Parse(typeof(TutorialDirector.Id), x)));
+            __state.AddAndRemoveWhere(__instance.pedia.popupQueue, __state.popupQueue, (x) => SaveRegistry.IsCustom(Enum.Parse(typeof(TutorialDirector.Id), x)));
         }
 
         public static void Postfix(GameV09 __instance, ref RemovalData __state)
@@ -70,6 +74,10 @@ namespace SRML.SR.SaveSystem.Patches
 
             public Dictionary<Identifiable.Id, int> craftMatCounts = new Dictionary<Identifiable.Id, int>();
 
+            public List<string> unlockedIds = new List<string>();
+            public List<string> completedTuts = new List<string>();
+            public List<string> popupQueue = new List<string>();
+
             List<Action> addBacks = new List<Action>();
 
             public void AddAndRemoveWhere<K, V>(Dictionary<K, V> original, Dictionary<K, V> buffer,
@@ -92,6 +100,17 @@ namespace SRML.SR.SaveSystem.Patches
                         original.Add(v.Key, v.Value);
                     }
                 });
+            }
+
+            public void AddAndRemoveWhere<T>(List<T> original, List<T> buffer, Predicate<T> cond)
+            {
+                buffer.AddRange(original.Where((x)=>cond(x)));
+                foreach (var v in buffer)
+                {
+                    original.Remove(v);
+                }
+
+                addBacks.Add(() => original.AddRange(buffer));
             }
 
             public void AddAndRemoveWhereCustom<T>(List<T> original, List<T> buffer)

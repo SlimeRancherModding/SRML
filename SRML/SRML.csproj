@@ -105,6 +105,7 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\GadgetRegistry.cs" />
     <Compile Include="SR\IdentifiableRegistry.cs" />
+    <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="SR\SaveSystem\Data\Gadget\CustomGadgetData.cs" />
     <Compile Include="SR\SaveSystem\Data\DataIdentifier.cs" />
     <Compile Include="SR\SaveSystem\Format\IdentifiedData.cs" />
+    <Compile Include="SR\SaveSystem\Format\ModPediaData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModPlayerData.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
