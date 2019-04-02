@@ -50,6 +50,13 @@ namespace SRML.SR.SaveSystem
                 segment.playerData.Pull(game.player, mod);
             }
 
+            PediaDataBuffer buf = new PediaDataBuffer(game.pedia);
+            foreach (var mod in ModPediaData.FindAllModsWithData(buf))
+            {
+                var segment = data.GetSegmentForMod(mod);
+                segment.pediaData.Pull(buf,mod);
+            }
+
             ExtendedData.Push(data);
             PersistentAmmoManager.SyncAll();
             PersistentAmmoManager.Push(data);
@@ -76,6 +83,7 @@ namespace SRML.SR.SaveSystem
                 }
 
                 mod.playerData.Push(game.player);
+                mod.pediaData.Push(game.pedia);
             }
 
             ExtendedData.Pull(data);
@@ -88,7 +96,7 @@ namespace SRML.SR.SaveSystem
         }
 
         public static void LoadModdedSave(AutoSaveDirector director, string savename)
-        {
+        {   
             var storageprovider = director.storageProvider as FileStorageProvider;
             if (storageprovider == null) return;
             var modpath = GetModdedPath(storageprovider, savename);

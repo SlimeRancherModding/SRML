@@ -48,8 +48,8 @@ namespace SRML.SR.SaveSystem
 
         public static bool IsModdedID(object data)
         {
-            return (data is Identifiable.Id id && IdentifiablePatcher.IsModdedIdentifiable(id)) ||
-                   (data is Gadget.Id gadget && GadgetPatcher.IsModdedGadget(gadget))||
+            return (data is Identifiable.Id id && IdentifiableRegistry.IsModdedIdentifiable(id)) ||
+                   (data is Gadget.Id gadget && GadgetRegistry.IsModdedGadget(gadget))||
                    (data is PlayerState.Upgrade upgrade && PersonalUpgradeRegistry.IsModdedUpgrade(upgrade));
         }
 
@@ -68,16 +68,16 @@ namespace SRML.SR.SaveSystem
         {
             if (!IsCustom(data)) return null;
             if (data is IDataRegistryMember model) return ModForModelType(model.GetModelType());
-            if (data is VanillaActorData actor) return IdentifiablePatcher.moddedIdentifiables[(Identifiable.Id) actor.typeId];
-            if (data is VanillaGadgetData gadget) return GadgetPatcher.moddedGadgets[gadget.gadgetId]; 
+            if (data is VanillaActorData actor) return IdentifiableRegistry.moddedIdentifiables[(Identifiable.Id) actor.typeId];
+            if (data is VanillaGadgetData gadget) return GadgetRegistry.moddedGadgets[gadget.gadgetId]; 
             return null;
         }
 
         internal static SRMod ModForID(object data)
         {
             if (!IsModdedID(data)) return null;
-            if (data is Identifiable.Id id) return IdentifiablePatcher.moddedIdentifiables[id];
-            if (data is Gadget.Id gadget) return GadgetPatcher.moddedGadgets[gadget];
+            if (data is Identifiable.Id id) return IdentifiableRegistry.moddedIdentifiables[id];
+            if (data is Gadget.Id gadget) return GadgetRegistry.moddedGadgets[gadget];
             if (data is PlayerState.Upgrade upgrade)return PersonalUpgradeRegistry.moddedUpgrades[upgrade];
             return null;
         }

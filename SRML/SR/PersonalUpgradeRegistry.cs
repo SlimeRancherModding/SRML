@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SRML.SR
 {
     public static class PersonalUpgradeRegistry
     {
+        public delegate void ApplyUpgradeDelegate(PlayerState player, bool isFirstTime);
 
         internal static Dictionary<PlayerState.Upgrade, SRMod> moddedUpgrades = new Dictionary<PlayerState.Upgrade, SRMod>();
+
+        internal static Dictionary<PlayerState.Upgrade,ApplyUpgradeDelegate> upgradeCallbacks = new Dictionary<PlayerState.Upgrade, ApplyUpgradeDelegate>();
 
         public static PlayerState.Upgrade CreatePersonalUpgrade(object value, string name)
         {
@@ -27,6 +31,18 @@ namespace SRML.SR
         public static bool IsModdedUpgrade(PlayerState.Upgrade upgrade)
         {
             return moddedUpgrades.ContainsKey(upgrade);
+        }
+
+        public static void RegisterUpgradeCallback(PlayerState.Upgrade upgrade, ApplyUpgradeDelegate callback)
+        {
+            if (upgradeCallbacks.ContainsKey(upgrade))
+            {
+                upgradeCallbacks[upgrade] += callback;
+            }
+            else
+            {
+                upgradeCallbacks[upgrade] = callback;
+            }
         }
 
     }

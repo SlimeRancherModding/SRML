@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SRML.SR
 {
-    public static class GadgetPatcher
+    public static class GadgetRegistry
     {
         internal static Dictionary<Gadget.Id, SRMod> moddedGadgets = new Dictionary<Gadget.Id, SRMod>();
 

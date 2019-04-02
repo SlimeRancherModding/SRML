@@ -30,6 +30,8 @@ namespace SRML.SR.SaveSystem.Format
 
         public ModPlayerData playerData = new ModPlayerData();
 
+        public ModPediaData pediaData = new ModPediaData();
+
         public void Read(BinaryReader reader)
         {
             version = reader.ReadInt32();
@@ -59,6 +61,7 @@ namespace SRML.SR.SaveSystem.Format
             if (version >= 1)
             {
                 playerData.Read(reader);
+                pediaData.Read(reader);
             }
         }
 
@@ -86,6 +89,7 @@ namespace SRML.SR.SaveSystem.Format
             }
 
             playerData.Write(writer);
+            pediaData.Write(writer);
 
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);

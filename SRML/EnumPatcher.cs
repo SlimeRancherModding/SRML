@@ -16,8 +16,8 @@ namespace SRML
         internal delegate object AlternateEnumRegister(object value, string name);
         private static readonly Dictionary<Type,AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type,AlternateEnumRegister>()
         {
-            { typeof(Identifiable.Id),(x,y)=>IdentifiablePatcher.CreateIdentifiableId(x,y)},
-            { typeof(Gadget.Id),(x,y)=>(object)GadgetPatcher.CreateGadgetId(x,y)},
+            { typeof(Identifiable.Id),(x,y)=>IdentifiableRegistry.CreateIdentifiableId(x,y)},
+            { typeof(Gadget.Id),(x,y)=>(object)GadgetRegistry.CreateGadgetId(x,y)},
             { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)}
         };
 

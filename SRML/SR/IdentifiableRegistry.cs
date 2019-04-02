@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SRML.SR
 {
-    public static class IdentifiablePatcher
+    public static class IdentifiableRegistry
     {
         internal static Dictionary<Identifiable.Id,SRMod> moddedIdentifiables = new Dictionary<Identifiable.Id, SRMod>();
         
