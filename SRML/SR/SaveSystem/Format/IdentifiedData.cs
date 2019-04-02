@@ -18,6 +18,14 @@ namespace SRML.SR.SaveSystem.Format
         public bool IsCustomModel;
         public long dataLength;
 
+        static IdentifiedData()
+        {
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, IdentifiedData data) =>
+                {
+                    EnumTranslator.FixEnumValues(translator,mode,data.data);
+                });
+        }
         public void Read(BinaryReader reader, ModSaveInfo info)
         {
             dataLength = reader.ReadInt64();

@@ -21,9 +21,6 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
-            
-            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
-                new HarmonyMethod(typeof(Main).GetMethod("PostLoad",BindingFlags.NonPublic|BindingFlags.Static)));
 
             
 
@@ -47,6 +44,9 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.Message}");
             }
             ReplacerCache.ClearCache();
+
+            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
+                new HarmonyMethod(typeof(Main).GetMethod("PostLoad", BindingFlags.NonPublic | BindingFlags.Static)));
 
         }
         

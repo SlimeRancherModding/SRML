@@ -29,6 +29,25 @@ namespace SRML.SR.SaveSystem.Format
         public Dictionary<Identifiable.Id,int> craftMatCounts = new Dictionary<Identifiable.Id, int>();
 
 
+        static ModPlayerData()
+        {
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, ModPlayerData data) =>
+                {
+                    EnumTranslator.FixEnumValues(translator,mode,data.upgrades);
+                    EnumTranslator.FixEnumValues(translator, mode,data.availBlueprints);
+                    EnumTranslator.FixEnumValues(translator, mode, data.blueprints);
+                    EnumTranslator.FixEnumValues(translator, mode, data.blueprintLocks);
+                    EnumTranslator.FixEnumValues(translator, mode, data.availUpgrades);
+                    EnumTranslator.FixEnumValues(translator, mode, data.upgradeLocks);
+                    EnumTranslator.FixEnumValues(translator, mode, data.progress);
+                    EnumTranslator.FixEnumValues(translator, mode, data.craftMatCounts);
+                    EnumTranslator.FixEnumValues(translator, mode,data.delayedProgress);
+                    EnumTranslator.FixEnumValues(translator, mode, data.gadgets);
+                });
+
+        }
+
         public void Write(BinaryWriter writer)
         {
             writer.Write(version);

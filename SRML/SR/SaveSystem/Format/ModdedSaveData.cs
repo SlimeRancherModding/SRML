@@ -106,6 +106,23 @@ namespace SRML.SR.SaveSystem.Format
             return seg;
         }
 
-        
+        public void InitializeAllEnumTranslators()
+        {
+            foreach (var v in segments)
+            {
+                if (v.enumTranslator == null)
+                {
+                    v.enumTranslator = SaveRegistry.GenerateEnumTranslator(SRModLoader.GetMod(v.modid));
+                }
+            }
+        }
+
+        public void FixAllEnumValues(EnumTranslator.TranslationMode mode)
+        {
+            foreach (var v in segments)
+            {
+                v.FixAllValues(mode);
+            }
+        }
     }
 }

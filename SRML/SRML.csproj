@@ -94,6 +94,7 @@
     <Compile Include="Editor\Runtime\FieldReplacer.cs" />
     <Compile Include="Editor\Runtime\InstanceInfo.cs" />
     <Compile Include="EnumPatcher.cs" />
+    <Compile Include="EnumTranslator.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
@@ -123,8 +124,10 @@
     <Compile Include="SR\SaveSystem\Format\IdentifiedData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModPediaData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModPlayerData.cs" />
+    <Compile Include="SR\SaveSystem\ModdedIDRegistry.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Utils\AmmoDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoGetSelectedStoredPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoMaybeAddToSlotPatch.cs" />

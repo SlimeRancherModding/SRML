@@ -14,6 +14,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
         }
 
 
+
         public abstract void PullCustomModel(T model);
 
         public abstract void PushCustomModel(T model);
@@ -55,5 +56,15 @@ namespace SRML.SR.SaveSystem.Data.Actor
         public abstract void LoadCustomData(BinaryReader reader);
 
         public abstract Type GetModelType();
+
+        static CustomActorData()
+        {
+            EnumTranslator.RegisterEnumFixer((EnumTranslator translator,EnumTranslator.TranslationMode mode,CustomActorData v) =>
+                {
+                    v.typeId = mode == EnumTranslator.TranslationMode.TOTRANSLATED
+                        ? translator.TranslateTo((Identifiable.Id) v.typeId)
+                        : (int)translator.TranslateFrom(typeof(Identifiable.Id), v.typeId);
+                });
+        }
     }
 }

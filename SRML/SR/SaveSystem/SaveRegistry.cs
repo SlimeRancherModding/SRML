@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data.Actor;
@@ -16,7 +17,12 @@ namespace SRML.SR.SaveSystem
     {
         internal static Dictionary<SRMod,ModSaveInfo> modToSaveInfo = new Dictionary<SRMod, ModSaveInfo>();
 
+        internal static Dictionary<Type,ModdedIDRegistry> moddedIdRegistries = new Dictionary<Type, ModdedIDRegistry>();
 
+        internal static void RegisterIDRegistry(ModdedIDRegistry registry)
+        {
+            moddedIdRegistries[registry.RegistryType] = registry;
+        }
 
         internal static ModSaveInfo GetSaveInfo(SRMod mod)
         {
@@ -48,9 +54,7 @@ namespace SRML.SR.SaveSystem
 
         public static bool IsModdedID(object data)
         {
-            return (data is Identifiable.Id id && IdentifiableRegistry.IsModdedIdentifiable(id)) ||
-                   (data is Gadget.Id gadget && GadgetRegistry.IsModdedGadget(gadget))||
-                   (data is PlayerState.Upgrade upgrade && PersonalUpgradeRegistry.IsModdedUpgrade(upgrade));
+            return moddedIdRegistries.Any((x) => x.Key == data.GetType() && x.Value.IsModdedID(data));
         }
 
 
@@ -64,22 +68,30 @@ namespace SRML.SR.SaveSystem
             return null;
         }
 
+        internal static EnumTranslator GenerateEnumTranslator(SRMod mod)
+        {
+            var newTranslator = new EnumTranslator();
+            foreach (var v in moddedIdRegistries)
+            {
+                newTranslator.GenerateTranslationTable(v.Value.GetIDsForMod(mod));
+            }
+            return newTranslator;
+        }
+
         internal static SRMod ModForData(object data)
         {
             if (!IsCustom(data)) return null;
             if (data is IDataRegistryMember model) return ModForModelType(model.GetModelType());
-            if (data is VanillaActorData actor) return IdentifiableRegistry.moddedIdentifiables[(Identifiable.Id) actor.typeId];
-            if (data is VanillaGadgetData gadget) return GadgetRegistry.moddedGadgets[gadget.gadgetId]; 
+            if (data is VanillaActorData actor) return ModForID((Identifiable.Id) actor.typeId);
+            if (data is VanillaGadgetData gadget) return ModForID(gadget.gadgetId); 
             return null;
         }
 
         internal static SRMod ModForID(object data)
         {
             if (!IsModdedID(data)) return null;
-            if (data is Identifiable.Id id) return IdentifiableRegistry.moddedIdentifiables[id];
-            if (data is Gadget.Id gadget) return GadgetRegistry.moddedGadgets[gadget];
-            if (data is PlayerState.Upgrade upgrade)return PersonalUpgradeRegistry.moddedUpgrades[upgrade];
-            return null;
+
+            return moddedIdRegistries.FirstOrDefault((x) => x.Key == data.GetType()).Value?.GetModForID(data);
         }
 
         public static void RegisterSerializableActorModel<T>(int id) where T : ActorModel, ISerializableModel
@@ -102,6 +114,8 @@ namespace SRML.SR.SaveSystem
                 }
             };
         }
+
+        
 
     }
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
+using MonomiPark.SlimeRancher.Persist;
 
 namespace SRML.SR.SaveSystem.Data.Ammo
 {
@@ -147,6 +148,51 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public static List<AmmoDataV02> ResolveToData(AmmoIdentifier identifier, GameV09 game)
+        {
+            switch (identifier.AmmoType)
+            {
+                case AmmoType.PLAYER:
+                    return game.player.ammo[(PlayerState.AmmoMode) identifier.longIdentifier];
+                case AmmoType.GADGET:
+                    return game.world.placedGadgets[identifier.stringIdentifier].ammo;
+                case AmmoType.LANDPLOT:
+                    return game.ranch.plots.First((x) => x.id == identifier.stringIdentifier)
+                        .siloAmmo[(SiloStorage.StorageType) identifier.longIdentifier];
+            }
+
+            return null;
+        }
+
+        public static AmmoIdentifier GetIdentifier(List<AmmoDataV02> ammo, GameV09 game)
+        {
+            foreach (var v in game.player.ammo)
+            {
+                if (ammo == v.Value) return new AmmoIdentifier(AmmoType.PLAYER, (ulong) v.Key);
+            }
+
+            foreach (var v in game.ranch.plots)
+            {
+                foreach (var ammoData in v.siloAmmo)
+                {
+                    if (ammoData.Value == ammo) return new AmmoIdentifier(AmmoType.LANDPLOT, (ulong)ammoData.Key,v.id);
+
+                }
+            }
+
+            foreach (var v in game.world.placedGadgets)
+            {
+                if(v.Value.ammo ==ammo) return new AmmoIdentifier(AmmoType.GADGET,v.Key);
+            }
+            return new AmmoIdentifier(AmmoType.NONE,0);
+        }
+
+        public static bool TryGetIdentifier(List<AmmoDataV02> ammo, GameV09 game, out AmmoIdentifier identifier)
+        {
+            identifier = GetIdentifier(ammo, game);
+            return identifier.AmmoType != AmmoType.NONE;
         }
 
         internal static void ClearCache()

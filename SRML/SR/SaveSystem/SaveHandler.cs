@@ -7,7 +7,9 @@ using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
+using SRML.SR.SaveSystem.Data.Ammo;
 using SRML.SR.SaveSystem.Format;
+using SRML.SR.SaveSystem.Utils;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
@@ -57,6 +59,26 @@ namespace SRML.SR.SaveSystem
                 segment.pediaData.Pull(buf,mod);
             }
 
+            foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
+            {
+                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => SaveRegistry.IsCustom(x.id) ? SaveRegistry.ModForID(x.id) : null));
+                modsInThis.Remove(null);
+                foreach (var mod in modsInThis)
+                {
+                    if (mod == null) continue;
+                    if (AmmoIdentifier.TryGetIdentifier(ammo, game, out var identifier))
+                    {
+                        var segment = data.GetSegmentForMod(mod);
+                        segment.customAmmo[identifier] =
+                            AmmoDataUtils.RipOutWhere(ammo, (x) => SaveRegistry.ModForID(x.id) == mod,false);
+                    }
+                    else
+                    {
+                        throw new Exception("OH GOD ITS HAPPENING");
+                    }
+                }
+            }
+
             ExtendedData.Push(data);
             PersistentAmmoManager.SyncAll();
             PersistentAmmoManager.Push(data);
@@ -84,6 +106,11 @@ namespace SRML.SR.SaveSystem
 
                 mod.playerData.Push(game.player);
                 mod.pediaData.Push(game.pedia);
+
+                foreach (var ammo in mod.customAmmo)
+                {
+                    AmmoDataUtils.SpliceAmmoData(AmmoIdentifier.ResolveToData(ammo.Key, game), ammo.Value);
+                }
             }
 
             ExtendedData.Pull(data);
@@ -106,7 +133,7 @@ namespace SRML.SR.SaveSystem
             {
                 data.Read(reader);
             }
-
+            data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
             PushModdedData(director.savedGame.gameState);
 
         }
@@ -118,6 +145,8 @@ namespace SRML.SR.SaveSystem
             var modpath = GetModdedPath(storageprovider, nextfilename);
             Debug.Log(modpath + " is our modded path");
             PullModdedData(director.savedGame.gameState);
+            data.InitializeAllEnumTranslators();
+            data.FixAllEnumValues(EnumTranslator.TranslationMode.TOTRANSLATED);
             if (File.Exists(modpath)) File.Delete(modpath);
             using (var writer = new BinaryWriter(new FileStream(modpath, FileMode.OpenOrCreate)))
             {
@@ -125,6 +154,17 @@ namespace SRML.SR.SaveSystem
             }
 
             
+        }
+
+        static SaveHandler()
+        {
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, AmmoDataV02 data) =>
+                {
+                    data.id = mode == EnumTranslator.TranslationMode.TOTRANSLATED
+                        ? (Identifiable.Id)translator.TranslateTo(data.id)
+                        : translator.TranslateFrom<Identifiable.Id>((int)data.id);
+                });
         }
     }
 }

@@ -3,14 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MonomiPark.SlimeRancher.DataModel;
 
 namespace SRML.SR.Patches
 {
-    [HarmonyPatch(typeof(PlayerState))]
+    [HarmonyPatch(typeof(PlayerModel))]
     [HarmonyPatch("ApplyUpgrade")]
     internal static class ApplyUpgradePatch
     {
-        public static bool Prefix(PlayerState __instance, PlayerState.Upgrade upgrade, bool isFirstTime)
+        public static bool Prefix(PlayerModel __instance, PlayerState.Upgrade upgrade, bool isFirstTime)
         {
             if (PersonalUpgradeRegistry.upgradeCallbacks.TryGetValue(upgrade, out var callback))
             {

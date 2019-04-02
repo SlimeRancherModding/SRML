@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Harmony;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Utils;
 using SRML.Utils;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
@@ -41,6 +42,15 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhere(__instance.pedia.unlockedIds,__state.unlockedIds,(x)=>SaveRegistry.IsCustom(Enum.Parse(typeof(PediaDirector.Id),x)));
             __state.AddAndRemoveWhere(__instance.pedia.completedTuts, __state.completedTuts, (x) => SaveRegistry.IsCustom(Enum.Parse(typeof(TutorialDirector.Id), x)));
             __state.AddAndRemoveWhere(__instance.pedia.popupQueue, __state.popupQueue, (x) => SaveRegistry.IsCustom(Enum.Parse(typeof(TutorialDirector.Id), x)));
+
+            foreach (var data in AmmoDataUtils.GetAllAmmoData(__instance))
+            {
+                var moddedData = AmmoDataUtils.RipOutModdedData(data);
+                __state.addBacks.Add(() =>
+                {
+                    AmmoDataUtils.SpliceAmmoData(data,moddedData);
+                });
+            }
         }
 
         public static void Postfix(GameV09 __instance, ref RemovalData __state)
@@ -78,7 +88,7 @@ namespace SRML.SR.SaveSystem.Patches
             public List<string> completedTuts = new List<string>();
             public List<string> popupQueue = new List<string>();
 
-            List<Action> addBacks = new List<Action>();
+            public List<Action> addBacks = new List<Action>();
 
             public void AddAndRemoveWhere<K, V>(Dictionary<K, V> original, Dictionary<K, V> buffer,
                 Predicate<KeyValuePair<K, V>> cond)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SRML.SR.SaveSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,12 @@ namespace SRML.SR
     public static class GadgetRegistry
     {
         internal static Dictionary<Gadget.Id, SRMod> moddedGadgets = new Dictionary<Gadget.Id, SRMod>();
+
+        static GadgetRegistry()
+        {
+            SaveRegistry.RegisterIDRegistry(new ModdedIDRegistry((id => moddedGadgets[(Gadget.Id)id]), () => typeof(Gadget.Id), (x) => IsModdedGadget((Gadget.Id)x), (mod) => moddedGadgets.Where((x) => x.Value == mod).Select((x) => x.Key).ToList()));
+
+        }
 
         public static Gadget.Id CreateGadgetId(object value, string name)
         {

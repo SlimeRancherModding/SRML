@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -8,11 +10,17 @@ namespace SRML.SR
 {
     public static class PersonalUpgradeRegistry
     {
-        public delegate void ApplyUpgradeDelegate(PlayerState player, bool isFirstTime);
+        public delegate void ApplyUpgradeDelegate(PlayerModel player, bool isFirstTime);
 
         internal static Dictionary<PlayerState.Upgrade, SRMod> moddedUpgrades = new Dictionary<PlayerState.Upgrade, SRMod>();
 
         internal static Dictionary<PlayerState.Upgrade,ApplyUpgradeDelegate> upgradeCallbacks = new Dictionary<PlayerState.Upgrade, ApplyUpgradeDelegate>();
+
+        static PersonalUpgradeRegistry()
+        {
+            SaveRegistry.RegisterIDRegistry(new ModdedIDRegistry((id => moddedUpgrades[(PlayerState.Upgrade)id]), () => typeof(PlayerState.Upgrade), (x) => IsModdedUpgrade((PlayerState.Upgrade)x), (mod) => moddedUpgrades.Where((x) => x.Value == mod).Select((x) => x.Key).ToList()));
+
+        }
 
         public static PlayerState.Upgrade CreatePersonalUpgrade(object value, string name)
         {

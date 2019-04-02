@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SRML.SR.SaveSystem;
 using UnityEngine;
 
 namespace SRML.SR
@@ -9,7 +10,12 @@ namespace SRML.SR
     public static class IdentifiableRegistry
     {
         internal static Dictionary<Identifiable.Id,SRMod> moddedIdentifiables = new Dictionary<Identifiable.Id, SRMod>();
-        
+
+        static IdentifiableRegistry()
+        {
+            SaveRegistry.RegisterIDRegistry(new ModdedIDRegistry((id => moddedIdentifiables[(Identifiable.Id)id]),()=>typeof(Identifiable.Id),(x)=>IsModdedIdentifiable((Identifiable.Id)x),(mod)=>moddedIdentifiables.Where((x)=>x.Value==mod).Select((x)=>x.Key).ToList()));
+        }
+
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)

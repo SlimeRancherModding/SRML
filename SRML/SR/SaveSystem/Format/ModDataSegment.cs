@@ -8,12 +8,14 @@ using MonomiPark.SlimeRancher.Persist;
 using rail;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
+using SRML.SR.SaveSystem.Data.Ammo;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 using UnityEngine;
 using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
 using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Registry;
-
+using SRML.Utils;
+using VanillaAmmoData = MonomiPark.SlimeRancher.Persist.AmmoDataV02;
 namespace SRML.SR.SaveSystem.Format
 {
     class ModDataSegment
@@ -31,6 +33,11 @@ namespace SRML.SR.SaveSystem.Format
         public ModPlayerData playerData = new ModPlayerData();
 
         public ModPediaData pediaData = new ModPediaData();
+
+        public EnumTranslator enumTranslator;
+
+        public Dictionary<AmmoIdentifier, List<VanillaAmmoData>> customAmmo = new Dictionary<AmmoIdentifier, List<VanillaAmmoData>>();
+
 
         public void Read(BinaryReader reader)
         {
@@ -62,6 +69,28 @@ namespace SRML.SR.SaveSystem.Format
             {
                 playerData.Read(reader);
                 pediaData.Read(reader);
+                enumTranslator = new EnumTranslator();
+                enumTranslator.Read(reader);
+                BinaryUtils.ReadDictionary(reader,customAmmo,(x)=>AmmoIdentifier.Read(x), (x) =>
+                {
+                    var list = new List<VanillaAmmoData>();
+                    int ammoCount = x.ReadInt32();
+                    for (int i = 0; i < ammoCount; i++)
+                    {
+                        if (x.ReadBoolean())
+                        {
+                            var newData = new VanillaAmmoData();
+                            newData.Load(x.BaseStream);
+                            list.Add(newData);
+                        }
+                        else
+                        {
+                            list.Add(null);
+                        }
+                    }
+
+                    return list;
+                } );
             }
         }
 
@@ -90,6 +119,21 @@ namespace SRML.SR.SaveSystem.Format
 
             playerData.Write(writer);
             pediaData.Write(writer);
+            
+            enumTranslator.Write(writer);
+
+            BinaryUtils.WriteDictionary(writer,customAmmo,(x,y)=>AmmoIdentifier.Write(y,x), (x, y) =>
+            {
+                x.Write(y.Count);
+                foreach (var v in y)
+                {
+                    x.Write(v!=null);
+                    if (v != null)
+                    {
+                        v.Write(x.BaseStream);
+                    }
+                }
+            });
 
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);
@@ -99,7 +143,15 @@ namespace SRML.SR.SaveSystem.Format
 
         }
 
-        
+        public void FixAllValues(EnumTranslator.TranslationMode mode)
+        {
+            Debug.Log("trying to fix "+modid);
+            if (enumTranslator == null) return;
+            Debug.Log("going to fix it all");
+            EnumTranslator.FixEnumValues(enumTranslator,mode,identifiableData);
+            EnumTranslator.FixEnumValues(enumTranslator,mode,playerData);
+            EnumTranslator.FixEnumValues(enumTranslator,mode,customAmmo);
+        }
     }
 
     
