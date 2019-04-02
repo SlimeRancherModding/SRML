@@ -37,13 +37,20 @@ namespace SRML.SR.SaveSystem
 
         public static bool IsCustom(object data)
         {
-            return IsFullyModdedData(data) || HasModdedID(data);
+            return IsFullyModdedData(data) || HasModdedID(data) || IsModdedID(data);
         }
 
         public static bool HasModdedID(object data)
         {
-            return (data is VanillaActorData actor && IdentifiablePatcher.IsModdedIdentifiable((Identifiable.Id)actor.typeId))||
-                   (data is VanillaGadgetData gadget && GadgetPatcher.IsModdedGadget(gadget.gadgetId));
+            return (data is VanillaActorData actor && IsModdedID((Identifiable.Id)actor.typeId))||
+                   (data is VanillaGadgetData gadget && IsModdedID(gadget.gadgetId));
+        }
+
+        public static bool IsModdedID(object data)
+        {
+            return (data is Identifiable.Id id && IdentifiablePatcher.IsModdedIdentifiable(id)) ||
+                   (data is Gadget.Id gadget && GadgetPatcher.IsModdedGadget(gadget))||
+                   (data is PlayerState.Upgrade upgrade && PersonalUpgradeRegistry.IsModdedUpgrade(upgrade));
         }
 
 
@@ -61,8 +68,17 @@ namespace SRML.SR.SaveSystem
         {
             if (!IsCustom(data)) return null;
             if (data is IDataRegistryMember model) return ModForModelType(model.GetModelType());
-            if(data is VanillaActorData actor) return IdentifiablePatcher.moddedIdentifiables[(Identifiable.Id) actor.typeId];
+            if (data is VanillaActorData actor) return IdentifiablePatcher.moddedIdentifiables[(Identifiable.Id) actor.typeId];
             if (data is VanillaGadgetData gadget) return GadgetPatcher.moddedGadgets[gadget.gadgetId]; 
+            return null;
+        }
+
+        internal static SRMod ModForID(object data)
+        {
+            if (!IsModdedID(data)) return null;
+            if (data is Identifiable.Id id) return IdentifiablePatcher.moddedIdentifiables[id];
+            if (data is Gadget.Id gadget) return GadgetPatcher.moddedGadgets[gadget];
+            if (data is PlayerState.Upgrade upgrade)return PersonalUpgradeRegistry.moddedUpgrades[upgrade];
             return null;
         }
 

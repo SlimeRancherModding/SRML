@@ -33,7 +33,6 @@ namespace SRML.SR.SaveSystem
 
             foreach (var gadget in game.world.placedGadgets.Where((x) => SaveRegistry.IsCustom(x.Value)))
             {
-                Debug.Log("We got a modded gadget!");
                 var segment = data.GetSegmentForMod(SaveRegistry.ModForData(gadget.Value));
                 segment.identifiableData.Add(new IdentifiedData()
                 {
@@ -41,6 +40,14 @@ namespace SRML.SR.SaveSystem
                     dataID = new DataIdentifier() {longID = 0, stringID = gadget.Key, Type = IdentifierType.GADGET}
                 });
 
+            }
+
+            foreach (var mod in ModPlayerData.FindAllModsWithData(game.player))
+            {
+
+                var segment = data.GetSegmentForMod(mod);
+                
+                segment.playerData.Pull(game.player, mod);
             }
 
             ExtendedData.Push(data);
@@ -67,6 +74,8 @@ namespace SRML.SR.SaveSystem
                             throw new NotImplementedException();
                     }
                 }
+
+                mod.playerData.Push(game.player);
             }
 
             ExtendedData.Pull(data);

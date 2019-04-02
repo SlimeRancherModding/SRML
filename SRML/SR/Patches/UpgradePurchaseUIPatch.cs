@@ -36,7 +36,7 @@ namespace SRML.SR.Patches
 
         static void UpgradeFix(PersonalUpgradeUI ui, ref PurchaseUI.Purchasable[] purchasables)
         {
-            purchasables = purchasables.AddRangeToArray(PersonalUpgradeRegistry.purchasableUpgradesToPatch.Select((x)=>ui.CreateUpgradePurchasable(x)).ToArray());
+            purchasables = purchasables.AddRangeToArray(PersonalUpgradeRegistry.moddedUpgrades.Select((x)=>ui.CreateUpgradePurchasable(x.Key)).ToArray());
         }
     }
 }

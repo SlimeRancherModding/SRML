@@ -86,9 +86,22 @@ namespace SRML
 
         private ModEntryPoint entryPoint;
 
+        private static SRMod forcedContext;
+
         public static SRMod GetCurrentMod()
         {
+            if (forcedContext != null) return forcedContext;
             return SRModLoader.GetModForAssembly(ReflectionUtils.GetRelevantAssembly());
+        }
+
+        internal static void ForceModContext(SRMod mod)
+        {
+            forcedContext = mod;
+        }
+
+        internal static void ClearModContext()
+        {
+            forcedContext = null;
         }
 
         public HarmonyInstance HarmonyInstance

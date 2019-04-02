@@ -7,16 +7,18 @@ using System.Text;
 using UnityEngine;
 using System.Reflection;
 using Harmony;
+using SRML.SR;
 
 namespace SRML
 {
     public static class EnumPatcher
     {
-
-        private static readonly HashSet<Type> BANNED_ENUMS = new HashSet<Type>()
+        internal delegate object AlternateEnumRegister(object value, string name);
+        private static readonly Dictionary<Type,AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type,AlternateEnumRegister>()
         {
-            typeof(Identifiable.Id),
-            typeof(Gadget.Id)
+            { typeof(Identifiable.Id),(x,y)=>IdentifiablePatcher.CreateIdentifiableId(x,y)},
+            { typeof(Gadget.Id),(x,y)=>(object)GadgetPatcher.CreateGadgetId(x,y)},
+            { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)}
         };
 
         private static PropertyInfo cache;
@@ -35,7 +37,7 @@ namespace SRML
 
         public static void AddEnumValue(Type enumType, object value, string name)
         {
-            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.Contains(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
+            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
             EnumPatch patch;
             if (!patches.TryGetValue(enumType, out patch))
@@ -47,6 +49,12 @@ namespace SRML
             ClearEnumCache(enumType);
 
             patch.AddValue(value, name);
+        }
+
+        internal static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
+        {
+            if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
+            else AddEnumValue(enumType,value,name);
         }
 
         public static void ClearEnumCache(Type enumType)

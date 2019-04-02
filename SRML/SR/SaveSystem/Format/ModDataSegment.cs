@@ -18,6 +18,8 @@ namespace SRML.SR.SaveSystem.Format
 {
     class ModDataSegment
     {
+        public const int DATA_VERSION = 1;
+
         public int version;
         public string modid;
         public long byteLength;
@@ -25,6 +27,8 @@ namespace SRML.SR.SaveSystem.Format
         public List<IdentifiedData> identifiableData = new List<IdentifiedData>();
 
         public List<ExtendedDataTree> extendedData = new List<ExtendedDataTree>();
+
+        public ModPlayerData playerData = new ModPlayerData();
 
         public void Read(BinaryReader reader)
         {
@@ -51,10 +55,16 @@ namespace SRML.SR.SaveSystem.Format
                 e.Read(reader);
                 extendedData.Add(e);
             }
+
+            if (version >= 1)
+            {
+                playerData.Read(reader);
+            }
         }
 
         public void Write(BinaryWriter writer)
         {
+            version = DATA_VERSION;
             var start = writer.BaseStream.Position;
             writer.Write(version);
             writer.Write(modid);
@@ -74,6 +84,8 @@ namespace SRML.SR.SaveSystem.Format
             {
                 data.Write(writer);
             }
+
+            playerData.Write(writer);
 
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);

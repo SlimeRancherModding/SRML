@@ -120,6 +120,7 @@
     <Compile Include="SR\SaveSystem\Data\Gadget\CustomGadgetData.cs" />
     <Compile Include="SR\SaveSystem\Data\DataIdentifier.cs" />
     <Compile Include="SR\SaveSystem\Format\IdentifiedData.cs" />
+    <Compile Include="SR\SaveSystem\Format\ModPlayerData.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
     <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />
@@ -160,6 +161,8 @@
     <Compile Include="SR\UI\ModMenuUIHandler.cs" />
     <Compile Include="SR\UI\Utils\MainMenuUtils.cs" />
     <Compile Include="SR\PersonalUpgradeRegistry.cs" />
+    <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
+    <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
@@ -178,6 +181,7 @@
       <Name>SRML.Editor</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>

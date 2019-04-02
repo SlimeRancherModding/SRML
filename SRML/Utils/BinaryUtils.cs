@@ -157,6 +157,46 @@ namespace SRML.Utils
             return new Vector3(reader.ReadSingle(),reader.ReadSingle(),reader.ReadSingle());
         }
 
+        public static void WriteList<T>(BinaryWriter writer, List<T> list, Action<BinaryWriter, T> listWriter)
+        {
+            writer.Write(list.Count);
+            foreach (var value in list)
+            {
+                listWriter(writer,value);
+            }
+        }
+
+        public static void ReadList<T>(BinaryReader reader, List<T> list, Func<BinaryReader, T> listReader)
+        {
+            list.Clear();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(listReader(reader));
+            }
+        }
+
+        public static void WriteDictionary<K, V>(BinaryWriter writer, Dictionary<K, V> dict,
+            Action<BinaryWriter, K> keyWriter, Action<BinaryWriter, V> valueWriter)
+        {
+            writer.Write(dict.Count);
+            foreach (var pair in dict)
+            {
+                keyWriter(writer, pair.Key);
+                valueWriter(writer, pair.Value);
+            }
+        }
+
+        public static void ReadDictionary<K, V>(BinaryReader reader, Dictionary<K, V> dict,Func<BinaryReader,K> keyReader, Func<BinaryReader,V> valueReader)
+        {
+            dict.Clear();
+            int count = reader.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                dict.Add(keyReader(reader),valueReader(reader));
+            }
+        }
+
         public static void WriteVector2(BinaryWriter writer, Vector2 vec)
         {
             writer.Write(vec.x);

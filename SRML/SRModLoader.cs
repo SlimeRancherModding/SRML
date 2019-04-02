@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Exception = System.Exception;
+using SRML.Utils.Enum;
 
 namespace SRML
 {
@@ -120,6 +121,7 @@ namespace SRML
             {
                 try
                 {
+                    EnumHolderResolver.RegisterAllEnums(mod.Value.EntryType.Module);
                     mod.Value.PreLoad();
                 }
                 catch (Exception e)
