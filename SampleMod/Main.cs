@@ -12,15 +12,15 @@ using SRML.SR;
 
 namespace SampleMod
 {
-    public class Main : ModEntryPoint
+    public class Main : IModEntryPoint
     {
         // Called before GameContext.Awake
         // this is where you want to register stuff (like custom enum values or identifiable id's)
         // and patch anything you want to patch with harmony
-        public override void PreLoad()
+        public void PreLoad()
         {
             Debug.Log("We did it!");
-            HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
+            HarmonyPatcher.GetInstance().PatchAll(Assembly.GetExecutingAssembly());
 
 
             // this code registers a callback that's run every time a saved game is loaded
@@ -39,7 +39,7 @@ namespace SampleMod
         // Called after GameContext.Start
         // stuff like gamecontext.lookupdirector are available in this step, generally for when you want to access
         // ingame prefabs and the such
-        public override void PostLoad()
+        public void PostLoad()
         {
             Debug.Log("We did it! Again! ");
         }

@@ -20,8 +20,17 @@ namespace SRML.Utils.Enum
                                                          BindingFlags.NonPublic))
                     {
                         if (!field.FieldType.IsEnum) continue;
-                        
+
+                        if ((int) field.GetValue(null) == 0)
+                        {
+                            var newVal = EnumPatcher.GetFirstFreeValue(field.FieldType);
+                            EnumPatcher.AddEnumValueWithAlternatives(field.FieldType, newVal, field.Name);
+                            field.SetValue(null,newVal);
+                            Debug.Log(newVal + " " + (int) newVal);
+                        }
+                        else
                         EnumPatcher.AddEnumValueWithAlternatives(field.FieldType,field.GetValue(null),field.Name);
+                        
                         
                     }
                 }

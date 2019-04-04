@@ -20,7 +20,7 @@ namespace SRML
 
         internal static LoadingStep CurrentLoadingStep { get; private set; }
 
-        public static void LoadMods()
+        public static void InitializeMods()
         {
             FileSystem.CheckDirectory(FileSystem.ModPath);
             HashSet<ProtoMod> foundMods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
@@ -36,9 +36,25 @@ namespace SRML
 
             }
 
+            foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
+            {
+                if(!ProtoMod.TryParseFromDLL(dllFile,out var mod)||mod.id==null) continue;
+                if (!foundMods.Add(mod))
+                {
+                    throw new Exception("Found mod with duplicate id '" + mod.id + "' in " + dllFile + "!");
+                }
+            }
+
             DependencyChecker.CheckDependencies(foundMods);
 
             DiscoverAndLoadAssemblies(foundMods);
+        }
+
+        internal static bool TryGetEntryType(Assembly assembly,out Type entryType)
+        {
+            entryType = assembly.ManifestModule.GetTypes()
+                .FirstOrDefault((x) => (typeof(IModEntryPoint).IsAssignableFrom(x)));
+            return entryType != default(Type);
         }
 
         static void DiscoverAndLoadAssemblies(ICollection<ProtoMod> protomods)
@@ -53,16 +69,16 @@ namespace SRML
                    
                 }
 
-               
-
-
             }
 
             Assembly FindAssembly(object obj, ResolveEventArgs args)
             {
                 var name = new AssemblyName(args.Name);
-                return foundAssemblies.First((x) => x.DoesMatch(name)).LoadAssembly();
+                Debug.Log(name);
+                return foundAssemblies.FirstOrDefault((x) => x.DoesMatch(name))?.LoadAssembly();
             }
+
+            
 
             AppDomain.CurrentDomain.AssemblyResolve += FindAssembly;
             try
@@ -72,9 +88,8 @@ namespace SRML
                     foreach (var assembly in foundAssemblies.Where((x)=>x.mod==mod))
                     {
                         var a = assembly.LoadAssembly();
-                        Type entryType = a.ManifestModule.GetTypes()
-                            .FirstOrDefault((x) => (x.BaseType?.FullName ?? "") == "SRML.ModEntryPoint");
-                        if (entryType == default(Type)) continue;
+                        if (!TryGetEntryType(a, out var entryType)) continue;
+
                         AddMod(assembly.mod, entryType);
 
                         goto foundmod;
@@ -109,7 +124,7 @@ namespace SRML
 
         static void AddMod(ProtoMod modInfo, Type entryType)
         {
-            ModEntryPoint entryPoint = (ModEntryPoint) Activator.CreateInstance(entryType);
+            IModEntryPoint entryPoint = (IModEntryPoint) Activator.CreateInstance(entryType);
             var newmod = new SRMod(modInfo.ToModInfo(), entryPoint,modInfo.path);
             Mods.Add(modInfo.id,newmod);
         }
@@ -127,6 +142,23 @@ namespace SRML
                 catch (Exception e)
                 {
                     throw new Exception($"Error pre-loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                }
+
+            }
+        }
+
+        public static void LoadMods()
+        {
+            CurrentLoadingStep = LoadingStep.LOAD;
+            foreach (var mod in Mods)
+            {
+                try
+                {
+                    mod.Value.Load();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
                 }
 
             }
@@ -150,7 +182,7 @@ namespace SRML
             CurrentLoadingStep = LoadingStep.FINISHED;
         }
 
-        internal struct AssemblyInfo
+        internal class AssemblyInfo
         {
             public AssemblyName AssemblyName;
             public String Path;
@@ -176,6 +208,7 @@ namespace SRML
         internal enum LoadingStep
         {
             PRELOAD,
+            LOAD,
             POSTLOAD,
             FINISHED
         }
@@ -186,8 +219,10 @@ namespace SRML
             public string name;
             public string author;
             public string version;
+            public string description;
             public string path;
             public string[] dependencies;
+            public bool isFromJSON = true;
             public override bool Equals(object o)
             {
                 if (!(o is ProtoMod obj)) return base.Equals(o);
@@ -205,12 +240,43 @@ namespace SRML
             public static ProtoMod ParseFromJson(String jsonFile)
             {
 
+
+                return ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
+
+            }
+
+            public static ProtoMod ParseFromJson(String jsonData,string path)
+            {
+
                 var proto =
-                    JsonConvert.DeserializeObject<ProtoMod>(File.ReadAllText(jsonFile));
-                proto.path = Path.GetDirectoryName(jsonFile);
+                    JsonConvert.DeserializeObject<ProtoMod>(jsonData);
+                proto.path = Path.GetDirectoryName(path);
                 proto.ValidateFields();
                 return proto;
 
+            }
+
+            public static bool TryParseFromDLL(String dllFile,out ProtoMod mod)
+            {
+                
+                var assembly = Assembly.LoadFile(dllFile);
+                
+                mod = new ProtoMod();
+                mod.isFromJSON = false;
+                mod.path = Path.GetDirectoryName(dllFile);
+                if (assembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string
+                    fileName)
+                {
+                    using (var reader = new StreamReader(assembly.GetManifestResourceStream(fileName)))
+                    {
+                        mod = ParseFromJson(reader.ReadToEnd(), dllFile);
+                        mod.isFromJSON = false;
+                    }
+                }
+                else return false;
+
+
+                return true;
             }
 
             public override String ToString()
@@ -226,7 +292,7 @@ namespace SRML
 
             public SRModInfo ToModInfo()
             {
-                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version));
+                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version),description);
             }
             public override int GetHashCode()
             {

@@ -35,6 +35,13 @@ namespace SRML
             global_cache = AccessTools.Field(t, "global_cache");
         }
 
+        public static object AddEnumValue(Type enumType, string name)
+        {
+            var newVal = GetFirstFreeValue(enumType);
+            AddEnumValue(enumType, newVal, name);
+            return newVal;
+        }
+
         public static void AddEnumValue(Type enumType, object value, string name)
         {
             if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
@@ -55,6 +62,20 @@ namespace SRML
         {
             if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
             else AddEnumValue(enumType,value,name);
+        }
+
+        public static object GetFirstFreeValue(Type enumType)
+        {
+            var allValues = Enum.GetValues(enumType);
+            for (int i = 0; i < allValues.Length - 1; i++)
+            {
+                if ((int)allValues.GetValue(i + 1) - (int)allValues.GetValue(i)>1)
+                {
+                    return Enum.ToObject(enumType, (int) allValues.GetValue(i) + 1);
+                }
+            }
+
+            return Enum.ToObject(enumType,(int)allValues.GetValue(allValues.Length - 1) + 1);
         }
 
         public static void ClearEnumCache(Type enumType)

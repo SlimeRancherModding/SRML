@@ -99,7 +99,7 @@
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="ModEntryPoint.cs" />
+    <Compile Include="IModEntryPoint.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SR\AmmoRegistry.cs" />

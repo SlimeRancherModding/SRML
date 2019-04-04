@@ -34,7 +34,6 @@ namespace SRML.SR.SaveSystem.Format
 
         public ModPediaData pediaData = new ModPediaData();
 
-        public EnumTranslator enumTranslator;
 
         public Dictionary<AmmoIdentifier, List<VanillaAmmoData>> customAmmo = new Dictionary<AmmoIdentifier, List<VanillaAmmoData>>();
 
@@ -69,8 +68,6 @@ namespace SRML.SR.SaveSystem.Format
             {
                 playerData.Read(reader);
                 pediaData.Read(reader);
-                enumTranslator = new EnumTranslator();
-                enumTranslator.Read(reader);
                 BinaryUtils.ReadDictionary(reader,customAmmo,(x)=>AmmoIdentifier.Read(x), (x) =>
                 {
                     var list = new List<VanillaAmmoData>();
@@ -120,8 +117,6 @@ namespace SRML.SR.SaveSystem.Format
             playerData.Write(writer);
             pediaData.Write(writer);
             
-            enumTranslator.Write(writer);
-
             BinaryUtils.WriteDictionary(writer,customAmmo,(x,y)=>AmmoIdentifier.Write(y,x), (x, y) =>
             {
                 x.Write(y.Count);
@@ -143,11 +138,9 @@ namespace SRML.SR.SaveSystem.Format
 
         }
 
-        public void FixAllValues(EnumTranslator.TranslationMode mode)
+        public void FixAllValues(EnumTranslator enumTranslator, EnumTranslator.TranslationMode mode)
         {
-            Debug.Log("trying to fix "+modid);
             if (enumTranslator == null) return;
-            Debug.Log("going to fix it all");
             EnumTranslator.FixEnumValues(enumTranslator,mode,identifiableData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,playerData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,customAmmo);

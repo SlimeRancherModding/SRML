@@ -17,9 +17,9 @@ namespace SRML.SR.SaveSystem
     {
         internal static Dictionary<SRMod,ModSaveInfo> modToSaveInfo = new Dictionary<SRMod, ModSaveInfo>();
 
-        internal static Dictionary<Type,ModdedIDRegistry> moddedIdRegistries = new Dictionary<Type, ModdedIDRegistry>();
+        internal static Dictionary<Type,IModdedIDRegistry> moddedIdRegistries = new Dictionary<Type, IModdedIDRegistry>();
 
-        internal static void RegisterIDRegistry(ModdedIDRegistry registry)
+        internal static void RegisterIDRegistry(IModdedIDRegistry registry)
         {
             moddedIdRegistries[registry.RegistryType] = registry;
         }
@@ -68,12 +68,12 @@ namespace SRML.SR.SaveSystem
             return null;
         }
 
-        internal static EnumTranslator GenerateEnumTranslator(SRMod mod)
+        internal static EnumTranslator GenerateEnumTranslator()
         {
             var newTranslator = new EnumTranslator();
             foreach (var v in moddedIdRegistries)
             {
-                newTranslator.GenerateTranslationTable(v.Value.GetIDsForMod(mod));
+                newTranslator.GenerateTranslationTable(v.Value.GetAllModdedIDs());
             }
             return newTranslator;
         }

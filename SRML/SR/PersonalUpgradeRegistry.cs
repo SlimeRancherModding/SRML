@@ -12,13 +12,13 @@ namespace SRML.SR
     {
         public delegate void ApplyUpgradeDelegate(PlayerModel player, bool isFirstTime);
 
-        internal static Dictionary<PlayerState.Upgrade, SRMod> moddedUpgrades = new Dictionary<PlayerState.Upgrade, SRMod>();
+        internal static ModdedIDRegistry<PlayerState.Upgrade> moddedUpgrades = new ModdedIDRegistry<PlayerState.Upgrade>();
 
         internal static Dictionary<PlayerState.Upgrade,ApplyUpgradeDelegate> upgradeCallbacks = new Dictionary<PlayerState.Upgrade, ApplyUpgradeDelegate>();
 
         static PersonalUpgradeRegistry()
         {
-            SaveRegistry.RegisterIDRegistry(new ModdedIDRegistry((id => moddedUpgrades[(PlayerState.Upgrade)id]), () => typeof(PlayerState.Upgrade), (x) => IsModdedUpgrade((PlayerState.Upgrade)x), (mod) => moddedUpgrades.Where((x) => x.Value == mod).Select((x) => x.Key).ToList()));
+            SaveRegistry.RegisterIDRegistry(moddedUpgrades);
 
         }
 
@@ -26,14 +26,7 @@ namespace SRML.SR
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
                 throw new Exception("Can't register gadgets outside of the PreLoad step");
-            var id = (PlayerState.Upgrade)value;
-            if (moddedUpgrades.ContainsKey(id))
-                throw new Exception(
-                    $"Upgrade {value} is already registered to {moddedUpgrades[id].ModInfo.Id}");
-            var sr = SRMod.GetCurrentMod();
-            if (sr != null) moddedUpgrades[id] = sr;
-            EnumPatcher.AddEnumValue(typeof(PlayerState.Upgrade), id, name);
-            return id;
+            return moddedUpgrades.RegisterValueWithEnum((PlayerState.Upgrade) value, name);
         }
 
         public static bool IsModdedUpgrade(PlayerState.Upgrade upgrade)

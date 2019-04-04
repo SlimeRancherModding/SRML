@@ -11,12 +11,14 @@ namespace SRML.SR.SaveSystem.Format
 {
     class ModdedSaveData
     {
+
+        public const int DATA_VERSION = 1;
         public int version;
         public List<ModDataSegment> segments = new List<ModDataSegment>();
 
         public List<IdentifiableAmmoData> ammoDataEntries = new List<IdentifiableAmmoData>();
 
-
+        public EnumTranslator enumTranslator;
 
         public void ReadHeader(BinaryReader reader)
         {
@@ -27,7 +29,7 @@ namespace SRML.SR.SaveSystem.Format
 
         public void WriteHeader(BinaryWriter writer)
         {
-            writer.Write(version);
+            writer.Write(DATA_VERSION);
 
 
         }
@@ -64,6 +66,13 @@ namespace SRML.SR.SaveSystem.Format
                     reader.BaseStream.Seek(start + mod.byteLength,SeekOrigin.Begin);
                 }
             }
+
+            if (version >= 1)
+            {
+                enumTranslator = new EnumTranslator();
+                enumTranslator.Read(reader);
+                Debug.Log(enumTranslator);
+            }
         }
 
         public void WriteData(BinaryWriter writer)
@@ -79,6 +88,8 @@ namespace SRML.SR.SaveSystem.Format
                 mod.Write(writer);
                 Debug.Log($"Saving mod {mod.modid} which is {mod.byteLength} bytes long");
             }
+
+            enumTranslator.Write(writer);
         }
 
         public void Write(BinaryWriter writer)
@@ -106,22 +117,16 @@ namespace SRML.SR.SaveSystem.Format
             return seg;
         }
 
-        public void InitializeAllEnumTranslators()
+        public void InitializeEnumTranslator()
         {
-            foreach (var v in segments)
-            {
-                if (v.enumTranslator == null)
-                {
-                    v.enumTranslator = SaveRegistry.GenerateEnumTranslator(SRModLoader.GetMod(v.modid));
-                }
-            }
+            enumTranslator = SaveRegistry.GenerateEnumTranslator();
         }
 
         public void FixAllEnumValues(EnumTranslator.TranslationMode mode)
         {
             foreach (var v in segments)
             {
-                v.FixAllValues(mode);
+                v.FixAllValues(enumTranslator,mode);
             }
         }
     }

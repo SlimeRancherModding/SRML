@@ -21,7 +21,7 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
-
+            Debug.Log(EnumPatcher.GetFirstFreeValue(typeof(Identifiable.Id)));
             
 
             try

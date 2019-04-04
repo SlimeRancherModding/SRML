@@ -16,12 +16,17 @@ namespace SRML.SR.UI
         private GameObject modScrollbarContent;
         private Text modNamePanelText;
 
+        private Text authorNameText;
+        private Text descriptionText;
 
         public override void Awake()
         {
             this.modScrollbarContent = transform.Find("ModScroll/Viewport/Content").gameObject;
             transform.Find("ModsFolderButton").GetComponent<Button>().onClick.AddListener(()=>Process.Start(Path.GetFullPath(FileSystem.ModPath)));
             modNamePanelText = transform.Find("ModNamePanel/ModNameText").GetComponent<Text>();
+            var modinfo = transform.Find("ModInfoScroll/Viewport/Content");
+            authorNameText = modinfo.Find("ModInfoContainer/AuthorText").GetComponent<Text>();
+            descriptionText = modinfo.Find("ModInfoContainer/DescriptionText").GetComponent<Text>();
         }
 
         public void Start()
@@ -44,6 +49,19 @@ namespace SRML.SR.UI
         public void OnModSelect(SRModInfo info)
         {
             modNamePanelText.text = info.Name;
+            authorNameText.gameObject.SetActive(false);
+            descriptionText.gameObject.SetActive(false);
+            if (info.Author != null)
+            {
+                authorNameText.text = "Author: "+info.Author;
+                authorNameText.gameObject.SetActive(true);
+            }
+
+            if (info.Description != null)
+            {
+                descriptionText.text = "Description: "+info.Description;
+                descriptionText.gameObject.SetActive(true);
+            }
         }
     }
 }

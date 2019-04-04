@@ -59,7 +59,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
 
         static CustomActorData()
         {
-            EnumTranslator.RegisterEnumFixer((EnumTranslator translator,EnumTranslator.TranslationMode mode,CustomActorData v) =>
+            EnumTranslator.RegisterEnumFixer((EnumTranslator translator,EnumTranslator.TranslationMode mode,VanillaActorData v) =>
                 {
                     v.typeId = mode == EnumTranslator.TranslationMode.TOTRANSLATED
                         ? translator.TranslateTo((Identifiable.Id) v.typeId)

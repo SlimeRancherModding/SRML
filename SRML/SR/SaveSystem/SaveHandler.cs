@@ -145,7 +145,7 @@ namespace SRML.SR.SaveSystem
             var modpath = GetModdedPath(storageprovider, nextfilename);
             Debug.Log(modpath + " is our modded path");
             PullModdedData(director.savedGame.gameState);
-            data.InitializeAllEnumTranslators();
+            data.InitializeEnumTranslator();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.TOTRANSLATED);
             if (File.Exists(modpath)) File.Delete(modpath);
             using (var writer = new BinaryWriter(new FileStream(modpath, FileMode.OpenOrCreate)))
@@ -153,7 +153,8 @@ namespace SRML.SR.SaveSystem
                 data.Write(writer);
             }
 
-            
+            data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
+
         }
 
         static SaveHandler()

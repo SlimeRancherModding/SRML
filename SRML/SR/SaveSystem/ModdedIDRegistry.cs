@@ -6,36 +6,60 @@ using System.Text;
 
 namespace SRML.SR.SaveSystem
 {
-    internal class ModdedIDRegistry
+    internal class ModdedIDRegistry<T> : Dictionary<T,SRMod>, IModdedIDRegistry
     {
-        public delegate SRMod GetModForIDDelegate(object id);
 
-        public delegate Type GetRegistryTypeDelegate();
+        public Type RegistryType => typeof(T);
 
-        public delegate bool IsModdedIDDelegate(object id);
-
-        public delegate IList GetIDsForModDelegate(SRMod mod);
-
-        private GetModForIDDelegate modForId;
-        private GetRegistryTypeDelegate typeForRegistry;
-        private IsModdedIDDelegate isIdModded;
-        private GetIDsForModDelegate getids;
-
-        public Type RegistryType => typeForRegistry();
-
-        public bool IsModdedID(object val) => isIdModded(val);
-
-        public SRMod GetModForID(object val) => modForId(val);
-
-        public IList GetIDsForMod(SRMod mod) => getids(mod);
-
-        public ModdedIDRegistry(GetModForIDDelegate modforid, GetRegistryTypeDelegate regtype,
-            IsModdedIDDelegate ismodded,GetIDsForModDelegate modids)
+        public IList GetAllModdedIDs()
         {
-            this.modForId = modforid;
-            this.typeForRegistry = regtype;
-            this.isIdModded = ismodded;
-            this.getids = modids;
+            return Keys.ToList();
         }
+
+        public IList GetIDsForMod(SRMod mod)
+        {
+            return this.Where((x) => x.Value == mod).Select((x) => x.Key).ToList();
+        }
+
+        public SRMod GetModForID(object val)
+        {
+            return this[(T) val];
+        }
+
+        public bool IsModdedID(object val)
+        {
+            return val.GetType()==RegistryType&&ContainsKey((T)val);
+        }
+
+        public T RegisterValue(T id)
+        {
+            if (ContainsKey(id))
+                throw new Exception(
+                    $"{id} is already registered to {this[id].ModInfo.Id}");
+            var sr = SRMod.GetCurrentMod();
+            if (sr != null) this[id] = sr;
+            return id;
+        }
+
+        public T RegisterValueWithEnum(T id, string name)
+        {
+            var newid = RegisterValue(id);
+            EnumPatcher.AddEnumValue(RegistryType, newid, name);
+            return newid;
+        }
+    }
+
+    internal interface IModdedIDRegistry
+    {
+
+        Type RegistryType { get; }
+
+        bool IsModdedID(object val);
+
+        SRMod GetModForID(object val);
+
+        IList GetIDsForMod(SRMod mod);
+
+        IList GetAllModdedIDs();
     }
 }

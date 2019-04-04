@@ -57,7 +57,7 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     gadgetEntriesToPatch.Add(entry);
                     break;
-                case LoadingStep.POSTLOAD:
+                case LoadingStep.LOAD:
                     GameContext.Instance.LookupDirector.gadgetEntries.Add(entry);
                     GameContext.Instance.LookupDirector.gadgetEntryDict[entry.id] = entry;
                     break;
@@ -76,7 +76,7 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     upgradeEntriesToPatch.Add(entry);
                     break;
-                case LoadingStep.POSTLOAD:
+                case LoadingStep.LOAD:
                     GameContext.Instance.LookupDirector.upgradeEntries.Add(entry);
                     GameContext.Instance.LookupDirector.upgradeEntryDict[entry.upgrade] = entry;
                     break;

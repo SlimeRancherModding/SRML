@@ -11,19 +11,21 @@ namespace SRML
 {
     public class SRModInfo
     {
-        public SRModInfo(string modid,string name, string author, ModVersion version)
+        public SRModInfo(string modid,string name, string author, ModVersion version,string description)
         {
             Id = modid;
             Name = name;
             Author = author;
             Version = version;
+            Description = description;
         }
         public String Id { get; private set; }
         public String Name { get; private set; }
         public String Author { get; private set; }
+        public String Description { get; private set; }
         public ModVersion Version { get; private set; }
 
-        public static SRModInfo GetMyInfo()
+        public static SRModInfo GetCurrentInfo()
         {
             var assembly = ReflectionUtils.GetRelevantAssembly();
             return SRModLoader.GetModForAssembly(assembly).ModInfo;
@@ -84,7 +86,7 @@ namespace SRML
         public Type EntryType { get; private set; }
         private HarmonyInstance _harmonyInstance;
 
-        private ModEntryPoint entryPoint;
+        private IModEntryPoint entryPoint;
 
         private static SRMod forcedContext;
 
@@ -110,7 +112,7 @@ namespace SRML
             {
                 if (_harmonyInstance == null)
                 {
-                    CreateHarmonyInstance(GetHarmonyName());
+                    CreateHarmonyInstance(GetDefaultHarmonyName());
                 }
 
                 return _harmonyInstance;
@@ -118,32 +120,36 @@ namespace SRML
             private set { _harmonyInstance = value; }
         }
 
-        void CreateHarmonyInstance(String name)
+        public void CreateHarmonyInstance(String name)
         {
             HarmonyInstance = HarmonyInstance.Create(name);
         }
 
-        public String GetHarmonyName()
+        public String GetDefaultHarmonyName()
         {
             return $"net.{(ModInfo.Author==null||ModInfo.Author.Length==0?"srml":Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
 
-        public SRMod(SRModInfo info,ModEntryPoint entryPoint)
+        public SRMod(SRModInfo info,IModEntryPoint entryPoint)
         {
             this.ModInfo = info;
             this.EntryType = entryPoint.GetType();
             this.entryPoint = entryPoint;
         }
 
-        public SRMod(SRModInfo info, ModEntryPoint entryPoint, String path) : this(info, entryPoint)
+        public SRMod(SRModInfo info, IModEntryPoint entryPoint, String path) : this(info, entryPoint)
         {
             this.Path = path;
         }
 
         public void PreLoad()
         {
-            entryPoint.HarmonyInstance = HarmonyInstance;
             entryPoint.PreLoad();
+        }
+
+        public void Load()
+        {
+            entryPoint.Load();
         }
 
         public void PostLoad()

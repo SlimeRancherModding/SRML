@@ -9,25 +9,18 @@ namespace SRML.SR
 {
     public static class IdentifiableRegistry
     {
-        internal static Dictionary<Identifiable.Id,SRMod> moddedIdentifiables = new Dictionary<Identifiable.Id, SRMod>();
+        internal static ModdedIDRegistry<Identifiable.Id> moddedIdentifiables = new ModdedIDRegistry<Identifiable.Id>();
 
         static IdentifiableRegistry()
         {
-            SaveRegistry.RegisterIDRegistry(new ModdedIDRegistry((id => moddedIdentifiables[(Identifiable.Id)id]),()=>typeof(Identifiable.Id),(x)=>IsModdedIdentifiable((Identifiable.Id)x),(mod)=>moddedIdentifiables.Where((x)=>x.Value==mod).Select((x)=>x.Key).ToList()));
+            SaveRegistry.RegisterIDRegistry(moddedIdentifiables);
         }
 
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
                 throw new Exception("Can't register identifiables outside of the PreLoad step");
-            var id = (Identifiable.Id) value;
-            if (moddedIdentifiables.ContainsKey(id))
-                throw new Exception(
-                    $"Identifiable {value} is already registered to {moddedIdentifiables[id].ModInfo.Id}");
-            var sr = SRMod.GetCurrentMod();
-            if (sr != null) moddedIdentifiables[id] = sr;
-            EnumPatcher.AddEnumValue(typeof(Identifiable.Id), id, name);
-            
+            var id = moddedIdentifiables.RegisterValueWithEnum((Identifiable.Id)value,name);
             if (shouldCategorize) CategorizeId(id);
             return id;
         }

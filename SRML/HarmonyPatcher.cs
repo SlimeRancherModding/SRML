@@ -3,11 +3,11 @@ using Harmony;
 
 namespace SRML
 {
-    internal static class HarmonyPatcher
+    public static class HarmonyPatcher
     {
         private static HarmonyInstance _instance;
 
-        public static HarmonyInstance Instance
+        internal static HarmonyInstance Instance
         {
             get
             {
@@ -22,12 +22,24 @@ namespace SRML
 
         static void InitializeInstance()
         {
-            _instance = HarmonyInstance.Create("net.veesus.veesustools");
+            _instance = HarmonyInstance.Create("net.veesus.srml");
         }
 
-        public static void PatchAll()
+        internal static void PatchAll()
         {
             Instance.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
+        public static HarmonyInstance SetInstance(string name)
+        {
+            var currentMod = SRMod.GetCurrentMod();
+            currentMod.CreateHarmonyInstance(name);
+            return currentMod.HarmonyInstance;
+        }
+
+        public static HarmonyInstance GetInstance()
+        {
+            return SRMod.GetCurrentMod().HarmonyInstance;
         }
     }
 }
