@@ -12,7 +12,7 @@ using SRML.SR;
 
 namespace SampleMod
 {
-    public class Main : IModEntryPoint
+    public class Main : ModEntryPoint
     {
         // Called before GameContext.Awake
         // this is where you want to register stuff (like custom enum values or identifiable id's)

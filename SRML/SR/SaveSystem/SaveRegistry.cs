@@ -17,9 +17,9 @@ namespace SRML.SR.SaveSystem
     {
         internal static Dictionary<SRMod,ModSaveInfo> modToSaveInfo = new Dictionary<SRMod, ModSaveInfo>();
 
-        internal static Dictionary<Type,IModdedIDRegistry> moddedIdRegistries = new Dictionary<Type, IModdedIDRegistry>();
+        internal static Dictionary<Type,IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();
 
-        internal static void RegisterIDRegistry(IModdedIDRegistry registry)
+        internal static void RegisterIDRegistry(IIDRegistry registry)
         {
             moddedIdRegistries[registry.RegistryType] = registry;
         }

@@ -26,7 +26,6 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static void LoadModSave(AutoSaveDirector director, GameData.Summary summary)
         {
-            Debug.Log("Fallback loaded "+summary.name);
             SaveHandler.LoadModdedSave(director,summary.saveName);
         }
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)

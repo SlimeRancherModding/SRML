@@ -89,6 +89,10 @@ namespace SRML.SR.SaveSystem.Format
                     return list;
                 } );
             }
+            else
+            {
+                identifiableData.Clear(); // with the new enum translator system we need to make sure old id's are gone
+            }
         }
 
         public void Write(BinaryWriter writer)

@@ -31,7 +31,6 @@ namespace SRML.Utils
                 if (!comp) continue;
                 foreach (var field in replacer.FieldToField.Where((x)=>x.Value.DeclaringType==comp.GetType()))
                 {
-                    Debug.Log(field.Value.Name+" "+field.Key.Name+" "+(replacer.InstanceInfo.Instance as GameObject).GetComponent<SlimeEyeComponents>());
                     field.Value.SetValue(comp,field.Key.GetValue((replacer.InstanceInfo.Instance as GameObject).GetComponentInChildren(comp.GetType())));
                 }
             }

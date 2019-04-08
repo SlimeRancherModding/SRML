@@ -97,6 +97,16 @@ namespace SRML
             }
         }
 
+        public T TranslateEnum<T>(TranslationMode mode, T id)
+        {
+            return TranslateEnum(this, mode, id);
+        }
+
+        public void FixEnumValues(TranslationMode mode, object toFix)
+        {
+            FixEnumValues(this,mode,toFix);
+        }
+
         
     }
 
@@ -116,7 +126,7 @@ namespace SRML
             enumFixers.Add(type,del);
         }
 
-        public static void FixEnumValues(EnumTranslator translator, TranslationMode mode, ref object toFix)
+        static void FixEnumValues(EnumTranslator translator, TranslationMode mode, ref object toFix)
         {
             if (toFix == null) return;
             var type = toFix.GetType();
@@ -143,6 +153,13 @@ namespace SRML
             }
             else
                 foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type))) v.Value(translator, mode, toFix);
+        }
+
+        public static T TranslateEnum<T>(EnumTranslator translator,TranslationMode mode, T id)
+        {
+            return (mode == TranslationMode.TOTRANSLATED
+                ? (T)(object)translator.TranslateTo(id)
+                : translator.TranslateFrom<T>((int)(object)id));
         }
 
         public enum TranslationMode

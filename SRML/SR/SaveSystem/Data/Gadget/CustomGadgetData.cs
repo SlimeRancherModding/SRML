@@ -58,5 +58,17 @@ namespace SRML.SR.SaveSystem.Data.Gadget
         public abstract void LoadCustomData(BinaryReader reader);
 
         public abstract Type GetModelType();
+
+        static CustomGadgetData()
+        {
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, VanillaGadgetData v) =>
+                {
+                    v.gadgetId = translator.TranslateEnum(mode, v.gadgetId);
+                    translator.FixEnumValues(mode,v.fashions);
+                    v.baitTypeId = translator.TranslateEnum(mode, v.baitTypeId);
+                    v.gordoTypeId = translator.TranslateEnum(mode, v.gordoTypeId);
+                });
+        }
     }
 }

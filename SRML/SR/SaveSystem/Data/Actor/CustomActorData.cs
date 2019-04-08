@@ -61,9 +61,8 @@ namespace SRML.SR.SaveSystem.Data.Actor
         {
             EnumTranslator.RegisterEnumFixer((EnumTranslator translator,EnumTranslator.TranslationMode mode,VanillaActorData v) =>
                 {
-                    v.typeId = mode == EnumTranslator.TranslationMode.TOTRANSLATED
-                        ? translator.TranslateTo((Identifiable.Id) v.typeId)
-                        : (int)translator.TranslateFrom(typeof(Identifiable.Id), v.typeId);
+                    v.typeId = (int)translator.TranslateEnum(mode, ((Identifiable.Id) v.typeId));
+                    translator.FixEnumValues(mode, v.fashions);
                 });
         }
     }

@@ -61,7 +61,7 @@ namespace SRML.SR.SaveSystem
 
             foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
             {
-                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => SaveRegistry.IsCustom(x.id) ? SaveRegistry.ModForID(x.id) : null));
+                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => SaveRegistry.IsCustom(x.id) ? ModdedIDRegistry.ModForID(x.id) : null));
                 modsInThis.Remove(null);
                 foreach (var mod in modsInThis)
                 {
@@ -70,11 +70,11 @@ namespace SRML.SR.SaveSystem
                     {
                         var segment = data.GetSegmentForMod(mod);
                         segment.customAmmo[identifier] =
-                            AmmoDataUtils.RipOutWhere(ammo, (x) => SaveRegistry.ModForID(x.id) == mod,false);
+                            AmmoDataUtils.RipOutWhere(ammo, (x) => ModdedIDRegistry.ModForID(x.id) == mod,false);
                     }
                     else
                     {
-                        throw new Exception("OH GOD ITS HAPPENING");
+                        Debug.LogError("Unknown ammo identifier, skipping...");
                     }
                 }
             }

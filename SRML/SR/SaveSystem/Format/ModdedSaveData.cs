@@ -70,8 +70,7 @@ namespace SRML.SR.SaveSystem.Format
             if (version >= 1)
             {
                 enumTranslator = new EnumTranslator();
-                enumTranslator.Read(reader);
-                Debug.Log(enumTranslator);
+                enumTranslator.Read(reader);         
             }
         }
 

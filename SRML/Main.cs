@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using Harmony;
 using SRML.Editor;
+using SRML.SR.SaveSystem.Data;
 using SRML.Utils;
 using TMPro;
 using UnityEngine;
@@ -15,19 +16,15 @@ namespace SRML
     internal static class Main
     {
         private static bool isPreInitialized;
-        public static void PreLoad()
+        internal static void PreLoad()
         {
             if (isPreInitialized) return;
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyPatcher.PatchAll();
-            Debug.Log(EnumPatcher.GetFirstFreeValue(typeof(Identifiable.Id)));
-            
-
             try
             {
-                SRModLoader.LoadMods();
-                
+                SRModLoader.InitializeMods();
             }
             catch (Exception e)
             {
@@ -46,8 +43,28 @@ namespace SRML
             ReplacerCache.ClearCache();
 
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
-                new HarmonyMethod(typeof(Main).GetMethod("PostLoad", BindingFlags.NonPublic | BindingFlags.Static)));
+                new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
 
+        }
+
+        private static bool isInitialized;
+
+        static void Load()
+        {
+            if (!isInitialized) return;
+            isInitialized = true;
+            PrefabUtils.ProcessReplacements();
+            try
+            {
+                SRModLoader.LoadMods();
+            }
+            catch (Exception e)
+            {
+                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                return;
+            }
+
+            PostLoad();
         }
         
         private static bool isPostInitialized;
@@ -56,7 +73,8 @@ namespace SRML
         {
             if (isPostInitialized) return;
             isPostInitialized = true;
-            PrefabUtils.ProcessReplacements();
+            
+            
             try
             {
                 SRModLoader.PostLoadMods();

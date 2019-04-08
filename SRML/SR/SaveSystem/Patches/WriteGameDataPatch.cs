@@ -31,7 +31,7 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhereCustom(__instance.player.blueprints,__state.blueprints);
             __state.AddAndRemoveWhereCustom(__instance.player.availBlueprints,__state.availBlueprints);
             __state.AddAndRemoveWhere(__instance.player.blueprintLocks,__state.blueprintLocks,(x)=>SaveRegistry.IsCustom(x.Key));
-
+            
             __state.AddAndRemoveWhere(__instance.player.progress,__state.progress,(x)=>SaveRegistry.IsCustom(x.Key));
             __state.AddAndRemoveWhere(__instance.player.delayedProgress,__state.delayedProgress,(x)=>SaveRegistry.IsCustom(x.Key));
 

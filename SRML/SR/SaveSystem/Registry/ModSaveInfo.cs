@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Registry
 {
-    internal class ModSaveInfo 
+    internal class ModSaveInfo
     {
-        DataRegistry<CustomActorData> CustomActorDataRegistry = new DataRegistry<CustomActorData>();
+        private DataRegistry<CustomActorData> CustomActorDataRegistry = new DataRegistry<CustomActorData>();
         DataRegistry<CustomGadgetData> CustomGadgetDataRegisty = new DataRegistry<CustomGadgetData>();
 
         public readonly HashSet<DataRegistry> Registries = new HashSet<DataRegistry>();

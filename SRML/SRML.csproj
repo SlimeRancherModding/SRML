@@ -108,6 +108,7 @@
     <Compile Include="SR\IdentifiableRegistry.cs" />
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
+    <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
     <Compile Include="SR\PlortRegistry.cs" />
@@ -118,9 +119,11 @@
     <Compile Include="SR\Patches\MainMenuStartPatch.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
+    <Compile Include="SR\SaveSystem\CustomChecker.cs" />
     <Compile Include="SR\SaveSystem\Data\Gadget\BinaryGadgetData.cs" />
     <Compile Include="SR\SaveSystem\Data\Gadget\CustomGadgetData.cs" />
     <Compile Include="SR\SaveSystem\Data\DataIdentifier.cs" />
+    <Compile Include="SR\SaveSystem\Data\PartialData.cs" />
     <Compile Include="SR\SaveSystem\Format\IdentifiedData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModPediaData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModPlayerData.cs" />

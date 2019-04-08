@@ -12,13 +12,18 @@ namespace SRML.SR
     {
         public delegate void ApplyUpgradeDelegate(PlayerModel player, bool isFirstTime);
 
-        internal static ModdedIDRegistry<PlayerState.Upgrade> moddedUpgrades = new ModdedIDRegistry<PlayerState.Upgrade>();
+        public delegate PlayerState.UpgradeLocker CreateUpgradeLockerDelegate(PlayerState state);
+
+        internal static IDRegistry<PlayerState.Upgrade> moddedUpgrades = new IDRegistry<PlayerState.Upgrade>();
 
         internal static Dictionary<PlayerState.Upgrade,ApplyUpgradeDelegate> upgradeCallbacks = new Dictionary<PlayerState.Upgrade, ApplyUpgradeDelegate>();
 
+        internal static Dictionary<PlayerState.Upgrade, CreateUpgradeLockerDelegate> moddedLockers =
+            new Dictionary<PlayerState.Upgrade, CreateUpgradeLockerDelegate>();
+
         static PersonalUpgradeRegistry()
         {
-            SaveRegistry.RegisterIDRegistry(moddedUpgrades);
+            ModdedIDRegistry.RegisterIDRegistry(moddedUpgrades);
 
         }
 
@@ -44,6 +49,18 @@ namespace SRML.SR
             {
                 upgradeCallbacks[upgrade] = callback;
             }
+        }
+
+
+
+        public static void RegisterUpgradeLock(PlayerState.Upgrade upgrade, CreateUpgradeLockerDelegate del)
+        {
+            moddedLockers.Add(upgrade,del);
+        }
+
+        public static void RegisterDefaultUpgrade(PlayerState.Upgrade upgrade)
+        {
+            RegisterUpgradeLock(upgrade,null);
         }
 
     }

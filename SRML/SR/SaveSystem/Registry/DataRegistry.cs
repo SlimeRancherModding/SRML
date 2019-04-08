@@ -6,10 +6,20 @@ namespace SRML.SR.SaveSystem.Registry
 {
     internal class DataRegistry<K> : DataRegistry where K : IDataRegistryMember
     {
+        public delegate bool OwnershipCheckerDelegate<T>(T value);
+
         public Dictionary<int,Func<K>> actorDataIds = new Dictionary<int, Func<K>>();
 
         public Dictionary<Type, int> modelTypeToIds = new Dictionary<Type, int>();
 
+        private OwnershipCheckerDelegate<K> ownershipChecker;
+
+        public DataRegistry() { }
+
+        public DataRegistry(OwnershipCheckerDelegate<K> checker) : this()
+        {
+            ownershipChecker = checker;
+        }
 
         public void AddCustomData<T>(int id, Func<K> creator)
         {
@@ -24,7 +34,7 @@ namespace SRML.SR.SaveSystem.Registry
 
         public override bool BelongsToMe(object b)
         {
-            return b is K;
+            return b is K k&&(ownershipChecker?.Invoke(k) ?? true);
         }
 
         public K GetDataForID(int id)

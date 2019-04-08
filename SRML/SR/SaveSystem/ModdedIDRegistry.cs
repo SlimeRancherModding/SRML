@@ -1,65 +1,34 @@
-﻿using System;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using MonomiPark.SlimeRancher.Persist;
+using SRML;
+using SRML.SR.SaveSystem;
 
-namespace SRML.SR.SaveSystem
+static internal class ModdedIDRegistry
 {
-    internal class ModdedIDRegistry<T> : Dictionary<T,SRMod>, IModdedIDRegistry
+    internal static Dictionary<Type,IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();
+
+    internal static void RegisterIDRegistry(IIDRegistry registry)
     {
-
-        public Type RegistryType => typeof(T);
-
-        public IList GetAllModdedIDs()
-        {
-            return Keys.ToList();
-        }
-
-        public IList GetIDsForMod(SRMod mod)
-        {
-            return this.Where((x) => x.Value == mod).Select((x) => x.Key).ToList();
-        }
-
-        public SRMod GetModForID(object val)
-        {
-            return this[(T) val];
-        }
-
-        public bool IsModdedID(object val)
-        {
-            return val.GetType()==RegistryType&&ContainsKey((T)val);
-        }
-
-        public T RegisterValue(T id)
-        {
-            if (ContainsKey(id))
-                throw new Exception(
-                    $"{id} is already registered to {this[id].ModInfo.Id}");
-            var sr = SRMod.GetCurrentMod();
-            if (sr != null) this[id] = sr;
-            return id;
-        }
-
-        public T RegisterValueWithEnum(T id, string name)
-        {
-            var newid = RegisterValue(id);
-            EnumPatcher.AddEnumValue(RegistryType, newid, name);
-            return newid;
-        }
+        moddedIdRegistries[registry.RegistryType] = registry;
     }
 
-    internal interface IModdedIDRegistry
+    public static bool HasModdedID(object data)
     {
+        return (data is ActorDataV07 actor && IsModdedID((Identifiable.Id)actor.typeId))||
+               (data is PlacedGadgetV06 gadget && IsModdedID(gadget.gadgetId));
+    }
 
-        Type RegistryType { get; }
+    public static bool IsModdedID(object data)
+    {
+        return moddedIdRegistries.Any((x) => x.Key == data.GetType() && x.Value.IsModdedID(data));
+    }
 
-        bool IsModdedID(object val);
+    internal static SRMod ModForID(object data)
+    {
+        if (!IsModdedID(data)) return null;
 
-        SRMod GetModForID(object val);
-
-        IList GetIDsForMod(SRMod mod);
-
-        IList GetAllModdedIDs();
+        return moddedIdRegistries.FirstOrDefault((x) => x.Key == data.GetType()).Value?.GetModForID(data);
     }
 }

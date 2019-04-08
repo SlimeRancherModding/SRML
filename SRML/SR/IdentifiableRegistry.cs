@@ -9,11 +9,11 @@ namespace SRML.SR
 {
     public static class IdentifiableRegistry
     {
-        internal static ModdedIDRegistry<Identifiable.Id> moddedIdentifiables = new ModdedIDRegistry<Identifiable.Id>();
+        internal static IDRegistry<Identifiable.Id> moddedIdentifiables = new IDRegistry<Identifiable.Id>();
 
         static IdentifiableRegistry()
         {
-            SaveRegistry.RegisterIDRegistry(moddedIdentifiables);
+            ModdedIDRegistry.RegisterIDRegistry(moddedIdentifiables);
         }
 
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)

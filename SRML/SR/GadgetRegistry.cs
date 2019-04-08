@@ -8,12 +8,11 @@ namespace SRML.SR
 {
     public static class GadgetRegistry
     {
-        internal static ModdedIDRegistry<Gadget.Id> moddedGadgets = new ModdedIDRegistry<Gadget.Id>();
+        internal static IDRegistry<Gadget.Id> moddedGadgets = new IDRegistry<Gadget.Id>();
 
         static GadgetRegistry()
         {
-            SaveRegistry.RegisterIDRegistry(moddedGadgets);
-
+            ModdedIDRegistry.RegisterIDRegistry(moddedGadgets);
         }
 
         public static Gadget.Id CreateGadgetId(object value, string name)
