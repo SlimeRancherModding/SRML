@@ -23,6 +23,7 @@ namespace SRML.SR.SaveSystem.Patches
                 { 
 
                     flag = true;
+                    yield return v;
                     yield return new CodeInstruction(OpCodes.Pop);
                     yield return new CodeInstruction(OpCodes.Ldarg_1);
                     yield return new CodeInstruction(OpCodes.Ldloca_S,0);

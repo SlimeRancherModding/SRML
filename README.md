@@ -11,12 +11,3 @@ N/A
 ## Acknowledgements ##
 * CabbageCrow and his wonderful [Assembly Publicizer](https://github.com/CabbageCrow/AssemblyPublicizer)
 * The amazing [Harmony Runtime Patching Library](https://github.com/pardeike/Harmony)
-
-
-
-library id livi_rpa
-ebsco
-s9760450
-password
-livingstonstudent
-livingstonstudent
