@@ -8,6 +8,7 @@ using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Ammo;
+using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Format;
 using SRML.SR.SaveSystem.Utils;
@@ -89,7 +90,6 @@ namespace SRML.SR.SaveSystem
             {
                 var level = CustomChecker.GetCustomLevel(v);
 
-
                 if (level == CustomChecker.CustomLevel.PARTIAL)
                 {
                     var partialdata = PartialData.GetPartialData(v.GetType(), true);
@@ -108,8 +108,12 @@ namespace SRML.SR.SaveSystem
 
             foreach (var g in game.world.placedGadgets)
             {
-                Check(g, (v, partialdata) =>
-                    data.partialData.Add(new DataIdentifier() { stringID = v.Key, Type = IdentifierType.GADGET }, partialdata));
+                var currentString = g.Key;
+                Check(g.Value, (v, partialdata) =>
+                {
+                    data.partialData.Add(new DataIdentifier() {stringID = currentString, Type = IdentifierType.GADGET},
+                        partialdata);
+                });
             }
 
             foreach (var g in game.ranch.plots)
@@ -195,7 +199,7 @@ namespace SRML.SR.SaveSystem
             {
                 data.Read(reader);
             }
-            data.enumTranslator.FixMissingEnumValues();
+            data.enumTranslator?.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
             PushModdedData(director.savedGame.gameState);
 
@@ -225,10 +229,10 @@ namespace SRML.SR.SaveSystem
             EnumTranslator.RegisterEnumFixer(
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, AmmoDataV02 data) =>
                 {
-                    data.id = mode == EnumTranslator.TranslationMode.TOTRANSLATED
-                        ? (Identifiable.Id)translator.TranslateTo(data.id)
-                        : translator.TranslateFrom<Identifiable.Id>((int)data.id);
+                    data.id = translator.TranslateEnum(mode, data.id);
+                    translator.FixEnumValues(mode,data.emotionData.emotionData);
                 });
+            CustomGadgetData.RegisterGadgetThings();
         }
     }
 }

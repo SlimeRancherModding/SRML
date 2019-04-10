@@ -52,6 +52,23 @@ namespace SRML.SR.SaveSystem.Data.Partial
         }
     }
 
+    internal abstract class VersionedPartialData<T> : PartialData<T>, IVersionedSerializable
+    {
+        public abstract int LatestVersion { get; }
+
+        public int Version { get; protected set; }
+
+        public override void Write(BinaryWriter writer)
+        {
+            writer.Write(LatestVersion);
+        }
+
+        public override void Read(BinaryReader reader)
+        {
+            Version = reader.ReadInt32();
+        }
+    }
+
     internal abstract class PartialData<T> : PartialData
     {
         public abstract void Pull(T data);
@@ -72,7 +89,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public abstract override void Write(BinaryWriter writer);
         public abstract override void Read(BinaryReader reader);
     }
-    internal abstract partial class PartialData
+    internal abstract partial class PartialData : ISerializable
     {
         public abstract void Pull(object data);
         public abstract void Push(object data);

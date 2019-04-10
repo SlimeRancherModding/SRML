@@ -15,6 +15,8 @@ namespace SRML.SR
         public delegate GadgetModel CreateGadgetDelegate(string siteId, GadgetSiteModel site, GameObject obj);
         internal static Dictionary<Predicate<Gadget.Id>,CreateGadgetDelegate> gadgetOverrideMapping = new Dictionary<Predicate<Gadget.Id>, CreateGadgetDelegate>();
 
+      
+
         public static void RegisterActorModelOverride(Predicate<Identifiable.Id> pred, CreateActorDelegate creator)
         {
             actorOverrideMapping.Add(pred,creator);

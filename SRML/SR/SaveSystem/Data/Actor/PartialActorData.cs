@@ -10,14 +10,17 @@ using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem.Data.Actor
 {
-    internal class PartialActorData : PartialData<VanillaActorData>
+    internal class PartialActorData : VersionedPartialData<VanillaActorData>
     {
         public PartialCollection<Identifiable.Id> partialFashions = new PartialCollection<Identifiable.Id>(ModdedIDRegistry.IsModdedID, SerializerPair.GetEnumSerializerPair<Identifiable.Id>());
         public PartialDictionary<SlimeEmotions.Emotion,float> partialEmotions = new PartialDictionary<SlimeEmotions.Emotion, float>((x)=>ModdedIDRegistry.IsModdedID(x.Key),SerializerPair.GetEnumSerializerPair<SlimeEmotions.Emotion>(),new SerializerPair<float>((x,y)=>x.Write(y),(x)=>x.ReadSingle()));
 
+        public override int LatestVersion => 0;
+
         public override void Pull(VanillaActorData data)
         {
             partialFashions.Pull(data.fashions);
+            if(partialFashions.InternalList.Count>0) Debug.Log((Identifiable.Id)data.typeId);
             partialEmotions.Pull(data.emotions.emotionData);
         }
 

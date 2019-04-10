@@ -36,8 +36,10 @@ namespace SRML.SR.SaveSystem
 
         public static bool IsCustom(object data)
         {
+            if (data == null) return false;
             if (data.GetType().IsEnum)
                 throw new Exception("IsCustom for enums has been deprecated, use ModdedIDRegistry");
+            if (data.GetType().IsValueType) throw new Exception("Custom Value Type " + data.GetType());
             return IsFullyModdedData(data) || ModdedIDRegistry.HasModdedID(data);
         }
 

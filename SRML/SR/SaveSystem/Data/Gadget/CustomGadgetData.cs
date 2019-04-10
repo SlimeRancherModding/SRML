@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SRML.SR.SaveSystem.Data.Partial;
+using UnityEngine;
 using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaDroneData = MonomiPark.SlimeRancher.Persist.DroneGadgetV01;
 namespace SRML.SR.SaveSystem.Data.Gadget
 {
     internal abstract class CustomGadgetData<T> : CustomGadgetData where T : GadgetModel
@@ -59,16 +62,40 @@ namespace SRML.SR.SaveSystem.Data.Gadget
 
         public abstract Type GetModelType();
 
-        static CustomGadgetData()
+        internal static void RegisterGadgetThings()
         {
             EnumTranslator.RegisterEnumFixer(
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, VanillaGadgetData v) =>
                 {
                     v.gadgetId = translator.TranslateEnum(mode, v.gadgetId);
-                    translator.FixEnumValues(mode,v.fashions);
+                    translator.FixEnumValues(mode, v.fashions);
                     v.baitTypeId = translator.TranslateEnum(mode, v.baitTypeId);
                     v.gordoTypeId = translator.TranslateEnum(mode, v.gordoTypeId);
+                    if(v.drone!=null) translator.FixEnumValues(mode,v.drone);
                 });
+
+            EnumTranslator.RegisterEnumFixer((EnumTranslator translator, EnumTranslator.TranslationMode mode,
+                VanillaDroneData v) =>
+            {
+                translator.FixEnumValues(mode,v.drone.fashions);
+            });
+            PartialGadgetData.RegisterEnumFixer();
+            PartialDroneData.RegisterEnumFixer();
+            PartialData.RegisterPartialData(() => new PartialGadgetData());
+            PartialData.RegisterPartialData(() => new PartialDroneData());
+            CustomChecker.RegisterCustomChecker((VanillaGadgetData data) =>
+            {
+                if (ModdedIDRegistry.IsModdedID(data.gadgetId)) return CustomChecker.CustomLevel.FULL;
+                if (ModdedIDRegistry.IsModdedID(data.baitTypeId) || ModdedIDRegistry.IsModdedID(data.gordoTypeId))
+                    return CustomChecker.CustomLevel.PARTIAL;
+                if (data.fashions.Any(ModdedIDRegistry.IsModdedID)) return CustomChecker.CustomLevel.PARTIAL;
+                return data.drone==null? CustomChecker.CustomLevel.VANILLA : CustomChecker.GetCustomLevel(data.drone);
+            });
+            CustomChecker.RegisterCustomChecker((VanillaDroneData data) =>
+            {
+                if (data.drone.fashions.Any(ModdedIDRegistry.IsModdedID)) return CustomChecker.CustomLevel.PARTIAL;
+                return CustomChecker.CustomLevel.VANILLA;
+            });
         }
     }
 }

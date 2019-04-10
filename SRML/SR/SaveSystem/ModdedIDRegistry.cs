@@ -22,6 +22,7 @@ static internal class ModdedIDRegistry
 
     public static bool IsModdedID(object id)
     {
+        if (!id.GetType().IsEnum) throw new Exception(id.GetType() + " is not an enum!");
         return moddedIdRegistries.Any((x) => x.Key == id.GetType() && x.Value.IsModdedID(id));
     }
 
@@ -32,6 +33,7 @@ static internal class ModdedIDRegistry
 
     internal static SRMod ModForID(object data)
     {
+        
         if (!IsModdedID(data)) return null;
         return moddedIdRegistries.FirstOrDefault((x) => x.Key == data.GetType()).Value?.GetModForID(data);
     }

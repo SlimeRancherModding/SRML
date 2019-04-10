@@ -8,9 +8,8 @@ using SRML.Utils;
 
 namespace SRML.SR.SaveSystem.Format
 {
-    internal class ModPlayerData
+    internal class ModPlayerData : VersionedSerializable
     {
-        public int version;
 
         public List<PlayerState.Upgrade> upgrades = new List<PlayerState.Upgrade>();
         public List<PlayerState.Upgrade> availUpgrades = new List<PlayerState.Upgrade>();
@@ -28,6 +27,7 @@ namespace SRML.SR.SaveSystem.Format
 
         public Dictionary<Identifiable.Id,int> craftMatCounts = new Dictionary<Identifiable.Id, int>();
 
+        public override int LatestVersion => 0;
 
         static ModPlayerData()
         {
@@ -48,9 +48,9 @@ namespace SRML.SR.SaveSystem.Format
 
         }
 
-        public void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer)
         {
-            writer.Write(version);
+            base.Write(writer);
             BinaryUtils.WriteList(writer,upgrades,(x,y)=>x.Write((int)y));
             BinaryUtils.WriteList(writer, availUpgrades, (x, y) => x.Write((int)y));
             BinaryUtils.WriteDictionary(writer, upgradeLocks, (x, y) => x.Write((int)y),(x,y)=> {x.Write(y.timedLock);x.Write(y.lockedUntil);});
@@ -67,9 +67,9 @@ namespace SRML.SR.SaveSystem.Format
             BinaryUtils.WriteDictionary(writer, craftMatCounts, (x, y) => x.Write((int)y), (x, y) => x.Write(y));
         }
 
-        public void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader)
         {
-            version = reader.ReadInt32();
+            base.Read(reader);
             BinaryUtils.ReadList(reader,upgrades,(x)=>(PlayerState.Upgrade)x.ReadInt32());
             BinaryUtils.ReadList(reader, availUpgrades, (x) => (PlayerState.Upgrade)x.ReadInt32());
             BinaryUtils.ReadDictionary(reader,upgradeLocks,(x)=> (PlayerState.Upgrade)x.ReadInt32(),(x)=>new PlayerState.UpgradeLockData(x.ReadBoolean(),x.ReadDouble()));
@@ -131,7 +131,7 @@ namespace SRML.SR.SaveSystem.Format
 
             player.upgrades.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
             player.availUpgrades.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
-            foreach (var x in player.upgradeLocks) mods.Add(ModdedIDRegistry.ModForID(x));
+            foreach (var x in player.upgradeLocks) mods.Add(ModdedIDRegistry.ModForID(x.Key));
 
             foreach(var x in player.progress) mods.Add(ModdedIDRegistry.ModForID(x.Key));
             foreach (var x in player.delayedProgress) mods.Add(ModdedIDRegistry.ModForID(x.Key));

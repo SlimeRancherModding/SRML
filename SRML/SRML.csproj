@@ -109,6 +109,7 @@
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\LandPlotToGameObjectPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
     <Compile Include="SR\PlortRegistry.cs" />
@@ -121,9 +122,14 @@
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
     <Compile Include="SR\SaveSystem\CustomChecker.cs" />
     <Compile Include="SR\SaveSystem\Data\Actor\PartialActorData.cs" />
+    <Compile Include="SR\SaveSystem\Data\LandPlot\BinaryLandPlotData.cs" />
+    <Compile Include="SR\SaveSystem\Data\LandPlot\CustomLandPlotData.cs" />
     <Compile Include="SR\SaveSystem\Data\Gadget\BinaryGadgetData.cs" />
     <Compile Include="SR\SaveSystem\Data\Gadget\CustomGadgetData.cs" />
     <Compile Include="SR\SaveSystem\Data\DataIdentifier.cs" />
+    <Compile Include="SR\SaveSystem\Data\Gadget\PartialDroneData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Gadget\PartialGadgetData.cs" />
+    <Compile Include="SR\SaveSystem\Data\LandPlot\PartialLandPlotData.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\IDictionaryProvider.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\IListProvider.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\PartialCollection.cs" />
@@ -134,8 +140,11 @@
     <Compile Include="SR\SaveSystem\Format\ModPediaData.cs" />
     <Compile Include="SR\SaveSystem\Format\ModPlayerData.cs" />
     <Compile Include="SR\SaveSystem\IDRegistry.cs" />
+    <Compile Include="SR\SaveSystem\ISerializable.cs" />
+    <Compile Include="SR\SaveSystem\IVersionedSerializable.cs" />
     <Compile Include="SR\SaveSystem\ModdedIDRegistry.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PullLandPlotDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
     <Compile Include="SR\SaveSystem\Utils\AmmoDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />
@@ -170,6 +179,7 @@
     <Compile Include="SR\SaveSystem\Registry\ModSaveInfo.cs" />
     <Compile Include="SR\SaveSystem\SaveHandler.cs" />
     <Compile Include="SR\SaveSystem\SaveRegistry.cs" />
+    <Compile Include="SR\SaveSystem\VersionedSerializable.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />
     <Compile Include="SR\UI\ModMenuUI.cs" />

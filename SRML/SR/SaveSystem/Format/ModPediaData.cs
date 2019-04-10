@@ -5,30 +5,31 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
 using UnityEngine.Rendering;
 
 namespace SRML.SR.SaveSystem.Format
 {
-    internal class ModPediaData
+    internal class ModPediaData : VersionedSerializable
     {
-        public int version;
         public List<string> unlockedIds = new List<string>();
         public List<string> completedTuts = new List<string>();
         public List<string> popupQueue = new List<string>();
 
+        public override int LatestVersion => 0;
 
-        public void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer)
         {
-            writer.Write(version);
+            base.Write(writer);
             BinaryUtils.WriteList(writer,unlockedIds,(x,y)=>x.Write(y));
             BinaryUtils.WriteList(writer, completedTuts, (x, y) => x.Write(y));
             BinaryUtils.WriteList(writer, popupQueue, (x, y) => x.Write(y));
         }
 
-        public void Read(BinaryReader reader)
+        public override void Read(BinaryReader reader)
         {
-            version = reader.ReadInt32();
+            base.Read(reader);
             BinaryUtils.ReadList(reader,unlockedIds,(x)=>x.ReadString());
             BinaryUtils.ReadList(reader,completedTuts, (x) => x.ReadString());
             BinaryUtils.ReadList(reader, popupQueue, (x) => x.ReadString());

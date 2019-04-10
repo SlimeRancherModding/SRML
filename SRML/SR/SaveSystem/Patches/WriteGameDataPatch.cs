@@ -78,7 +78,7 @@ namespace SRML.SR.SaveSystem.Patches
 
             foreach (var actor in __instance.world.placedGadgets)
             {
-                RemovePartial(actor, __state);
+                RemovePartial(actor.Value, __state);
             }
         }
 
