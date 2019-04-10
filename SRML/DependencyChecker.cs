@@ -36,14 +36,14 @@ namespace SRML
             HashSet<string> currentlyLoading = new HashSet<string>();
 
 
-            void FixBefores(SRModLoader.ProtoMod mod)
+            void FixAfters(SRModLoader.ProtoMod mod)
             {
-                foreach(var h in mod.load_after)
+                foreach(var h in mod.load_before)
                 {
 
                     if (mods.FirstOrDefault((x) => x.id == h) is SRModLoader.ProtoMod proto)
                     {
-                        proto.load_before = new HashSet<string>(proto.load_before.AddToArray(mod.id)).ToArray();
+                        proto.load_after = new HashSet<string>(proto.load_after.AddToArray(mod.id)).ToArray();
                         
                     }
                 }
@@ -52,14 +52,14 @@ namespace SRML
 
             foreach (var v in mods)
             {
-                FixBefores(v);
+                FixAfters(v);
             }
 
             void LoadMod(SRModLoader.ProtoMod mod)
             {
                 if (modList.Contains(mod)) return;
                 currentlyLoading.Add(mod.id);
-                foreach (var v in mod.load_before)
+                foreach (var v in mod.load_after)
                 {
                     if (!(mods.FirstOrDefault((x) => x.id == v) is SRModLoader.ProtoMod proto)) continue;
                     if (currentlyLoading.Contains(v)) throw new Exception("Circular dependency detected "+mod.id+" "+v);
