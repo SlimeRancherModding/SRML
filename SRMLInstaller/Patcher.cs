@@ -37,7 +37,7 @@ namespace SRMLInstaller
 
         public bool IsPatched()
         {
-            return target.Body.Instructions[0].OpCode == OpCodes.Call && target.Body.Instructions[0].Operand is MethodReference methRef && methRef.Name=="LoadSRML";
+            return target.Body.Instructions[0].OpCode == OpCodes.Call && target.Body.Instructions[0].Operand is MethodReference methRef && (methRef.Name=="LoadSRML" || methRef.Name=="PreLoad");
         }
 
         public MethodDefinition AddLoadMethod()
@@ -125,7 +125,7 @@ namespace SRMLInstaller
                 Path.GetFileNameWithoutExtension(filename) + "_patched.dll");
             string oldname = Path.Combine(pathRoot,
                 Path.GetFileNameWithoutExtension(filename) + "_old.dll");
-            if(!CheckOrDelete(patchedname)||!CheckOrDelete(oldname)) throw new Exception();
+            if(!CheckOrDelete(patchedname)||!CheckOrDelete(oldname)) throw new Exception("Cannot continue installation while this file exists!");
             curAssembly.Write(patchedname);
             Dispose();
             File.Move(filename,oldname);
