@@ -23,6 +23,7 @@ namespace SRML.SR.SaveSystem.Patches
                 { 
 
                     flag = true;
+                    yield return v;
                     yield return new CodeInstruction(OpCodes.Pop);
                     yield return new CodeInstruction(OpCodes.Ldarg_1);
                     yield return new CodeInstruction(OpCodes.Ldloca_S,0);
@@ -43,6 +44,7 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static void FixLandPlotModel(LandPlotV08 data, ref LandPlotModel model)
         {
+            return;
             var temp = model;
             model = new TestModel();
             model.SetGameObject(temp.gameObj);
