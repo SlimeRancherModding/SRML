@@ -156,10 +156,7 @@ namespace SRML
             var type = toFix.GetType();
             if (type.IsEnum)
             {
-                Debug.Log(toFix+" before "+type);
                 toFix = TranslateEnum(type, translator, mode, toFix);
-                Debug.Log(mode);
-                Debug.Log(toFix+" after "+toFix.GetType());
             }
             else
                 foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type)))
@@ -232,8 +229,6 @@ namespace SRML
                 dict.Clear();
                 for (int i = 0; i < keyArray.Length; i++)
                 {
-                    Debug.Log(keyArray[i] +" "+ keyArray[i].GetType()+" "+valueArray[i]);
-
 
                     dict[keyArray[i]] = valueArray[i]; 
                 }

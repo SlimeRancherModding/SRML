@@ -42,7 +42,6 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static VanillaLandPlotData CreateLandPlotData(LandPlotModel model)
         {
-            Debug.Log(model.typeId);
             var mod = SaveRegistry.ModForModelType(model.GetType());
             if (mod != null)
             {

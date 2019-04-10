@@ -43,6 +43,7 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static void FixLandPlotModel(LandPlotV08 data, ref LandPlotModel model)
         {
+            return;
             var temp = model;
             model = new TestModel();
             model.SetGameObject(temp.gameObj);

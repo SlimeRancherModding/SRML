@@ -20,7 +20,6 @@ namespace SRML.SR.SaveSystem.Data.Actor
         public override void Pull(VanillaActorData data)
         {
             partialFashions.Pull(data.fashions);
-            if(partialFashions.InternalList.Count>0) Debug.Log((Identifiable.Id)data.typeId);
             partialEmotions.Pull(data.emotions.emotionData);
         }
 
