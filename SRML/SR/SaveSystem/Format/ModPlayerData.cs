@@ -90,20 +90,20 @@ namespace SRML.SR.SaveSystem.Format
 
         public void Pull(PlayerV13 player,SRMod ourMod)
         {
-            upgrades.AddRange(player.upgrades.Where((x)=>SaveRegistry.ModForID(x)==ourMod));
-            availUpgrades.AddRange(player.availUpgrades.Where((x) => SaveRegistry.ModForID(x) == ourMod));
-            AddRange(upgradeLocks,player.upgradeLocks.Where((x)=> SaveRegistry.ModForID(x.Key) == ourMod));
+            upgrades.AddRange(player.upgrades.Where((x)=>ModdedIDRegistry.ModForID(x)==ourMod));
+            availUpgrades.AddRange(player.availUpgrades.Where((x) => ModdedIDRegistry.ModForID(x) == ourMod));
+            AddRange(upgradeLocks,player.upgradeLocks.Where((x)=> ModdedIDRegistry.ModForID(x.Key) == ourMod));
 
-            AddRange(progress,player.progress.Where((x)=> SaveRegistry.ModForID(x.Key) == ourMod));
-            AddRange(delayedProgress, player.delayedProgress.Where((x) => SaveRegistry.ModForID(x.Key) == ourMod));
+            AddRange(progress,player.progress.Where((x)=> ModdedIDRegistry.ModForID(x.Key) == ourMod));
+            AddRange(delayedProgress, player.delayedProgress.Where((x) => ModdedIDRegistry.ModForID(x.Key) == ourMod));
 
-            blueprints.AddRange(player.blueprints.Where((x)=> SaveRegistry.ModForID(x) == ourMod));
-            availBlueprints.AddRange(player.availBlueprints.Where((x) => SaveRegistry.ModForID(x) == ourMod));
-            AddRange(blueprintLocks,player.blueprintLocks.Where((x)=> SaveRegistry.ModForID(x.Key) == ourMod));
+            blueprints.AddRange(player.blueprints.Where((x)=> ModdedIDRegistry.ModForID(x) == ourMod));
+            availBlueprints.AddRange(player.availBlueprints.Where((x) => ModdedIDRegistry.ModForID(x) == ourMod));
+            AddRange(blueprintLocks,player.blueprintLocks.Where((x)=> ModdedIDRegistry.ModForID(x.Key) == ourMod));
 
-            AddRange(gadgets,player.gadgets.Where((x)=> SaveRegistry.ModForID(x.Key) == ourMod));
+            AddRange(gadgets,player.gadgets.Where((x)=> ModdedIDRegistry.ModForID(x.Key) == ourMod));
 
-            AddRange(craftMatCounts, player.craftMatCounts.Where((x) => SaveRegistry.ModForID(x.Key) == ourMod));
+            AddRange(craftMatCounts, player.craftMatCounts.Where((x) => ModdedIDRegistry.ModForID(x.Key) == ourMod));
 
         }
 
@@ -129,20 +129,20 @@ namespace SRML.SR.SaveSystem.Format
         {
             var mods = new HashSet<SRMod>();
 
-            player.upgrades.ForEach((x) => mods.Add(SaveRegistry.ModForID(x)));
-            player.availUpgrades.ForEach((x) => mods.Add(SaveRegistry.ModForID(x)));
-            foreach (var x in player.upgradeLocks) mods.Add(SaveRegistry.ModForID(x));
+            player.upgrades.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
+            player.availUpgrades.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
+            foreach (var x in player.upgradeLocks) mods.Add(ModdedIDRegistry.ModForID(x));
 
-            foreach(var x in player.progress) mods.Add(SaveRegistry.ModForID(x.Key));
-            foreach (var x in player.delayedProgress) mods.Add(SaveRegistry.ModForID(x.Key));
+            foreach(var x in player.progress) mods.Add(ModdedIDRegistry.ModForID(x.Key));
+            foreach (var x in player.delayedProgress) mods.Add(ModdedIDRegistry.ModForID(x.Key));
 
-            player.blueprints.ForEach((x) => mods.Add(SaveRegistry.ModForID(x)));
-            player.availBlueprints.ForEach((x) => mods.Add(SaveRegistry.ModForID(x)));
-            foreach (var x in player.blueprintLocks) mods.Add(SaveRegistry.ModForID(x.Key));
+            player.blueprints.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
+            player.availBlueprints.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
+            foreach (var x in player.blueprintLocks) mods.Add(ModdedIDRegistry.ModForID(x.Key));
 
-            foreach (var x in player.gadgets) mods.Add(SaveRegistry.ModForID(x.Key));
+            foreach (var x in player.gadgets) mods.Add(ModdedIDRegistry.ModForID(x.Key));
 
-            foreach (var x in player.craftMatCounts) mods.Add(SaveRegistry.ModForID(x.Key));
+            foreach (var x in player.craftMatCounts) mods.Add(ModdedIDRegistry.ModForID(x.Key));
 
             mods.Remove(null);
             return mods;

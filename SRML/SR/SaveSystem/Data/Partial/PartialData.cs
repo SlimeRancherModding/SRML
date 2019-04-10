@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 
-namespace SRML.SR.SaveSystem.Data
+namespace SRML.SR.SaveSystem.Data.Partial
 {
 
     internal class CompoundPartialData<T> : PartialData<T>
@@ -112,40 +110,54 @@ namespace SRML.SR.SaveSystem.Data
             RegisterPartialData<K>(typeof(T));
         }
 
-        public static bool HasPartialData(Type type)
+        public static bool HasPartialData(Type type,bool allowInherited = false)
         {
-            return partialDataCreators.ContainsKey(type);
+            return partialDataCreators.ContainsKey(type)||(allowInherited&&partialDataCreators.Any((x)=>x.Key.IsAssignableFrom(type)));
         }
 
-        static PartialDataCreatorDelegate GetPartialDataCreator(Type type)
+        static PartialDataCreatorDelegate GetPartialDataCreator(Type type,bool allowInherited = false)
         {
-            return HasPartialData(type) ? partialDataCreators[type]: null;
+            return HasPartialData(type,allowInherited) ? partialDataCreators.First((x)=>type == x.Key || x.Key.IsAssignableFrom(type)).Value : null;
         }
 
-        public static PartialData GetPartialData(Type type)
+        public static PartialData GetPartialData(Type type,bool allowInherited = false)
         {
-            return GetPartialDataCreator(type)?.Invoke();
+            return GetPartialDataCreator(type,allowInherited)?.Invoke();
         }
 
-        public static bool TryGetPartialData(Type type,out PartialData data)
+        public static bool TryGetPartialData(Type type,out PartialData data, bool allowInherited = false)
         {
-            data = GetPartialData(type);
+            data = GetPartialData(type,allowInherited);
             return data != null;
         }
 
-        public static PartialData GetPartialData<T>()
+        public static PartialData GetPartialData<T>(bool allowInherited = false)
         {
-            return GetPartialData(typeof(T));
+            return GetPartialData(typeof(T),allowInherited);
         }
 
-        public static bool TryGetPartialData<T>(out PartialData data)
+        public static bool TryGetPartialData<T>(out PartialData data,bool allowInherited=false)
         {
-            return TryGetPartialData(typeof(T), out data);
+            return TryGetPartialData(typeof(T), out data,allowInherited);
         }
 
         public static CompoundPartialData<T> CreateCompoundPartialData<T>()
         {
             return new CompoundPartialData<T>(partialDataCreators.Where((x)=>x.Key.IsAssignableFrom(typeof(T))).Select((x)=>(PartialData)x.Value()));
+        }
+
+        static PartialData()
+        {
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, IDictionaryProvider v) =>
+                {
+                    translator.FixEnumValues(mode,v.InternalDictionary);
+                });
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, IListProvider v) =>
+                {
+                    translator.FixEnumValues(mode,v.InternalList);
+                });
         }
     }
 

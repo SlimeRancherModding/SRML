@@ -31,6 +31,25 @@ namespace SRML
 
         }
 
+        public void FixMissingEnumValues()
+        {
+            var toChangeList = new List<int>();
+            foreach (var pair in MappedValues)
+            {
+                var noneObject = Enum.ToObject(pair.Key, 0).ToString();
+                toChangeList.Clear();
+                foreach (var v in pair.Value)
+                {
+                    if(!Enum.IsDefined(pair.Key,v.Value)) toChangeList.Add(v.Key);
+                }
+
+                foreach (var toChange in toChangeList)
+                {
+                    pair.Value[toChange] = noneObject;
+                }
+            }
+        }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -99,7 +118,12 @@ namespace SRML
 
         public T TranslateEnum<T>(TranslationMode mode, T id)
         {
-            return TranslateEnum(this, mode, id);
+            return (T)TranslateEnum(typeof(T), mode, id);
+        }
+
+        public object TranslateEnum(Type enumType, TranslationMode mode, object id)
+        {
+            return TranslateEnum(enumType, this, mode, id);
         }
 
         public void FixEnumValues(TranslationMode mode, object toFix)
@@ -132,9 +156,7 @@ namespace SRML
             var type = toFix.GetType();
             if (type.IsEnum)
             {
-                toFix = mode == TranslationMode.TOTRANSLATED
-                    ? translator.TranslateTo(toFix)
-                    : translator.TranslateFrom(type, (int)toFix);
+                toFix = TranslateEnum(type, translator, mode, toFix);
             }
             else
                 foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type)))
@@ -149,7 +171,7 @@ namespace SRML
             var type = toFix.GetType();
             if (type.IsEnum)
             {
-                throw new Exception("ENUMS BELONG IN THE REF VERSION OF FIXENUMVALUES");
+                throw new Exception("Use TranslateEnum for enumvalues");
             }
             else
                 foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type))) v.Value(translator, mode, toFix);
@@ -157,9 +179,14 @@ namespace SRML
 
         public static T TranslateEnum<T>(EnumTranslator translator,TranslationMode mode, T id)
         {
+            return (T)TranslateEnum(typeof(T),translator,mode,id);
+        }
+
+        public static object TranslateEnum(Type enumType, EnumTranslator translator, TranslationMode mode, object id)
+        {
             return (mode == TranslationMode.TOTRANSLATED
-                ? (T)(object)translator.TranslateTo(id)
-                : translator.TranslateFrom<T>((int)(object)id));
+                ? Enum.ToObject(enumType,translator.TranslateTo(id))
+                : translator.TranslateFrom(enumType,(int)id));
         }
 
         public enum TranslationMode
@@ -201,7 +228,7 @@ namespace SRML
 
                 for (int i = 0; i < keyArray.Length; i++)
                 {
-                    dict[keyArray[i]] = valueArray[i];
+                    dict[keyArray[i]] = valueArray[i]; 
                 }
             });
         }

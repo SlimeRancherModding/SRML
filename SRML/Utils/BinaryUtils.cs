@@ -274,6 +274,17 @@ namespace SRML.Utils
             serializerFunc(writer, (T) b);
         }
 
+        public void SerializeGeneric(BinaryWriter writer, T b)
+        {
+            Serialize(writer,b);
+        }
+
+        public T DeserializeGeneric(BinaryReader reader)
+        {
+            return (T) Deserialize(reader);
+        } 
+
+
         private BinarySerializer<T> serializerFunc;
         private BinaryDeserializer<T> deserializerFunc;
 
@@ -283,6 +294,8 @@ namespace SRML.Utils
             this.serializerFunc = serializer;
             this.deserializerFunc = deserializer;
         }
+
+
 
         public override Type GetSerializedType()
         {
@@ -295,5 +308,10 @@ namespace SRML.Utils
         public abstract object Deserialize(BinaryReader reader);
         public abstract void Serialize(BinaryWriter writer,object b);
         public abstract Type GetSerializedType();
+        public static SerializerPair<K> GetEnumSerializerPair<K>()
+        {
+            return new SerializerPair<K>((writer, obj) => writer.Write((int)(object)obj),
+                (reader => (K)(object)reader.ReadInt32()));
+        }
     }
 }

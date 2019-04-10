@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MonomiPark.SlimeRancher.Persist;
 
 namespace SRML.SR.SaveSystem.Data
 {
@@ -12,12 +13,19 @@ namespace SRML.SR.SaveSystem.Data
         public long longID;
         public string stringID;
 
+        public static readonly Dictionary<IdentifierType, Type> IdentifierTypeToData =
+            new Dictionary<IdentifierType, Type>()
+            {
+                {IdentifierType.ACTOR,typeof(ActorDataV07) },
+                {IdentifierType.GADGET,typeof(PlacedGadgetV06) },
+                {IdentifierType.LANDPLOT,typeof(LandPlotV08) }
+            };
 
         public static void Write(BinaryWriter writer,DataIdentifier id)
         {
             writer.Write((int) id.Type);
             writer.Write(id.longID);
-            writer.Write(id.stringID);
+            writer.Write(id.stringID ?? "");
         }
 
         public static DataIdentifier Read(BinaryReader reader)

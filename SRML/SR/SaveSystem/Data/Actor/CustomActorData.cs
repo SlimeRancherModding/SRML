@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Registry;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 namespace SRML.SR.SaveSystem.Data.Actor
@@ -63,7 +65,19 @@ namespace SRML.SR.SaveSystem.Data.Actor
                 {
                     v.typeId = (int)translator.TranslateEnum(mode, ((Identifiable.Id) v.typeId));
                     translator.FixEnumValues(mode, v.fashions);
+                    translator.FixEnumValues(mode, v.emotions.emotionData);
                 });
+            CustomChecker.RegisterCustomChecker((VanillaActorData data) =>
+            {
+                if (SaveRegistry.IsCustom(data)) return CustomChecker.CustomLevel.FULL;
+                if (data.fashions.Any((x) => ModdedIDRegistry.IsModdedID<Identifiable.Id>(x)))
+                    return CustomChecker.CustomLevel.PARTIAL;
+                if (data.emotions.emotionData.Any((x) => ModdedIDRegistry.IsModdedID(x.Key)))
+                    return CustomChecker.CustomLevel.PARTIAL;
+
+                return CustomChecker.CustomLevel.VANILLA;
+            });
+            PartialData.RegisterPartialData(()=>new PartialActorData());
         }
     }
 }

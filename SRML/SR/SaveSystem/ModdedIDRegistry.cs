@@ -20,15 +20,19 @@ static internal class ModdedIDRegistry
                (data is PlacedGadgetV06 gadget && IsModdedID(gadget.gadgetId));
     }
 
-    public static bool IsModdedID(object data)
+    public static bool IsModdedID(object id)
     {
-        return moddedIdRegistries.Any((x) => x.Key == data.GetType() && x.Value.IsModdedID(data));
+        return moddedIdRegistries.Any((x) => x.Key == id.GetType() && x.Value.IsModdedID(id));
+    }
+
+    public static bool IsModdedID<T>(T id)
+    {
+        return IsModdedID((object)id);
     }
 
     internal static SRMod ModForID(object data)
     {
         if (!IsModdedID(data)) return null;
-
         return moddedIdRegistries.FirstOrDefault((x) => x.Key == data.GetType()).Value?.GetModForID(data);
     }
 }

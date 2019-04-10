@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Ammo;
+using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
 using UnityEngine;
 
@@ -12,13 +14,15 @@ namespace SRML.SR.SaveSystem.Format
     class ModdedSaveData
     {
 
-        public const int DATA_VERSION = 1;
+        public const int DATA_VERSION = 2;
         public int version;
         public List<ModDataSegment> segments = new List<ModDataSegment>();
 
         public List<IdentifiableAmmoData> ammoDataEntries = new List<IdentifiableAmmoData>();
 
         public EnumTranslator enumTranslator;
+
+        public Dictionary<DataIdentifier,PartialData> partialData = new Dictionary<DataIdentifier, PartialData>();
 
         public void ReadHeader(BinaryReader reader)
         {
@@ -70,7 +74,23 @@ namespace SRML.SR.SaveSystem.Format
             if (version >= 1)
             {
                 enumTranslator = new EnumTranslator();
-                enumTranslator.Read(reader);         
+                enumTranslator.Read(reader);
+                if (version >= 2)
+                {
+                    partialData.Clear();
+                    count = reader.ReadInt32();
+                    for (int i = 0; i < count; i++)
+                    {
+                        var id = DataIdentifier.Read(reader);
+                        var dataType = DataIdentifier.IdentifierTypeToData[id.Type];
+                        if(PartialData.TryGetPartialData(dataType,out var data))
+                        {
+                            data.Read(reader);
+                            partialData[id] = data;
+                        }
+                        else Debug.LogError("No partial data for data identifier type "+id.Type);
+                    }
+                }
             }
         }
 
@@ -89,6 +109,14 @@ namespace SRML.SR.SaveSystem.Format
             }
 
             enumTranslator.Write(writer);
+
+            writer.Write(partialData.Count);
+
+            foreach (var pair in partialData)
+            {
+                DataIdentifier.Write(writer,pair.Key);
+                pair.Value.Write(writer);
+            }
         }
 
         public void Write(BinaryWriter writer)
@@ -123,6 +151,7 @@ namespace SRML.SR.SaveSystem.Format
 
         public void FixAllEnumValues(EnumTranslator.TranslationMode mode)
         {
+            enumTranslator?.FixEnumValues(mode,partialData);
             foreach (var v in segments)
             {
                 v.FixAllValues(enumTranslator,mode);

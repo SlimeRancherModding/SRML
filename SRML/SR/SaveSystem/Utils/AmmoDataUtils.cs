@@ -43,12 +43,12 @@ namespace SRML.SR.SaveSystem.Utils
 
         public static List<VanillaAmmoData> RipOutModdedData(List<VanillaAmmoData> original)
         {
-            return RipOutWhere(original, (x) => SaveRegistry.IsCustom(x.id));
+            return RipOutWhere(original, (x) => ModdedIDRegistry.IsModdedID(x.id));
         }
 
         public static bool HasCustomData(List<VanillaAmmoData> ammo)
         {
-            return ammo.Any((x) => SaveRegistry.IsCustom(x.id));
+            return ammo.Any((x) => ModdedIDRegistry.IsModdedID(x.id));
         }
 
         public static List<List<VanillaAmmoData>> GetAllAmmoData(GameV09 game)

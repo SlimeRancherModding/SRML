@@ -21,7 +21,6 @@ namespace SRML.Utils
         }
         static void FixPrefabFieldsInternal(GameObject prefab, IFieldReplacer replacementInfo)
         {
-
             var replacer = ReplacerCache.GetReplacer(replacementInfo);
 
             var components = replacementInfo.ReplaceInChildren? prefab.GetComponentsInChildren<Component>(true):prefab.GetComponents<Component>();
@@ -31,7 +30,9 @@ namespace SRML.Utils
                 if (!comp) continue;
                 foreach (var field in replacer.FieldToField.Where((x)=>x.Value.DeclaringType==comp.GetType()))
                 {
+                    
                     field.Value.SetValue(comp,field.Key.GetValue((replacer.InstanceInfo.Instance as GameObject).GetComponentInChildren(comp.GetType())));
+
                 }
             }
         }

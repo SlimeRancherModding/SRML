@@ -35,8 +35,6 @@ namespace SRML.SR.SaveSystem
             return currentLevel;
         }
 
-        
-
         public enum CustomLevel
         {
             NONE,

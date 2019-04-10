@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SRML.Utils;
 using Exception = System.Exception;
 using SRML.Utils.Enum;
 
@@ -16,8 +17,10 @@ namespace SRML
     {
         public const string ModJson = "modinfo.json";
 
-        static readonly Dictionary<String,SRMod> Mods = new Dictionary<string, SRMod>();
+        static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
 
+        private static readonly List<string> loadOrder = new List<string>();
+        
         internal static LoadingStep CurrentLoadingStep { get; private set; }
 
         public static void InitializeMods()
@@ -46,6 +49,8 @@ namespace SRML
             }
 
             DependencyChecker.CheckDependencies(foundMods);
+            
+            DependencyChecker.CalculateLoadOrder(foundMods,loadOrder);
 
             DiscoverAndLoadAssemblies(foundMods);
         }
@@ -74,7 +79,6 @@ namespace SRML
             Assembly FindAssembly(object obj, ResolveEventArgs args)
             {
                 var name = new AssemblyName(args.Name);
-                Debug.Log(name);
                 return foundAssemblies.FirstOrDefault((x) => x.DoesMatch(name))?.LoadAssembly();
             }
 
@@ -132,16 +136,17 @@ namespace SRML
         public static void PreLoadMods()
         {
 
-            foreach (var mod in Mods)
+            foreach (var modid in loadOrder)
             {
+                var mod = Mods[modid];
                 try
                 {
-                    EnumHolderResolver.RegisterAllEnums(mod.Value.EntryType.Module);
-                    mod.Value.PreLoad();
+                    EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
+                    mod.PreLoad();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error pre-loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
                 }
 
             }
@@ -150,15 +155,16 @@ namespace SRML
         public static void LoadMods()
         {
             CurrentLoadingStep = LoadingStep.LOAD;
-            foreach (var mod in Mods)
+            foreach (var modid in loadOrder)
             {
+                var mod = Mods[modid];
                 try
                 {
-                    mod.Value.Load();
+                    mod.Load();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
                 }
 
             }
@@ -167,15 +173,16 @@ namespace SRML
         public static void PostLoadMods()
         {
             CurrentLoadingStep = LoadingStep.POSTLOAD;
-            foreach (var mod in Mods)
+            foreach (var modid in loadOrder)
             {
+                var mod = Mods[modid];
                 try
                 {
-                    mod.Value.PostLoad();
+                    mod.PostLoad();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error post-loading mod '{mod.Key}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error post-loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
                 }
             }
 
@@ -222,6 +229,8 @@ namespace SRML
             public string description;
             public string path;
             public string[] dependencies;
+            public string[] load_after;
+            public string[] load_before;
             public bool isFromJSON = true;
             public override bool Equals(object o)
             {
@@ -288,6 +297,8 @@ namespace SRML
             {
                 id = id.ToLower();
                 if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
+                load_after = load_after ?? new string[0];
+                load_before = load_before ?? new string[0];
             }
 
             public SRModInfo ToModInfo()

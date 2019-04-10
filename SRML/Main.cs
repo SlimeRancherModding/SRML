@@ -28,6 +28,7 @@ namespace SRML
             }
             catch (Exception e)
             {
+                Debug.LogError(e);
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
@@ -38,6 +39,7 @@ namespace SRML
             }
             catch (Exception e)
             {
+                Debug.LogError(e);
                 ErrorGUI.CreateError($"{e.Message}");
             }
             ReplacerCache.ClearCache();
@@ -51,7 +53,7 @@ namespace SRML
 
         static void Load()
         {
-            if (!isInitialized) return;
+            if (isInitialized) return;
             isInitialized = true;
             PrefabUtils.ProcessReplacements();
             try
@@ -60,6 +62,7 @@ namespace SRML
             }
             catch (Exception e)
             {
+                Debug.LogError(e);
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
@@ -81,6 +84,7 @@ namespace SRML
             }
             catch (Exception e)
             {
+                Debug.LogError(e);
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }

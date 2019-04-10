@@ -36,9 +36,9 @@ namespace SRML.SR.SaveSystem.Format
 
         public void Pull(PediaDataBuffer data, SRMod ourMod)
         {
-            unlockedIds.AddRange(data.unlockedIds.Where((x)=>SaveRegistry.ModForID(x)==ourMod).Select((x)=>Enum.GetName(typeof(PediaDirector.Id),x)));
-            completedTuts.AddRange(data.completedTuts.Where((x) => SaveRegistry.ModForID(x) == ourMod).Select((x) => Enum.GetName(typeof(TutorialDirector.Id), x)));
-            popupQueue.AddRange(data.popupQueue.Where((x) => SaveRegistry.ModForID(x) == ourMod).Select((x) => Enum.GetName(typeof(TutorialDirector.Id), x)));
+            unlockedIds.AddRange(data.unlockedIds.Where((x)=>ModdedIDRegistry.ModForID(x)==ourMod).Select((x)=>Enum.GetName(typeof(PediaDirector.Id),x)));
+            completedTuts.AddRange(data.completedTuts.Where((x) => ModdedIDRegistry.ModForID(x) == ourMod).Select((x) => Enum.GetName(typeof(TutorialDirector.Id), x)));
+            popupQueue.AddRange(data.popupQueue.Where((x) => ModdedIDRegistry.ModForID(x) == ourMod).Select((x) => Enum.GetName(typeof(TutorialDirector.Id), x)));
         }
 
         public void Push(PediaV03 data)
@@ -51,9 +51,9 @@ namespace SRML.SR.SaveSystem.Format
         public static HashSet<SRMod> FindAllModsWithData(PediaDataBuffer data)
         {
             var mods = new HashSet<SRMod>();
-            data.unlockedIds.ForEach((x)=>mods.Add(SaveRegistry.ModForID(x)));
-            data.completedTuts.ForEach((x) => mods.Add(SaveRegistry.ModForID(x)));
-            data.popupQueue.ForEach((x) => mods.Add(SaveRegistry.ModForID(x)));
+            data.unlockedIds.ForEach((x)=>mods.Add(ModdedIDRegistry.ModForID(x)));
+            data.completedTuts.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
+            data.popupQueue.ForEach((x) => mods.Add(ModdedIDRegistry.ModForID(x)));
 
             mods.Remove(null);
             return mods;

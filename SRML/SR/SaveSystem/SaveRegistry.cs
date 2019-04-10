@@ -17,13 +17,6 @@ namespace SRML.SR.SaveSystem
     {
         internal static Dictionary<SRMod,ModSaveInfo> modToSaveInfo = new Dictionary<SRMod, ModSaveInfo>();
 
-        internal static Dictionary<Type,IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();
-
-        internal static void RegisterIDRegistry(IIDRegistry registry)
-        {
-            moddedIdRegistries[registry.RegistryType] = registry;
-        }
-
         internal static ModSaveInfo GetSaveInfo(SRMod mod)
         {
             if (!modToSaveInfo.ContainsKey(mod)) modToSaveInfo.Add(mod,new ModSaveInfo());
@@ -43,18 +36,9 @@ namespace SRML.SR.SaveSystem
 
         public static bool IsCustom(object data)
         {
-            return IsFullyModdedData(data) || HasModdedID(data) || IsModdedID(data);
-        }
-
-        public static bool HasModdedID(object data)
-        {
-            return (data is VanillaActorData actor && IsModdedID((Identifiable.Id)actor.typeId))||
-                   (data is VanillaGadgetData gadget && IsModdedID(gadget.gadgetId));
-        }
-
-        public static bool IsModdedID(object data)
-        {
-            return moddedIdRegistries.Any((x) => x.Key == data.GetType() && x.Value.IsModdedID(data));
+            if (data.GetType().IsEnum)
+                throw new Exception("IsCustom for enums has been deprecated, use ModdedIDRegistry");
+            return IsFullyModdedData(data) || ModdedIDRegistry.HasModdedID(data);
         }
 
 
@@ -71,7 +55,7 @@ namespace SRML.SR.SaveSystem
         internal static EnumTranslator GenerateEnumTranslator()
         {
             var newTranslator = new EnumTranslator();
-            foreach (var v in moddedIdRegistries)
+            foreach (var v in ModdedIDRegistry.moddedIdRegistries)
             {
                 newTranslator.GenerateTranslationTable(v.Value.GetAllModdedIDs());
             }
@@ -82,16 +66,9 @@ namespace SRML.SR.SaveSystem
         {
             if (!IsCustom(data)) return null;
             if (data is IDataRegistryMember model) return ModForModelType(model.GetModelType());
-            if (data is VanillaActorData actor) return ModForID((Identifiable.Id) actor.typeId);
-            if (data is VanillaGadgetData gadget) return ModForID(gadget.gadgetId); 
+            if (data is VanillaActorData actor) return ModdedIDRegistry.ModForID((Identifiable.Id) actor.typeId);
+            if (data is VanillaGadgetData gadget) return ModdedIDRegistry.ModForID(gadget.gadgetId); 
             return null;
-        }
-
-        internal static SRMod ModForID(object data)
-        {
-            if (!IsModdedID(data)) return null;
-
-            return moddedIdRegistries.FirstOrDefault((x) => x.Key == data.GetType()).Value?.GetModForID(data);
         }
 
         public static void RegisterSerializableActorModel<T>(int id) where T : ActorModel, ISerializableModel

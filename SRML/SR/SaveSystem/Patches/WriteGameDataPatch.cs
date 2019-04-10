@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Harmony;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Utils;
 using SRML.Utils;
 using UnityEngine;
@@ -26,22 +27,22 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhereCustom(__instance.player.upgrades,__state.upgrades);
             __state.AddAndRemoveWhereCustom(__instance.player.availUpgrades, __state.availUpgrades);
             __state.AddAndRemoveWhere(__instance.player.upgradeLocks, __state.upgradeLocks,
-                (x) => SaveRegistry.IsCustom(x.Key));
+                (x) => ModdedIDRegistry.IsModdedID(x.Key));
 
             __state.AddAndRemoveWhereCustom(__instance.player.blueprints,__state.blueprints);
             __state.AddAndRemoveWhereCustom(__instance.player.availBlueprints,__state.availBlueprints);
-            __state.AddAndRemoveWhere(__instance.player.blueprintLocks,__state.blueprintLocks,(x)=>SaveRegistry.IsCustom(x.Key));
+            __state.AddAndRemoveWhere(__instance.player.blueprintLocks,__state.blueprintLocks,(x)=> ModdedIDRegistry.IsModdedID(x.Key));
             
-            __state.AddAndRemoveWhere(__instance.player.progress,__state.progress,(x)=>SaveRegistry.IsCustom(x.Key));
-            __state.AddAndRemoveWhere(__instance.player.delayedProgress,__state.delayedProgress,(x)=>SaveRegistry.IsCustom(x.Key));
+            __state.AddAndRemoveWhere(__instance.player.progress,__state.progress,(x)=> ModdedIDRegistry.IsModdedID(x.Key));
+            __state.AddAndRemoveWhere(__instance.player.delayedProgress,__state.delayedProgress,(x)=> ModdedIDRegistry.IsModdedID(x.Key));
 
-            __state.AddAndRemoveWhere(__instance.player.gadgets,__state.gadgets,(x)=>SaveRegistry.IsCustom(x.Key));
+            __state.AddAndRemoveWhere(__instance.player.gadgets,__state.gadgets,(x)=> ModdedIDRegistry.IsModdedID(x.Key));
 
-            __state.AddAndRemoveWhere(__instance.player.craftMatCounts,__state.craftMatCounts,(x)=>SaveRegistry.IsCustom(x.Key));
+            __state.AddAndRemoveWhere(__instance.player.craftMatCounts,__state.craftMatCounts,(x)=> ModdedIDRegistry.IsModdedID(x.Key));
 
-            __state.AddAndRemoveWhere(__instance.pedia.unlockedIds,__state.unlockedIds,(x)=>SaveRegistry.IsCustom(Enum.Parse(typeof(PediaDirector.Id),x)));
-            __state.AddAndRemoveWhere(__instance.pedia.completedTuts, __state.completedTuts, (x) => SaveRegistry.IsCustom(Enum.Parse(typeof(TutorialDirector.Id), x)));
-            __state.AddAndRemoveWhere(__instance.pedia.popupQueue, __state.popupQueue, (x) => SaveRegistry.IsCustom(Enum.Parse(typeof(TutorialDirector.Id), x)));
+            __state.AddAndRemoveWhere(__instance.pedia.unlockedIds,__state.unlockedIds,(x)=> ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(PediaDirector.Id),x)));
+            __state.AddAndRemoveWhere(__instance.pedia.completedTuts, __state.completedTuts, (x) => ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(TutorialDirector.Id), x)));
+            __state.AddAndRemoveWhere(__instance.pedia.popupQueue, __state.popupQueue, (x) => ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(TutorialDirector.Id), x)));
 
             foreach (var data in AmmoDataUtils.GetAllAmmoData(__instance))
             {
@@ -50,6 +51,34 @@ namespace SRML.SR.SaveSystem.Patches
                 {
                     AmmoDataUtils.SpliceAmmoData(data,moddedData);
                 });
+            }
+
+            void RemovePartial(object actor,RemovalData data)
+            {
+                if (CustomChecker.GetCustomLevel(actor) == CustomChecker.CustomLevel.PARTIAL)
+                {
+                    var partial = PartialData.GetPartialData(actor.GetType(), true);
+                    partial.Pull(actor);
+                    data.addBacks.Add(() =>
+                    {
+                        partial.Push(actor);
+                    });
+                }
+            }
+
+            foreach (var actor in __instance.actors)
+            {
+                RemovePartial(actor,__state);
+            }
+
+            foreach (var actor in __instance.ranch.plots)
+            {
+                RemovePartial(actor, __state);
+            }
+
+            foreach (var actor in __instance.world.placedGadgets)
+            {
+                RemovePartial(actor, __state);
             }
         }
 
@@ -125,7 +154,7 @@ namespace SRML.SR.SaveSystem.Patches
 
             public void AddAndRemoveWhereCustom<T>(List<T> original, List<T> buffer)
             {
-                buffer.AddRange(original.Where((x) => SaveRegistry.IsCustom(x)));
+                buffer.AddRange(original.Where((x) => x.GetType().IsEnum? ModdedIDRegistry.IsModdedID(x):SaveRegistry.IsCustom(x)));
                 foreach (var v in buffer)
                 {
                     original.Remove(v);

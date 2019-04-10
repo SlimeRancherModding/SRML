@@ -8,11 +8,14 @@ using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Ammo;
+using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Format;
 using SRML.SR.SaveSystem.Utils;
+using SRML.Utils;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
 using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem
 {
     internal static class SaveHandler
@@ -61,7 +64,7 @@ namespace SRML.SR.SaveSystem
 
             foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
             {
-                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => SaveRegistry.IsCustom(x.id) ? ModdedIDRegistry.ModForID(x.id) : null));
+                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => ModdedIDRegistry.IsModdedID(x.id) ? ModdedIDRegistry.ModForID(x.id) : null));
                 modsInThis.Remove(null);
                 foreach (var mod in modsInThis)
                 {
@@ -79,6 +82,42 @@ namespace SRML.SR.SaveSystem
                 }
             }
 
+            data.partialData.Clear();
+
+            void Check<T>(T v, Action
+                <T,PartialData> onSuccess)
+            {
+                var level = CustomChecker.GetCustomLevel(v);
+
+
+                if (level == CustomChecker.CustomLevel.PARTIAL)
+                {
+                    var partialdata = PartialData.GetPartialData(v.GetType(), true);
+                    partialdata.Pull(v);
+
+                    onSuccess(v, partialdata);
+                }
+            }
+
+            foreach (var g in game.actors)
+            {
+                Check(g,(v,partialdata)=>
+                    data.partialData.Add(new DataIdentifier(){longID = v.actorId,Type=IdentifierType.ACTOR},partialdata ));
+                
+            }
+
+            foreach (var g in game.world.placedGadgets)
+            {
+                Check(g, (v, partialdata) =>
+                    data.partialData.Add(new DataIdentifier() { stringID = v.Key, Type = IdentifierType.GADGET }, partialdata));
+            }
+
+            foreach (var g in game.ranch.plots)
+            {
+                Check(g, (v, partialdata) =>
+                    data.partialData.Add(new DataIdentifier() { stringID = g.id, Type = IdentifierType.LANDPLOT }, partialdata));
+            }
+
             ExtendedData.Push(data);
             PersistentAmmoManager.SyncAll();
             PersistentAmmoManager.Push(data);
@@ -88,7 +127,7 @@ namespace SRML.SR.SaveSystem
         {
             foreach (var mod in data.segments)
             {
-                Debug.Log($"Splicing data from mod {mod.modid} which {mod.identifiableData.Count} pieces of identifiable data");
+                Debug.Log($"Splicing data from mod {mod.modid} which has {mod.identifiableData.Count} pieces of identifiable data");
                 foreach (var customData in mod.identifiableData)
                 {
                     switch (customData.dataID.Type)
@@ -115,6 +154,29 @@ namespace SRML.SR.SaveSystem
 
             ExtendedData.Pull(data);
             PersistentAmmoManager.Pull(data);
+            PushAllPartialData(game);
+        }
+
+        public static void PushAllPartialData(GameV09 game)
+        {
+            foreach (var partial in data.partialData)
+            {
+                switch (partial.Key.Type)
+                {
+                    case IdentifierType.ACTOR:
+                        if(game.actors.FirstOrDefault((x)=>x.actorId==partial.Key.longID) is VanillaActorData dat) partial.Value.Push(dat);
+                        break;
+                    case IdentifierType.GADGET:
+                        if (game.world.placedGadgets.ContainsKey(partial.Key.stringID)) partial.Value.Push(game.world.placedGadgets[partial.Key.stringID]);
+                        break;
+                    case IdentifierType.LANDPLOT:
+                        if(game.ranch.plots.FirstOrDefault((x)=>x.id==partial.Key.stringID) is VanillaPlotData plot) partial.Value.Push(plot);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+
+                }
+            }
         }
 
         public static string GetModdedPath(FileStorageProvider provider, string savename)
@@ -133,6 +195,7 @@ namespace SRML.SR.SaveSystem
             {
                 data.Read(reader);
             }
+            data.enumTranslator.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
             PushModdedData(director.savedGame.gameState);
 
@@ -154,7 +217,7 @@ namespace SRML.SR.SaveSystem
             }
 
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-
+            PushAllPartialData(director.savedGame.gameState);
         }
 
         static SaveHandler()
