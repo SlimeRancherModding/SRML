@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SRML.Utils;
 
 namespace SRML.SR.Patches
 {
@@ -18,7 +19,7 @@ namespace SRML.SR.Patches
                 if (v.Value == null) model.availUpgrades.Add(v.Key);
                 else model.upgradeLocks[v.Key] = v.Value(__instance);
 
-            }
+            }  
         }
     }
 }

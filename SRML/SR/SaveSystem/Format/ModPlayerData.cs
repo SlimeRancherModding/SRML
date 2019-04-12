@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.Utils;
+using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Format
 {
@@ -34,6 +35,7 @@ namespace SRML.SR.SaveSystem.Format
             EnumTranslator.RegisterEnumFixer(
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, ModPlayerData data) =>
                 {
+
                     EnumTranslator.FixEnumValues(translator,mode,data.upgrades);
                     EnumTranslator.FixEnumValues(translator, mode,data.availBlueprints);
                     EnumTranslator.FixEnumValues(translator, mode, data.blueprints);
@@ -109,20 +111,20 @@ namespace SRML.SR.SaveSystem.Format
 
         public void Push(PlayerV13 player)
         {
-            player.upgrades.AddRange(upgrades);
-            player.availUpgrades.AddRange(availUpgrades);
-            AddRange(player.upgradeLocks,upgradeLocks);
+            player.upgrades.AddRange(upgrades.Where((x) => ModdedIDRegistry.IsValidID(x)));
+            player.availUpgrades.AddRange(availUpgrades.Where((x)=>ModdedIDRegistry.IsValidID(x)));
+            AddRange(player.upgradeLocks,upgradeLocks.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
 
-            AddRange(player.progress,progress);
-            AddRange(player.delayedProgress,delayedProgress);
+            AddRange(player.progress,progress.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
+            AddRange(player.delayedProgress,delayedProgress.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
 
-            player.blueprints.AddRange(blueprints);
-            player.availBlueprints.AddRange(availBlueprints);
-            AddRange(player.blueprintLocks,blueprintLocks);
+            player.blueprints.AddRange(blueprints.Where((x) => ModdedIDRegistry.IsValidID(x)));
+            player.availBlueprints.AddRange(availBlueprints.Where((x) => ModdedIDRegistry.IsValidID(x)));
+            AddRange(player.blueprintLocks,blueprintLocks.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
 
-            AddRange(player.gadgets,gadgets);
+            AddRange(player.gadgets,gadgets.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
             
-            AddRange(player.craftMatCounts,craftMatCounts);
+            AddRange(player.craftMatCounts,craftMatCounts.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
         }
 
         public static HashSet<SRMod> FindAllModsWithData(PlayerV13 player)

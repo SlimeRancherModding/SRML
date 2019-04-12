@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Harmony;
+using SRML.Utils;
 using UnityEngine;
 
 namespace SRML
@@ -79,7 +80,10 @@ namespace SRML
                 LoadMod(v);
             }
 
+            
+
             loadOrder.AddRange(modList.Select((x)=>x.id));
+
         }
 
 

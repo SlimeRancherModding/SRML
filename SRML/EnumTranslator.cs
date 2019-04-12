@@ -33,19 +33,24 @@ namespace SRML
 
         public void FixMissingEnumValues()
         {
-            var toChangeList = new List<int>();
+            var toChangeList = new Dictionary<int,string>();
             foreach (var pair in MappedValues)
             {
-                var noneObject = Enum.ToObject(pair.Key, 0).ToString();
                 toChangeList.Clear();
                 foreach (var v in pair.Value)
                 {
-                    if(!Enum.IsDefined(pair.Key,v.Value)) toChangeList.Add(v.Key);
+                    var curString = v.Value;
+                    if (!Enum.IsDefined(pair.Key, curString))
+                    {
+                        toChangeList.Add(v.Key,OnTranslationFallback(pair.Key,ref curString)?curString:null);
+                    }
                 }
 
                 foreach (var toChange in toChangeList)
                 {
-                    pair.Value[toChange] = noneObject;
+                    if (toChange.Value == null) pair.Value.Remove(toChange.Key);
+                    else
+                    pair.Value[toChange.Key] = toChange.Value;
                 }
             }
         }
@@ -70,6 +75,7 @@ namespace SRML
         {
             var type = val.GetType();
             if (!MappedValues.ContainsKey(type)) return ((int) val);
+            
             var potential = MappedValues[type].FirstOrDefault((x) => Enum.GetName(type, val) == x.Value);
             return potential.Key<0?potential.Key : ((int)val);
         }
@@ -81,7 +87,15 @@ namespace SRML
 
         public object TranslateFrom(Type enumType, int val)
         {
-            return val<0?Enum.ToObject(enumType,Enum.Parse(enumType,MappedValues[enumType][val])):Enum.ToObject(enumType,val);
+            if (val < 0)
+            {
+                if(!MappedValues.ContainsKey(enumType)||!MappedValues[enumType].ContainsKey(val)||!Enum.IsDefined(enumType,MappedValues[enumType][val])) throw new MissingTranslationException(val,TranslationMode.FROMTRANSLATED);
+                return Enum.ToObject(enumType, Enum.Parse(enumType, MappedValues[enumType][val]));
+            }
+            else
+            {
+                return Enum.ToObject(enumType, val);
+            }
         }
 
         public void Write(BinaryWriter writer)
@@ -134,20 +148,91 @@ namespace SRML
         
     }
 
+    public class MissingTranslationException : Exception
+    {
+        public object value;
+        public EnumTranslator.TranslationMode mode;
+
+        public MissingTranslationException(object value, EnumTranslator.TranslationMode mode)
+        {
+            this.value = value;
+            this.mode = mode;
+        }
+    }
+
     public partial class EnumTranslator
     {
         public delegate void EnumFixerGenericDelegate<T>(EnumTranslator translator,TranslationMode mode, T toFix);
         public delegate void EnumFixerDelegate(EnumTranslator translator, TranslationMode mode, object toFix);
         static Dictionary<Type,EnumFixerDelegate> enumFixers = new Dictionary<Type, EnumFixerDelegate>();
 
+        public delegate bool MissingTranslationDelegate(Type enumType, ref string value);
+
+        public delegate bool MissingTranslationGenericDelegate<T>(ref string value);
+        static List<MissingTranslationDelegate> missingDelegates = new List<MissingTranslationDelegate>();
+
+        private static List<MissingTranslationDelegate> defaultFallbacks = new List<MissingTranslationDelegate>()
+        {
+            ConvertGenericFallback<Identifiable.Id>((ref string x) =>
+                {
+                    x = Identifiable.Id.NONE.ToString();
+                    return true;
+                }),
+            ConvertGenericFallback<Gadget.Id>((ref string x) =>
+            {
+            x = Gadget.Id.NONE.ToString();
+            return true;
+            }),
+            ConvertGenericFallback<LandPlot.Id>((ref string x) =>
+            {
+                x = LandPlot.Id.NONE.ToString();
+                return true;
+            })
+        };
+
         public static void RegisterEnumFixer<T>(EnumFixerGenericDelegate<T> del)
         {
             RegisterEnumFixer(typeof(T),((EnumTranslator translator,TranslationMode mode, object fix) => del(translator,mode,(T)fix)));
         }
 
+        public static void RegisterFallbackHandler(MissingTranslationDelegate del)
+        {
+            missingDelegates.Add(del);
+        }
+
+        public static void RegisterFallbackHandler<T>(MissingTranslationGenericDelegate<T> del)
+        {
+            RegisterFallbackHandler(ConvertGenericFallback(del));
+        }
+
+        public static bool OnTranslationFallback(Type enumType, ref string value)
+        {
+            bool success = false;
+            foreach (var v in missingDelegates)
+            {
+                success |= v(enumType, ref value);
+            }
+
+            if(!success) foreach (var v in defaultFallbacks)
+            {
+                success |= v(enumType, ref value);
+            }
+
+            return success;
+        }
+
         public static void RegisterEnumFixer(Type type, EnumFixerDelegate del)
         {
             enumFixers.Add(type,del);
+        }
+
+        internal static MissingTranslationDelegate ConvertGenericFallback<T>(MissingTranslationGenericDelegate<T> del)
+        {
+            return (Type t, ref string x) =>
+            {
+                if (typeof(T) != t) return false;
+                return del(ref x);
+            };
         }
 
         static void FixEnumValues(EnumTranslator translator, TranslationMode mode, ref object toFix)
@@ -199,11 +284,18 @@ namespace SRML
         {
             RegisterEnumFixer((EnumTranslator translator, TranslationMode mode, IList list) =>
             {
-                for(int i = 0;i<list.Count;i++)
+                for(int i = list.Count-1;i>=0;i--)
                 {
                     var temp = list[i];
-                    FixEnumValues(translator,mode,ref temp);
-                    list[i] = temp;
+                    try
+                    {
+                        FixEnumValues(translator, mode, ref temp);
+                        list[i] = temp;
+                    }
+                    catch (MissingTranslationException)
+                    {
+                        list.RemoveAt(i);
+                    }
                 }
             });
             RegisterEnumFixer((EnumTranslator translator, TranslationMode mode, IDictionary dict) =>
@@ -214,8 +306,18 @@ namespace SRML
                 foreach (var v in dict.Keys)
                 {
                     var temp = v;
-                    FixEnumValues(translator,mode,ref temp);
-                    keyArray[counter++] = temp;
+                    try
+                    {
+                        FixEnumValues(translator, mode, ref temp);
+                        keyArray[counter++] = temp;
+                    }
+                    catch (MissingTranslationException)
+                    {
+                        Debug.Log("Key invalid "+temp);
+                        keyArray[counter++] = null;
+                    }
+
+                    
                 }
 
                 counter = 0;
@@ -230,6 +332,7 @@ namespace SRML
                 for (int i = 0; i < keyArray.Length; i++)
                 {
 
+                    if (keyArray[i] == null) continue;
                     dict[keyArray[i]] = valueArray[i]; 
                 }
             });

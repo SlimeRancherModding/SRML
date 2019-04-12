@@ -109,6 +109,7 @@
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
+    <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LandPlotToGameObjectPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
