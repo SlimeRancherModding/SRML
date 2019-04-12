@@ -4,6 +4,7 @@ using System.Linq;
 using MonomiPark.SlimeRancher.Persist;
 using SRML;
 using SRML.SR.SaveSystem;
+using UnityEngine;
 
 static internal class ModdedIDRegistry
 {
@@ -29,6 +30,17 @@ static internal class ModdedIDRegistry
     public static bool IsModdedID<T>(T id)
     {
         return IsModdedID((object)id);
+    }
+
+    public static bool IsNullID(object id)
+    {
+        return id.GetType().IsEnum && ((int) id) == 0;
+        
+    }
+
+    public static bool IsValidID(object id)
+    {
+        return !IsNullID(id) && IsModdedID(id);
     }
 
     internal static SRMod ModForID(object data)

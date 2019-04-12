@@ -44,9 +44,9 @@ namespace SRML.SR.SaveSystem.Format
 
         public void Push(PediaV03 data)
         {
-            data.unlockedIds.AddRange(unlockedIds);
-            data.completedTuts.AddRange(completedTuts);
-            data.popupQueue.AddRange(popupQueue);
+            data.unlockedIds.AddRange(unlockedIds.Where((x) => Enum.IsDefined(typeof(PediaDirector.Id),x)&&ModdedIDRegistry.IsValidID(Enum.Parse(typeof(PediaDirector.Id),x))));
+            data.completedTuts.AddRange(completedTuts.Where((x) => Enum.IsDefined(typeof(TutorialDirector.Id), x) && ModdedIDRegistry.IsValidID(Enum.Parse(typeof(TutorialDirector.Id), x))));
+            data.popupQueue.AddRange(popupQueue.Where((x) => Enum.IsDefined(typeof(TutorialDirector.Id), x) && ModdedIDRegistry.IsValidID(Enum.Parse(typeof(TutorialDirector.Id), x))));
         }
 
         public static HashSet<SRMod> FindAllModsWithData(PediaDataBuffer data)
