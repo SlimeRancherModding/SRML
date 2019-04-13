@@ -63,5 +63,13 @@ namespace SRML.SR
             RegisterUpgradeLock(upgrade,null);
         }
 
+        public static string GetDescriptionKey(PlayerState.Upgrade upgrade)
+        {
+            return "m.upgrade.desc.personal." + upgrade.ToString().ToLower();
+        }
+        public static string GetNameKey(PlayerState.Upgrade upgrade)
+        {
+            return "m.upgrade.name.personal." + upgrade.ToString().ToLower();
+        }
     }
 }
