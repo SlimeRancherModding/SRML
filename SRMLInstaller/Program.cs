@@ -88,6 +88,18 @@ namespace SRMLInstaller
 
                 
 
+                
+
+                string GetAlternateRoot()
+                {
+                    string alternateRoot = Path.Combine(Directory.GetParent(root).Parent.FullName, "SRML", "Libs");
+                    if (!Directory.Exists(alternateRoot))
+                    {
+                        Directory.CreateDirectory(alternateRoot);
+                    }
+
+                    return alternateRoot;
+                }
 
                 void SendFilesOver()
                 {
@@ -96,7 +108,7 @@ namespace SRMLInstaller
                         x.Substring(0, embeddedResourceProject.Length) == embeddedResourceProject))
                     {
                         var file = v.Substring(embeddedResourcePath.Length);
-                        var combine = Path.Combine(root, file);
+                        var combine = Path.Combine(file.Contains("SRML")?root:GetAlternateRoot(), file);
                         //var libPath = Path.Combine(libFolder, file);
                         if (File.Exists(combine))
                         {
@@ -144,7 +156,7 @@ namespace SRMLInstaller
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
             }
             Console.Write("Press any key to continue...");
             Console.ReadKey();

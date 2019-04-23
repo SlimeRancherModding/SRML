@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using Harmony;
 using SRML.Editor;
@@ -15,8 +16,9 @@ namespace SRML
 {
     internal static class Main
     {
+
         private static bool isPreInitialized;
-        internal static void PreLoad()
+        internal static void PreLoad() 
         {
             if (isPreInitialized) return;
             isPreInitialized = true;

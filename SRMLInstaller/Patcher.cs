@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using MethodAttributes = Mono.Cecil.MethodAttributes;
 
 namespace SRMLInstaller
 {
@@ -16,6 +18,13 @@ namespace SRMLInstaller
         private String filename;
         public Patcher(String filename,MethodReference methodToPatchIn)
         {
+            Init(filename);
+            this.methodToPatchIn = methodToPatchIn;
+            this.filename = filename;
+        }
+
+        private void Init(string filename)
+        {
             try
             {
                 curAssembly = AssemblyDefinition.ReadAssembly(filename);
@@ -26,8 +35,6 @@ namespace SRMLInstaller
             }
 
             target = FindTarget();
-            this.methodToPatchIn = methodToPatchIn;
-            this.filename = filename;
         }
 
         MethodDefinition FindTarget()
@@ -37,15 +44,63 @@ namespace SRMLInstaller
 
         public bool IsPatched()
         {
-            return target.Body.Instructions[0].OpCode == OpCodes.Call && target.Body.Instructions[0].Operand is MethodReference methRef && (methRef.Name=="LoadSRML" || methRef.Name=="PreLoad");
+            return target.Body.Instructions[0].OpCode == OpCodes.Call && target.Body.Instructions[0].Operand is MethodReference methRef && (methRef.Name=="LoadSRModLoader" || methRef.Name=="PreLoad");
+        }
+
+        public void RemoveOldPatch()
+        {
+            if(target.Body.Instructions.First().Operand is MethodReference h&&h.Name=="LoadSRML") target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
+            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRML") is MethodDefinition d)
+            {
+                target.DeclaringType.Methods.Remove(d);
+            }
+        }
+
+        IEnumerable<Instruction> GetLoadingInstructions(ILProcessor proc,ModuleDefinition def)
+        {
+            yield return proc.Create(OpCodes.Ldstr, "SRML/Libs");
+            yield return proc.Create(OpCodes.Ldstr, "*.dll");
+            yield return proc.Create(OpCodes.Ldc_I4_1);
+
+            var method = typeof(Directory).GetMethods()
+                .First((x) => x.Name == "GetFiles" && x.GetParameters().Length == 3);
+            Console.WriteLine(method);
+            var imported = def.ImportReference(method);
+            Console.WriteLine(imported);
+            yield return proc.Create(OpCodes.Call, imported);
+
+                
+            yield return proc.Create(OpCodes.Stloc_0);
+            yield return proc.Create(OpCodes.Ldc_I4_0);
+            yield return proc.Create(OpCodes.Stloc_1);
+            var seventeen = proc.Create(OpCodes.Ldloc_1);
+            yield return proc.Create(OpCodes.Br_S, seventeen);
+            var eight = proc.Create(OpCodes.Ldloc_0);
+            yield return eight;
+            yield return proc.Create(OpCodes.Ldloc_1);
+            yield return proc.Create(OpCodes.Ldelem_Ref);
+            yield return proc.Create(OpCodes.Call, def.ImportReference(typeof(Assembly).GetMethod("LoadFrom",BindingFlags.Public|BindingFlags.Static,Type.DefaultBinder,new Type[]{typeof(String)},null)));
+            yield return proc.Create(OpCodes.Pop);
+            yield return proc.Create(OpCodes.Ldloc_1);
+            yield return proc.Create(OpCodes.Ldc_I4_1);
+            yield return proc.Create(OpCodes.Add);
+            yield return proc.Create(OpCodes.Stloc_1);
+            yield return seventeen;
+            yield return proc.Create(OpCodes.Ldloc_0);
+            yield return proc.Create(OpCodes.Ldlen);
+            yield return proc.Create(OpCodes.Conv_I4);
+            yield return proc.Create(OpCodes.Blt_S, eight);
+
         }
 
         public MethodDefinition AddLoadMethod()
         {
-            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRML") is MethodDefinition d
+            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRModLoader") is MethodDefinition d
             ) return d;
 
-            var method = new MethodDefinition("LoadSRML",MethodAttributes.Public|MethodAttributes.Static,target.Module.TypeSystem.Void);
+            var method = new MethodDefinition("LoadSRModLoader", MethodAttributes.Public|MethodAttributes.Static,target.Module.TypeSystem.Void);
+            method.Body.Variables.Add(new VariableDefinition(curAssembly.MainModule.ImportReference(typeof(string[]))));
+            method.Body.Variables.Add(new VariableDefinition(curAssembly.MainModule.TypeSystem.Int32));
             var proc = method.Body.GetILProcessor();
             var maincall = target.Body.GetILProcessor().Create(OpCodes.Call, curAssembly.MainModule.ImportReference(methodToPatchIn));
             if (!curAssembly.MainModule.TryGetTypeReference("UnityEngine.Debug", out var reference))
@@ -64,7 +119,14 @@ namespace SRMLInstaller
 
             var mainret = proc.Create(OpCodes.Ret);
 
+            foreach (var v in GetLoadingInstructions(proc,curAssembly.MainModule))
+            {
+                proc.Append(v);
+            }
+
             proc.Append(maincall);
+
+
             proc.InsertAfter(maincall, mainret);
             proc.InsertAfter(mainret,onfailwrite);
             proc.InsertAfter(onfailwrite,applicationquit);
@@ -91,6 +153,7 @@ namespace SRMLInstaller
 
         public void Patch()
         {
+            RemoveOldPatch();
             var proc = target.Body.GetILProcessor();
             proc.InsertBefore(target.Body.Instructions[0],proc.Create(OpCodes.Call,AddLoadMethod()));
 
@@ -99,10 +162,12 @@ namespace SRMLInstaller
         public void Unpatch()
         {
             target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
-            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRML") is MethodDefinition d)
+            if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRModLoader") is MethodDefinition d)
             {
                 target.DeclaringType.Methods.Remove(d);
             }
+
+            RemoveOldPatch();
         }
 
         bool CheckOrDelete(String path)
@@ -161,7 +226,11 @@ namespace SRMLInstaller
             {
                 Dispose();
                 File.Delete(filename);
-                File.Move(oldname,filename);
+                Init(oldname);
+                Unpatch();
+                curAssembly.Write(filename);
+                Dispose();
+                File.Delete(oldname);
             }
             Console.WriteLine("Unpatching Successful!");
         }
