@@ -11,7 +11,7 @@
     <AssemblyName>SRML</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <Deterministic>false</Deterministic>
     <GameDir>C:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed</GameDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

@@ -201,7 +201,6 @@ namespace SRML.SR.SaveSystem
             }
 
             data.enumTranslator?.FixMissingEnumValues();
-            Debug.Log(data.enumTranslator);
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
             PushModdedData(director.savedGame.gameState);
 

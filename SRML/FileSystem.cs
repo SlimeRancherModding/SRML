@@ -12,6 +12,7 @@ namespace SRML
     {
         public const String DataPath = "SlimeRancher_Data";
         public static String ModPath = "SRML/Mods";
+        public static String LibPath = "SRML/Libs";
         public static void CheckDirectory(string path)
         {
             if (!Directory.Exists(path))
