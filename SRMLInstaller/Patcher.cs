@@ -64,9 +64,7 @@ namespace SRMLInstaller
 
             var method = typeof(Directory).GetMethods()
                 .First((x) => x.Name == "GetFiles" && x.GetParameters().Length == 3);
-            Console.WriteLine(method);
             var imported = def.ImportReference(method);
-            Console.WriteLine(imported);
             yield return proc.Create(OpCodes.Call, imported);
 
                 
