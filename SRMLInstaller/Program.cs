@@ -55,13 +55,10 @@ namespace SRMLInstaller
                         {
                             uninstalling = true;
                             patcher.Uninstall();
-                            patcher.Dispose();
-                            SendFilesOver();
                         }
                         else if (response == "n" || response == "no")
                         {
-                            patcher.Dispose();
-                            SendFilesOver();
+
                         }
                         else
                         {
@@ -71,14 +68,15 @@ namespace SRMLInstaller
                     }
                     else
                     {
+
                         Console.WriteLine("Patching...");
                         patcher.Patch();
                         Console.WriteLine("Patching Successful!");
                         patcher.Save();
-
                     }
 
-
+                    patcher.Dispose();
+                    SendFilesOver();
                 }
                 else
                 {
@@ -112,6 +110,7 @@ namespace SRMLInstaller
                         //var libPath = Path.Combine(libFolder, file);
                         if (File.Exists(combine))
                         {
+                            Console.WriteLine(combine);
                             if (!uninstalling) Console.WriteLine($"Found old {file}! Replacing...");
                             else Console.WriteLine($"Deleting {file}...");
                             File.Delete(combine);

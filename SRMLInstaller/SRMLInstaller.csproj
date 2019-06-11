@@ -83,11 +83,11 @@
     <Error Condition="!Exists('..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props'))" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>mkdir $(ProjectDir)Libs\
-xcopy /Y $(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.dll $(ProjectDir)Libs\
-xcopy /Y $(SolutionDir)SRML\bin\$(ConfigurationName)\Newtonsoft.Json.dll $(ProjectDir)Libs\
-xcopy /Y $(SolutionDir)SRML\bin\$(ConfigurationName)\0Harmony.dll $(ProjectDir)Libs\
-xcopy /Y $(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.Editor.dll $(ProjectDir)Libs\
-xcopy /Y $(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll $(ProjectDir)Libs\</PreBuildEvent>
+    <PreBuildEvent>mkdir "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.dll" "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\Newtonsoft.Json.dll" "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\0Harmony.dll" "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.Editor.dll" "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll" "$(ProjectDir)Libs\"</PreBuildEvent>
   </PropertyGroup>
 </Project>
