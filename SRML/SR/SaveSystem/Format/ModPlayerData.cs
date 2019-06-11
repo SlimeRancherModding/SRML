@@ -28,7 +28,11 @@ namespace SRML.SR.SaveSystem.Format
 
         public Dictionary<Identifiable.Id,int> craftMatCounts = new Dictionary<Identifiable.Id, int>();
 
-        public override int LatestVersion => 0;
+        public List<MailV02> mail = new List<MailV02>();
+
+        public List<ZoneDirector.Zone> unlockedZoneMaps = new List<ZoneDirector.Zone>();
+
+        public override int LatestVersion => 1;
 
         static ModPlayerData()
         {
@@ -46,7 +50,15 @@ namespace SRML.SR.SaveSystem.Format
                     EnumTranslator.FixEnumValues(translator, mode, data.craftMatCounts);
                     EnumTranslator.FixEnumValues(translator, mode,data.delayedProgress);
                     EnumTranslator.FixEnumValues(translator, mode, data.gadgets);
+                    EnumTranslator.FixEnumValues(translator,mode,data.mail);
+                    EnumTranslator.FixEnumValues(translator,mode,data.unlockedZoneMaps);
                 });
+            EnumTranslator.RegisterEnumFixer(
+                (EnumTranslator translator, EnumTranslator.TranslationMode mode, MailV02 data) =>
+                {
+                    data.mailType=EnumTranslator.TranslateEnum(translator, mode, data.mailType);
+                }
+            );
 
         }
 
@@ -67,6 +79,11 @@ namespace SRML.SR.SaveSystem.Format
             BinaryUtils.WriteDictionary(writer, gadgets, (x, y) => x.Write((int)y), (x, y) => x.Write(y));
 
             BinaryUtils.WriteDictionary(writer, craftMatCounts, (x, y) => x.Write((int)y), (x, y) => x.Write(y));
+
+            BinaryUtils.WriteList(writer,mail,(x,y)=>y.WriteData(x));
+
+            var enumser = SerializerPair.GetEnumSerializerPair<ZoneDirector.Zone>();
+            BinaryUtils.WriteList(writer,unlockedZoneMaps,(x,y)=>enumser.Serialize(x,y));
         }
 
         public override void Read(BinaryReader reader)
@@ -86,6 +103,17 @@ namespace SRML.SR.SaveSystem.Format
             BinaryUtils.ReadDictionary(reader,gadgets, (x) => (Gadget.Id)x.ReadInt32(), (x) => x.ReadInt32());
 
             BinaryUtils.ReadDictionary(reader, craftMatCounts, (x) => (Identifiable.Id)x.ReadInt32(), (x) => x.ReadInt32());
+
+            if (Version == 0) return;
+
+            BinaryUtils.ReadList(reader,mail, (x) =>
+            {
+                var v = new MailV02();
+                v.LoadData(reader);
+                return v;
+            });
+            var enumser = SerializerPair.GetEnumSerializerPair<ZoneDirector.Zone>();
+            BinaryUtils.ReadList(reader,unlockedZoneMaps,(x)=>(ZoneDirector.Zone)enumser.Deserialize(x));
         }
 
         
@@ -107,6 +135,9 @@ namespace SRML.SR.SaveSystem.Format
 
             AddRange(craftMatCounts, player.craftMatCounts.Where((x) => ModdedIDRegistry.ModForID(x.Key) == ourMod));
 
+            unlockedZoneMaps.AddRange(player.unlockedZoneMaps.Where((x)=>ModdedIDRegistry.ModForID(x)==ourMod));
+
+            mail.AddRange(player.mail.Where((x)=>MailRegistry.GetModForMail(x.messageKey)==ourMod));
         }
 
         public void Push(PlayerV13 player)
@@ -125,6 +156,8 @@ namespace SRML.SR.SaveSystem.Format
             AddRange(player.gadgets,gadgets.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
             
             AddRange(player.craftMatCounts,craftMatCounts.Where((x) => ModdedIDRegistry.IsValidID(x.Key)));
+            player.unlockedZoneMaps.AddRange(unlockedZoneMaps.Where((x)=>ModdedIDRegistry.IsValidID(unlockedZoneMaps)));
+            player.mail.AddRange(mail.Where((x)=>MailRegistry.GetModForMail(x.messageKey)!=null));
         }
 
         public static HashSet<SRMod> FindAllModsWithData(PlayerV13 player)
@@ -145,6 +178,10 @@ namespace SRML.SR.SaveSystem.Format
             foreach (var x in player.gadgets) mods.Add(ModdedIDRegistry.ModForID(x.Key));
 
             foreach (var x in player.craftMatCounts) mods.Add(ModdedIDRegistry.ModForID(x.Key));
+
+            player.mail.ForEach((x)=>mods.Add(MailRegistry.GetModForMail(x.messageKey)));
+
+            player.unlockedZoneMaps.ForEach((x)=>mods.Add(ModdedIDRegistry.ModForID(x)));
 
             mods.Remove(null);
             return mods;

@@ -13,9 +13,9 @@ using SRML.Utils.Enum;
 
 namespace SRML
 {
-    internal static class SRModLoader
+    public static class SRModLoader
     {
-        public const string ModJson = "modinfo.json";
+        internal const string ModJson = "modinfo.json";
 
         static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
 
@@ -23,7 +23,7 @@ namespace SRML
         
         internal static LoadingStep CurrentLoadingStep { get; private set; }
 
-        public static void InitializeMods()
+        internal static void InitializeMods()
         {
             FileSystem.CheckDirectory(FileSystem.ModPath);
             HashSet<ProtoMod> foundMods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
@@ -53,6 +53,11 @@ namespace SRML
             DependencyChecker.CalculateLoadOrder(foundMods,loadOrder);
 
             DiscoverAndLoadAssemblies(foundMods);
+        }
+
+        public static bool IsModPresent(string modid)
+        {
+            return loadOrder.Any((x) => modid == x);
         }
 
         internal static bool TryGetEntryType(Assembly assembly,out Type entryType)
@@ -111,12 +116,12 @@ namespace SRML
             }
         }
 
-        public static SRMod GetMod(string id)
+        internal static SRMod GetMod(string id)
         {
             return Mods.TryGetValue(id,out var mod)?mod:null;
         }
 
-        public static SRMod GetModForAssembly(Assembly a)
+        internal static SRMod GetModForAssembly(Assembly a)
         {
             return Mods.FirstOrDefault((x) => x.Value.EntryType.Assembly == a).Value;
         }
@@ -133,7 +138,7 @@ namespace SRML
             Mods.Add(modInfo.id,newmod);
         }
 
-        public static void PreLoadMods()
+        internal static void PreLoadMods()
         {
 
             foreach (var modid in loadOrder)
@@ -148,11 +153,11 @@ namespace SRML
                 {
                     throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
                 }
-
+               
             }
         }
-
-        public static void LoadMods()
+        
+        internal static void LoadMods()
         {
             CurrentLoadingStep = LoadingStep.LOAD;
             foreach (var modid in loadOrder)
@@ -170,7 +175,7 @@ namespace SRML
             }
         }
 
-        public static void PostLoadMods()
+        internal static void PostLoadMods()
         {
             CurrentLoadingStep = LoadingStep.POSTLOAD;
             foreach (var modid in loadOrder)
@@ -295,6 +300,7 @@ namespace SRML
 
             void ValidateFields()
             {
+                if (id == null) throw new Exception($"{path} is missing an id field!");
                 id = id.ToLower();
                 if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
                 load_after = load_after ?? new string[0];

@@ -40,9 +40,16 @@ namespace SRML.SR.SaveSystem.Patches
 
             __state.AddAndRemoveWhere(__instance.player.craftMatCounts,__state.craftMatCounts,(x)=> ModdedIDRegistry.IsModdedID(x.Key));
 
+            __state.AddAndRemoveWhereCustom(__instance.player.unlockedZoneMaps, __state.unlockedZoneMaps);
+
+            __state.AddAndRemoveWhere(__instance.player.mail, __state.mail, (x) => MailRegistry.GetModForMail(x.messageKey) != null);
+
             __state.AddAndRemoveWhere(__instance.pedia.unlockedIds,__state.unlockedIds,(x)=> ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(PediaDirector.Id),x)));
             __state.AddAndRemoveWhere(__instance.pedia.completedTuts, __state.completedTuts, (x) => ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(TutorialDirector.Id), x)));
             __state.AddAndRemoveWhere(__instance.pedia.popupQueue, __state.popupQueue, (x) => ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(TutorialDirector.Id), x)));
+
+
+            
 
             foreach (var data in AmmoDataUtils.GetAllAmmoData(__instance))
             {
@@ -112,6 +119,10 @@ namespace SRML.SR.SaveSystem.Patches
             public Dictionary<Gadget.Id, int> gadgets = new Dictionary<Gadget.Id, int>();
 
             public Dictionary<Identifiable.Id, int> craftMatCounts = new Dictionary<Identifiable.Id, int>();
+
+            public List<ZoneDirector.Zone> unlockedZoneMaps =new List<ZoneDirector.Zone>();
+
+            public List<MailV02> mail = new List<MailV02>();
 
             public List<string> unlockedIds = new List<string>();
             public List<string> completedTuts = new List<string>();

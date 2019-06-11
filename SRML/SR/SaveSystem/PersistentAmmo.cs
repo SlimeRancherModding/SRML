@@ -17,18 +17,24 @@ namespace SRML.SR.SaveSystem
             this.DataModel = model;
         }
 
-        public void Sync()
+        public void Sync(bool log = false)
         {
-            DataModel.UpdateFromExistingSlots(Identifier.ResolveModel().slots);
+            DataModel.UpdateFromExistingSlots(Identifier.ResolveModel().slots,log);
         }
 
         public void OnDecrement(int slot, int count)
         {
-            if (DataModel.slots[slot].Count == 0) return;
+
+            if (DataModel.slots[slot].Count == 0)
+            {
+                Sync();
+                return;
+            }
             for (int i = 0; i < count; i++)
             {
                 DataModel.PopDataForSlot(slot);
             }
+            Sync();
             ClearSelected();
 
         }

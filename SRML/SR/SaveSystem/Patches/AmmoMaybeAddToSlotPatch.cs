@@ -36,12 +36,14 @@ namespace SRML.SR.SaveSystem.Patches
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
                     ammo.DataModel.slots[count].PushTop(ExtendedData.extendedActorData[identifiable.GetActorId()]);
+                    ammo.Sync();
                 }
                 else
                 {
                     if (!PersistentAmmoManager.HasPersistentAmmo(identifier)) return;
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
                     ammo.DataModel.slots[count].PushTop(null);
+                    ammo.Sync();
                 }
             }
         }
@@ -63,9 +65,11 @@ namespace SRML.SR.SaveSystem.Patches
                 if (identifiable && ExtendedData.IsRegistered(identifiable.gameObject))
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
+                    
                     for (int i = 0; i < count; i++)
                         ammo.DataModel.slots[slotIdx]
                             .PushTop(ExtendedData.extendedActorData[identifiable.GetActorId()]);
+                    ammo.Sync();
                 }
                 else
                 {
@@ -73,6 +77,7 @@ namespace SRML.SR.SaveSystem.Patches
                     var ammo = PersistentAmmoManager.PersistentAmmoData[identifier];
                     for (int i = 0; i < count; i++)
                         ammo.DataModel.slots[slotIdx].PushTop(null);
+                    ammo.Sync();
                 }
             }
         }
