@@ -110,7 +110,6 @@ namespace SRMLInstaller
                         //var libPath = Path.Combine(libFolder, file);
                         if (File.Exists(combine))
                         {
-                            Console.WriteLine(combine);
                             if (!uninstalling) Console.WriteLine($"Found old {file}! Replacing...");
                             else Console.WriteLine($"Deleting {file}...");
                             File.Delete(combine);
