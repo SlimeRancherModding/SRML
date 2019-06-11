@@ -49,7 +49,7 @@ namespace SRMLInstaller
 
         public void RemoveOldPatch()
         {
-            if(target.Body.Instructions.First().Operand is MethodReference h&&h.Name=="LoadSRML") target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
+            if(target.Body.Instructions[0].Operand is MethodReference h&&h.Name=="LoadSRML") target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
             if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRML") is MethodDefinition d)
             {
                 target.DeclaringType.Methods.Remove(d);
@@ -159,7 +159,7 @@ namespace SRMLInstaller
 
         public void Unpatch()
         {
-            target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
+            if(target.Body.Instructions[0].Operand is MethodReference h && h.Name=="LoadSRModLoader")target.Body.GetILProcessor().Remove(target.Body.Instructions[0]);
             if (target.DeclaringType.Methods.FirstOrDefault((x) => x.Name == "LoadSRModLoader") is MethodDefinition d)
             {
                 target.DeclaringType.Methods.Remove(d);
@@ -208,7 +208,7 @@ namespace SRMLInstaller
             string oldname = Path.Combine(pathRoot,
                 Path.GetFileNameWithoutExtension(filename) + "_old.dll");
             string patchedname = Path.Combine(pathRoot,
-                Path.GetFileNameWithoutExtension(filename) + "_time_to_delete_it.dll");
+                Path.GetFileNameWithoutExtension(filename) + "_patched.dll");
             if (!File.Exists(oldname))
             {
                 Console.WriteLine($"Couldn't find old {Path.GetFileName(filename)}!");

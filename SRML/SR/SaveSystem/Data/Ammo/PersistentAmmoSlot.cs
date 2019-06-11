@@ -13,15 +13,15 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
         public int Count => data.Count;
 
-        public void UpdateFromExistingSlot(global::Ammo.Slot slot)
+        public void UpdateFromExistingSlot(global::Ammo.Slot slot, bool log = false)
         {
-            CompensateForExternalChanges(slot?.count ?? 0);
+            CompensateForExternalChanges(slot?.count ?? 0,log);
         }
 
         public CompoundDataPiece PopBottom()
         {
             var temp = data.First();
-            data.Remove(temp);
+            data.RemoveAt(0);
             return temp;
         }
 
@@ -47,11 +47,11 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             data.Add(piece);
         }
 
-        public void CompensateForExternalChanges(int realAmount)
+        public void CompensateForExternalChanges(int realAmount, bool log = false)
         {
             if (realAmount - Count != 0)
             {
-                Debug.Log("Compensating for an apparent ammo difference of "+(realAmount-Count));
+                if (log) Debug.Log("Compensating for an apparent ammo difference of "+(realAmount-Count)+" real amount: "+realAmount+" current count: "+Count);
             }
 
             while (realAmount > Count)

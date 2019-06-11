@@ -11,9 +11,9 @@ namespace SRMLInstaller
     static class GameFinder
     {
         private const String gameDLL = "Assembly-CSharp.dll";
-        
+
         private const String gameName = "SlimeRancher";
-            
+
         private const String gameNameWithSpace = "Slime Rancher";
 
         private static String dataFolder = gameName + "_Data";
@@ -30,10 +30,17 @@ namespace SRMLInstaller
 
         private static String exeToDLL = Path.Combine(dataFolder, Path.Combine("Managed", gameDLL));
 
+        private const string GameExe = "SlimeRancher.exe";
+
+        static bool CheckForValidDllPath(string path)
+        {
+            var parent = Directory.GetParent(path);
+            return parent.Name == "Managed" && parent.Parent.Parent.GetFiles().Any((x) => x.Name == GameExe);
+        }
 
         public static String FindGame()
-        {
-            if (File.Exists(gameDLL)) return Path.GetFullPath(gameDLL);
+        { 
+            if (File.Exists(gameDLL) && CheckForValidDllPath(Path.GetFullPath(gameDLL))) return Path.GetFullPath(gameDLL);
             var managedDLL = Path.Combine("Managed", gameDLL);
             if (File.Exists(managedDLL))
                 return Path.GetFullPath(managedDLL);

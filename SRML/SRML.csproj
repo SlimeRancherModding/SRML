@@ -39,7 +39,6 @@
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
@@ -63,7 +62,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\SampleMod\bin\Debug\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -106,9 +105,12 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\GadgetRegistry.cs" />
     <Compile Include="SR\IdentifiableRegistry.cs" />
+    <Compile Include="SR\MailRegistry.cs" />
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
+    <Compile Include="SR\Patches\MailReadPatch.cs" />
+    <Compile Include="SR\Patches\RegisterActorPatch.cs" />
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LandPlotToGameObjectPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
@@ -183,6 +185,11 @@
     <Compile Include="SR\SaveSystem\VersionedSerializable.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />
+    <Compile Include="SR\Translation\ITranslatable.cs" />
+    <Compile Include="SR\Translation\PediaEntryTranslation.cs" />
+    <Compile Include="SR\Translation\PediaTranslation.cs" />
+    <Compile Include="SR\Translation\PersonalUpgradeTranslation.cs" />
+    <Compile Include="SR\Translation\UpgradeTranslation.cs" />
     <Compile Include="SR\UI\ModMenuUI.cs" />
     <Compile Include="SR\UI\ModMenuUIHandler.cs" />
     <Compile Include="SR\UI\Utils\MainMenuUtils.cs" />

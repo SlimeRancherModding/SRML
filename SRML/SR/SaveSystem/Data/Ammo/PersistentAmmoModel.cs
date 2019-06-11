@@ -37,12 +37,12 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             slots = slotList.ToArray();
         }
 
-        public void UpdateFromExistingSlots(global::Ammo.Slot[] ammoSlots)
+        public void UpdateFromExistingSlots(global::Ammo.Slot[] ammoSlots,bool log = false)
         {
             AdjustSlotCount(ammoSlots.Length);
             for (int i = 0; i < ammoSlots.Length; i++)
             {
-                slots[i].UpdateFromExistingSlot(ammoSlots[i]);
+                slots[i].UpdateFromExistingSlot(ammoSlots[i],log);
             }
         }
 
