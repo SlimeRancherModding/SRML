@@ -65,7 +65,7 @@ namespace SRML.SR.SaveSystem.Patches
                 if (identifiable && ExtendedData.IsRegistered(identifiable.gameObject))
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
-                    
+                    if (ammo == null) return;
                     for (int i = 0; i < count; i++)
                         ammo.DataModel.slots[slotIdx]
                             .PushTop(ExtendedData.extendedActorData[identifiable.GetActorId()]);

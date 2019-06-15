@@ -20,7 +20,7 @@ namespace SRML.SR.SaveSystem
 
         internal static void Pull(ModdedSaveData data)
         {
-            extendedActorData.Clear();
+            Clear();
             foreach (var mod in data.segments)
             {
                 Debug.Log($"mod {mod.modid} has {mod.extendedData.Count} extended actor datas");
@@ -43,6 +43,10 @@ namespace SRML.SR.SaveSystem
             }
         }
 
+        internal static void Clear()
+        {
+            extendedActorData.Clear();
+        }
         public static GameObject InstantiateActorWithData(GameObject prefab, Vector3 pos, Quaternion rot,
             CompoundDataPiece data)
         {

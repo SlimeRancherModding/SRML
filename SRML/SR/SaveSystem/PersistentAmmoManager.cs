@@ -18,13 +18,18 @@ namespace SRML.SR.SaveSystem
 
         internal static void Pull(ModdedSaveData data)
         {
-            PersistentAmmoData.Clear();
-            AmmoIdentifier.ClearCache();
+            Clear();
             foreach (var v in data.ammoDataEntries)
             {
                 if (v.model.HasNoData()) continue;
                 PersistentAmmoData[v.identifier] = new PersistentAmmo(v.identifier, v.model);
             }
+        }
+
+        internal static void Clear()
+        {
+            PersistentAmmoData.Clear();
+            AmmoIdentifier.ClearCache();
         }
 
         internal static void OnAmmoDecrement(AmmoIdentifier id, int slot, int count)
@@ -83,6 +88,20 @@ namespace SRML.SR.SaveSystem
 
         internal static void SyncAll()
         {
+            List<AmmoIdentifier> invalidIdentifiers = new List<AmmoIdentifier>();
+            foreach(var v in PersistentAmmoData)
+            {
+                try
+                {
+                    if (v.Key.ResolveModel() == null) invalidIdentifiers.Add(v.Key);
+                }
+                catch
+                {
+                    Debug.LogError($"Error ocurred while attempting to resolve ammo identifier {v.Key.AmmoType} {v.Key.stringIdentifier}-{v.Key.longIdentifier}");
+                    invalidIdentifiers.Add(v.Key);
+                }
+            }
+            invalidIdentifiers.ForEach(x => PersistentAmmoData.Remove(x));
             foreach (var v in PersistentAmmoData) v.Value.Sync();
         }
 

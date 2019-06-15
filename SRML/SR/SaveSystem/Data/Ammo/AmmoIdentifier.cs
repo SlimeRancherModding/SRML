@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
+using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data.Ammo
 {

@@ -22,71 +22,25 @@ namespace SRML.SR.SaveSystem
     internal static class SaveHandler
     {
         public static ModdedSaveData data = new ModdedSaveData();
-
-        public static void PullModdedData(GameV09 game)
+        #region pulling data
+        public static void PullModdedData(ModdedSaveData data, GameV09 game)
         {
-            data.segments.Clear();
-            data.ammoDataEntries.Clear();
-            foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
-            {
-                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(actor));
-                segment.identifiableData.Add(new IdentifiedData()
-                {
-                    data = actor,
-                    dataID = new DataIdentifier() { longID = actor.actorId,stringID = "",Type=IdentifierType.ACTOR}
-                });
-            }
+            data.Clear();
 
-            foreach (var gadget in game.world.placedGadgets.Where((x) => SaveRegistry.IsCustom(x.Value)))
-            {
-                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(gadget.Value));
-                segment.identifiableData.Add(new IdentifiedData()
-                {
-                    data = gadget.Value,
-                    dataID = new DataIdentifier() {longID = 0, stringID = gadget.Key, Type = IdentifierType.GADGET}
-                });
+            PullFullData(data,game);
+            PullTertiaryData(data,game);
+            PullAmmoData(data,game);
+            PullPartialData(data,game);
 
-            }
+            ExtendedData.Push(data);
+            PersistentAmmoManager.SyncAll();
+            PersistentAmmoManager.Push(data);
+        }
 
-            foreach (var mod in ModPlayerData.FindAllModsWithData(game.player))
-            {
-
-                var segment = data.GetSegmentForMod(mod);
-                
-                segment.playerData.Pull(game.player, mod);
-            }
-
-            PediaDataBuffer buf = new PediaDataBuffer(game.pedia);
-            foreach (var mod in ModPediaData.FindAllModsWithData(buf))
-            {
-                var segment = data.GetSegmentForMod(mod);
-                segment.pediaData.Pull(buf,mod);
-            }
-
-            foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
-            {
-                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => ModdedIDRegistry.IsModdedID(x.id) ? ModdedIDRegistry.ModForID(x.id) : null));
-                modsInThis.Remove(null);
-                foreach (var mod in modsInThis)
-                {
-                    if (mod == null) continue;
-                    if (AmmoIdentifier.TryGetIdentifier(ammo, game, out var identifier))
-                    {
-                        var segment = data.GetSegmentForMod(mod);
-                        segment.customAmmo[identifier] =
-                            AmmoDataUtils.RipOutWhere(ammo, (x) => ModdedIDRegistry.ModForID(x.id) == mod,false);
-                    }
-                    else
-                    {
-                        Debug.LogError("Unknown ammo identifier, skipping...");
-                    }
-                }
-            }
-
-            data.partialData.Clear();
-
+        private static void PullPartialData(ModdedSaveData data, GameV09 game)
+        {
             void Check<T>(T v, Action
-                <T,PartialData> onSuccess)
+                            <T, PartialData> onSuccess)
             {
                 var level = CustomChecker.GetCustomLevel(v);
 
@@ -101,9 +55,9 @@ namespace SRML.SR.SaveSystem
 
             foreach (var g in game.actors)
             {
-                Check(g,(v,partialdata)=>
-                    data.partialData.Add(new DataIdentifier(){longID = v.actorId,Type=IdentifierType.ACTOR},partialdata ));
-                
+                Check(g, (v, partialdata) =>
+                    data.partialData.Add(new DataIdentifier() { longID = v.actorId, Type = IdentifierType.ACTOR }, partialdata));
+
             }
 
             foreach (var g in game.world.placedGadgets)
@@ -111,7 +65,7 @@ namespace SRML.SR.SaveSystem
                 var currentString = g.Key;
                 Check(g.Value, (v, partialdata) =>
                 {
-                    data.partialData.Add(new DataIdentifier() {stringID = currentString, Type = IdentifierType.GADGET},
+                    data.partialData.Add(new DataIdentifier() { stringID = currentString, Type = IdentifierType.GADGET },
                         partialdata);
                 });
             }
@@ -121,47 +75,130 @@ namespace SRML.SR.SaveSystem
                 Check(g, (v, partialdata) =>
                     data.partialData.Add(new DataIdentifier() { stringID = g.id, Type = IdentifierType.LANDPLOT }, partialdata));
             }
-
-            ExtendedData.Push(data);
-            PersistentAmmoManager.SyncAll();
-            PersistentAmmoManager.Push(data);
         }
 
-        public static void PushModdedData(GameV09 game)
+        private static void PullAmmoData(ModdedSaveData data, GameV09 game)
         {
-            foreach (var mod in data.segments)
+            foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
             {
-                Debug.Log($"Splicing data from mod {mod.modid} which has {mod.identifiableData.Count} pieces of identifiable data");
-                foreach (var customData in mod.identifiableData)
+                var modsInThis = new HashSet<SRMod>(ammo.Select((x) => ModdedIDRegistry.IsModdedID(x.id) ? ModdedIDRegistry.ModForID(x.id) : null));
+                modsInThis.Remove(null);
+                foreach (var mod in modsInThis)
                 {
-                    switch (customData.dataID.Type)
+                    if (mod == null) continue;
+                    if (AmmoIdentifier.TryGetIdentifier(ammo, game, out var identifier))
                     {
-                        case IdentifierType.ACTOR:
-                            game.actors.Add((VanillaActorData)customData.data);
-                            break;
-                        case IdentifierType.GADGET:
-                            game.world.placedGadgets[customData.dataID.stringID] = (VanillaGadgetData) customData.data;
-                            break;
-                        default:
-                            throw new NotImplementedException();
+                        var segment = data.GetSegmentForMod(mod);
+                        segment.customAmmo[identifier] =
+                            AmmoDataUtils.RipOutWhere(ammo, (x) => ModdedIDRegistry.ModForID(x.id) == mod, false);
+                    }
+                    else
+                    {
+                        Debug.LogError("Unknown ammo identifier, skipping...");
                     }
                 }
-
-                mod.playerData.Push(game.player);
-                mod.pediaData.Push(game.pedia);
-
-                foreach (var ammo in mod.customAmmo)
-                {
-                    AmmoDataUtils.SpliceAmmoData(AmmoIdentifier.ResolveToData(ammo.Key, game), ammo.Value);
-                }
             }
+        }
+
+        private static void PullTertiaryData(ModdedSaveData data, GameV09 game)
+        {
+            foreach (var mod in ModPlayerData.FindAllModsWithData(game.player))
+            {
+
+                var segment = data.GetSegmentForMod(mod);
+
+                segment.playerData.Pull(game.player, mod);
+            }
+
+            PediaDataBuffer buf = new PediaDataBuffer(game.pedia);
+            foreach (var mod in ModPediaData.FindAllModsWithData(buf))
+            {
+                var segment = data.GetSegmentForMod(mod);
+                segment.pediaData.Pull(buf, mod);
+            }
+        }
+
+        private static void PullFullData(ModdedSaveData data, GameV09 game)
+        {
+            foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
+            {
+                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(actor));
+                segment.identifiableData.Add(new IdentifiedData()
+                {
+                    data = actor,
+                    dataID = new DataIdentifier() { longID = actor.actorId, stringID = "", Type = IdentifierType.ACTOR }
+                });
+            }
+
+            foreach (var gadget in game.world.placedGadgets.Where((x) => SaveRegistry.IsCustom(x.Value)))
+            {
+                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(gadget.Value));
+                segment.identifiableData.Add(new IdentifiedData()
+                {
+                    data = gadget.Value,
+                    dataID = new DataIdentifier() { longID = 0, stringID = gadget.Key, Type = IdentifierType.GADGET }
+                });
+
+            }
+        }
+        #endregion
+
+        #region pushing data
+        public static void PushAllModdedData(ModdedSaveData data, GameV09 game)
+        {
+            PushAllSegmentData(data, game);
 
             ExtendedData.Pull(data);
             PersistentAmmoManager.Pull(data);
-            PushAllPartialData(game);
+            PushAllPartialData(data, game);
         }
 
-        public static void PushAllPartialData(GameV09 game)
+        private static void PushAllSegmentData(ModdedSaveData data, GameV09 game)
+        {
+            foreach (var mod in data.segments)
+            {
+                PushSegmentFullData(game, mod);
+
+                PushSegmentTertiaryData(game, mod);
+
+                PushSegmentAmmoData(game, mod);
+            }
+        }
+
+        private static void PushSegmentAmmoData(GameV09 game, ModDataSegment mod)
+        {
+            foreach (var ammo in mod.customAmmo)
+            {
+                AmmoDataUtils.SpliceAmmoData(AmmoIdentifier.ResolveToData(ammo.Key, game), ammo.Value);
+            }
+        }
+
+        private static void PushSegmentTertiaryData(GameV09 game, ModDataSegment mod)
+        {
+            mod.playerData.Push(game.player);
+            mod.pediaData.Push(game.pedia);
+        }
+
+        private static void PushSegmentFullData(GameV09 game, ModDataSegment mod)
+        {
+            Debug.Log($"Splicing data from mod {mod.modid} which has {mod.identifiableData.Count} pieces of identifiable data");
+            foreach (var customData in mod.identifiableData)
+            {
+                switch (customData.dataID.Type)
+                {
+                    case IdentifierType.ACTOR:
+                        game.actors.Add((VanillaActorData)customData.data);
+                        break;
+                    case IdentifierType.GADGET:
+                        game.world.placedGadgets[customData.dataID.stringID] = (VanillaGadgetData)customData.data;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        public static void PushAllPartialData(ModdedSaveData data,GameV09 game)
         {
             foreach (var partial in data.partialData)
             {
@@ -182,10 +219,17 @@ namespace SRML.SR.SaveSystem
                 }
             }
         }
+        #endregion
 
         public static string GetModdedPath(FileStorageProvider provider, string savename)
         {
             return Path.ChangeExtension(provider.GetFullFilePath(savename), ".mod");
+        }
+
+        static void ClearAllNonData()
+        {
+            ExtendedData.Clear();
+            PersistentAmmoManager.Clear();
         }
 
         public static void LoadModdedSave(AutoSaveDirector director, string savename)
@@ -194,7 +238,9 @@ namespace SRML.SR.SaveSystem
             if (storageprovider == null) return;
             var modpath = GetModdedPath(storageprovider, savename);
             Debug.Log(modpath+" is our modded path");
+            ClearAllNonData();
             if (!File.Exists(modpath)) return;
+
             using (var reader = new BinaryReader(new FileStream(modpath, FileMode.Open)))
             {
                 data.Read(reader);
@@ -202,7 +248,7 @@ namespace SRML.SR.SaveSystem
 
             data.enumTranslator?.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            PushModdedData(director.savedGame.gameState);
+            PushAllModdedData(data,director.savedGame.gameState);
 
         }
 
@@ -212,7 +258,7 @@ namespace SRML.SR.SaveSystem
             if (storageprovider == null) return;
             var modpath = GetModdedPath(storageprovider, nextfilename);
             Debug.Log(modpath + " is our modded path");
-            PullModdedData(director.savedGame.gameState);
+            PullModdedData(data,director.savedGame.gameState);
             data.InitializeEnumTranslator();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.TOTRANSLATED);
             if (File.Exists(modpath)) File.Delete(modpath);
@@ -222,7 +268,7 @@ namespace SRML.SR.SaveSystem
             }
 
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            PushAllPartialData(director.savedGame.gameState);
+            PushAllPartialData(data, director.savedGame.gameState); // re-apply the data we took out so we leave the game state relatively untouched
         }
 
         static SaveHandler()
