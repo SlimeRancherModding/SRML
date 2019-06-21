@@ -9,8 +9,8 @@ using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Registry;
 using SRML.SR.SaveSystem.Utils;
 using UnityEngine;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
-using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 namespace SRML.SR.SaveSystem
 {
     public static class SaveRegistry

@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
+using MonomiPark.SlimeRancher.Regions;
 using UnityEngine;
 
 namespace SRML.SR
 {
     public static class DataModelRegistry
     {
-        public delegate ActorModel CreateActorDelegate(long actorid, Identifiable.Id ident, GameObject gameObj);
+        public delegate ActorModel CreateActorDelegate(long actorid, Identifiable.Id ident, RegionRegistry.RegionSetId regionSetId, GameObject gameObj);
         internal static Dictionary<Predicate<Identifiable.Id>,CreateActorDelegate> actorOverrideMapping = new Dictionary<Predicate<Identifiable.Id>, CreateActorDelegate>();
 
-        public delegate GadgetModel CreateGadgetDelegate(string siteId, GadgetSiteModel site, GameObject obj);
+        public delegate GadgetModel CreateGadgetDelegate(GadgetSiteModel site, GameObject gameObj);
         internal static Dictionary<Predicate<Gadget.Id>,CreateGadgetDelegate> gadgetOverrideMapping = new Dictionary<Predicate<Gadget.Id>, CreateGadgetDelegate>();
 
       
@@ -31,7 +32,7 @@ namespace SRML.SR
         {
             if (!typeof(ActorModel).IsAssignableFrom(actorType))
                 throw new Exception("Given type is not a valid ActorModel!");
-            RegisterCustomActorModel(id,(x,y,z)=>(ActorModel)Activator.CreateInstance(actorType,x,y,z.transform));
+            RegisterCustomActorModel(id,(x,y,z,w)=>(ActorModel)Activator.CreateInstance(actorType,x,y,z,w.transform));
         }
 
         public static void RegisterGadgetModelOverride(Predicate<Gadget.Id> pred, CreateGadgetDelegate creator)
@@ -48,7 +49,7 @@ namespace SRML.SR
         {
             if (!typeof(GadgetModel).IsAssignableFrom(gadgetType))
                 throw new Exception("Given type is not a valid GadgetModel!");
-            RegisterCustomGadgetModel(id,(siteId,site,obj)=>(GadgetModel)Activator.CreateInstance(gadgetType,obj.GetComponent<Gadget>().id,siteId,obj.transform));
+            RegisterCustomGadgetModel(id,(site,obj)=>(GadgetModel)Activator.CreateInstance(gadgetType,obj.GetComponent<Gadget>().id,site.id,obj.transform));
         }
     }
 }

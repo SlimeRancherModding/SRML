@@ -4,7 +4,7 @@ using System.Linq;
 using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Registry;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
 namespace SRML.SR.SaveSystem.Data.Actor
 {
     internal abstract class CustomActorData<T> : CustomActorData where T : ActorModel

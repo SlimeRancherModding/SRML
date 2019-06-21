@@ -9,6 +9,7 @@ namespace SRML.SR
     public static class AmmoRegistry
     {
         internal static Dictionary<PlayerState.AmmoMode,List<GameObject>> inventoryPrefabsToPatch = new Dictionary<PlayerState.AmmoMode, List<GameObject>>();
+        internal static List<Identifiable.Id> customRefineryResources = new List<Identifiable.Id>();
 
         public static void RegisterAmmoPrefab(PlayerState.AmmoMode mode, GameObject prefab)
         {
@@ -18,6 +19,12 @@ namespace SRML.SR
             }
             inventoryPrefabsToPatch[mode].Add(prefab);
         }
+
+        public static void RegisterRefineryResource(Identifiable.Id id)
+        {
+            customRefineryResources.Add(id);
+        }
+
 
         static AmmoRegistry()
         {

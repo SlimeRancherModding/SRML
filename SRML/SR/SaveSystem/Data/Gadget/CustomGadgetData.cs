@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using SRML.SR.SaveSystem.Data.Partial;
 using UnityEngine;
-using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaDroneData = MonomiPark.SlimeRancher.Persist.DroneGadgetV01;
 namespace SRML.SR.SaveSystem.Data.Gadget
 {

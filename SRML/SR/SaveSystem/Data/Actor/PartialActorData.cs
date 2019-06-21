@@ -7,7 +7,7 @@ using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
 using UnityEngine;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
 namespace SRML.SR.SaveSystem.Data.Actor
 {
     internal class PartialActorData : VersionedPartialData<VanillaActorData>

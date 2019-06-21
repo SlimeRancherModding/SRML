@@ -13,8 +13,8 @@ namespace SRML.SR.Translation
         public virtual string DefaultNamePrefix => DefaultPrefix + PediaType + ".name.";
         public virtual string DefaultDescriptionPrefix => DefaultPrefix + PediaType + ".desc.";
 
-        public abstract string NamePrefix { get; }
-        public abstract string DescriptionPrefix { get; }
+        public virtual string NamePrefix => DefaultNamePrefix;
+        public virtual string DescriptionPrefix => DefaultDescriptionPrefix;
 
         public virtual T Key { get; protected set; }
 

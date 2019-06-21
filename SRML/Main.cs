@@ -7,6 +7,7 @@ using System.Security.Policy;
 using System.Text;
 using Harmony;
 using SRML.Editor;
+using SRML.SR;
 using SRML.SR.SaveSystem.Data;
 using SRML.Utils;
 using TMPro;

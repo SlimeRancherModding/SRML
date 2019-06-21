@@ -14,8 +14,8 @@ using SRML.SR.SaveSystem.Format;
 using SRML.SR.SaveSystem.Utils;
 using SRML.Utils;
 using UnityEngine;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
-using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem
 {
@@ -23,7 +23,7 @@ namespace SRML.SR.SaveSystem
     {
         public static ModdedSaveData data = new ModdedSaveData();
         #region pulling data
-        public static void PullModdedData(ModdedSaveData data, GameV09 game)
+        public static void PullModdedData(ModdedSaveData data, GameV11 game)
         {
             data.Clear();
 
@@ -37,7 +37,7 @@ namespace SRML.SR.SaveSystem
             PersistentAmmoManager.Push(data);
         }
 
-        private static void PullPartialData(ModdedSaveData data, GameV09 game)
+        private static void PullPartialData(ModdedSaveData data, GameV11 game)
         {
             void Check<T>(T v, Action
                             <T, PartialData> onSuccess)
@@ -77,7 +77,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullAmmoData(ModdedSaveData data, GameV09 game)
+        private static void PullAmmoData(ModdedSaveData data, GameV11 game)
         {
             foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
             {
@@ -100,7 +100,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullTertiaryData(ModdedSaveData data, GameV09 game)
+        private static void PullTertiaryData(ModdedSaveData data, GameV11 game)
         {
             foreach (var mod in ModPlayerData.FindAllModsWithData(game.player))
             {
@@ -118,7 +118,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullFullData(ModdedSaveData data, GameV09 game)
+        private static void PullFullData(ModdedSaveData data, GameV11 game)
         {
             foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
@@ -144,7 +144,7 @@ namespace SRML.SR.SaveSystem
         #endregion
 
         #region pushing data
-        public static void PushAllModdedData(ModdedSaveData data, GameV09 game)
+        public static void PushAllModdedData(ModdedSaveData data, GameV11 game)
         {
             PushAllSegmentData(data, game);
 
@@ -153,7 +153,7 @@ namespace SRML.SR.SaveSystem
             PushAllPartialData(data, game);
         }
 
-        private static void PushAllSegmentData(ModdedSaveData data, GameV09 game)
+        private static void PushAllSegmentData(ModdedSaveData data, GameV11 game)
         {
             foreach (var mod in data.segments)
             {
@@ -165,7 +165,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PushSegmentAmmoData(GameV09 game, ModDataSegment mod)
+        private static void PushSegmentAmmoData(GameV11 game, ModDataSegment mod)
         {
             foreach (var ammo in mod.customAmmo)
             {
@@ -173,13 +173,13 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PushSegmentTertiaryData(GameV09 game, ModDataSegment mod)
+        private static void PushSegmentTertiaryData(GameV11 game, ModDataSegment mod)
         {
             mod.playerData.Push(game.player);
             mod.pediaData.Push(game.pedia);
         }
 
-        private static void PushSegmentFullData(GameV09 game, ModDataSegment mod)
+        private static void PushSegmentFullData(GameV11 game, ModDataSegment mod)
         {
             Debug.Log($"Splicing data from mod {mod.modid} which has {mod.identifiableData.Count} pieces of identifiable data");
             foreach (var customData in mod.identifiableData)
@@ -198,7 +198,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public static void PushAllPartialData(ModdedSaveData data,GameV09 game)
+        public static void PushAllPartialData(ModdedSaveData data,GameV11 game)
         {
             foreach (var partial in data.partialData)
             {

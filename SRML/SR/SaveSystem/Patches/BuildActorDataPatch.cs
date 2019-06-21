@@ -9,7 +9,7 @@ using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data.Actor;
 using UnityEngine;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
 
 namespace SRML.SR.SaveSystem.Patches
 {
@@ -18,7 +18,7 @@ namespace SRML.SR.SaveSystem.Patches
     {
         public static MethodInfo TargetMethod()
         {
-            return AccessTools.Method(typeof(SavedGame), "BuildActorDataV07");
+            return AccessTools.Method(typeof(SavedGame), "BuildActorData");
         }
 
         public static VanillaActorData ActorCreator(GameModel gameModel, int typeId, long actorId, ActorModel actorModel)
