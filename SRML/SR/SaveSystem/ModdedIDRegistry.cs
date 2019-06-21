@@ -17,8 +17,8 @@ static internal class ModdedIDRegistry
 
     public static bool HasModdedID(object data)
     {
-        return (data is ActorDataV07 actor && IsModdedID((Identifiable.Id)actor.typeId))||
-               (data is PlacedGadgetV06 gadget && IsModdedID(gadget.gadgetId));
+        return (data is ActorDataV09 actor && IsModdedID((Identifiable.Id)actor.typeId))||
+               (data is PlacedGadgetV08 gadget && IsModdedID(gadget.gadgetId));
     }
 
     public static bool IsModdedID(object id)

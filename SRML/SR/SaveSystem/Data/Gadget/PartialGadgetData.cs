@@ -7,7 +7,7 @@ using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
 using UnityEngine;
-using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 namespace SRML.SR.SaveSystem.Data.Gadget
 {
     internal class PartialGadgetData : VersionedPartialData<VanillaGadgetData>

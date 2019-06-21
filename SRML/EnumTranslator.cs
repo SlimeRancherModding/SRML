@@ -244,10 +244,10 @@ namespace SRML
                 toFix = TranslateEnum(type, translator, mode, toFix);
             }
             else
-                foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type)))
-                {
-                    v.Value(translator, mode, toFix);
-                }
+            foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type)))
+            {
+                v.Value(translator, mode, toFix);
+            }
         }
 
         public static void FixEnumValues(EnumTranslator translator, TranslationMode mode, object toFix)

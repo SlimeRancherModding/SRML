@@ -7,16 +7,16 @@ using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Utils;
 using SRML.Utils;
 using UnityEngine;
-using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV07;
-using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem.Patches
 {
-    [HarmonyPatch(typeof(GameV09))]
+    [HarmonyPatch(typeof(GameV11))]
     [HarmonyPatch("WriteGameData")]
     internal static class WriteGameDataPatch
     {
-        public static void Prefix(GameV09 __instance, ref RemovalData __state)
+        public static void Prefix(GameV11 __instance, ref RemovalData __state)
         {
             __state = new RemovalData();
 
@@ -89,7 +89,7 @@ namespace SRML.SR.SaveSystem.Patches
             }
         }
 
-        public static void Postfix(GameV09 __instance, ref RemovalData __state)
+        public static void Postfix(GameV11 __instance, ref RemovalData __state)
         {
             __state.AddAllBack();
         }
@@ -101,7 +101,7 @@ namespace SRML.SR.SaveSystem.Patches
         public class RemovalData
         {
             public List<VanillaActorData> actors = new List<VanillaActorData>();
-            public Dictionary<string,VanillaGadgetData> placedGadgets = new Dictionary<string, PlacedGadgetV06>();
+            public Dictionary<string,VanillaGadgetData> placedGadgets = new Dictionary<string, PlacedGadgetV08>();
             public List<VanillaPlotData> landplots = new List<VanillaPlotData>();
 
             public List<PlayerState.Upgrade> upgrades = new List<PlayerState.Upgrade>();

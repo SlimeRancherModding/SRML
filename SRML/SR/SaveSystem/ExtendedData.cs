@@ -10,6 +10,7 @@ using System.Text;
 using SRML.SR.SaveSystem.Utils;
 using UnityEngine;
 using static SRML.SR.SaveSystem.Format.ExtendedDataTree;
+using MonomiPark.SlimeRancher.Regions;
 
 namespace SRML.SR.SaveSystem
 {
@@ -47,18 +48,18 @@ namespace SRML.SR.SaveSystem
         {
             extendedActorData.Clear();
         }
-        public static GameObject InstantiateActorWithData(GameObject prefab, Vector3 pos, Quaternion rot,
+        public static GameObject InstantiateActorWithData(GameObject prefab, RegionRegistry.RegionSetId id, Vector3 pos, Quaternion rot,
             CompoundDataPiece data)
         {
             long actorId;
             SceneContext.Instance.GameModel.nextActorId = (actorId = SceneContext.Instance.GameModel.nextActorId) + 1L;
-            return InstantiateActorWithData(actorId,prefab,pos,rot,data);
+            return InstantiateActorWithData(actorId,prefab,id,pos,rot,data);
         }
 
-        public static GameObject InstantiateActorWithData(long actorId, GameObject prefab, Vector3 pos, Quaternion rot,CompoundDataPiece data)
+        public static GameObject InstantiateActorWithData(long actorId, GameObject prefab, RegionRegistry.RegionSetId id, Vector3 pos, Quaternion rot,CompoundDataPiece data)
         {
             extendedActorData[actorId] = data;
-            return SceneContext.Instance.GameModel.InstantiateActor(actorId, prefab, pos, rot, false, false);
+            return SceneContext.Instance.GameModel.InstantiateActor(actorId, prefab,id, pos, rot, false, false);
         }
             
         internal static void CullMissingModsFromData(CompoundDataPiece piece)

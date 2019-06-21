@@ -12,8 +12,9 @@ namespace SRML.SR.Patches
     [HarmonyPatch("LoadFromText")]
     internal static class ResourceBundlePatch
     {
-        static void Postfix(string path, Dictionary<string, string> __result)
+        static void Postfix(string path, Dictionary<string, string> __result,string text)
         {
+            File.WriteAllText(path + ".txt", text);
             if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) return;    
             foreach (var entry in dict)
             {

@@ -51,7 +51,7 @@ namespace SRML.SR.SaveSystem.Utils
             return ammo.Any((x) => ModdedIDRegistry.IsModdedID(x.id));
         }
 
-        public static List<List<VanillaAmmoData>> GetAllAmmoData(GameV09 game)
+        public static List<List<VanillaAmmoData>> GetAllAmmoData(GameV11 game)
         {
             List<List<VanillaAmmoData>> ammoDataData = new List<List<VanillaAmmoData>>();
 

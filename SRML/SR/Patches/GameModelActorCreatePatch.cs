@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using MonomiPark.SlimeRancher.DataModel;
+using MonomiPark.SlimeRancher.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace SRML.SR.Patches
     [HarmonyPatch("CreateActorModel")]
     public class GameModelActorCreatePatch
     {
-        public static bool Prefix(out ActorModel __result, GameModel __instance, long actorId, Identifiable.Id ident,
+        public static bool Prefix(out ActorModel __result, GameModel __instance, long actorId, Identifiable.Id ident, RegionRegistry.RegionSetId regionSetId,
             GameObject gameObj)
         {
             __result = null;
@@ -20,7 +21,7 @@ namespace SRML.SR.Patches
             if (_override.Value==null)
                 return true;
 
-            __result = _override.Value(actorId, ident, gameObj);
+            __result = _override.Value(actorId, ident, regionSetId, gameObj);
             return false;
         }
     }

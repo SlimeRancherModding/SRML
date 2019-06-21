@@ -118,7 +118,7 @@ namespace SRML.SR.SaveSystem.Format
 
         
 
-        public void Pull(PlayerV13 player,SRMod ourMod)
+        public void Pull(PlayerV14 player,SRMod ourMod)
         {
             upgrades.AddRange(player.upgrades.Where((x)=>ModdedIDRegistry.ModForID(x)==ourMod));
             availUpgrades.AddRange(player.availUpgrades.Where((x) => ModdedIDRegistry.ModForID(x) == ourMod));
@@ -140,7 +140,7 @@ namespace SRML.SR.SaveSystem.Format
             mail.AddRange(player.mail.Where((x)=>MailRegistry.GetModForMail(x.messageKey)==ourMod));
         }
 
-        public void Push(PlayerV13 player)
+        public void Push(PlayerV14 player)
         {
             player.upgrades.AddRange(upgrades.Where((x) => ModdedIDRegistry.IsValidID(x)));
             player.availUpgrades.AddRange(availUpgrades.Where((x)=>ModdedIDRegistry.IsValidID(x)));
@@ -160,7 +160,7 @@ namespace SRML.SR.SaveSystem.Format
             player.mail.AddRange(mail.Where((x)=>MailRegistry.GetModForMail(x.messageKey)!=null));
         }
 
-        public static HashSet<SRMod> FindAllModsWithData(PlayerV13 player)
+        public static HashSet<SRMod> FindAllModsWithData(PlayerV14 player)
         {
             var mods = new HashSet<SRMod>();
 

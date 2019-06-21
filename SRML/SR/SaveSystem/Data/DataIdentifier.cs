@@ -16,8 +16,8 @@ namespace SRML.SR.SaveSystem.Data
         public static readonly Dictionary<IdentifierType, Type> IdentifierTypeToData =
             new Dictionary<IdentifierType, Type>()
             {
-                {IdentifierType.ACTOR,typeof(ActorDataV07) },
-                {IdentifierType.GADGET,typeof(PlacedGadgetV06) },
+                {IdentifierType.ACTOR,typeof(ActorDataV09) },
+                {IdentifierType.GADGET,typeof(PlacedGadgetV08) },
                 {IdentifierType.LANDPLOT,typeof(LandPlotV08) }
             };
 

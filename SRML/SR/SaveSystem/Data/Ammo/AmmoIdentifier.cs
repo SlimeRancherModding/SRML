@@ -151,7 +151,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             }
         }
 
-        public static List<AmmoDataV02> ResolveToData(AmmoIdentifier identifier, GameV09 game)
+        public static List<AmmoDataV02> ResolveToData(AmmoIdentifier identifier, GameV11 game)
         {
             switch (identifier.AmmoType)
             {
@@ -167,7 +167,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             return null;
         }
 
-        public static AmmoIdentifier GetIdentifier(List<AmmoDataV02> ammo, GameV09 game)
+        public static AmmoIdentifier GetIdentifier(List<AmmoDataV02> ammo, GameV11 game)
         {
             foreach (var v in game.player.ammo)
             {
@@ -190,7 +190,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             return new AmmoIdentifier(AmmoType.NONE,0);
         }
 
-        public static bool TryGetIdentifier(List<AmmoDataV02> ammo, GameV09 game, out AmmoIdentifier identifier)
+        public static bool TryGetIdentifier(List<AmmoDataV02> ammo, GameV11 game, out AmmoIdentifier identifier)
         {
             identifier = GetIdentifier(ammo, game);
             return identifier.AmmoType != AmmoType.NONE;

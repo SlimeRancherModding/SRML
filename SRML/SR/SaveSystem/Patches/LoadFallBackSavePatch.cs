@@ -17,7 +17,7 @@ namespace SRML.SR.SaveSystem.Patches
     internal static class LoadFallBackSavePatch
     {
         private static Type targetType = typeof(AutoSaveDirector).GetNestedTypes(BindingFlags.NonPublic)
-            .First((x) => x.Name == "<LoadFallbackSave>c__Iterator1");
+            .First((x) => x.Name == "<LoadFallbackSave_Coroutine>c__Iterator2");
 
         public static MethodInfo TargetMethod()
         {

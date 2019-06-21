@@ -27,10 +27,10 @@ namespace SampleMod
             // in this case it spawns a mosaic boom largo
             SRCallbacks.OnSaveGameLoaded += (scenecontext) =>
             {
-                
+                   
                 var playerModel = SceneContext.Instance.GameModel.GetPlayerModel();
                 SRBehaviour.InstantiateActor(
-                    GameContext.Instance.LookupDirector.GetPrefab(Identifiable.Id.MOSAIC_BOOM_LARGO), playerModel.position,
+                    GameContext.Instance.LookupDirector.GetPrefab(Identifiable.Id.MOSAIC_BOOM_LARGO),MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId.UNSET,playerModel.position,
                     playerModel.rotation);
             };
         }

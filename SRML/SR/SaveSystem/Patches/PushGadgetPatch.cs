@@ -10,7 +10,7 @@ using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Gadget;
 using UnityEngine;
-using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV06;
+using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 namespace SRML.SR.SaveSystem.Patches
 {
     [HarmonyPatch(typeof(SavedGame))]
@@ -19,7 +19,7 @@ namespace SRML.SR.SaveSystem.Patches
         public static MethodInfo TargetMethod()
         {
             return AccessTools.Method(typeof(SavedGame), "Push",
-                new Type[] {typeof(GameModel), typeof(VanillaGadgetData), typeof(string), typeof(GadgetSiteModel)});
+                new Type[] {typeof(GameModel), typeof(VanillaGadgetData), typeof(GadgetSiteModel)});
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr)

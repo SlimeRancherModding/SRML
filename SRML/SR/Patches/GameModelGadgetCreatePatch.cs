@@ -12,7 +12,7 @@ namespace SRML.SR.Patches
     [HarmonyPatch("CreateGadgetModel")]
     internal static class GameModelGadgetCreatePatch
     {
-        public static bool Prefix(out GadgetModel __result, string siteId, GadgetSiteModel site, GameObject gameObj)
+        public static bool Prefix(out GadgetModel __result, GadgetSiteModel site, GameObject gameObj)
         {
             __result = null;
             var id = gameObj.GetComponent<Gadget>().id;
@@ -20,7 +20,7 @@ namespace SRML.SR.Patches
             if (_override.Value == null)
                 return true;
 
-            __result = _override.Value(siteId,site,gameObj);
+            __result = _override.Value(site,gameObj);
             return false;
         }
     }
