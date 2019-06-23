@@ -42,6 +42,7 @@ namespace SRML
             foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
             {
                 if(!ProtoMod.TryParseFromDLL(dllFile,out var mod)||mod.id==null) continue;
+                Debug.Log(mod.id);
                 if (!foundMods.Add(mod))
                 {
                     throw new Exception("Found mod with duplicate id '" + mod.id + "' in " + dllFile + "!");
@@ -97,8 +98,8 @@ namespace SRML
                     foreach (var assembly in foundAssemblies.Where((x)=>x.mod==mod))
                     {
                         var a = assembly.LoadAssembly();
-                        if (!TryGetEntryType(a, out var entryType)) continue;
-
+                        if (!TryGetEntryType(a, out var entryType)||assembly.IsModAssembly||(!mod.isFromJSON&&Path.GetFullPath(assembly.Path)!=Path.GetFullPath(mod.entryFile))) continue;
+                        assembly.IsModAssembly = true;
                         AddMod(assembly.mod, entryType);
 
                         goto foundmod;
@@ -199,6 +200,7 @@ namespace SRML
             public AssemblyName AssemblyName;
             public String Path;
             public ProtoMod mod;
+            public bool IsModAssembly;
             public AssemblyInfo(AssemblyName name, String path,ProtoMod mod)
             {
                 AssemblyName = name;
@@ -236,7 +238,11 @@ namespace SRML
             public string[] dependencies;
             public string[] load_after;
             public string[] load_before;
+
+
+
             public bool isFromJSON = true;
+            public string entryFile;
             public override bool Equals(object o)
             {
                 if (!(o is ProtoMod obj)) return base.Equals(o);
@@ -265,6 +271,7 @@ namespace SRML
                 var proto =
                     JsonConvert.DeserializeObject<ProtoMod>(jsonData);
                 proto.path = Path.GetDirectoryName(path);
+                proto.entryFile = path;
                 proto.ValidateFields();
                 return proto;
 
@@ -278,6 +285,7 @@ namespace SRML
                 mod = new ProtoMod();
                 mod.isFromJSON = false;
                 mod.path = Path.GetDirectoryName(dllFile);
+                mod.entryFile = dllFile;
                 if (assembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string
                     fileName)
                 {
