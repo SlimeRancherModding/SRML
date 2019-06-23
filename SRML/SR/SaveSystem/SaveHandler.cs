@@ -75,6 +75,8 @@ namespace SRML.SR.SaveSystem
                 Check(g, (v, partialdata) =>
                     data.partialData.Add(new DataIdentifier() { stringID = g.id, Type = IdentifierType.LANDPLOT }, partialdata));
             }
+
+            data.appearancesData.Pull(game.appearances);
         }
 
         private static void PullAmmoData(ModdedSaveData data, GameV11 game)
@@ -146,6 +148,8 @@ namespace SRML.SR.SaveSystem
         #region pushing data
         public static void PushAllModdedData(ModdedSaveData data, GameV11 game)
         {
+
+
             PushAllSegmentData(data, game);
 
             ExtendedData.Pull(data);
@@ -218,6 +222,7 @@ namespace SRML.SR.SaveSystem
 
                 }
             }
+            data.appearancesData.Push(game.appearances);
         }
         #endregion
 

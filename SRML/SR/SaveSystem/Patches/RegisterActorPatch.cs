@@ -21,7 +21,7 @@ namespace SRML.SR.SaveSystem.Patches
         {
             var potentialTag = PersistentAmmoManager.GetPotentialDataTag(gameObj);
             if (potentialTag != null)
-            {
+            {   
                 ExtendedData.extendedActorData[actorId] = potentialTag;
                 
             }

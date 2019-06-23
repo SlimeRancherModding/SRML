@@ -14,19 +14,19 @@ namespace SRML.SR.SaveSystem.Data.Partial
         Predicate<KeyValuePair<K, V>> hoistPredicate;
         public readonly Dictionary<K, V> hoistedValues = new Dictionary<K, V>();
 
-        private Func<KeyValuePair<K, V>?> hoistFiller;
+        private Func<KeyValuePair<K,V>, KeyValuePair<K, V>?> hoistFiller;
 
         private SerializerPair<K> keySerializer;
         private SerializerPair<V> valueSerializer;
 
   
 
-        public PartialDictionary(Predicate<KeyValuePair<K,V>> hoistPredicate,SerializerPair<K> keySerializer,SerializerPair<V> valueSerializer,Func<KeyValuePair<K,V>?> filler=null)
+        public PartialDictionary(Predicate<KeyValuePair<K,V>> hoistPredicate,SerializerPair<K> keySerializer,SerializerPair<V> valueSerializer,Func<KeyValuePair<K,V>,KeyValuePair<K,V>?> filler=null)
         {
             this.hoistPredicate = hoistPredicate;
             this.keySerializer = keySerializer;
             this.valueSerializer = valueSerializer;
-            if (filler == null) filler = () => null;
+            if (filler == null) filler = (x) => null;
             this.hoistFiller = filler;
         }
 
@@ -46,7 +46,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
             foreach (var pair in hoistedValues)
             {
                 data.Remove(pair.Key);
-                var newkey = hoistFiller();
+                var newkey = hoistFiller(pair);
                 if(newkey.HasValue) data.Add(newkey.Value.Key,newkey.Value.Value);
             }
         }

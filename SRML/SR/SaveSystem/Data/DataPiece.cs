@@ -168,7 +168,9 @@ namespace SRML.SR.SaveSystem.Data
 
         public void SetValue<T>(T b)
         {
-            SetValue(b);
+            if (typeId != GetTypeID(typeof(T)))
+                throw new Exception($"Tried to set data piece to a value invalid for its type ID");
+            this.data = b;
         }
 
 

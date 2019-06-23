@@ -70,6 +70,9 @@
       <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
@@ -110,9 +113,13 @@
     <Compile Include="SR\Patches\InitInitialBlueprintsPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
     <Compile Include="SR\Patches\MailReadPatch.cs" />
+    <Compile Include="SR\Patches\PediaDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RefineryUIPatch.cs" />
     <Compile Include="SR\Patches\RegisterActorPatch.cs" />
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
+    <Compile Include="SR\PediaRegistry.cs" />
+    <Compile Include="SR\SaveSystem\Data\Appearances\PartialAppearancesData.cs" />
+    <Compile Include="SR\SaveSystem\Patches\AmmoSetAmmoSlotPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LandPlotToGameObjectPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
@@ -150,6 +157,8 @@
     <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullLandPlotDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SiloCatcherOnTriggerStayPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SiloCatcherTriggerEnterPatch.cs" />
     <Compile Include="SR\SaveSystem\Utils\AmmoDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoGetSelectedStoredPatch.cs" />

@@ -14,11 +14,12 @@ namespace SRML
     public static class EnumPatcher
     {
         internal delegate object AlternateEnumRegister(object value, string name);
-        private static readonly Dictionary<Type,AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type,AlternateEnumRegister>()
+        private static readonly Dictionary<Type, AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type, AlternateEnumRegister>()
         {
             { typeof(Identifiable.Id),(x,y)=>IdentifiableRegistry.CreateIdentifiableId(x,y)},
             { typeof(Gadget.Id),(x,y)=>(object)GadgetRegistry.CreateGadgetId(x,y)},
-            { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)}
+            { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)},
+            {typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) }
         };
 
         private static PropertyInfo cache;
@@ -46,8 +47,9 @@ namespace SRML
         {
             if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
-            EnumPatch patch;
-            if (!patches.TryGetValue(enumType, out patch))
+
+            value = Enum.ToObject(enumType, value);
+            if (!patches.TryGetValue(enumType, out var patch))
             {
                 patch = new EnumPatch();
                 patches.Add(enumType, patch);
@@ -111,10 +113,10 @@ namespace SRML
                 values.Add(enumValue, name);
             }
 
-            public void GetArrays(out string[] names, out int[] values)
+            public void GetArrays(out string[] names, out object[] values)
             {
                 names = this.values.Values.ToArray();
-                values = this.values.Keys.Select((x) => (int)x).ToArray();
+                values = this.values.Keys.ToArray();
             }
         }
     }

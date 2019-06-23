@@ -30,7 +30,7 @@ namespace SRML.Patches
 
                 var oldValues = (int[])values.GetValue(mono);
                 var oldNames = (string[])names.GetValue(mono);
-                patch.GetArrays(out string[] toBePatchedNames,out int[] toBePatchedValues);
+                patch.GetArrays(out string[] toBePatchedNames,out object[] toBePatchedValues);
                 Array.Resize(ref toBePatchedNames, toBePatchedNames.Length + oldNames.Length);
                 Array.Resize(ref toBePatchedValues, toBePatchedValues.Length + oldValues.Length);
                 Array.Copy(oldNames, 0, toBePatchedNames, toBePatchedNames.Length - oldNames.Length, oldNames.Length);

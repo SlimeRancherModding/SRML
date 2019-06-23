@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Harmony;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.Appearances;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Utils;
 using SRML.Utils;
@@ -87,6 +88,10 @@ namespace SRML.SR.SaveSystem.Patches
             {
                 RemovePartial(actor.Value, __state);
             }
+
+            var partialAppearance = new PartialAppearancesData();
+            partialAppearance.Pull(__instance.appearances);
+            __state.addBacks.Add(() => partialAppearance.Push(__instance.appearances));
         }
 
         public static void Postfix(GameV11 __instance, ref RemovalData __state)

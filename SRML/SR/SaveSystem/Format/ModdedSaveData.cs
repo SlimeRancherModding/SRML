@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Ammo;
+using SRML.SR.SaveSystem.Data.Appearances;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace SRML.SR.SaveSystem.Format
     class ModdedSaveData
     {
 
-        public const int DATA_VERSION = 2;
+        public const int DATA_VERSION = 3;
         public int version;
         public List<ModDataSegment> segments = new List<ModDataSegment>();
 
@@ -23,6 +24,8 @@ namespace SRML.SR.SaveSystem.Format
         public EnumTranslator enumTranslator;
 
         public Dictionary<DataIdentifier,PartialData> partialData = new Dictionary<DataIdentifier, PartialData>();
+
+        public PartialAppearancesData appearancesData = new PartialAppearancesData();
 
         public void ReadHeader(BinaryReader reader)
         {
@@ -97,8 +100,13 @@ namespace SRML.SR.SaveSystem.Format
                         }
                         else Debug.LogError("No partial data for data identifier type "+id.Type);
                     }
+                    if (version >= 3)
+                    {
+                        appearancesData.Read(reader);
+                    }
                 }
             }
+          
         }
 
         public void WriteData(BinaryWriter writer)
@@ -124,6 +132,8 @@ namespace SRML.SR.SaveSystem.Format
                 DataIdentifier.Write(writer,pair.Key);
                 pair.Value.Write(writer);
             }
+
+            appearancesData.Write(writer);
         }
 
         public void Write(BinaryWriter writer)
@@ -159,6 +169,7 @@ namespace SRML.SR.SaveSystem.Format
         public void FixAllEnumValues(EnumTranslator.TranslationMode mode)
         {
             enumTranslator?.FixEnumValues(mode,partialData);
+            enumTranslator?.FixEnumValues(mode, appearancesData);
             foreach (var v in segments)
             {
                 v.FixAllValues(enumTranslator,mode);
