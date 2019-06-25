@@ -1,11 +1,10 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using SRML.SR.SaveSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-
 namespace SRML.SR
 {
     public static class PediaRegistry
@@ -77,7 +76,9 @@ namespace SRML.SR
 
         public static void SetPediaCategory(PediaDirector.Id id, PediaCategory category)
         {
-            GetCategory(category) = GetCategory(category).Add(id).ToArray();
+            var cat = GetCategory(category).ToList();
+            cat.Add(id);
+            GetCategory(category) = cat.ToArray();
         }
  
         public enum PediaCategory

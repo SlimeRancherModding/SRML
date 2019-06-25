@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using SRML.Utils;
 using UnityEngine;
 

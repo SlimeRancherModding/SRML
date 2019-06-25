@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Harmony;
+using HarmonyLib;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Appearances;
 using SRML.SR.SaveSystem.Data.Partial;

@@ -1,13 +1,13 @@
 ﻿using System.Reflection;
-using Harmony;
+using HarmonyLib;
 
 namespace SRML
 {
     public static class HarmonyPatcher
     {
-        private static HarmonyInstance _instance;
+        private static Harmony _instance;
 
-        internal static HarmonyInstance Instance
+        internal static Harmony Instance
         {
             get
             {
@@ -22,7 +22,7 @@ namespace SRML
 
         static void InitializeInstance()
         {
-            _instance = HarmonyInstance.Create("net.veesus.srml");
+            _instance = new Harmony("net.veesus.srml");
         }
 
         internal static void PatchAll()
@@ -30,14 +30,14 @@ namespace SRML
             Instance.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-        public static HarmonyInstance SetInstance(string name)
+        public static Harmony SetInstance(string name)
         {
             var currentMod = SRMod.GetCurrentMod();
             currentMod.CreateHarmonyInstance(name);
             return currentMod.HarmonyInstance;
         }
 
-        public static HarmonyInstance GetInstance()
+        public static Harmony GetInstance()
         {
             return SRMod.GetCurrentMod().HarmonyInstance;
         }
