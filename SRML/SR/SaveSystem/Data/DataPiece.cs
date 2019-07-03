@@ -53,21 +53,41 @@ namespace SRML.SR.SaveSystem.Data
             {DataType.ARRAY, new SerializerPair<Array>((x, y) =>
             {
                 var arrayType = y.GetType().GetElementType();
-                if (!typeToDataType.TryGetValue(arrayType, out var typeId))
+                DataType typeId;
+                try
+                {
+                    typeId=GetTypeID(arrayType);
+                }
+                catch{
                     throw new Exception("Array holds type that is invalid!");
+                }
 
                 if(!serializerPairs.TryGetValue(typeId,out var serializer))throw new Exception($"Unrecognized Data Type {typeId}");
 
                 x.Write((int)typeId);
                 x.Write(y.Length);
-                foreach (var v in y)
+                if(typeId!=DataType.ENUM)
                 {
-                    serializer.Serialize(x, v);
+                    foreach (var v in y)
+                    {
+                        serializer.Serialize(x, v);
+                    }
+                }
+                else
+                {
+                    var intSerializer = serializerPairs[DataType.INT32];
+                    x.Write(arrayType.AssemblyQualifiedName);
+                    for(int i = 0; i < y.Length;i++)
+                    {
+                            intSerializer.Serialize(x,(int)y.GetValue(i));
+                    }
+                    
                 }
             },
             (x) =>
             {
                 var typeId = (DataType)x.ReadInt32();
+                if(typeId!=DataType.ENUM){
                 var arrayType = typeToDataType.FirstOrDefault((g) => g.Value == typeId).Key;
                 if (arrayType == null) throw new Exception($"Unrecognized Data Type {typeId}");
                 if(!serializerPairs.TryGetValue(typeId,out var serializer)) throw new Exception($"Unrecognized Data Type {typeId}");
@@ -80,6 +100,20 @@ namespace SRML.SR.SaveSystem.Data
                 }
 
                 return array;
+                }
+                else
+                {
+                    int count = x.ReadInt32();
+                    var str = x.ReadString();
+                    Type type = Type.GetType(str);
+                    var array = Array.CreateInstance(type,count);
+                    var intSerializer = serializerPairs[DataType.INT32];
+                    for(int i = 0; i < count; i++)
+                    {
+                        array.SetValue(Enum.ToObject(type,(int)intSerializer.Deserialize(x)),i);
+                    }
+                    return array;
+                }
             }) },
             {DataType.BOOLEAN,new SerializerPair<bool>((x,y)=>x.Write(y),(x)=>x.ReadBoolean()) },
             {DataType.COLOR, new SerializerPair<Color>((x, y) => {
@@ -88,7 +122,9 @@ namespace SRML.SR.SaveSystem.Data
                 x.Write(y.b);
                 x.Write(y.a);
             },
-            (x) => { return new Color(x.ReadSingle(), x.ReadSingle(), x.ReadSingle(), x.ReadSingle()); }) }
+            (x) => { return new Color(x.ReadSingle(), x.ReadSingle(), x.ReadSingle(), x.ReadSingle()); }) },
+            {DataType.ENUM, new SerializerPair<object>((x,y)=>{
+            x.Write(y.GetType().AssemblyQualifiedName);x.Write((int)y); },(x)=>Enum.ToObject(Type.GetType(x.ReadString()),x.ReadInt32()))}
         };
 
         internal static readonly Dictionary<Type, DataType> typeToDataType = new Dictionary<Type, DataType>();
@@ -99,6 +135,10 @@ namespace SRML.SR.SaveSystem.Data
             {
                 typeToDataType.Add(v.Value.GetSerializedType(), v.Key);
             }
+            EnumTranslator.RegisterEnumFixer<DataPiece>((translator, mode, piece) =>
+            {
+                if (piece.dataFixer != null) piece.dataFixer.Invoke(translator, mode, piece.data); else translator.FixEnumValues(mode, piece.data);
+            });
         }
 
         internal static DataPiece GetNewDataPiece(DataType forType)
@@ -124,6 +164,7 @@ namespace SRML.SR.SaveSystem.Data
             piece.data = serializer.Deserialize(reader);
             return piece;
         }
+
 
         internal static void Serialize(BinaryWriter writer, DataPiece piece)
         {
@@ -182,7 +223,7 @@ namespace SRML.SR.SaveSystem.Data
 
         public static DataType GetTypeID(Type type)
         {
-            return typeToDataType[type];
+            return type.IsArray ? DataType.ARRAY : type.IsEnum ? DataType.ENUM : typeToDataType[type];
         }
 
         public static DataType GetTypeID(object val)
@@ -192,7 +233,7 @@ namespace SRML.SR.SaveSystem.Data
 
         public Type GetDataType()
         {
-            return typeToDataType.FirstOrDefault((g) => g.Value == typeId).Key;
+            return typeId == DataType.ENUM?data?.GetType():typeToDataType.FirstOrDefault((g) => g.Value == typeId).Key;
         }
 
         public override bool Equals(object obj)
@@ -206,6 +247,15 @@ namespace SRML.SR.SaveSystem.Data
         {
             return 249886028 + EqualityComparer<string>.Default.GetHashCode(key);
         }
+
+
+        EnumTranslator.EnumFixerDelegate dataFixer;
+
+        public virtual void SetEnumTranslator(EnumTranslator.EnumFixerDelegate del)
+        {
+            dataFixer = del;   
+        }
+
     }
 
     public enum DataType
@@ -227,6 +277,7 @@ namespace SRML.SR.SaveSystem.Data
         COMPOUND,
         ARRAY,
         BOOLEAN,
-        COLOR
+        COLOR,
+        ENUM
     }
 }

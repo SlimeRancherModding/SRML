@@ -23,5 +23,13 @@ namespace SRML.SR.SaveSystem.Format
             identifier=AmmoIdentifier.Read(reader);
             model.Read(reader);
         }
+
+        static IdentifiableAmmoData()
+        {
+            EnumTranslator.RegisterEnumFixer<IdentifiableAmmoData>((translator, mode, data) =>
+            {
+                translator.FixEnumValues(mode, data.model);
+            });
+        }
     }
 }

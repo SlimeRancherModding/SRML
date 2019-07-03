@@ -7,10 +7,8 @@ using System.Security.Policy;
 using System.Text;
 using HarmonyLib;
 using SRML.Editor;
-using SRML.SR;
-using SRML.SR.SaveSystem.Data;
 using SRML.Utils;
-using TMPro;
+using SRML.Utils.Prefab.Patches;
 using UnityEngine;
 
 namespace SRML
@@ -24,9 +22,16 @@ namespace SRML
             if (isPreInitialized) return;
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
+
+            foreach(var v in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
+            }
             HarmonyPatcher.PatchAll();
+
             try
             {
+                
                 SRModLoader.InitializeMods();
             }
             catch (Exception e)
@@ -35,7 +40,6 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
-
             try
             {
                 SRModLoader.PreLoadMods();
@@ -44,6 +48,7 @@ namespace SRML
             {
                 Debug.LogError(e);
                 ErrorGUI.CreateError($"{e.Message}");
+                return;
             }
             ReplacerCache.ClearCache();
 
@@ -69,7 +74,6 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
-
             PostLoad();
         }
         
@@ -78,9 +82,7 @@ namespace SRML
         static void PostLoad()
         {
             if (isPostInitialized) return;
-            isPostInitialized = true;
-            
-            
+            isPostInitialized = true;   
             try
             {
                 SRModLoader.PostLoadMods();

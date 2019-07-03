@@ -170,6 +170,7 @@ namespace SRML.SR.SaveSystem.Format
         {
             enumTranslator?.FixEnumValues(mode,partialData);
             enumTranslator?.FixEnumValues(mode, appearancesData);
+            enumTranslator?.FixEnumValues(mode, ammoDataEntries);
             foreach (var v in segments)
             {
                 v.FixAllValues(enumTranslator,mode);

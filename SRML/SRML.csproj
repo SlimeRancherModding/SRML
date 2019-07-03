@@ -115,9 +115,12 @@
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
     <Compile Include="SR\Patches\MailReadPatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorAwakePatch.cs" />
+    <Compile Include="SR\Patches\PlayerStateGetPotentialAmmoPatch.cs" />
+    <Compile Include="SR\Patches\PlayerStateResetPatch.cs" />
     <Compile Include="SR\Patches\RefineryUIPatch.cs" />
     <Compile Include="SR\Patches\RegisterActorPatch.cs" />
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
+    <Compile Include="SR\Patches\StorageTypeExtensionsGetContentsPatch.cs" />
     <Compile Include="SR\PediaRegistry.cs" />
     <Compile Include="SR\SaveSystem\Data\Appearances\PartialAppearancesData.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoSetAmmoSlotPatch.cs" />
@@ -155,6 +158,7 @@
     <Compile Include="SR\SaveSystem\ISerializable.cs" />
     <Compile Include="SR\SaveSystem\IVersionedSerializable.cs" />
     <Compile Include="SR\SaveSystem\ModdedIDRegistry.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PlortCollectorUpdatePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullGadgetDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PullLandPlotDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
@@ -208,6 +212,9 @@
     <Compile Include="SR\PersonalUpgradeRegistry.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
     <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
+    <Compile Include="Utils\Prefab\Patches\GameObjectDestroyPatches.cs" />
+    <Compile Include="Utils\Prefab\Patches\GameObjectInstantiatePatches.cs" />
+    <Compile Include="Utils\Prefab\RuntimePrefab.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
@@ -215,6 +222,7 @@
     <Compile Include="Utils\BinaryUtils.cs" />
     <Compile Include="Utils\LogUtils.cs" />
     <Compile Include="Utils\PrefabUtils.cs" />
+    <Compile Include="Utils\SiloStorageExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

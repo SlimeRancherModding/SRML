@@ -67,5 +67,67 @@ namespace SRML.Utils
 
             }
         }
+
+        public static GameObject CopyPrefab(GameObject prefab)
+        {
+            var newG = GameObjectUtils.InstantiateInactive(prefab);
+            GameObjectUtils.Prefabitize(newG);
+            return newG;
+        }
+
+        public static UnityEngine.Object DeepCopyObject(UnityEngine.Object ob)
+        {
+            Dictionary<UnityEngine.Object, UnityEngine.Object> refToRef = new Dictionary<UnityEngine.Object, UnityEngine.Object>();
+            UnityEngine.Object DeepCopyObject_Internal(UnityEngine.Object obj)
+            {
+                if (!obj) return obj;
+                if (refToRef.TryGetValue(obj, out var old)) return old;
+                if (refToRef.Values.Contains(obj)) return obj;
+                var newObj = UnityEngine.Object.Instantiate(obj);
+                if (!typeof(ScriptableObject).IsAssignableFrom(newObj.GetType())) return newObj;
+                refToRef[obj] = newObj;
+                System.Object ProcessObject(System.Object theObj)
+                {
+                    if (theObj == null) return null;
+                    
+                    if (typeof(Component).IsAssignableFrom(theObj.GetType()) || typeof(GameObject).IsAssignableFrom(theObj.GetType()))
+                    {
+                        return theObj;  
+                        var newPref = CopyPrefab((typeof(Component).IsAssignableFrom(theObj.GetType())) ? (theObj as Component).gameObject : theObj as GameObject);
+                        return (typeof(Component).IsAssignableFrom(theObj.GetType())) ? (System.Object)newPref.GetComponent(theObj.GetType()) : newPref;
+                    }
+                    else
+                    if (typeof(UnityEngine.Object).IsAssignableFrom(theObj.GetType()))
+                    {
+                        return DeepCopyObject_Internal((UnityEngine.Object)theObj);
+                    }
+                    else if (theObj.GetType().IsArray)
+                    {
+                        var g = theObj as Array;
+                        for (int i = 0; i < g.Length; i++)
+                        {
+                            g.SetValue(ProcessObject(g.GetValue(i)), i);
+                        }
+                        
+                    }
+                    else if (!theObj.GetType().IsPrimitive&&!typeof(String).IsAssignableFrom(theObj.GetType())&&!theObj.GetType().IsEnum)
+                    {
+                        foreach(var v in theObj.GetType().GetFields(System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public))
+                        {
+                            v.SetValue(theObj, ProcessObject(v.GetValue(theObj)));
+                        }
+                    }
+                    
+                    return theObj;
+                }
+
+                foreach (var v in newObj.GetType().GetFields())
+                {
+                    v.SetValue(newObj,ProcessObject(v.GetValue(newObj)));
+                }
+                return newObj;
+            }
+            return DeepCopyObject_Internal(ob);
+        }
     }
 }

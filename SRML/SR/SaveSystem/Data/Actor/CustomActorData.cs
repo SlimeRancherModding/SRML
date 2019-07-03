@@ -61,12 +61,16 @@ namespace SRML.SR.SaveSystem.Data.Actor
 
         static CustomActorData()
         {
-            EnumTranslator.RegisterEnumFixer((EnumTranslator translator,EnumTranslator.TranslationMode mode,VanillaActorData v) =>
-                {
-                    v.typeId = (int)translator.TranslateEnum(mode, ((Identifiable.Id) v.typeId));
-                    translator.FixEnumValues(mode, v.fashions);
-                    translator.FixEnumValues(mode, v.emotions.emotionData);
-                });
+            RegisterPickers();
+        }
+        public static void RegisterPickers()
+        {
+            EnumTranslator.RegisterEnumFixer((EnumTranslator translator, EnumTranslator.TranslationMode mode, VanillaActorData v) =>
+            {
+                v.typeId = (int)translator.TranslateEnum(mode, ((Identifiable.Id)v.typeId));
+                translator.FixEnumValues(mode, v.fashions);
+                translator.FixEnumValues(mode, v.emotions.emotionData);
+            });
             CustomChecker.RegisterCustomChecker((VanillaActorData data) =>
             {
                 if (SaveRegistry.IsCustom(data)) return CustomChecker.CustomLevel.FULL;
@@ -77,7 +81,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
 
                 return CustomChecker.CustomLevel.VANILLA;
             });
-            PartialData.RegisterPartialData(()=>new PartialActorData());
+            PartialData.RegisterPartialData(() => new PartialActorData());
         }
     }
 }

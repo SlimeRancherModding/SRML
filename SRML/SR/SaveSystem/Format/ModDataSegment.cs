@@ -148,6 +148,7 @@ namespace SRML.SR.SaveSystem.Format
             EnumTranslator.FixEnumValues(enumTranslator,mode,identifiableData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,playerData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,customAmmo);
+            EnumTranslator.FixEnumValues(enumTranslator, mode, extendedData);
         }
     }
 

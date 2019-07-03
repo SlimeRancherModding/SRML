@@ -42,7 +42,6 @@ namespace SRML
             foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
             {
                 if(!ProtoMod.TryParseFromDLL(dllFile,out var mod)||mod.id==null) continue;
-                Debug.Log(mod.id);
                 if (!foundMods.Add(mod))
                 {
                     throw new Exception("Found mod with duplicate id '" + mod.id + "' in " + dllFile + "!");
@@ -152,7 +151,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
                
             }
@@ -170,7 +169,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
 
             }
@@ -188,7 +187,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error post-loading mod '{modid}'!\n{e.GetType().Name}: {e.Message}");
+                    throw new Exception($"Error post-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
             }
 
