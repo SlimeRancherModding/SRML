@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using SRML.SR.SaveSystem.Data.Ammo;
 using UnityEngine;
 
@@ -16,7 +16,6 @@ namespace SRML.SR.SaveSystem.Patches
         {
             if (AmmoIdentifier.TryGetIdentifier(__instance, out var identifier))
             {
-                Debug.Log($"decremented ammo {identifier.AmmoType} {identifier.longIdentifier} {identifier.stringIdentifier}");
                 if (PersistentAmmoManager.HasPersistentAmmo(identifier))
                 {
                     PersistentAmmoManager.OnAmmoDecrement(identifier,__instance.selectedAmmoIdx,amount);

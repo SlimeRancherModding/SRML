@@ -21,6 +21,22 @@ namespace SRML.SR.SaveSystem.Data
             get { return data as HashSet<DataPiece>; }
         }
 
+        static CompoundDataPiece()
+        {
+            EnumTranslator.RegisterEnumFixer<CompoundDataPiece>((translator, mode, piece) =>
+            {
+                foreach(var v in piece.DataList)
+                {
+                    translator.FixEnumValues(mode, v);
+                }
+            });
+        }
+
+        public override void SetEnumTranslator(EnumTranslator.EnumFixerDelegate del)
+        {
+            return;
+        }
+
         private Dictionary<string, DataPiece> _cache = new Dictionary<string, DataPiece>();
 
         DataPiece GetCachedPiece(string key)

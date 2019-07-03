@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Harmony;
+using HarmonyLib;
 using SRML.Utils;
 
 namespace SRML
@@ -84,7 +84,7 @@ namespace SRML
         public SRModInfo ModInfo { get; private set; }
         public String Path { get; private set; }
         public Type EntryType { get; private set; }
-        private HarmonyInstance _harmonyInstance;
+        private Harmony _harmonyInstance;
 
         private IModEntryPoint entryPoint;
 
@@ -106,7 +106,7 @@ namespace SRML
             forcedContext = null;
         }
 
-        public HarmonyInstance HarmonyInstance
+        public Harmony HarmonyInstance
         {
             get
             {
@@ -122,7 +122,7 @@ namespace SRML
 
         public void CreateHarmonyInstance(String name)
         {
-            HarmonyInstance = HarmonyInstance.Create(name);
+            HarmonyInstance = new Harmony(name);
         }
 
         public String GetDefaultHarmonyName()

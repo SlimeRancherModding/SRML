@@ -5,11 +5,14 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using SRML.Utils.Prefab;
 using UnityEngine;
 namespace SRML.Utils
 {
     public static class GameObjectUtils
     {
+        public static object GameContext { get; internal set; }
+
         public static String PrintObjectTree(GameObject obj)
         {
             while (obj.transform.parent != null)
@@ -74,6 +77,16 @@ namespace SRML.Utils
         {
             obj.SetActive(false);
             GameObject.DontDestroyOnLoad(obj);
+            obj.AddComponent<RuntimePrefab>();
+        }
+
+        public static GameObject InstantiateInactive(GameObject original)
+        {
+            var state = original.activeSelf;
+            original.SetActive(false);
+            var newObj = GameObject.Instantiate(original);
+            original.SetActive(state);
+            return newObj;
         }
     }
 }

@@ -9,32 +9,54 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Format
 {
-    internal class ExtendedDataTree
+    internal class ExtendedDataTree : VersionedSerializable
     {
         public IdentifierType idType;
-        public long identifier;
+        public long longIdentifier;
+        public string stringIdentifier="";
         public CompoundDataPiece dataPiece;
 
-        public void Read(BinaryReader reader)
+        public override int LatestVersion => 0;
+
+        public override void Read(BinaryReader reader)
         {
-            idType = (IdentifierType) reader.ReadInt32();
-            identifier = reader.ReadInt64();
+            bool isOld = false;
+            int number =  reader.ReadInt32();
+            if (number < 3)
+            {
+                isOld = true; number += 3;
+            }
+            idType = (IdentifierType)number;
+            if(!isOld) base.Read(reader);
+            longIdentifier = reader.ReadInt64();
+            stringIdentifier = isOld ? "" : reader.ReadString();
             dataPiece = DataPiece.Deserialize(reader) as CompoundDataPiece;
             if (dataPiece == null) throw new Exception("Invalid top level data piece!");
         }
 
-        public void Write(BinaryWriter writer)
+        public override void Write(BinaryWriter writer)
         {
+            
             writer.Write((int)idType);
-            writer.Write(identifier);
+            base.Write(writer);
+            writer.Write(longIdentifier);
+            writer.Write(stringIdentifier);
             DataPiece.Serialize(writer, dataPiece);
+        }
+
+        static ExtendedDataTree()
+        {
+            EnumTranslator.RegisterEnumFixer<ExtendedDataTree>((translator, mode, piece) => 
+            {
+                if(piece.dataPiece!=null) translator.FixEnumValues(mode, piece.dataPiece);
+            });
         }
 
         internal enum IdentifierType
         {
-            ACTOR,
-            GADGET,
-            LANDPLOT
+            ACTOR=3,
+            GADGET=4,
+            LANDPLOT=5
         }
     }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using Sony.NP;
 
 namespace SRML
@@ -18,7 +18,7 @@ namespace SRML
 
     public abstract class ModEntryPoint : IModEntryPoint
     {
-        public HarmonyInstance HarmonyInstance => HarmonyPatcher.GetInstance();
+        public Harmony HarmonyInstance => HarmonyPatcher.GetInstance();
 
         public virtual void Load()
         {

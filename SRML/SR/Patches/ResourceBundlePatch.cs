@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace SRML.SR.Patches
@@ -14,7 +14,6 @@ namespace SRML.SR.Patches
     {
         static void Postfix(string path, Dictionary<string, string> __result,string text)
         {
-            File.WriteAllText(path + ".txt", text);
             if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) return;    
             foreach (var entry in dict)
             {

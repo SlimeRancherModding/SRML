@@ -30,7 +30,7 @@ namespace SRML.SR.SaveSystem
                     switch (extendedDataTree.idType)
                     {
                         case ExtendedDataTree.IdentifierType.ACTOR:
-                            var list = ExtendedDataUtils.GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.identifier)).DataList;
+                            var list = ExtendedDataUtils.GetPieceForMod(mod.modid,GetDataForActor(extendedDataTree.longIdentifier)).DataList;
                             foreach (var h in extendedDataTree.dataPiece.DataList)
                             {
                                 list.Add(h);
@@ -165,7 +165,7 @@ namespace SRML.SR.SaveSystem
                     seg.extendedData.Add(new ExtendedDataTree()
                     {
                         dataPiece = newCompound,
-                        identifier = actorData.Key,
+                        longIdentifier = actorData.Key,
                         idType = ExtendedDataTree.IdentifierType.ACTOR
                     });
                 }

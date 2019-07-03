@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Harmony;
+using HarmonyLib;
 namespace SRML.SR.Patches
 {
     [HarmonyPatch(typeof(LookupDirector))]

@@ -53,6 +53,14 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
         public PersistentAmmoModel() { }
 
+        static PersistentAmmoModel()
+        {
+            EnumTranslator.RegisterEnumFixer<PersistentAmmoModel>((translator, mode, loop) =>
+            {
+                translator.FixEnumValues(mode, loop.slots);
+            });
+        }
+
         public CompoundDataPiece PopDataForSlot(int index)
         {
             return slots[index].PopTop();

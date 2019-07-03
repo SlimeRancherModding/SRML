@@ -47,6 +47,14 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             data.Add(piece);
         }
 
+        static PersistentAmmoSlot()
+        {
+            EnumTranslator.RegisterEnumFixer<PersistentAmmoSlot>((translator, mode, loop) =>
+            {
+                translator.FixEnumValues(mode, loop.data);
+            });
+        }
+
         public void CompensateForExternalChanges(int realAmount, bool log = false)
         {
             if (realAmount - Count != 0)

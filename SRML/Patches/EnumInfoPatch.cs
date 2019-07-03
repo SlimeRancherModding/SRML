@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace SRML.Patches
@@ -18,7 +18,7 @@ namespace SRML.Patches
             names = AccessTools.Field(t, "names");
             values = AccessTools.Field(t,"values");
         }
-        static MethodBase TargetMethod(HarmonyInstance instance)
+        static MethodBase TargetMethod()
         {
             return AccessTools.Method(Type.GetType("System.MonoEnumInfo"),"GetInfo");
 

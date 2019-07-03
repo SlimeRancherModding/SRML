@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using System.Reflection;
-using Harmony;
+using HarmonyLib;
 using SRML.SR;
 
 namespace SRML
