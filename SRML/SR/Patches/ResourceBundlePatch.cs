@@ -14,6 +14,7 @@ namespace SRML.SR.Patches
     {
         static void Postfix(string path, Dictionary<string, string> __result,string text)
         {
+            TranslationPatcher.doneDictionaries[path] = __result;
             if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) return;    
             foreach (var entry in dict)
             {

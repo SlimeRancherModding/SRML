@@ -10,6 +10,9 @@ namespace SRML.SR
 {
     public static class TranslationPatcher
     {
+
+        internal static Dictionary<string, Dictionary<string, string>> doneDictionaries = new Dictionary<string, Dictionary<string, string>>();
+
         internal static Dictionary<string,Dictionary<string,string>> patches = new Dictionary<string, Dictionary<string, string>>();
 
         internal static Dictionary<KeyValuePair<string,string>,SRMod> keyToMod = new Dictionary<KeyValuePair<String,String>,SRMod>();
@@ -46,8 +49,11 @@ namespace SRML.SR
             AddTranslationKey("ui",key,value);
         }
         
-        internal static Dictionary<string, string> GetPatchesFor(string bundleName)
+        private static Dictionary<string, string> GetPatchesFor(string bundleName)
         {
+
+            if (doneDictionaries.TryGetValue(bundleName, out var test)) return test;
+
             if (!patches.ContainsKey(bundleName))
             {
                 patches.Add(bundleName, new Dictionary<string,string>());

@@ -40,6 +40,9 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
+
+            Console.Console.Init();
+
             try
             {
                 SRModLoader.PreLoadMods();

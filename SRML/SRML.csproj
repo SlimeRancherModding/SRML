@@ -86,6 +86,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Console\Commands\AddButtonCommand.cs" />
+    <Compile Include="Console\Commands\ClearCommand.cs" />
+    <Compile Include="Console\Commands\DumpCommand.cs" />
+    <Compile Include="Console\Commands\EditButtonCommand.cs" />
+    <Compile Include="Console\Commands\GiveCommand.cs" />
+    <Compile Include="Console\Commands\HelpCommand.cs" />
+    <Compile Include="Console\Commands\ModsCommand.cs" />
+    <Compile Include="Console\Commands\ReloadCommand.cs" />
+    <Compile Include="Console\Commands\RemoveButtonCommand.cs" />
+    <Compile Include="Console\Commands\SpawnCommand.cs" />
+    <Compile Include="Console\Console.cs" />
+    <Compile Include="Console\ConsoleBinder.cs" />
+    <Compile Include="Console\ConsoleButton.cs" />
+    <Compile Include="Console\ConsoleCommand.cs" />
+    <Compile Include="Console\ConsoleWindow.cs" />
+    <Compile Include="Console\FileLogger.cs" />
     <Compile Include="DependencyChecker.cs" />
     <Compile Include="Editor\ReplacerCache.cs" />
     <Compile Include="Editor\ResolvedInstance.cs" />
