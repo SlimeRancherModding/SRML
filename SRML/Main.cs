@@ -40,7 +40,7 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
-
+            FileLogger.Init();
             Console.Console.Init();
 
             try
