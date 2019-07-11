@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using static SRML.SRModLoader;
 
@@ -32,7 +28,7 @@ namespace SRML.SR
         }
 
         public static void RegisterIdentifiablePrefab(Identifiable b)
-        {
+        {   
             RegisterIdentifiablePrefab(b.gameObject);
         }
 

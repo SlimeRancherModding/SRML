@@ -12,7 +12,6 @@ namespace SRML
 {
     internal static class DependencyChecker
     {
-        private static Exception comparerException; // this sucks
         public static bool CheckDependencies(HashSet<SRModLoader.ProtoMod> mods)
         {
             foreach (var mod in mods)

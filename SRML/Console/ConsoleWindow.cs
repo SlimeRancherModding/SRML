@@ -16,6 +16,8 @@ namespace SRML.Console
         private static bool showWindow = false;
         private static bool focus = false;
         private static bool autoComplete = false;
+        private static bool hasAlreadyPaused = false;
+        private static SRInput.InputMode previousInput;
 
         // TEXT VARIABLES
         private static readonly string cmdName = "cmdLine";
@@ -94,7 +96,7 @@ namespace SRML.Console
         private static Rect intRect = new Rect(5, 0, acsRect.width - 20, 0);
         private static Rect cBtnRect = new Rect(0, 0, intRect.width - 5, 20);
 
-        private static List<string> cachedAC = new List<string>();
+        private static readonly List<string> cachedAC = new List<string>();
         private static string oldCmdText = null;
 
         /// <summary>
@@ -164,11 +166,19 @@ namespace SRML.Console
             window.onHover.background = window.normal.background;
             window.onFocused.background = window.normal.background;
 
+
+            // FORCES WINDOW TO CLOSE IF THE GAME IS LOADING
+            if (GameContext.Instance.AutoSaveDirector.IsLoadingGame() && showWindow)
+            {
+                SetWindowOff();
+            }
+
+
             // LISTENS TO MAIN INPUT
             if (Event.current.isKey && Event.current.type == EventType.KeyDown)
             {
                 // TOGGLES THE WINDOW
-                if ((Event.current.modifiers == EventModifiers.Control || Event.current.modifiers == EventModifiers.Command) && Event.current.keyCode == KeyCode.Tab)
+                if ((Event.current.modifiers == EventModifiers.Control || Event.current.modifiers == EventModifiers.Command) && Event.current.keyCode == KeyCode.Tab && !GameContext.Instance.AutoSaveDirector.IsLoadingGame())
                 {
                     ToggleWindow();
                 }
@@ -176,14 +186,25 @@ namespace SRML.Console
 
             if (showWindow)
             {
+                GUI.backgroundColor = new Color(0, 0, 0, 0.25f);
+                GUI.Window(1234567892, new Rect(-20, -20, Screen.width + 20, Screen.height + 20), (id) => { }, string.Empty, window);
+                GUI.BringWindowToBack(1234567892);
+                GUI.backgroundColor = Color.white;
+
                 GUI.Window(1234567890, windowRect, DrawWindow, string.Empty, window);
                 GUI.BringWindowToFront(1234567890);
+                GUI.FocusWindow(1234567890);
 
                 if (autoComplete)
                 {
                     completeRect.x = 4 + CursorX;
                     GUI.Window(1234567891, completeRect, DrawACWindow, acTitle, window);
                     GUI.BringWindowToFront(1234567891);
+                }
+
+                if (Event.current.isKey || Event.current.isMouse || Event.current.isScrollWheel)
+                {
+                    Event.current.Use();
                 }
             }
 
@@ -192,6 +213,15 @@ namespace SRML.Console
 
         private void DrawWindow(int id)
         {
+            int bFontSize = GUI.skin.button.fontSize;
+            int tfFontSize = GUI.skin.textField.fontSize;
+            int tFontSize = GUI.skin.toggle.fontSize;
+            int lFontSize = GUI.skin.label.fontSize;
+            GUI.skin.button.fontSize = consoleFont.fontSize;
+            GUI.skin.textField.fontSize = consoleFont.fontSize;
+            GUI.skin.toggle.fontSize = consoleFont.fontSize;
+            GUI.skin.label.fontSize = consoleFont.fontSize;
+
             if (cachedAC.Count == 0)
             {
                 autoComplete = false;
@@ -208,6 +238,13 @@ namespace SRML.Console
                     Event.current.Use();
                     return;
                 }
+                else if (Event.current.keyCode == KeyCode.Escape && !autoComplete)
+                {
+                    SetWindowOff();
+
+                    Event.current.Use();
+                    return;
+                }
 
                 // SUBMITS THE TEXTFIELD
                 if (Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter)
@@ -216,6 +253,7 @@ namespace SRML.Console
                     cmdText = string.Empty;
                     oldCmdText = null;
 
+                    currHistory = -1;
                     completeIndex = 0;
                     autoComplete = false;
 
@@ -255,7 +293,7 @@ namespace SRML.Console
                 }
 
                 // CYCLES HISTORY UP
-                if (Event.current.keyCode == KeyCode.UpArrow && !autoComplete)
+                if (Event.current.keyCode == KeyCode.UpArrow && !autoComplete && Console.history.Count > 0)
                 {
                     if (currHistory == -1)
                     {
@@ -289,7 +327,7 @@ namespace SRML.Console
                 }
 
                 // CYCLES HISTORY DOWN
-                if (Event.current.keyCode == KeyCode.DownArrow && !autoComplete)
+                if (Event.current.keyCode == KeyCode.DownArrow && !autoComplete && Console.history.Count > 0)
                 {
                     if (currHistory != -1)
                     {
@@ -323,7 +361,7 @@ namespace SRML.Console
                 }
 
                 // TRIGGER AUTO COMPLETE
-                if (autoAC && Event.current.keyCode != KeyCode.None && Event.current.keyCode != KeyCode.Space && (!cmdText.Equals(oldCmdText) || cmdText.Equals(string.Empty)) && (Event.current.modifiers == EventModifiers.None || Event.current.modifiers == EventModifiers.Shift))
+                if (autoAC && Event.current.keyCode != KeyCode.None && Event.current.keyCode != KeyCode.Space && Event.current.keyCode != KeyCode.Escape && (!cmdText.Equals(oldCmdText) || cmdText.Equals(string.Empty)) && (Event.current.modifiers == EventModifiers.None || Event.current.modifiers == EventModifiers.Shift))
                 {
                     if (cmdText.Equals(string.Empty))
                         forceClose = false;
@@ -361,7 +399,7 @@ namespace SRML.Console
                 GUI.FocusControl(cmdName);
             }
 
-            textArea.wordWrap = true;
+            textArea.wordWrap = false;
             textArea.clipping = TextClipping.Clip;
             textArea.richText = true;
             textArea.padding = new RectOffset(5, 5, 5, 5);
@@ -437,7 +475,13 @@ namespace SRML.Console
             // UPDATES THE SCROLL POSITION FOR THE CONSOLE TO SHOW LATEST MESSAGES
             if (updateDisplay)
             {
-                consoleScroll.y = textArea.CalcSize(new GUIContent(fullText.ToString())).y;
+                fullText = string.Empty;
+                for (int i = 0; i < Console.lines.Count; i++)
+                {
+                    fullText += $"{(i == 0 ? string.Empty : "\n")}{Console.lines[i]}";
+                }
+
+                consoleScroll.y = TextSize.y;
                 updateDisplay = false;
             }
 
@@ -450,10 +494,21 @@ namespace SRML.Console
                 autoComplete = false;
                 moveCursor = false;
             }
+
+            if (cmdText.Equals(string.Empty) && currHistory > -1)
+                currHistory = -1;
+
+            GUI.skin.button.fontSize = bFontSize;
+            GUI.skin.textField.fontSize = tfFontSize;
+            GUI.skin.toggle.fontSize = tFontSize;
+            GUI.skin.label.fontSize = lFontSize;
         }
 
         private void DrawACWindow(int id)
         {
+            int bFontSize = GUI.skin.button.fontSize;
+            GUI.skin.button.fontSize = consoleFont.fontSize;
+
             bool spaces = cmdText.Contains(" ");
             string command = spaces ? cmdText.Substring(0, cmdText.IndexOf(' ')) : cmdText;
 
@@ -579,6 +634,8 @@ namespace SRML.Console
 
             GUI.EndGroup();
             GUI.EndScrollView();
+
+            GUI.skin.button.fontSize = bFontSize;
         }
 
         private void ToggleWindow()
@@ -587,35 +644,84 @@ namespace SRML.Console
 
             if (showWindow)
             {
+                previousInput = SRInput.Instance.GetInputMode();
+                SRInput.Instance.SetInputMode(SRInput.InputMode.NONE);
+
+                autoComplete = false;
+                currHistory = -1;
+                forceClose = false;
+                completeIndex = 0;
+
                 focus = false;
                 if (SceneManager.GetActiveScene().name.Equals("worldGenerated"))
                 {
                     if (!SceneContext.Instance.TimeDirector.HasPauser())
                         SceneContext.Instance.TimeDirector.Pause(true);
+                    else
+                        hasAlreadyPaused = true;
                 }
 
                 cachedCasters = FindObjectsOfType<GraphicRaycaster>();
                 foreach (GraphicRaycaster caster in cachedCasters)
                 {
+                    if (caster == null)
+                        continue;
+
                     caster.enabled = false;
                 }
             }
             else
             {
+                SRInput.Instance.SetInputMode(previousInput);
+
                 autoComplete = false;
+                currHistory = -1;
+                forceClose = false;
+                completeIndex = 0;
 
                 if (SceneManager.GetActiveScene().name.Equals("worldGenerated"))
                 {
-                    if (SceneContext.Instance.TimeDirector.HasPauser())
+                    if (!hasAlreadyPaused)
                         SceneContext.Instance.TimeDirector.Unpause(true);
                 }
 
                 foreach (GraphicRaycaster caster in cachedCasters)
                 {
+                    if (!caster)
+                        continue;
+
                     caster.enabled = true;
                 }
                 cachedCasters = null;
+                hasAlreadyPaused = false;
             }
+        }
+
+        private void SetWindowOff()
+        {
+            SRInput.Instance.SetInputMode(previousInput);
+
+            showWindow = false;
+            autoComplete = false;
+            currHistory = -1;
+            forceClose = false;
+            completeIndex = 0;
+
+            if (SceneManager.GetActiveScene().name.Equals("worldGenerated"))
+            {
+                if (!hasAlreadyPaused)
+                    SceneContext.Instance.TimeDirector.Unpause(true);
+            }
+
+            foreach (GraphicRaycaster caster in cachedCasters)
+            {
+                if (!caster)
+                    continue;
+
+                caster.enabled = true;
+            }
+            cachedCasters = null;
+            hasAlreadyPaused = false;
         }
     }
 }

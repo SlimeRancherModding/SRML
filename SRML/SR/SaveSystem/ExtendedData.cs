@@ -149,6 +149,19 @@ namespace SRML.SR.SaveSystem
             if (IsRegistered(id)) extendedActorData.Remove(id);
         }
 
+
+        public static void UnregisterActor(GameObject b, bool removeParticipants = true)
+        {
+            if (b?.GetComponent<Identifiable>()?.model == null) return;
+            long id = Identifiable.GetActorId(b);
+            if (IsRegistered(id)) extendedActorData.Remove(id);
+            if (!removeParticipants) return;
+            foreach(Component participant in b.GetComponents<ExtendedData.Participant>())
+            {
+                MonoBehaviour.Destroy(participant);
+            }
+        }
+
         internal static void Push(ModdedSaveData data)
         {
             foreach (var actorData in extendedActorData)

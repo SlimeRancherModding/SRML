@@ -47,7 +47,7 @@ namespace SRMLInstaller
                     if (patcher.IsPatched())
                     {
 
-                        Console.Write($"Game is already patched! Would you like to uninstall? (y/n): ");
+                        Console.Write($"Game is already patched! Would you like to uninstall? (selecting n will instead trigger an update) (y/n): ");
                         alreadypatched = true;
                         poll_user:
                         var response = Console.ReadLine();

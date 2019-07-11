@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-// Code courtesy of RicardoTheCoder
-
 namespace SRML.Console
 {
     /// <summary>
@@ -15,7 +13,7 @@ namespace SRML.Console
     public class Console
     {
         // CONFIGURE SOME NUMBERS
-        public const int MAX_ENTRIES = 200; // MAX ENTRIES TO SHOW ON CONSOLE
+        public const int MAX_ENTRIES = 100; // MAX ENTRIES TO SHOW ON CONSOLE (CAN'T GO ABOVE 100, TEXT MESH GENERATOR WILL BUG IF SO)
         public const int HISTORY = 10; // NUMBER OF COMMANDS TO KEEP ON HISTORY
 
         // LOG STUFF
@@ -27,8 +25,8 @@ namespace SRML.Console
         internal static Dictionary<string, ConsoleCommand> commands = new Dictionary<string, ConsoleCommand>();
         internal static Dictionary<string, ConsoleButton> cmdButtons = new Dictionary<string, ConsoleButton>();
 
-        // LINE COUNTER
-        private static int lines = 0;
+        // LINES
+        internal static List<string> lines = new List<string>();
 
         // COMMAND HISTORY
         internal static List<string> history = new List<string>(HISTORY);
@@ -273,12 +271,10 @@ namespace SRML.Console
             if (type.Equals("ERRO")) color = "#FFAAAA";
             if (type.Equals("WARN")) color = "#EEEE99";
 
-            if (lines == MAX_ENTRIES)
-                ConsoleWindow.fullText = ConsoleWindow.fullText.Substring(ConsoleWindow.fullText.IndexOf('\n'));
-            else
-                lines++;
+            if (lines.Count >= MAX_ENTRIES)
+                lines.RemoveRange(0, 10);
 
-            ConsoleWindow.fullText += $"{(ConsoleWindow.fullText.Equals(string.Empty) ? "" : "\n")}<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color><color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>";
+            lines.Add($"<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color><color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>");
 
             if (logToFile)
                 FileLogger.LogEntry(logType, message);
