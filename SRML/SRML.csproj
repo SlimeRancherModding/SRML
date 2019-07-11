@@ -89,6 +89,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\ConfigElement.cs" />
+    <Compile Include="Config\ConfigSection.cs" />
+    <Compile Include="Config\Parsing\ParserRegistry.cs" />
+    <Compile Include="Config\Parsing\StringParser.cs" />
     <Compile Include="Console\Commands\AddButtonCommand.cs" />
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\DumpCommand.cs" />
@@ -253,9 +257,7 @@
       <Name>SRML.Editor</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Config\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>
