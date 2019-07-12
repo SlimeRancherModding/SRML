@@ -16,11 +16,11 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         static readonly Dictionary<AmmoIdentifier, AmmoModel> _cache = new Dictionary<AmmoIdentifier, AmmoModel>();
 
         public AmmoType AmmoType;
-        public ulong longIdentifier;
+        public long longIdentifier;
         public string stringIdentifier;
         public string custommodid;
 
-        public AmmoIdentifier(AmmoType type, ulong id)
+        public AmmoIdentifier(AmmoType type, long id)
         {
             this.AmmoType = type;
             this.longIdentifier = id;
@@ -31,12 +31,12 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         public AmmoIdentifier(AmmoType type, string id)
         {
             this.AmmoType = type;
-            this.longIdentifier = ulong.MaxValue;
+            this.longIdentifier = long.MaxValue;
             this.stringIdentifier = id;
             this.custommodid = "";
         }
 
-        public AmmoIdentifier(AmmoType type, ulong longId, string stringId)
+        public AmmoIdentifier(AmmoType type, long longId, string stringId)
         {
             this.AmmoType = type;
             this.longIdentifier = longId;
@@ -44,7 +44,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             this.custommodid = "";
         }
 
-        public AmmoIdentifier(AmmoType type, ulong longId, string stringId,string modid)
+        public AmmoIdentifier(AmmoType type, long longId, string stringId,string modid)
         {
             this.AmmoType = type;
             this.longIdentifier = longId;
@@ -62,7 +62,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         public static AmmoIdentifier Read(BinaryReader reader)
         {
             var ammotype = (Ammo.AmmoType)reader.ReadInt32();
-            return new AmmoIdentifier(ammotype, reader.ReadUInt64(), reader.ReadString(), ammotype.IsCustom()?reader.ReadString():"");
+            return new AmmoIdentifier(ammotype, reader.ReadInt64(), reader.ReadString(), ammotype.IsCustom()?reader.ReadString():"");
         }
 
         public static AmmoIdentifier GetIdentifier(global::Ammo ammo)
@@ -84,7 +84,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         {
             foreach (var candidate in SceneContext.Instance.GameModel.player.ammoDict)
             {
-                if (candidate.Value == ammoModel) return new AmmoIdentifier(Ammo.AmmoType.PLAYER, (ulong)candidate.Key);
+                if (candidate.Value == ammoModel) return new AmmoIdentifier(Ammo.AmmoType.PLAYER, (long)candidate.Key);
             }
 
             foreach (var candidate in SceneContext.Instance.GameModel.gadgetSites.Where((x) => x.Value.HasAttached()))
@@ -109,7 +109,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             {
                 foreach (var ammo in candidate.Value.siloAmmo) {
                     if (ammo.Value == ammoModel)
-                        return new AmmoIdentifier(AmmoType.LANDPLOT, (ulong)ammo.Key, candidate.Key);
+                        return new AmmoIdentifier(AmmoType.LANDPLOT, (long)ammo.Key, candidate.Key);
                 }
             }
 
@@ -184,14 +184,14 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         {
             foreach (var v in game.player.ammo)
             {
-                if (ammo == v.Value) return new AmmoIdentifier(AmmoType.PLAYER, (ulong)v.Key);
+                if (ammo == v.Value) return new AmmoIdentifier(AmmoType.PLAYER, (long)v.Key);
             }
 
             foreach (var v in game.ranch.plots)
             {
                 foreach (var ammoData in v.siloAmmo)
                 {
-                    if (ammoData.Value == ammo) return new AmmoIdentifier(AmmoType.LANDPLOT, (ulong)ammoData.Key, v.id);
+                    if (ammoData.Value == ammo) return new AmmoIdentifier(AmmoType.LANDPLOT, (long)ammoData.Key, v.id);
 
                 }
             }

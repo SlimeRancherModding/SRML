@@ -29,6 +29,18 @@ namespace SRML.SR.SaveSystem.Format
             EnumTranslator.RegisterEnumFixer<IdentifiableAmmoData>((translator, mode, data) =>
             {
                 translator.FixEnumValues(mode, data.model);
+                long FixValue(AmmoType type, long original)
+                {
+                    switch (type)
+                    {
+                        case AmmoType.PLAYER:
+                            return (long)translator.TranslateEnum(typeof(PlayerState.AmmoMode), mode, (PlayerState.AmmoMode)original);
+                        case AmmoType.LANDPLOT:
+                            return (long)translator.TranslateEnum(typeof(SiloStorage.StorageType), mode, (SiloStorage.StorageType)original);
+                    }
+                    return original;
+                }
+                data.identifier = new AmmoIdentifier(data.identifier.AmmoType,   FixValue(data.identifier.AmmoType,data.identifier.longIdentifier), data.identifier.stringIdentifier, data.identifier.custommodid);
             });
         }
     }

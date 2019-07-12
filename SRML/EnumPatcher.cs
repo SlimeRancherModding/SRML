@@ -19,7 +19,8 @@ namespace SRML
             { typeof(Identifiable.Id),(x,y)=>IdentifiableRegistry.CreateIdentifiableId(x,y)},
             { typeof(Gadget.Id),(x,y)=>(object)GadgetRegistry.CreateGadgetId(x,y)},
             { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)},
-            {typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) }
+            {typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) },
+            {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) }
         };
 
         private static PropertyInfo cache;

@@ -7,6 +7,7 @@ using System.Security.Policy;
 using System.Text;
 using HarmonyLib;
 using SRML.Editor;
+using SRML.SR;
 using SRML.Utils;
 using SRML.Utils.Prefab.Patches;
 using UnityEngine;

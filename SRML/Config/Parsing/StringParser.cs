@@ -46,11 +46,18 @@ namespace SRML.Config.Parsing
         {
             return Parse(str);
         }
+
+        public string GetUsageString()
+        {
+            return ParsedType.Name;
+        }
     }
     public interface IStringParser
     {
         Type ParsedType { get; }
         object ParseObject(string str);
         string EncodeObject(object obj);
+
+        string GetUsageString();
     }
 }

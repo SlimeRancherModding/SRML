@@ -5,14 +5,16 @@ using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Gadget;
+using SRML.SR.SaveSystem.Data.LandPlot;
 using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Registry
 {
     internal class ModSaveInfo
     {
-        private DataRegistry<CustomActorData> CustomActorDataRegistry = new DataRegistry<CustomActorData>();
-        DataRegistry<CustomGadgetData> CustomGadgetDataRegisty = new DataRegistry<CustomGadgetData>();
+        DataRegistry<CustomActorData> CustomActorDataRegistry = new DataRegistry<CustomActorData>();
+        DataRegistry<CustomGadgetData> CustomGadgetDataRegistry = new DataRegistry<CustomGadgetData>();
+        DataRegistry<CustomLandPlotData> CustomLandPlotRegistry = new DataRegistry<CustomLandPlotData>();
 
         public readonly HashSet<DataRegistry> Registries = new HashSet<DataRegistry>();
 
@@ -30,7 +32,8 @@ namespace SRML.SR.SaveSystem.Registry
         public ModSaveInfo()
         {
             Registries.Add(CustomActorDataRegistry);
-            Registries.Add(CustomGadgetDataRegisty);
+            Registries.Add(CustomGadgetDataRegistry);
+            Registries.Add(CustomLandPlotRegistry);
         }
 
         public bool BelongsToMe(object b)

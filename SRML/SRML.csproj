@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>false</Deterministic>
-    <GameDir>C:\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
+    <GameDir>C:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed</GameDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -89,10 +89,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Attributes\ConfigFileAttribute.cs" />
     <Compile Include="Config\ConfigElement.cs" />
+    <Compile Include="Config\ConfigFile.cs" />
     <Compile Include="Config\ConfigSection.cs" />
     <Compile Include="Config\Parsing\ParserRegistry.cs" />
     <Compile Include="Config\Parsing\StringParser.cs" />
+    <Compile Include="Config\TestConfig.cs" />
     <Compile Include="Console\Commands\AddButtonCommand.cs" />
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\DumpCommand.cs" />
@@ -129,6 +132,7 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\GadgetRegistry.cs" />
     <Compile Include="SR\IdentifiableRegistry.cs" />
+    <Compile Include="SR\LandPlotRegistry.cs" />
     <Compile Include="SR\MailRegistry.cs" />
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />

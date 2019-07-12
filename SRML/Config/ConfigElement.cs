@@ -36,7 +36,7 @@ namespace SRML.Config
 
         public ConfigElement(string name) : base(GenerateDefaultOptions(typeof(T),name))
         {
-            if (Options.DefaultValue != null) SetValue(Options.DefaultValue);
+            if (Options.DefaultValue != null) Value = Options.DefaultValue;
         }
     }
     public abstract class ConfigElement
@@ -44,6 +44,11 @@ namespace SRML.Config
         public abstract Type ElementType { get; }
         public ConfigElementOptions Options { get; protected set; }
         protected abstract object Value { get; set; }
+
+        public delegate void OnValueChangedDelegate(object newVal);
+
+        public event OnValueChangedDelegate OnValueChanged;
+
         public T GetValue<T>()
         {
             return (T)Value;
@@ -57,6 +62,7 @@ namespace SRML.Config
 
         public void SetValue<T>(T value)
         {
+            OnValueChanged?.Invoke(value);
             Value = value;
         }
 
@@ -89,7 +95,14 @@ namespace SRML.Config
         public IStringParser Parser { get; internal set; }
         public string Comment { get; internal set; }
         public object DefaultValue { get; internal set; }
-
         public string Name { get; internal set; }
+        public ReloadMode ReloadMode { get; internal set; }
+    }
+
+    public enum ReloadMode
+    {
+        NORMAL,
+        SAVE,
+        RESTART
     }
 }

@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.LandPlot;
 using SRML.Utils;
 using UnityEngine;
 
@@ -44,21 +47,26 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static void FixLandPlotModel(LandPlotV08 data, ref LandPlotModel model)
         {
-            return;
             var temp = model;
-            model = new TestModel();
-            model.SetGameObject(temp.gameObj);
-            if (!SceneContext.Instance.GameModel.expectingPush)
+            var potentialNew = DataModelRegistry.landPlotOverrides.FirstOrDefault(x=>x.Key(data.typeId));
+            if (potentialNew.Value != null)
             {
-                model.Init();
-                model.NotifyParticipants();
+                model = potentialNew.Value();
+                model.SetGameObject(temp.gameObj);
+                if (!SceneContext.Instance.GameModel.expectingPush)
+                {
+                    model.Init();
+                    model.NotifyParticipants();
+                }
+                SceneContext.Instance.GameModel.landPlots[data.id] = model;
             }
-            SceneContext.Instance.GameModel.landPlots[data.id] = model;
-        }
 
-        public class TestModel : LandPlotModel
-        {
-
+            if(data is CustomLandPlotData plot)
+            {
+                plot.PushCustomModel(model);
+            }
         }
     }
+
+  
 }

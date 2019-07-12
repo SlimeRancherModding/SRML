@@ -13,22 +13,27 @@ namespace SRML.Config
     {
         
         readonly Dictionary<string, ConfigElement> elementDict = new Dictionary<string, ConfigElement>();
+
+        public delegate void OnValueChangedDelegate(string key, object value);
+
+        public event OnValueChangedDelegate OnValueChanged;
+
+        public string Name;
+        public string Comment;
+
+        public ConfigSection(string name)
+        {
+            Name = name;
+        }
         public void AddElement(ConfigElement element)
         {
             elementDict[element.Options.Name] = element;
+            element.OnValueChanged += (val) => OnValueChanged?.Invoke(element.Options.Name, val);
         }
 
-        public ConfigElement this[string index]
-        {
-            get
-            {
-                return elementDict[index];
-            }
-            set
-            {
-                elementDict[index] = value;
-            }
-        }
+        public ConfigElement this[string index] => elementDict[index];
+
+        public void Clear() => elementDict.Clear();
         public void LoadIniData(KeyDataCollection keys)
         {
             foreach(var data in keys)
@@ -50,26 +55,14 @@ namespace SRML.Config
             {
                 var keyData = new KeyData(element.Key);
                 keyData.Value = element.Value.Options.Parser.EncodeObject(element.Value.GetValue<object>());
-                keyData.Comments = element.Value.Options.Comment != null ? new List<string> { element.Value.Options.Comment } : new List<string>();
+                var commentList =  new List<string>();
+                commentList.Add(element.Value.Options.Parser.GetUsageString());
+                if (element.Value.Options.Comment != null) commentList.Add(element.Value.Options.Comment);
+                keyData.Comments = commentList;
                 if (!keys.AddKey(keyData)) Debug.LogWarning($"Key {element.Key} already present in section!");
             }
         }
 
-        static ConfigSection()
-        {
-            IniData file = new IniData();
-            var section = new SectionData("test");
-
-            var test = new ConfigSection();
-            test.AddElement(new ConfigElement<int>("testelement"));
-            var element = new ConfigElement<float>("testfloat");
-            element.Options.Comment = "Example Comment";
-            test.AddElement(element);
-            test.WriteIniData(section.Keys);
-            file.Sections.Add(section);
-            var parser = new FileIniDataParser();
-            parser.WriteFile(Path.Combine(Application.persistentDataPath, "test.ini"), file);
-
-        }
+       
     }
 }

@@ -16,6 +16,8 @@ namespace SRML.SR
         public delegate GadgetModel CreateGadgetDelegate(GadgetSiteModel site, GameObject gameObj);
         internal static Dictionary<Predicate<Gadget.Id>,CreateGadgetDelegate> gadgetOverrideMapping = new Dictionary<Predicate<Gadget.Id>, CreateGadgetDelegate>();
 
+        public delegate LandPlotModel CreateLandPlotDelegate();
+        internal static Dictionary<Predicate<LandPlot.Id>, CreateLandPlotDelegate> landPlotOverrides = new Dictionary<Predicate<LandPlot.Id>, CreateLandPlotDelegate>();
       
 
         public static void RegisterActorModelOverride(Predicate<Identifiable.Id> pred, CreateActorDelegate creator)
@@ -33,6 +35,11 @@ namespace SRML.SR
             if (!typeof(ActorModel).IsAssignableFrom(actorType))
                 throw new Exception("Given type is not a valid ActorModel!");
             RegisterCustomActorModel(id,(x,y,z,w)=>(ActorModel)Activator.CreateInstance(actorType,x,y,z,w.transform));
+        }
+
+        public static void RegisterLandPlotModelOverride(Predicate<LandPlot.Id> pred,CreateLandPlotDelegate creator)
+        {
+            landPlotOverrides.Add(pred, creator);
         }
 
         public static void RegisterGadgetModelOverride(Predicate<Gadget.Id> pred, CreateGadgetDelegate creator)

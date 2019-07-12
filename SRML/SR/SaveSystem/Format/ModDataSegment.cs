@@ -148,6 +148,23 @@ namespace SRML.SR.SaveSystem.Format
             EnumTranslator.FixEnumValues(enumTranslator,mode,identifiableData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,playerData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,customAmmo);
+            var newDict = new Dictionary<AmmoIdentifier, List<VanillaAmmoData>>();
+            long FixValue(AmmoType type, long original)
+            {
+                switch (type)
+                {
+                    case AmmoType.PLAYER:
+                        return (long)enumTranslator.TranslateEnum(typeof(PlayerState.AmmoMode), mode, (PlayerState.AmmoMode)original);
+                    case AmmoType.LANDPLOT:
+                        return (long)enumTranslator.TranslateEnum(typeof(SiloStorage.StorageType), mode, (SiloStorage.StorageType)original);
+                }
+                return original;
+            }
+            foreach (var v in customAmmo)
+            {
+                newDict[new AmmoIdentifier(v.Key.AmmoType, FixValue(v.Key.AmmoType, v.Key.longIdentifier), v.Key.stringIdentifier, v.Key.custommodid)] = v.Value;
+            }
+            customAmmo = newDict;
             EnumTranslator.FixEnumValues(enumTranslator, mode, extendedData);
         }
     }

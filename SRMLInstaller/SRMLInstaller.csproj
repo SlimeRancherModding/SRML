@@ -88,6 +88,7 @@ xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.dll" "$(ProjectDir)Li
 xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\Newtonsoft.Json.dll" "$(ProjectDir)Libs\"
 xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\0Harmony.dll" "$(ProjectDir)Libs\"
 xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.Editor.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll" "$(ProjectDir)Libs\"</PreBuildEvent>
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll" "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\INIFileParser.dll" "$(ProjectDir)Libs\"</PreBuildEvent>
   </PropertyGroup>
 </Project>
