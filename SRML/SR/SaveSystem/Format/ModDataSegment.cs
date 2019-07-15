@@ -154,9 +154,9 @@ namespace SRML.SR.SaveSystem.Format
                 switch (type)
                 {
                     case AmmoType.PLAYER:
-                        return (long)enumTranslator.TranslateEnum(typeof(PlayerState.AmmoMode), mode, (PlayerState.AmmoMode)original);
+                        return (int)enumTranslator.TranslateEnum(typeof(PlayerState.AmmoMode), mode, (PlayerState.AmmoMode)(int)original);
                     case AmmoType.LANDPLOT:
-                        return (long)enumTranslator.TranslateEnum(typeof(SiloStorage.StorageType), mode, (SiloStorage.StorageType)original);
+                        return (int)enumTranslator.TranslateEnum(typeof(SiloStorage.StorageType), mode, (SiloStorage.StorageType)(int)original);
                 }
                 return original;
             }

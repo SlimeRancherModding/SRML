@@ -226,6 +226,29 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                    longIdentifier == identifier.longIdentifier;
         }
 
+        public static bool IsModdedIdentifier(AmmoIdentifier id)
+        {
+            switch (id.AmmoType)
+            {
+                case AmmoType.PLAYER:
+                    return ModdedIDRegistry.IsModdedID((PlayerState.AmmoMode)(int)id.longIdentifier);
+                case AmmoType.LANDPLOT:
+                    return ModdedIDRegistry.IsModdedID((SiloStorage.StorageType)(int)id.longIdentifier);
+            }
+            return id.AmmoType.IsCustom();
+        }
+
+        public static SRMod GetModForIdentifier(AmmoIdentifier id)
+        {
+            switch (id.AmmoType)
+            {
+                case AmmoType.PLAYER:
+                    return ModdedIDRegistry.ModForID((PlayerState.AmmoMode)(int)id.longIdentifier);
+                case AmmoType.LANDPLOT:
+                    return ModdedIDRegistry.ModForID((SiloStorage.StorageType)(int)id.longIdentifier);
+            }
+            return id.AmmoType.IsCustom() ? SRModLoader.GetMod(id.custommodid) : null;
+        }
         public static bool TryGetIdentifier(AmmoModel model, out AmmoIdentifier identifier)
         {
             identifier = GetIdentifier(model);

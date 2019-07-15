@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Registry;
 using VanillaLandPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
@@ -57,5 +58,22 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
         public abstract void LoadCustomData(BinaryReader reader);
 
         public abstract Type GetModelType();
+
+        static CustomLandPlotData()
+        {
+            CustomChecker.RegisterCustomChecker<VanillaLandPlotData>(x =>
+            {
+                if (ModdedIDRegistry.IsModdedID(x.typeId)) return CustomChecker.CustomLevel.FULL;
+                if (x.upgrades.Any(ModdedIDRegistry.IsModdedID)) return CustomChecker.CustomLevel.PARTIAL;
+                if (ModdedIDRegistry.IsModdedID(x.attachedId)) return CustomChecker.CustomLevel.PARTIAL;
+                return CustomChecker.CustomLevel.VANILLA;
+            });
+            EnumTranslator.RegisterEnumFixer<VanillaLandPlotData>((translator, mode, data) =>
+            {
+                translator.FixEnumValues(mode, data.upgrades);
+                data.attachedId = translator.TranslateEnum<SpawnResource.Id>(mode, data.attachedId);
+            });
+
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using static SRML.SRModLoader;
 
@@ -13,6 +14,8 @@ namespace SRML.SR
         internal static HashSet<LookupDirector.UpgradeEntry> upgradeEntriesToPatch =
             new HashSet<LookupDirector.UpgradeEntry>();
 
+        internal static HashSet<GameObject> landPlotsToPatch = new HashSet<GameObject>();
+
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -20,10 +23,12 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     objectsToPatch.Add(b);
                     break;
-                default:
+                case LoadingStep.LOAD:
                     GameContext.Instance.LookupDirector.identifiablePrefabs.Add(b);
                     GameContext.Instance.LookupDirector.identifiablePrefabDict[Identifiable.GetId(b)] = b;
                     break;
+                default:
+                    throw new Exception();
             }
         }
 
@@ -39,10 +44,28 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     vacEntriesToPatch.Add(entry);
                     break;
-                default:
+                case LoadingStep.LOAD:
                     GameContext.Instance.LookupDirector.vacEntries.Add(entry);
                     GameContext.Instance.LookupDirector.vacEntryDict[entry.id] = entry;
                     break;
+                default:
+                    throw new Exception();
+            }
+        }
+
+        public static void RegisterLandPlot(GameObject prefab)
+        {
+            switch (CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    landPlotsToPatch.Add(prefab);
+                    break;
+                case LoadingStep.LOAD:
+                    GameContext.Instance.LookupDirector.plotPrefabs.Add(prefab);
+                    GameContext.Instance.LookupDirector.plotPrefabDict[prefab.GetComponentInChildren<LandPlot>(true).typeId] = prefab;
+                    break;
+                default:
+                    throw new Exception();
             }
         }
 
@@ -57,6 +80,8 @@ namespace SRML.SR
                     GameContext.Instance.LookupDirector.gadgetEntries.Add(entry);
                     GameContext.Instance.LookupDirector.gadgetEntryDict[entry.id] = entry;
                     break;
+                default:
+                    throw new Exception();
             }
         }
 
@@ -76,6 +101,8 @@ namespace SRML.SR
                     GameContext.Instance.LookupDirector.upgradeEntries.Add(entry);
                     GameContext.Instance.LookupDirector.upgradeEntryDict[entry.upgrade] = entry;
                     break;
+                default:
+                    throw new Exception();
             }
         }
 

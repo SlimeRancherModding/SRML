@@ -81,9 +81,11 @@ namespace SRML.SR.SaveSystem
 
         private static void PullAmmoData(ModdedSaveData data, GameV11 game)
         {
-            foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game).Where((x) => AmmoDataUtils.HasCustomData(x)))
+            foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game))
             {
                 var modsInThis = new HashSet<SRMod>(ammo.Select((x) => ModdedIDRegistry.IsModdedID(x.id) ? ModdedIDRegistry.ModForID(x.id) : null));
+                var belongingMod = AmmoIdentifier.TryGetIdentifier(ammo, game, out var id) ? AmmoIdentifier.GetModForIdentifier(id) : null;
+                modsInThis.Add(belongingMod);
                 modsInThis.Remove(null);
                 foreach (var mod in modsInThis)
                 {
@@ -92,7 +94,7 @@ namespace SRML.SR.SaveSystem
                     {
                         var segment = data.GetSegmentForMod(mod);
                         segment.customAmmo[identifier] =
-                            AmmoDataUtils.RipOutWhere(ammo, (x) => ModdedIDRegistry.ModForID(x.id) == mod, false);
+                            AmmoDataUtils.RipOutWhere(ammo, (x) => mod==belongingMod?ModdedIDRegistry.ModForID(x.id)==null:ModdedIDRegistry.ModForID(x.id) == mod, false);
                     }
                     else
                     {
@@ -141,6 +143,16 @@ namespace SRML.SR.SaveSystem
                     dataID = new DataIdentifier() { longID = 0, stringID = gadget.Key, Type = IdentifierType.GADGET }
                 });
 
+            }
+
+            foreach(var plot in game.ranch.plots.Where(x => SaveRegistry.IsCustom(x)))
+            {
+                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(plot));
+                segment.identifiableData.Add(new IdentifiedData()
+                {
+                    data = plot,
+                    dataID = new DataIdentifier() { longID = 0, stringID = plot.id, Type = IdentifierType.LANDPLOT }
+                });
             }
         }
         #endregion
@@ -195,6 +207,9 @@ namespace SRML.SR.SaveSystem
                         break;
                     case IdentifierType.GADGET:
                         game.world.placedGadgets[customData.dataID.stringID] = (VanillaGadgetData)customData.data;
+                        break;
+                    case IdentifierType.LANDPLOT:
+                        game.ranch.plots.Add((VanillaPlotData)customData.data);
                         break;
                     default:
                         throw new NotImplementedException();

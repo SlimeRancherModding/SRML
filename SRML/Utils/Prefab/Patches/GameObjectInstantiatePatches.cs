@@ -76,7 +76,7 @@ namespace SRML.Utils.Prefab.Patches
             if (__result is GameObject obj) GameObjectInstantiate.OnInstantiate(obj);
         }
     }
-
+    
     [HarmonyPatch(typeof(UnityEngine.Object))]
     [HarmonyPatch("Instantiate", new Type[] { typeof(UnityEngine.Object), typeof(Vector3), typeof(Quaternion) })]
     internal static class GameObjectInstantiatePatch5

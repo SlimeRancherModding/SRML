@@ -11,6 +11,16 @@ namespace SRML.SR.SaveSystem.Utils
             return SRModLoader.GetModForAssembly(p.GetType().Assembly);
         }
 
+        public static int GetParticipantCount(CompoundDataPiece modPiece)
+        {
+            return modPiece.DataList.Count;
+        }
+
+        public static int GetModPieceCount(CompoundDataPiece root)
+        {
+            return root.DataList.Count;
+        }
+
         public static CompoundDataPiece GetPieceForParticipant(string participantName,CompoundDataPiece piece)
         {
             return piece.GetCompoundPiece(participantName);

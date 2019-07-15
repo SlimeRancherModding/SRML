@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
+using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Ammo;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ namespace SRML.SR.SaveSystem.Patches
                 if (identifiable&&ExtendedData.IsRegistered(identifiable.gameObject))
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
-                    ammo.DataModel.slots[count].PushTop(ExtendedData.extendedActorData[identifiable.GetActorId()]);
+                    ammo.DataModel.slots[count].PushTop(ExtendedData.extendedData[DataIdentifier.GetActorIdentifier(identifiable.GetActorId())]);
                     ammo.Sync();
                 }
                 else
@@ -66,7 +67,7 @@ namespace SRML.SR.SaveSystem.Patches
                     if (ammo == null) return;
                     for (int i = 0; i < count; i++)
                         ammo.DataModel.slots[slotIdx]
-                            .PushTop(ExtendedData.extendedActorData[identifiable.GetActorId()]);
+                            .PushTop(ExtendedData.extendedData[DataIdentifier.GetActorIdentifier(identifiable.GetActorId())]);
                     ammo.Sync();
                 }
                 else

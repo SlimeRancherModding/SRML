@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +22,8 @@ namespace SRML.SR.SaveSystem.Patches
         {
             var potentialTag = PersistentAmmoManager.GetPotentialDataTag(gameObj);
             if (potentialTag != null)
-            {   
-                ExtendedData.extendedActorData[actorId] = potentialTag;
+            {
+                ExtendedData.preparedData[DataIdentifier.GetActorIdentifier(actorId)] = new ExtendedData.PreparedData() { SourceType = ExtendedData.PreparedData.PreparationSource.AMMO, Data = potentialTag };
                 
             }
         }

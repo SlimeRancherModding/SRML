@@ -150,7 +150,9 @@
     <Compile Include="SR\Patches\StorageTypeExtensionsGetContentsPatch.cs" />
     <Compile Include="SR\PediaRegistry.cs" />
     <Compile Include="SR\SaveSystem\Data\Appearances\PartialAppearancesData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Gadget\PartialGordoData.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoSetAmmoSlotPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\GameModelRegisterLandPlotPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LandPlotToGameObjectPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
@@ -191,6 +193,7 @@
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SiloCatcherOnTriggerStayPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SiloCatcherTriggerEnterPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\UITemplatesPurchasablePatch.cs" />
     <Compile Include="SR\SaveSystem\Utils\AmmoDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoGetSelectedStoredPatch.cs" />
@@ -225,6 +228,7 @@
     <Compile Include="SR\SaveSystem\SaveHandler.cs" />
     <Compile Include="SR\SaveSystem\SaveRegistry.cs" />
     <Compile Include="SR\SaveSystem\VersionedSerializable.cs" />
+    <Compile Include="SR\SlimeRegistry.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />
     <Compile Include="SR\Translation\GadgetTranslation.cs" />

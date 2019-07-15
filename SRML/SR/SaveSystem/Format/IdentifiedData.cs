@@ -4,6 +4,7 @@ using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Gadget;
+using SRML.SR.SaveSystem.Data.LandPlot;
 using SRML.SR.SaveSystem.Registry;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
@@ -39,6 +40,9 @@ namespace SRML.SR.SaveSystem.Format
                 case IdentifierType.GADGET:
                     ReadData<CustomGadgetData,VanillaGadgetData>(reader,info);
                     break;
+                case IdentifierType.LANDPLOT:
+                    ReadData<CustomLandPlotData, VanillaPlotData>(reader, info);
+                    break;
                 default:
                     throw new NotImplementedException();
             }
@@ -58,6 +62,9 @@ namespace SRML.SR.SaveSystem.Format
                     break;
                 case IdentifierType.GADGET:
                     WriteData<CustomGadgetData>(writer, info);
+                    break;
+                case IdentifierType.LANDPLOT:
+                    WriteData<CustomLandPlotData>(writer, info);
                     break;
                 default:
                     throw new NotImplementedException();

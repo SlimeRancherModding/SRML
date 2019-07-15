@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
+using SRML.Utils;
 using VanillaLandPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem.Data.LandPlot
 {
@@ -12,24 +13,53 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
     {
         public override int LatestVersion => 0;
 
+
+        public SpawnResource.Id attachedId;
+        public PartialCollection<global::LandPlot.Upgrade> upgrades = new PartialCollection<global::LandPlot.Upgrade>(ModdedIDRegistry.IsModdedID, SerializerPair.GetEnumSerializerPair<global::LandPlot.Upgrade>());
         public override void Pull(VanillaLandPlotData data)
         {
-
+            data.attachedId = GiveNoneIfModded(data.attachedId);
+            attachedId = GiveBackIfModded(data.attachedId);
+            upgrades.Pull(data.upgrades);
         }
+
+        static T GiveBackIfModded<T>(T a)
+        {
+            return ModdedIDRegistry.IsModdedID(a) ? a : (T)(object)0;
+        }
+
+        static T GiveNoneIfModded<T>(T a)
+        {
+            return ModdedIDRegistry.IsModdedID(a) ? (T)(object)0 : a;
+        }
+
 
         public override void Push(VanillaLandPlotData data)
         {
-            throw new NotImplementedException();
+            if (attachedId != SpawnResource.Id.NONE) data.attachedId = attachedId;
+            upgrades.Push(data.upgrades);
         }
 
         public override void Read(BinaryReader reader)
         {
-            base.Read(reader);
+            attachedId = (SpawnResource.Id)reader.ReadInt32();
+            upgrades.Read(reader);
         }
 
         public override void Write(BinaryWriter writer)
         {
-            base.Write(writer);
+            writer.Write((int)attachedId);
+            upgrades.Write(writer);
+        }
+
+        static PartialLandPlotData()
+        {
+            EnumTranslator.RegisterEnumFixer<PartialLandPlotData>((translator, mode, data) => 
+            {
+                translator.FixEnumValues(mode, data.upgrades);
+                data.attachedId = translator.TranslateEnum(mode, data.attachedId);
+            });
+            PartialData.RegisterPartialData(() => new PartialLandPlotData());
         }
     }
 }
