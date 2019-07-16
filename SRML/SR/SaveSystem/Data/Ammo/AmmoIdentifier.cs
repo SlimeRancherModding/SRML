@@ -223,7 +223,8 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
             var identifier = (AmmoIdentifier)obj;
             return AmmoType == identifier.AmmoType &&
-                   longIdentifier == identifier.longIdentifier;
+                   longIdentifier == identifier.longIdentifier &&
+                   (stringIdentifier ?? "") == (identifier.stringIdentifier ?? "");
         }
 
         public static bool IsModdedIdentifier(AmmoIdentifier id)

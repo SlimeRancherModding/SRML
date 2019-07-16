@@ -31,5 +31,20 @@ namespace SRML.SR.SaveSystem.Data.Gadget
         {
             fashions.Write(writer);
         }
+
+        static PartialGordoData()
+        {
+            EnumTranslator.RegisterEnumFixer<PartialGordoData>((translator, mode, data) =>
+            {
+                translator.FixEnumValues(mode, data.fashions);
+            });
+
+            CustomChecker.RegisterCustomChecker<GordoV01>((x) =>
+            {
+                if (x.fashions.Any(ModdedIDRegistry.IsModdedID)) return CustomChecker.CustomLevel.PARTIAL;
+                return CustomChecker.CustomLevel.NONE;
+            });
+            PartialData.RegisterPartialData(() => new PartialGordoData());
+        }
     }
 }

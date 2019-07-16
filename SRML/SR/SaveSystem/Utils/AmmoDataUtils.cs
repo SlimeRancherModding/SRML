@@ -66,6 +66,36 @@ namespace SRML.SR.SaveSystem.Utils
             return ammoDataData;
         }
 
+        public static Action RemoveAmmoDataWithAddBack(List<VanillaAmmoData> data,GameV11 game)
+        {
+            var player = game.player.ammo.FirstOrDefault(x => x.Value == data);
+            if (player.Value != null)
+            {
+                game.player.ammo.Remove(player.Key);
+                return () => game.player.ammo.Add(player.Key, player.Value);
+            }
+
+            foreach(var plot in game.ranch.plots)
+            {
+                var silo = plot.siloAmmo.FirstOrDefault(x => x.Value == data);
+                if (silo.Value != null)
+                {
+                    plot.siloAmmo.Remove(silo.Key);
+                    return () => plot.siloAmmo.Add(silo.Key,silo.Value);
+                }
+            }
+
+            foreach(var gadget in game.world.placedGadgets)
+            {
+                if(data == gadget.Value.ammo)
+                {
+                    gadget.Value.ammo = new List<VanillaAmmoData>();
+                    return () => gadget.Value.ammo = data;
+                }
+            }
+            return () => throw new Exception();
+        }
+        
         static AmmoDataUtils()
         {
             

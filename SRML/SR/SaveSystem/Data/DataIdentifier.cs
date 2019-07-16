@@ -20,7 +20,8 @@ namespace SRML.SR.SaveSystem.Data
             {
                 {IdentifierType.ACTOR,typeof(ActorDataV09) },
                 {IdentifierType.GADGET,typeof(PlacedGadgetV08) },
-                {IdentifierType.LANDPLOT,typeof(LandPlotV08) }
+                {IdentifierType.LANDPLOT,typeof(LandPlotV08) },
+                {IdentifierType.GORDO,typeof(GordoV01) }
             };
 
         public static DataIdentifier GetActorIdentifier(long actorId)
@@ -73,6 +74,7 @@ namespace SRML.SR.SaveSystem.Data
         NONE,
         ACTOR,
         GADGET,
-        LANDPLOT
+        LANDPLOT,
+        GORDO
     }
 }

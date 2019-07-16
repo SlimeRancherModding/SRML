@@ -35,6 +35,7 @@ namespace SRML.SR.SaveSystem
             ExtendedData.Push(data);
             PersistentAmmoManager.SyncAll();
             PersistentAmmoManager.Push(data);
+            ModdedStringRegistry.Push(data);
         }
 
         private static void PullPartialData(ModdedSaveData data, GameV11 game)
@@ -74,6 +75,11 @@ namespace SRML.SR.SaveSystem
             {
                 Check(g, (v, partialdata) =>
                     data.partialData.Add(new DataIdentifier() { stringID = g.id, Type = IdentifierType.LANDPLOT }, partialdata));
+            }
+
+            foreach(var g in game.world.gordos)
+            {
+                Check(g.Value, (v, partialData) => data.partialData.Add(new DataIdentifier() { Type = IdentifierType.GORDO, stringID = g.Key }, partialData));
             }
 
             data.appearancesData.Pull(game.appearances);
@@ -161,7 +167,7 @@ namespace SRML.SR.SaveSystem
         public static void PushAllModdedData(ModdedSaveData data, GameV11 game)
         {
 
-
+            ModdedStringRegistry.Pull(data);
             PushAllSegmentData(data, game);
 
             ExtendedData.Pull(data);
@@ -232,6 +238,9 @@ namespace SRML.SR.SaveSystem
                     case IdentifierType.LANDPLOT:
                         if(game.ranch.plots.FirstOrDefault((x)=>x.id==partial.Key.stringID) is VanillaPlotData plot) partial.Value.Push(plot);
                         break;
+                    case IdentifierType.GORDO:
+                        if (game.world.gordos.TryGetValue(partial.Key.stringID,out var gordo)) partial.Value.Push(gordo);
+                        break;  
                     default:
                         throw new NotImplementedException();
 

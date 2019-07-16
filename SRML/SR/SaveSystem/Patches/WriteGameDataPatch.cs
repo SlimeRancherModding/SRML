@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.Ammo;
 using SRML.SR.SaveSystem.Data.Appearances;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.SR.SaveSystem.Utils;
@@ -49,16 +50,23 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhere(__instance.pedia.completedTuts, __state.completedTuts, (x) => ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(TutorialDirector.Id), x)));
             __state.AddAndRemoveWhere(__instance.pedia.popupQueue, __state.popupQueue, (x) => ModdedIDRegistry.IsModdedID(Enum.Parse(typeof(TutorialDirector.Id), x)));
 
-
             
 
             foreach (var data in AmmoDataUtils.GetAllAmmoData(__instance))
             {
-                var moddedData = AmmoDataUtils.RipOutModdedData(data);
-                __state.addBacks.Add(() =>
+                if (AmmoIdentifier.TryGetIdentifier(data, __instance, out var id)&&AmmoIdentifier.IsModdedIdentifier(id))
                 {
-                    AmmoDataUtils.SpliceAmmoData(data,moddedData);
-                });
+                    __state.addBacks.Add(AmmoDataUtils.RemoveAmmoDataWithAddBack(data, __instance));
+                }
+                else
+                {
+                    var moddedData = AmmoDataUtils.RipOutModdedData(data);
+
+                    __state.addBacks.Add(() =>
+                    {
+                        AmmoDataUtils.SpliceAmmoData(data, moddedData);
+                    });
+                }
             }
 
             void RemovePartial(object actor,RemovalData data)
@@ -85,6 +93,11 @@ namespace SRML.SR.SaveSystem.Patches
             }
 
             foreach (var actor in __instance.world.placedGadgets)
+            {
+                RemovePartial(actor.Value, __state);
+            }
+
+            foreach(var actor in __instance.world.gordos)
             {
                 RemovePartial(actor.Value, __state);
             }
