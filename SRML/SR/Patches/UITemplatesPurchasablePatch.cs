@@ -28,7 +28,7 @@ namespace SRML.SR.Patches
             BaseUI ui = onClose.Target as BaseUI;
             if (ui == null || type != ui.GetType()) throw new Exception();
 
-            purchasables = purchasables.AddRangeToArray(PurchasableUIRegistry.customPurchasables.Where(x=>x.Key(type,ui)).Select(x=>x.Value(ui)).ToArray());
+            purchasables = PurchasableUIRegistry.customPurchasables.Where(x => x.Key(type, ui)).Select(x => x.Value(ui)).ToArray().AddRangeToArray(purchasables);
         }
     }
 }

@@ -128,7 +128,24 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             if (newModel != null) _cache.Add(identifier, newModel);
             return newModel;
         }
+        public static bool IsValidIdentifier(AmmoIdentifier identifier)
+        {
+            switch (identifier.AmmoType)
+            {
+                case AmmoType.GADGET:
+                    return ModdedStringRegistry.IsValidString(identifier.stringIdentifier);
+                case AmmoType.LANDPLOT:
+                    return ModdedStringRegistry.IsValidString(identifier.stringIdentifier)&&Enum.IsDefined(typeof(SiloStorage.StorageType), (SiloStorage.StorageType)(int)identifier.longIdentifier);
+                case AmmoType.PLAYER:
+                    return Enum.IsDefined(typeof(PlayerState.AmmoMode),(PlayerState.AmmoMode)(int)identifier.longIdentifier);
+            }
+            return true;
+        }
 
+        public bool IsValid()
+        {
+            return IsValidIdentifier(this);
+        }
         static AmmoModel ResolveModelInternal(AmmoIdentifier identifier)
         {
             switch (identifier.AmmoType)
@@ -171,9 +188,9 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 case AmmoType.PLAYER:
                     return game.player.ammo[(PlayerState.AmmoMode)identifier.longIdentifier];
                 case AmmoType.GADGET:
-                    return game.world.placedGadgets[identifier.stringIdentifier].ammo;
+                    return ModdedStringRegistry.IsValidString(identifier.stringIdentifier)?game.world.placedGadgets[identifier.stringIdentifier].ammo:null;
                 case AmmoType.LANDPLOT:
-                    return game.ranch.plots.First((x) => x.id == identifier.stringIdentifier)
+                    return game.ranch.plots.FirstOrDefault((x) => x.id == identifier.stringIdentifier)?
                         .siloAmmo[(SiloStorage.StorageType)identifier.longIdentifier];
             }
 

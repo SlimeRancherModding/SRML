@@ -84,7 +84,15 @@ namespace SRML.Utils
         {
             var state = original.activeSelf;
             original.SetActive(false);
+            bool originalRuntimeValue = false;
+            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
+            if (comp)
+            {
+                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
+                comp.ShouldEnableOnInstantiate = false;
+            }
             var newObj = GameObject.Instantiate(original);
+            if (comp) comp.ShouldEnableOnInstantiate = originalRuntimeValue; 
             original.SetActive(state);
             return newObj;
         }

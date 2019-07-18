@@ -16,6 +16,12 @@ namespace SRML.SR
 
         internal static HashSet<GameObject> landPlotsToPatch = new HashSet<GameObject>();
 
+        internal static HashSet<GameObject> resourceSpawnersToPatch = new HashSet<GameObject>();
+
+        internal static HashSet<GameObject> gordosToPatch = new HashSet<GameObject>();
+
+        internal static HashSet<LookupDirector.Liquid> liquidsToPatch = new HashSet<LookupDirector.Liquid>();
+
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -114,6 +120,48 @@ namespace SRML.SR
                 icon = icon,
                 upgrade = upgrade
             });
+        }
+
+        public static void RegisterSpawnResource(GameObject b)
+        {
+            switch (SRModLoader.CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    resourceSpawnersToPatch.Add(b);
+                    break;
+                default:
+                    GameContext.Instance.LookupDirector.resourceSpawnerPrefabs.Add(b);
+                    GameContext.Instance.LookupDirector.resourcePrefabDict[b.GetComponent<SpawnResource>().id] = b;
+                    break;
+            }
+        }
+
+        public static void RegisterGordo(GameObject gordo)
+        {
+            switch (SRModLoader.CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    gordosToPatch.Add(gordo);
+                    break;
+                default:
+                    GameContext.Instance.LookupDirector.gordoEntries.Add(gordo);
+                    GameContext.Instance.LookupDirector.gordoDict[gordo.GetComponent<GordoIdentifiable>().id] = gordo;
+                    break;
+            }
+        }
+
+        public static void RegisterLiquid(LookupDirector.Liquid liquid)
+        {
+            switch (SRModLoader.CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    liquidsToPatch.Add(liquid);
+                    break;
+                default:
+                    GameContext.Instance.LookupDirector.liquidEntries.Add(liquid);
+                    GameContext.Instance.LookupDirector.liquidDict[liquid.id] = liquid;
+                    break;
+            }
         }
     }
 }

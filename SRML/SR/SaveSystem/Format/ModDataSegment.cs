@@ -39,8 +39,6 @@ namespace SRML.SR.SaveSystem.Format
 
         public CompoundDataPiece worldData = new CompoundDataPiece("root");
 
-        public Dictionary<string, Dictionary<string, string>> idData = new Dictionary<string, Dictionary<string, string>>();
-
         public void Read(BinaryReader reader)
         {
             version = reader.ReadInt32();
@@ -93,14 +91,6 @@ namespace SRML.SR.SaveSystem.Format
                 } );
                 if (version < 2) return;
                 worldData = (CompoundDataPiece)DataPiece.Deserialize(reader);
-                idData.Clear();
-                count = reader.ReadInt32();
-                for(int i = 0; i < count; i++)
-                {
-                    var prefix = reader.ReadString();
-                    idData[prefix] = new Dictionary<string, string>();
-                    BinaryUtils.ReadDictionary(reader, idData[prefix], x => x.ReadString(), x => x.ReadString());
-                }
             }
             else
             {
@@ -148,12 +138,6 @@ namespace SRML.SR.SaveSystem.Format
             });
 
             DataPiece.Serialize(writer,worldData);
-            writer.Write(idData.Count);
-            foreach(var v in idData)
-            {
-                writer.Write(v.Key);
-                BinaryUtils.WriteDictionary(writer, v.Value, (x, y) => x.Write(y), (x, y) => x.Write(y));
-            }
 
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);

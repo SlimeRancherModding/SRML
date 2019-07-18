@@ -23,8 +23,11 @@ namespace SRML.SR.SaveSystem.Patches
             __state = new RemovalData();
 
             __state.AddAndRemoveWhereCustom(__instance.actors,__state.actors);
-            __state.AddAndRemoveWhere(__instance.world.placedGadgets,__state.placedGadgets,(x)=>SaveRegistry.IsCustom(x.Value));
-            __state.AddAndRemoveWhereCustom(__instance.ranch.plots,__state.landplots);
+            __state.AddAndRemoveWhere(__instance.world.placedGadgets,__state.placedGadgets,(x)=>SaveRegistry.IsCustom(x.Value)||ModdedStringRegistry.IsModdedString(x.Key));
+            __state.AddAndRemoveWhere(__instance.ranch.plots,__state.landplots,(x)=>SaveRegistry.IsCustom(x)||ModdedStringRegistry.IsModdedString(x.id));
+            __state.AddAndRemoveWhere(__instance.world.gordos, new Dictionary<string, GordoV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
+            __state.AddAndRemoveWhere(__instance.world.treasurePods, new Dictionary<string, TreasurePodV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
+
 
             __state.AddAndRemoveWhereCustom(__instance.player.upgrades,__state.upgrades);
             __state.AddAndRemoveWhereCustom(__instance.player.availUpgrades, __state.availUpgrades);
@@ -98,6 +101,11 @@ namespace SRML.SR.SaveSystem.Patches
             }
 
             foreach(var actor in __instance.world.gordos)
+            {
+                RemovePartial(actor.Value, __state);
+            }
+
+            foreach(var actor in __instance.world.treasurePods)
             {
                 RemovePartial(actor.Value, __state);
             }

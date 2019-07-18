@@ -101,7 +101,14 @@ namespace SRML.SR.SaveSystem
             };
         }
 
-        
+        public static void RegisterWorldDataPreLoadDelegate(WorldDataPreLoadDelegate del)
+        {
+            GetSaveInfo(SRMod.GetCurrentMod()).OnDataPreload += del;
+        }
+        public static void RegisterWorldDataSaveDelegate(WorldDataSaveDelegate del)
+        {
+            GetSaveInfo(SRMod.GetCurrentMod()).OnWorldSave += del;
+        }
 
     }
 }

@@ -18,8 +18,8 @@ namespace SRML.Config
 
         public event OnValueChangedDelegate OnValueChanged;
 
-        public string Name;
-        public string Comment;
+        public string Name { get; internal set; }
+        public string Comment { get; internal set; }
 
         public ConfigSection(string name)
         {

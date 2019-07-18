@@ -11,9 +11,9 @@ namespace SRML.Config
 {
     public class ConfigFile
     {
-        public string FileName;
+        public string FileName { get; internal set; }
 
-        public string DefaultSection;
+        public string DefaultSection { get; internal set; }
 
         readonly Dictionary<string, ConfigSection> sections = new Dictionary<string, ConfigSection>();
 
@@ -69,6 +69,16 @@ namespace SRML.Config
             {
                 defaultSection.AddElement(new FieldBackedConfigElement(field));
             }
+            foreach(var v in type.GetNestedTypes())
+            {
+                var sectionAttribute = v.GetCustomAttributes(typeof(ConfigSectionAttribute), false).FirstOrDefault() as ConfigSectionAttribute;
+                if (sectionAttribute == null) continue;
+                var newSection = file.AddSection(sectionAttribute.SectionName??v.Name);
+                foreach(var field in v.GetFields().Where(x => x.IsStatic))
+                {
+                    newSection.AddElement(new FieldBackedConfigElement(field));
+                }
+            }
             return file;
         }
 
@@ -102,10 +112,5 @@ namespace SRML.Config
             parser.WriteFile(filePath, data);
         }
         
-        static ConfigFile()
-        {
-            GenerateConfig(typeof(TestConfig)).TryLoadFromFile();
-            SRML.Console.Console.Log(TestConfig.TestString);
-        }
     }
 }

@@ -7,6 +7,8 @@ namespace SRML.Console
 	/// </summary>
 	public abstract class ConsoleCommand
 	{
+
+        internal SRMod belongingMod;
 		/// <summary>
 		/// The ID of this command (Always lowercase)
 		/// </summary>

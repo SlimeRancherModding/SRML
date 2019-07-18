@@ -12,6 +12,7 @@ namespace SRML.SR.SaveSystem.Utils
     {
         public static void SpliceAmmoData(List<VanillaAmmoData> original, List<VanillaAmmoData> toSplice)
         {
+            if (original == null || toSplice == null) return;
             for (int i = 0; i < original.Count;i++)
             {
                 if (toSplice[i] != null) original[i] = toSplice[i];

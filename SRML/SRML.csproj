@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\Attributes\ConfigFileAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigSectionAttribute.cs" />
     <Compile Include="Config\ConfigElement.cs" />
     <Compile Include="Config\ConfigFile.cs" />
     <Compile Include="Config\ConfigSection.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\GadgetDirectorPatch.cs" />
+    <Compile Include="SR\Patches\GardenCatcherAwakePatch.cs" />
     <Compile Include="SR\Patches\InitBlueprintLocksPatch.cs" />
     <Compile Include="SR\Patches\InitInitialBlueprintsPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
@@ -146,16 +148,18 @@
     <Compile Include="SR\Patches\PlayerStateResetPatch.cs" />
     <Compile Include="SR\Patches\RefineryUIPatch.cs" />
     <Compile Include="SR\Patches\RegisterActorPatch.cs" />
+    <Compile Include="SR\Patches\SavedGamePushPatch.cs" />
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
     <Compile Include="SR\Patches\StorageTypeExtensionsGetContentsPatch.cs" />
     <Compile Include="SR\PediaRegistry.cs" />
+    <Compile Include="SR\PlantSlotRegistry.cs" />
     <Compile Include="SR\PurchasableUIRegistry.cs" />
     <Compile Include="SR\SaveSystem\Data\Appearances\PartialAppearancesData.cs" />
     <Compile Include="SR\SaveSystem\Data\Gadget\PartialGordoData.cs" />
+    <Compile Include="SR\SaveSystem\Data\World\PartialTreasurePodData.cs" />
     <Compile Include="SR\SaveSystem\ModdedStringRegistry.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoSetAmmoSlotPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\GameModelRegisterLandPlotPatch.cs" />
-    <Compile Include="SR\SaveSystem\Patches\IdHandlerAwakePatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LandPlotToGameObjectPatch.cs" />
     <Compile Include="SR\Patches\MarketPatch.cs" />
     <Compile Include="SR\Patches\UpgradePurchaseUIPatch.cs" />
@@ -247,6 +251,7 @@
     <Compile Include="SR\PersonalUpgradeRegistry.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
     <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
+    <Compile Include="Utils\IdHandlerUtils.cs" />
     <Compile Include="Utils\Prefab\Patches\GameObjectDestroyPatches.cs" />
     <Compile Include="Utils\Prefab\Patches\GameObjectInstantiatePatches.cs" />
     <Compile Include="Utils\Prefab\RuntimePrefab.cs" />
@@ -257,6 +262,7 @@
     <Compile Include="Utils\BinaryUtils.cs" />
     <Compile Include="Utils\LogUtils.cs" />
     <Compile Include="Utils\PrefabUtils.cs" />
+    <Compile Include="Utils\RegionUtils.cs" />
     <Compile Include="Utils\SiloStorageExtensions.cs" />
     <Compile Include="Utils\Tuple.cs" />
   </ItemGroup>

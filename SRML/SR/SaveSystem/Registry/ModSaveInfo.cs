@@ -10,6 +10,9 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Registry
 {
+    public delegate void WorldDataPreLoadDelegate(CompoundDataPiece data);
+    public delegate void WorldDataLoadDelegate(CompoundDataPiece data);
+    public delegate void WorldDataSaveDelegate(CompoundDataPiece data);
     internal class ModSaveInfo
     {
         DataRegistry<CustomActorData> CustomActorDataRegistry = new DataRegistry<CustomActorData>();
@@ -28,7 +31,15 @@ namespace SRML.SR.SaveSystem.Registry
             onExtendedActorDataLoaded?.Invoke(model, obj, piece);
         }
 
+        
 
+        internal WorldDataPreLoadDelegate OnDataPreload;
+        internal WorldDataLoadDelegate OnDataLoad;
+        internal WorldDataSaveDelegate OnWorldSave;
+
+        internal void WorldDataPreLoad(CompoundDataPiece tag) => OnDataPreload?.Invoke(tag);
+        internal void WorldDataLoad(CompoundDataPiece tag) => OnDataLoad?.Invoke(tag);
+        internal void WorldDataSave(CompoundDataPiece tag) => OnWorldSave(tag);
         public ModSaveInfo()
         {
             Registries.Add(CustomActorDataRegistry);

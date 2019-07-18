@@ -7,66 +7,73 @@ using SRML.Utils;
 
 namespace SRML.SR.SaveSystem
 {
-    internal class StringRegistry : Dictionary<string, Tuple<SRMod,string>>
+    internal class StringRegistry : Dictionary<SRMod,HashSet<string>>
     {
         public string Prefix { get; }
-
-        public delegate bool ExternalIDCheckPredicate(string candidate);
-
-        static readonly Random random = new Random();
-
-        ExternalIDCheckPredicate IDChecker;
-
-        internal void SetIDChecker(ExternalIDCheckPredicate pred)
-        {
-            IDChecker = pred;
-        }
         public StringRegistry(string prefix)
         {
             Prefix = prefix;
         }
 
-        public StringRegistry(string prefix, ExternalIDCheckPredicate pred) : this(prefix)
+        public HashSet<string> GetIDsForMod(SRMod mod)
         {
-            this.IDChecker = pred;
+            if (mod == null) return null;
+            if (!TryGetValue(mod, out var set))
+            {
+                set = new HashSet<string>(StringComparer.Ordinal);
+                this[mod] = set;
+            }
+            return set;
         }
 
-        public IEnumerable<KeyValuePair<string, string>> NamesToAliases => this.Select(x=>new KeyValuePair<string,string>(x.Key,x.Value.Item2)).Where(x=>x.Value!=null).AsEnumerable();
-
-        public bool Contains(string id) => ContainsKey(id) || (IDChecker?.Invoke(id) ??  false);
+        public bool Contains(SRMod mod, string id) => GetIDsForMod(mod)?.Contains(id) ?? false;
 
         public bool ConformsToPrefix(string candidate) => candidate.StartsWith(Prefix);
 
-        public bool HasAlias(string id) => TryGetValue(id, out var tuple)&&tuple.Item2!=null;
+        internal static string GetLongFormID(string prefix, string id, SRMod mod)
+        {
+            return $"{prefix}.{mod.ModInfo.Id}.{id}";
+        }
+        public string GetLongFormID(string id, SRMod mod)
+        {
+            return GetLongFormID(Prefix, id, mod);
+        }
+
+        public string ParseIDFromLongForm(string longform)
+        {
+            return longform.Split('.')[2];
+        }
+
+        public static void ParseLongForm(string longform, out string prefix, out string modid, out string id)
+        {
+            var split = longform.Split('.');
+            prefix = split[0];
+            id = split[2];
+            modid = split[1];
+        }
         
-
-        public string GetAlias(string id)
+        public static bool IsLongForm(string longform)
         {
-            TryGetValue(id, out var alternate);
-            return alternate?.Item2;
+            return longform.Split('.').Length == 3;
         }
 
-        public string FromAliasAndMod(string id, SRMod mod) => FromAliasAndMod(new Tuple<SRMod, string>(mod, id));
-        public string FromAliasAndMod(Tuple<SRMod,string> identifier) => this.FirstOrDefault(x => x.Value == identifier).Key;
-        
-
-        public bool RegisterID(string id, SRMod mod, string alias)
+        public string RegisterID(string id, SRMod mod)
         {
-            if (!ConformsToPrefix(id)) return false;
-            if (Contains(id)) return false;
-            Add(id, new Tuple<SRMod,string>(mod,alias));
-            return true;
+
+            GetIDsForMod(mod).Add(id); 
+            return GetLongFormID(id, mod);
         }
 
-        public string GenerateNewID()
+        public void UnRegisterID(string id,  SRMod mod)
         {
-            string candidate = "";
-            do
-            {
-                candidate = Prefix;
-                for (int i = 0; i < 10; i++) candidate += random.Next(0, 10).ToString();
-            } while (Contains(candidate));
-            return candidate;
+            GetIDsForMod(mod).Remove(id);
         }
+
+        public void UnRegisterAll(SRMod mod)
+        {
+            GetIDsForMod(mod).Clear();
+        }
+
+       
     }
 }

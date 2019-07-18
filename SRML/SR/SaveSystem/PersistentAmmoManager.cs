@@ -22,6 +22,7 @@ namespace SRML.SR.SaveSystem
             foreach (var v in data.ammoDataEntries)
             {
                 if (v.model.HasNoData()) continue;
+                if (!v.identifier.IsValid()) continue;
                 PersistentAmmoData[v.identifier] = new PersistentAmmo(v.identifier, v.model);
             }
         }

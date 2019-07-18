@@ -92,6 +92,7 @@ namespace SRML.Console
                 return false;
             }
 
+            cmd.belongingMod = SRMod.GetCurrentMod();
             commands.Add(cmd.ID.ToLowerInvariant(), cmd);
             ConsoleWindow.cmdsText += $"{(ConsoleWindow.cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
             return true;
@@ -224,7 +225,17 @@ namespace SRML.Console
                     }
 
                     if (keepExecution)
-                        executed = commands[cmd].Execute(args);
+                    {
+                        SRMod.ForceModContext(commands[cmd].belongingMod);
+                        try
+                        {
+                            executed = commands[cmd].Execute(args);
+                        }
+                        finally
+                        {
+                            SRMod.ClearModContext();
+                        }
+                    }
 
                     if (!executed && keepExecution)
                         Console.Log($"<color=cyan>Usage:</color> <color=#77DDFF>{ColorUsage(commands[cmd].Usage)}</color>");

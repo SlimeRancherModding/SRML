@@ -15,6 +15,8 @@ namespace SRML.SR.SaveSystem
             new Dictionary<DataIdentifier, CompoundDataPiece>();
         internal static Dictionary<DataIdentifier, PreparedData> preparedData = new Dictionary<DataIdentifier, PreparedData>();
 
+        internal static Dictionary<SRMod, CompoundDataPiece> worldSaveData = new Dictionary<SRMod, CompoundDataPiece>();
+
         internal static void Pull(ModdedSaveData data)
         {
             Clear();
@@ -37,12 +39,23 @@ namespace SRML.SR.SaveSystem
 
                     }
                 }
+                var actualMod = SRModLoader.GetMod(mod.modid);
+                if (actualMod == null) continue;
+                worldSaveData.Add(actualMod, mod.worldData);
+                SaveRegistry.GetSaveInfo(actualMod).WorldDataPreLoad(mod.worldData);
             }
+        }
+
+        public static CompoundDataPiece GetWorldSaveData()
+        {
+            return worldSaveData.Get(SRMod.GetCurrentMod());
         }
 
         internal static void Clear()
         {
             extendedData.Clear();
+            preparedData.Clear();
+            worldSaveData.Clear();
         }
         public static GameObject InstantiateActorWithData(GameObject prefab, RegionRegistry.RegionSetId id, Vector3 pos, Quaternion rot,
             CompoundDataPiece data)
@@ -202,6 +215,14 @@ namespace SRML.SR.SaveSystem
                         idType = ExtendedDataTree.IdentifierType.ACTOR
                     });
                 }
+            }
+            foreach(var pair in worldSaveData)
+            {
+                if (pair.Value.DataList.Count > 0)
+                {
+                    SaveRegistry.GetSaveInfo(pair.Key).WorldDataSave(pair.Value);
+                    data.GetSegmentForMod(pair.Key).worldData = pair.Value;
+                }   
             }
         }
 

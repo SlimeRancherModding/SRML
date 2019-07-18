@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace SRML.SR.SaveSystem
 {
@@ -25,74 +26,45 @@ namespace SRML.SR.SaveSystem
             return registry;
         }
 
-        internal static void ClaimNewID(string prefix, SRMod mod,string alias)
+        internal static string ClaimID(string prefix, SRMod mod,string id)
         {
             var reg = GetRegistry(prefix);
-            reg.RegisterID(reg.GenerateNewID(), mod,alias);
+            return reg.RegisterID(id, mod);
         }
 
-        public static void ClaimID(string prefix, string alias)
+        public static string ClaimID(string prefix,string id)
         {
-            ClaimNewID(prefix, SRMod.GetCurrentMod(), alias);
+            return ClaimID(prefix, SRMod.GetCurrentMod(),id);
         }
 
-        internal static Dictionary<string,Dictionary<string,string>> GetModKeys(SRMod mod)
+        public static void FreeID(string prefix, string id)
         {
-            var dict = new Dictionary<string,Dictionary<string, string>>();
-            foreach(var reg in Registries)
+            GetRegistry(prefix).UnRegisterID(id,SRMod.GetCurrentMod());
+        }
+
+        public static void FreeAllIDs(string prefix)
+        {
+            GetRegistry(prefix).UnRegisterAll(SRMod.GetCurrentMod());
+        }
+
+        public static void FreeAllIDs()
+        {
+            foreach(var v in Registries)
             {
-                var newDict = new Dictionary<string, string>();
-                foreach(var key in reg.Where(x=>x.Value.Item1==mod).Select(x=>new KeyValuePair<string,string>(x.Value.Item2,x.Key)))
-                {
-                    newDict.Add(key.Key, key.Value);
-                }
-                if (newDict.Count > 0) dict[reg.Prefix] = newDict;
-            }
-            return dict;
-        }
-
-        internal static void ReadModKeys(SRMod mod, Dictionary<string,Dictionary<string,string>> dict)
-        {
-            foreach(var v in dict)
-            {
-                var reg = GetRegistry(v.Key);
-                foreach(var key in v.Value)
-                {
-                    if (reg.ContainsKey(key.Value))
-                    {
-                        var temp = reg[key.Value];
-                        reg.Remove(key.Value);
-                        reg[reg.GenerateNewID()] = temp;
-                    }
-                    reg[key.Value] = new SRML.Utils.Tuple<SRMod, string>(mod, key.Key);
-                }
+                v.UnRegisterAll(SRMod.GetCurrentMod());
             }
         }
-        internal static void Push(ModdedSaveData data)
-        {
-            foreach (var v in new HashSet<SRMod>(Registries.SelectMany(x => x.Values.Select(y => y.Item1))))
-            {
-                var seg = data.GetSegmentForMod(v);
-                seg.idData = GetModKeys(v);
-            }
+        internal static bool IsModdedString(string str) => StringRegistry.IsLongForm(str);
 
-        }
-
-        internal static string ParseModColonAlias(string prefix, string identifier)
+        internal static bool IsValidString(string str) => !IsModdedString(str) || GetModForModdedString(str) != null;
+        
+        internal static SRMod GetModForModdedString(string str)
         {
-            var reg = GetRegistry(prefix);
-            var strings = identifier.Split(':');
-            var mod = SRModLoader.GetMod(strings[0]);
-            var alias = strings[1];
-            return reg.FromAliasAndMod(alias, mod);
-        }
-        internal static void Pull(ModdedSaveData data)
-        {
-            foreach(var seg in data.segments)
-            {
-                var mod = SRModLoader.GetMod(seg.modid);
-                ReadModKeys(mod, seg.idData);
-            }
+            if (!StringRegistry.IsLongForm(str)) return null;
+            StringRegistry.ParseLongForm(str, out var prefix, out var modid, out var id);
+            var mod = SRModLoader.GetMod(modid);
+            if (!GetRegistry(prefix).Contains(mod,id)) return null;
+            return mod;
         }
     
     }
