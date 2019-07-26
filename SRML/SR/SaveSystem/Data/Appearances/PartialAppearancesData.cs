@@ -1,12 +1,13 @@
-﻿using MonomiPark.SlimeRancher.Persist;
+﻿using HarmonyLib;
+using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
+using HarmonyLib;
 using static SlimeAppearance;
 
 namespace SRML.SR.SaveSystem.Data.Appearances
@@ -83,7 +84,8 @@ namespace SRML.SR.SaveSystem.Data.Appearances
             {
                 var create = CreatePartialList();
                 create.Read(reader);
-                unlocksPartial.Add(identifiablePair.DeserializeGeneric(reader), create);
+                var idpair = identifiablePair.DeserializeGeneric(reader);
+                unlocksPartial.Add(idpair, create);
             }
 
             selections.Read(reader);

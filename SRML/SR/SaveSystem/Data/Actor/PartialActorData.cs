@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
+using SRML.SR.SaveSystem.Format;
 using SRML.Utils;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
@@ -31,12 +32,14 @@ namespace SRML.SR.SaveSystem.Data.Actor
 
         public override void Read(BinaryReader reader)
         {
+            if (ModdedSaveData.LATEST_READ_VERSION > 3) base.Read(reader);
             partialFashions.Read(reader);
             partialEmotions.Read(reader);
         }
 
         public override void Write(BinaryWriter writer)
         {
+            base.Write(writer);
             partialFashions.Write(writer);
             partialEmotions.Write(writer);
         }

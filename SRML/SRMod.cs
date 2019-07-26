@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
+using SRML.Config;
 using SRML.Utils;
 
 namespace SRML
@@ -83,6 +84,7 @@ namespace SRML
 
         public SRModInfo ModInfo { get; private set; }
         public String Path { get; private set; }
+        public List<ConfigFile> Configs { get; private set; } = new List<ConfigFile>();
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
 

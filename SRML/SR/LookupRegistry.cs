@@ -22,6 +22,8 @@ namespace SRML.SR
 
         internal static HashSet<LookupDirector.Liquid> liquidsToPatch = new HashSet<LookupDirector.Liquid>();
 
+        internal static HashSet<LookupDirector.ToyEntry> toysToPatch = new HashSet<LookupDirector.ToyEntry>();
+
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -29,12 +31,10 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     objectsToPatch.Add(b);
                     break;
-                case LoadingStep.LOAD:
+                default:
                     GameContext.Instance.LookupDirector.identifiablePrefabs.Add(b);
                     GameContext.Instance.LookupDirector.identifiablePrefabDict[Identifiable.GetId(b)] = b;
                     break;
-                default:
-                    throw new Exception();
             }
         }
 
@@ -50,12 +50,10 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     vacEntriesToPatch.Add(entry);
                     break;
-                case LoadingStep.LOAD:
+                default:
                     GameContext.Instance.LookupDirector.vacEntries.Add(entry);
                     GameContext.Instance.LookupDirector.vacEntryDict[entry.id] = entry;
                     break;
-                default:
-                    throw new Exception();
             }
         }
 
@@ -66,12 +64,10 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     landPlotsToPatch.Add(prefab);
                     break;
-                case LoadingStep.LOAD:
+                default:
                     GameContext.Instance.LookupDirector.plotPrefabs.Add(prefab);
                     GameContext.Instance.LookupDirector.plotPrefabDict[prefab.GetComponentInChildren<LandPlot>(true).typeId] = prefab;
                     break;
-                default:
-                    throw new Exception();
             }
         }
 
@@ -82,12 +78,10 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     gadgetEntriesToPatch.Add(entry);
                     break;
-                case LoadingStep.LOAD:
+                default:
                     GameContext.Instance.LookupDirector.gadgetEntries.Add(entry);
                     GameContext.Instance.LookupDirector.gadgetEntryDict[entry.id] = entry;
                     break;
-                default:
-                    throw new Exception();
             }
         }
 
@@ -103,12 +97,10 @@ namespace SRML.SR
                 case LoadingStep.PRELOAD:
                     upgradeEntriesToPatch.Add(entry);
                     break;
-                case LoadingStep.LOAD:
+                default:
                     GameContext.Instance.LookupDirector.upgradeEntries.Add(entry);
                     GameContext.Instance.LookupDirector.upgradeEntryDict[entry.upgrade] = entry;
                     break;
-                default:
-                    throw new Exception();
             }
         }
 
@@ -162,6 +154,25 @@ namespace SRML.SR
                     GameContext.Instance.LookupDirector.liquidDict[liquid.id] = liquid;
                     break;
             }
+        }
+
+        public static void RegisterToy(LookupDirector.ToyEntry entry)
+        {
+            switch (SRModLoader.CurrentLoadingStep)
+            {
+                case LoadingStep.PRELOAD:
+                    toysToPatch.Add(entry);
+                    break;
+                default:
+                    GameContext.Instance.LookupDirector.toyEntries.Add(entry);
+                    GameContext.Instance.LookupDirector.toyDict[entry.toyId] = entry;
+                    break;
+            }
+        }
+
+        public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
+        {
+            RegisterToy(new LookupDirector.ToyEntry() { toyId = id, icon = icon, cost = cost, nameKey = nameKey });
         }
     }
 }

@@ -46,5 +46,57 @@ namespace SRML.SR
         {
             defaultAvailBlueprints.Add(id);
         }
+
+        public static void ClassifyGadget(Gadget.Id gadget, GadgetClassification classification)
+        {
+            switch (classification)
+            {
+                case GadgetClassification.MISC:
+                    Gadget.MISC_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.EXTRACTOR:
+                    Gadget.EXTRACTOR_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.TELEPORTER:
+                    Gadget.TELEPORTER_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.WARP_DEPOT:
+                    Gadget.WARP_DEPOT_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.ECHO_NET:
+                    Gadget.ECHO_NET_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.LAMP:
+                    Gadget.LAMP_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.FASHION_POD:
+                    Gadget.FASHION_POD_CLASS.Add(gadget);
+                    Gadget.RegisterFashion(gadget);
+                    break;
+                case GadgetClassification.SNARE:
+                    Gadget.SNARE_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.DECO:
+                    Gadget.DECO_CLASS.Add(gadget);
+                    break;
+                case GadgetClassification.DRONE:
+                    Gadget.DRONE_CLASS.Add(gadget);
+                    break;
+            }
+        }
+
+        public enum GadgetClassification
+        {
+            MISC,
+            EXTRACTOR,
+            TELEPORTER,
+            WARP_DEPOT,
+            ECHO_NET,
+            LAMP,
+            FASHION_POD,
+            SNARE,
+            DECO,
+            DRONE
+        }
     }
 }

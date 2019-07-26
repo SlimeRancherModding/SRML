@@ -23,6 +23,11 @@ namespace SRML
             {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) }
         };
 
+        internal static void RegisterAlternate(Type type, AlternateEnumRegister del)
+        {
+            BANNED_ENUMS.Add(type, del);
+        }
+
         private static PropertyInfo cache;
         private static FieldInfo global_cache_monitor;
         private static FieldInfo global_cache;

@@ -44,7 +44,6 @@ namespace SRML.SR.SaveSystem
                             <T, PartialData> onSuccess)
             {
                 var level = CustomChecker.GetCustomLevel(v);
-
                 if (level == CustomChecker.CustomLevel.PARTIAL)
                 {
                     var partialdata = PartialData.GetPartialData(v.GetType(), true);
@@ -73,8 +72,9 @@ namespace SRML.SR.SaveSystem
 
             foreach (var g in game.ranch.plots)
             {
+                var currentString = g.id;
                 Check(g, (v, partialdata) =>
-                    data.partialData.Add(new DataIdentifier() { stringID = g.id, Type = IdentifierType.LANDPLOT }, partialdata));
+                    data.partialData.Add(new DataIdentifier() { stringID = currentString, Type = IdentifierType.LANDPLOT }, partialdata));
             }
 
             foreach(var g in game.world.gordos)
@@ -85,6 +85,12 @@ namespace SRML.SR.SaveSystem
             foreach(var t in game.world.treasurePods)
             {
                 Check(t.Value, (v, partialData) => data.partialData.Add(new DataIdentifier() { Type = IdentifierType.TREASUREPOD, stringID = t.Key }, partialData));
+            }
+
+            foreach(var t in game.world.offers)
+            {
+                var cur = t.Key;
+                Check(t.Value, (v, partialData) => data.partialData.Add(new DataIdentifier() { Type = IdentifierType.EXCHANGEOFFER, longID = (int)cur },partialData));
             }
 
             data.appearancesData.Pull(game.appearances);
@@ -160,7 +166,7 @@ namespace SRML.SR.SaveSystem
             {
                 foreach (var pair in source.Where(x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key)))
                 {
-                    var segment = data.GetSegmentForMod(SaveRegistry.ModForData(pair.Value) is SRMod mod ? mod : ModdedStringRegistry.GetModForModdedString(pair.Key));
+                    var segment = data.GetSegmentForMod(SaveRegistry.ModForData(pair.Value) ?? ModdedStringRegistry.GetModForModdedString(pair.Key));
                     segment.identifiableData.Add(new IdentifiedData()
                     {
                         data = pair.Value,
@@ -169,9 +175,20 @@ namespace SRML.SR.SaveSystem
                 }
             }
 
+
             GetStringIndexedModdedData(game.world.placedGadgets, (gadget) => new DataIdentifier() { longID = 0, stringID = gadget.Key, Type = IdentifierType.GADGET }); 
             GetStringIndexedModdedData(game.world.gordos, (gordo) => new DataIdentifier() { longID = 0, stringID = gordo.Key, Type = IdentifierType.GORDO });
             GetStringIndexedModdedData(game.world.treasurePods, (pod) => new DataIdentifier() { longID = 0, stringID = pod.Key, Type = IdentifierType.TREASUREPOD });
+
+            foreach (var v in game.world.offers.Where(x=>ModdedIDRegistry.IsModdedID(x.Key)||ExchangeOfferRegistry.IsCustom(x.Value)))
+            {
+                var segment = data.GetSegmentForMod(SaveRegistry.ModForData(v.Value) ?? ExchangeOfferRegistry.GetModForData(v.Value));
+                segment.identifiableData.Add(new IdentifiedData()
+                {
+                    data = v.Value,
+                    dataID = new DataIdentifier() { Type = IdentifierType.EXCHANGEOFFER, longID = (int)v.Key }
+                });
+            }
         }
         #endregion
 
@@ -238,6 +255,10 @@ namespace SRML.SR.SaveSystem
                     case IdentifierType.TREASUREPOD:
                         if (ModdedStringRegistry.IsValidString(customData.dataID.stringID)) game.world.treasurePods[customData.dataID.stringID] = (TreasurePodV01)customData.data;
                         break;
+                    case IdentifierType.EXCHANGEOFFER:
+                        var offertype = (ExchangeDirector.OfferType)(int)customData.dataID.longID;
+                        if (Enum.IsDefined(typeof(ExchangeDirector.OfferType), offertype)) game.world.offers[offertype] = (ExchangeOfferV04)customData.data;
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -256,7 +277,7 @@ namespace SRML.SR.SaveSystem
                     case IdentifierType.GADGET:
                         if (game.world.placedGadgets.ContainsKey(partial.Key.stringID)) partial.Value.Push(game.world.placedGadgets[partial.Key.stringID]);
                         break;
-                    case IdentifierType.LANDPLOT:
+                    case IdentifierType.LANDPLOT:       
                         if(game.ranch.plots.FirstOrDefault((x)=>x.id==partial.Key.stringID) is VanillaPlotData plot) partial.Value.Push(plot);
                         break;
                     case IdentifierType.GORDO:

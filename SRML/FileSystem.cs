@@ -28,10 +28,15 @@ namespace SRML
             return SRModLoader.GetModForAssembly(assembly)?.Path ?? Path.GetDirectoryName(assembly.Location);
         }
 
+
+        internal static String GetConfigPath(SRMod mod)
+        {
+            return CheckDirectory(Path.Combine(Path.Combine(Application.persistentDataPath, "SRML/Config"), mod?.ModInfo.Id ?? "SRML"));
+        }
+
         public static String GetMyConfigPath()
         {
-            var assembly = ReflectionUtils.GetRelevantAssembly();
-            return CheckDirectory(Path.Combine(Path.Combine(Application.persistentDataPath, "SRML/Config"), SRModLoader.GetModForAssembly(assembly)?.ModInfo.Id ?? "SRML"));
+            return GetConfigPath(SRMod.GetCurrentMod());    
         }
     }
 }

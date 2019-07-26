@@ -19,6 +19,7 @@ namespace SRML.SR.Patches
             __instance.resourceSpawnerPrefabs.AddRange(LookupRegistry.resourceSpawnersToPatch);
             __instance.liquidEntries.AddRange(LookupRegistry.liquidsToPatch);
             __instance.gordoEntries.AddRange(LookupRegistry.gordosToPatch);
+            __instance.toyEntries.AddRange(LookupRegistry.toysToPatch);
         }
     }
 }

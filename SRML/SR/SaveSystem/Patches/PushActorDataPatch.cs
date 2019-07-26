@@ -55,6 +55,11 @@ namespace SRML.SR.SaveSystem.Patches
             {
                 customData.PushCustomModel(model);
             }
+
+            foreach(var v in DataModelRegistry.actorLoaders.Where(x => x.Key(model)))
+            {
+                v.Value(model, data);
+            }
         }
 
     }

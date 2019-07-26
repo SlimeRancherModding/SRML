@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
+using SRML.SR.SaveSystem.Format;
 using SRML.Utils;
+using UnityEngine;
 using VanillaLandPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem.Data.LandPlot
 {
@@ -18,8 +20,9 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
         public PartialCollection<global::LandPlot.Upgrade> upgrades = new PartialCollection<global::LandPlot.Upgrade>(ModdedIDRegistry.IsModdedID, SerializerPair.GetEnumSerializerPair<global::LandPlot.Upgrade>());
         public override void Pull(VanillaLandPlotData data)
         {
-            data.attachedId = GiveNoneIfModded(data.attachedId);
+
             attachedId = GiveBackIfModded(data.attachedId);
+            data.attachedId = GiveNoneIfModded(data.attachedId);
             upgrades.Pull(data.upgrades);
         }
 
@@ -42,12 +45,15 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
 
         public override void Read(BinaryReader reader)
         {
+            if(ModdedSaveData.LATEST_READ_VERSION>3) base.Read(reader);
+            Debug.Log(ModdedSaveData.LATEST_READ_VERSION+" test");
             attachedId = (SpawnResource.Id)reader.ReadInt32();
             upgrades.Read(reader);
         }
 
         public override void Write(BinaryWriter writer)
         {
+            base.Write(writer);
             writer.Write((int)attachedId);
             upgrades.Write(writer);
         }
@@ -59,6 +65,7 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
                 translator.FixEnumValues(mode, data.upgrades);
                 data.attachedId = translator.TranslateEnum(mode, data.attachedId);
             });
+            
             PartialData.RegisterPartialData(() => new PartialLandPlotData());
         }
     }

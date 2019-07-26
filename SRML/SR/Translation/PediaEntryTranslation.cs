@@ -36,7 +36,7 @@ namespace SRML.SR.Translation
             return this;
         }
 
-        public PediaEntryTranslation SetDescriptionTranslation(string description)
+        public PediaEntryTranslation SetDescriptionTranslation(string description)  
         {
             TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
             return this;

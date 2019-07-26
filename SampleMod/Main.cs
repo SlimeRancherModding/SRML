@@ -36,10 +36,18 @@ namespace SampleMod
         }
 
 
+        // Called right before PostLoad
+        // Used to register stuff that needs lookupdirector access
+        public override void Load()
+        {
+            
+        }
+
+
         // Called after GameContext.Start
         // stuff like gamecontext.lookupdirector are available in this step, generally for when you want to access
         // ingame prefabs and the such
-        public void PostLoad()
+        public override void PostLoad()
         {
             Debug.Log("We did it! Again! ");
         }

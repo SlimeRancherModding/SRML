@@ -34,7 +34,7 @@ namespace SRML.Utils.Enum
                     }
                 }
             }
-            SRMod.ClearModContext();
+            SRMod.ClearModContext();    
         }
     }
 }

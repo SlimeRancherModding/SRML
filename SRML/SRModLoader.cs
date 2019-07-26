@@ -11,6 +11,7 @@ using SRML.Utils;
 using Exception = System.Exception;
 using SRML.Utils.Enum;
 using System.Collections.ObjectModel;
+using SRML.Config;
 
 namespace SRML
 {
@@ -102,8 +103,8 @@ namespace SRML
                         var a = assembly.LoadAssembly();
                         if (!TryGetEntryType(a, out var entryType)||assembly.IsModAssembly||(!mod.isFromJSON&&Path.GetFullPath(assembly.Path)!=Path.GetFullPath(mod.entryFile))) continue;
                         assembly.IsModAssembly = true;
-                        AddMod(assembly.mod, entryType);
-
+                        var newMod = AddMod(assembly.mod, entryType);
+                        HarmonyOverrideHandler.LoadOverrides(entryType.Module);
                         goto foundmod;
                     }
 
@@ -134,11 +135,12 @@ namespace SRML
             return Mods.Values;
         }
 
-        static void AddMod(ProtoMod modInfo, Type entryType)
+        static SRMod AddMod(ProtoMod modInfo, Type entryType)
         {
             IModEntryPoint entryPoint = (IModEntryPoint) Activator.CreateInstance(entryType);
             var newmod = new SRMod(modInfo.ToModInfo(), entryPoint,modInfo.path);
             Mods.Add(modInfo.id,newmod);
+            return newmod;
         }
 
         internal static void PreLoadMods()
@@ -150,6 +152,7 @@ namespace SRML
                 try
                 {
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
+                    ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
                 }
                 catch (Exception e)

@@ -1,4 +1,5 @@
-﻿using SRML.Config.Parsing;
+﻿using SRML.Config.Attributes;
+using SRML.Config.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,12 +19,31 @@ namespace SRML.Config
             get { return field.GetValue(null); }
             set { field.SetValue(null, value); }
         }
+        static bool GetAttributeOfType<T>(FieldInfo field, out T attribute) where T : Attribute
+        {
+            attribute = field.GetCustomAttributes(false).FirstOrDefault(x => x is T) as T;
+            return attribute != null;
+        }
+        public static ConfigElementOptions GenerateAttributesOptions(FieldInfo field)
+        {
 
-        public FieldBackedConfigElement(FieldInfo field) : base(GenerateDefaultOptions(field.FieldType,field.Name)) 
+
+            return new ConfigElementOptions()
+            {
+                Comment = GetAttributeOfType<ConfigCommentAttribute>(field, out var comment) ? comment.Comment : null,
+                Name = GetAttributeOfType<ConfigNameAttribute>(field, out var name) ? name.Name : field.Name,
+                Parser = GetAttributeOfType<ConfigParserAttribute>(field, out var parser) ? parser.Parser : ParserRegistry.TryGetParser(field.FieldType, out var backupParser) ? backupParser : null,
+                ReloadMode = GetAttributeOfType<ConfigReloadAttribute>(field, out var reload) ? reload.Mode : ReloadMode.NORMAL
+            };
+        }
+
+        public FieldBackedConfigElement(FieldInfo field) : base(GenerateAttributesOptions(field)) 
         {
             this.field = field;
             Options.DefaultValue = Value;
-
+            if (Value is IStringParserProvider val) Options.Parser = val.GetParser();
+            if (Options.Parser == null) throw new Exception(field.FieldType.ToString());
+            if (GetAttributeOfType<ConfigCallbackAttribute>(field,out var attribute)) OnValueChanged += (x) => attribute.OnValueChanged(Value, x);
         }
     }
     public class ConfigElement<T> : ConfigElement
@@ -70,7 +90,7 @@ namespace SRML.Config
         {
             return new ConfigElementOptions()
             {
-                Parser = ParserRegistry.GetParser(type),
+                Parser = ParserRegistry.TryGetParser(type,out var parser)?parser:null,
                 DefaultValue = type.IsValueType ? Activator.CreateInstance(type) : null,
                 Name = name
             };

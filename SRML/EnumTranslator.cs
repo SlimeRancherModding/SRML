@@ -187,6 +187,11 @@ namespace SRML
             {
                 x = LandPlot.Id.NONE.ToString();
                 return true;
+            }),
+            ConvertGenericFallback<SpawnResource.Id>((ref string x) =>
+            {
+                x = SpawnResource.Id.NONE.ToString();
+                return true;
             })
         };
 

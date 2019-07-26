@@ -1,12 +1,13 @@
 ﻿using SRML.SR;
 using SRML.SR.SaveSystem;
+using SRML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace SRML.Utils
+namespace SRML.SR.Utils
 {
     public static class IdHandlerUtils
     {
@@ -15,9 +16,9 @@ namespace SRML.Utils
         {
             SRCallbacks.PreSaveGameLoad += (s) =>
             {
-                foreach(IdHandler handler in GameObject.FindObjectsOfType<IdHandler>())
+                foreach (IdHandler handler in UnityEngine.Object.FindObjectsOfType<IdHandler>())
                 {
-                    if(!idHandlerPrefabs.ContainsKey(handler.GetType()))
+                    if (!idHandlerPrefabs.ContainsKey(handler.GetType()))
                     {
                         idHandlerPrefabs[handler.GetType()] = PrefabUtils.CopyPrefab(handler.gameObject);
                     }
@@ -37,7 +38,7 @@ namespace SRML.Utils
             if (!idHandlerPrefabs.TryGetValue(typeof(T), out var gameObj)) return null;
             var newG = GameObjectUtils.InstantiateInactive(gameObj);
 
-            newG.GetComponent<T>().id = ModdedStringRegistry.IsModdedString(id) ? id:ModdedStringRegistry.ClaimID(GetPrefix<T>(),id);
+            newG.GetComponent<T>().id = ModdedStringRegistry.IsModdedString(id) ? id : ModdedStringRegistry.ClaimID(GetPrefix<T>(), id);
 
             return newG;
         }

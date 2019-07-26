@@ -29,6 +29,8 @@ namespace SRML.SR.Patches
             if (ui == null || type != ui.GetType()) throw new Exception();
 
             purchasables = PurchasableUIRegistry.customPurchasables.Where(x => x.Key(type, ui)).Select(x => x.Value(ui)).ToArray().AddRangeToArray(purchasables);
+
+            foreach (var v in PurchasableUIRegistry.customManipulators.Where(x => x.Key(type, ui))) v.Value(ui, ref purchasables);
         }
     }
 }

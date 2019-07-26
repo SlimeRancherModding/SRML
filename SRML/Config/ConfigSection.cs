@@ -14,6 +14,8 @@ namespace SRML.Config
         
         readonly Dictionary<string, ConfigElement> elementDict = new Dictionary<string, ConfigElement>();
 
+        public IEnumerable<ConfigElement> Elements => elementDict.Values;
+
         public delegate void OnValueChangedDelegate(string key, object value);
 
         public event OnValueChangedDelegate OnValueChanged;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace SRML.Utils
+namespace SRML.SR.Utils
 {
     public static class RegionUtils
     {

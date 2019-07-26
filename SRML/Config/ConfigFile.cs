@@ -62,7 +62,8 @@ namespace SRML.Config
         public static ConfigFile GenerateConfig(Type type)
         {
             var file = new ConfigFile();
-            var attribute = (ConfigFileAttribute)type.GetCustomAttributes(typeof(ConfigFileAttribute), false).FirstOrDefault();
+            var attribute = type.GetCustomAttributes(typeof(ConfigFileAttribute), false).FirstOrDefault() as ConfigFileAttribute;
+            if (attribute == null) return null;
             file.FileName = attribute.FileName;
             var defaultSection = file.AddSection(attribute.DefaultSection);
             foreach (var field in type.GetFields().Where(x => x.IsStatic))

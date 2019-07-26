@@ -68,6 +68,8 @@ namespace SRML.Console
             RegisterCommand(new Commands.EditButtonCommand());
             RegisterCommand(new Commands.SpawnCommand());
             RegisterCommand(new Commands.GiveCommand());
+            RegisterCommand(new Commands.BindCommand());
+            RegisterCommand(new Commands.ConfigCommand());
 
             RegisterButton("clear", new ConsoleButton("Clear Console", "clear"));
             RegisterButton("help", new ConsoleButton("Show Help", "help"));

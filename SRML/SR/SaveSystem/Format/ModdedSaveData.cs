@@ -15,8 +15,9 @@ namespace SRML.SR.SaveSystem.Format
     class ModdedSaveData
     {
 
-        public const int DATA_VERSION = 3;
+        public const int DATA_VERSION = 4;
         public int version;
+        internal static int LATEST_READ_VERSION;
         public List<ModDataSegment> segments = new List<ModDataSegment>();
 
         public List<IdentifiableAmmoData> ammoDataEntries = new List<IdentifiableAmmoData>();
@@ -30,7 +31,7 @@ namespace SRML.SR.SaveSystem.Format
         public void ReadHeader(BinaryReader reader)
         {
             version = reader.ReadInt32();
-
+            LATEST_READ_VERSION = version;
 
         }
 
@@ -102,7 +103,14 @@ namespace SRML.SR.SaveSystem.Format
                     }
                     if (version >= 3)
                     {
-                        appearancesData.Read(reader);
+                        try
+                        {
+                            appearancesData.Read(reader);
+                        }
+                        catch(Exception e)
+                        {
+                            throw;
+                        }
                     }
                 }
             }
@@ -169,12 +177,22 @@ namespace SRML.SR.SaveSystem.Format
         public void FixAllEnumValues(EnumTranslator.TranslationMode mode)
         {
             enumTranslator?.FixEnumValues(mode,partialData);
+            if (enumTranslator != null)
+            {
+                var newDict = new Dictionary<DataIdentifier, PartialData>();
+                foreach(var v in partialData)
+                {
+                    newDict.Add(v.Key.TranslateWithEnum(enumTranslator, mode), v.Value);
+                }
+                partialData = newDict;
+            }
             enumTranslator?.FixEnumValues(mode, appearancesData);
             enumTranslator?.FixEnumValues(mode, ammoDataEntries);
             foreach (var v in segments)
             {
                 v.FixAllValues(enumTranslator,mode);
             }
+            
         }
     }
 }

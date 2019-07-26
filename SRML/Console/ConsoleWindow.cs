@@ -36,7 +36,7 @@ namespace SRML.Console
         internal static string cmdsText = string.Empty;
         internal static string modsText = string.Empty;
         internal static string fullText = string.Empty;
-        private static string cmdText = string.Empty;
+        internal static string cmdText = string.Empty;
 
         // STYLE CONTROL
         private static GUIStyle textArea;

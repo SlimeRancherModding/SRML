@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
+using MonomiPark.SlimeRancher.Persist;
 using MonomiPark.SlimeRancher.Regions;
 using UnityEngine;
 
@@ -18,11 +19,26 @@ namespace SRML.SR
 
         public delegate LandPlotModel CreateLandPlotDelegate();
         internal static Dictionary<Predicate<LandPlot.Id>, CreateLandPlotDelegate> landPlotOverrides = new Dictionary<Predicate<LandPlot.Id>, CreateLandPlotDelegate>();
-      
+
+        public delegate void ActorDataSaveDelegate(ActorModel model, ActorDataV09 data);
+        internal static Dictionary<Predicate<ActorModel>, ActorDataSaveDelegate> actorSavers = new Dictionary<Predicate<ActorModel>, ActorDataSaveDelegate>();
+
+        public delegate void ActorDataLoadDelegate(ActorModel model, ActorDataV09 data);
+        internal static Dictionary<Predicate<ActorModel>, ActorDataLoadDelegate> actorLoaders = new Dictionary<Predicate<ActorModel>, ActorDataLoadDelegate>();
 
         public static void RegisterActorModelOverride(Predicate<Identifiable.Id> pred, CreateActorDelegate creator)
         {
             actorOverrideMapping.Add(pred,creator);
+        }
+
+        public static void RegisterActorSaver(Predicate<ActorModel> pred, ActorDataSaveDelegate del)
+        {
+            actorSavers.Add(pred, del);
+        }
+
+        public static void RegisterActorLoader(Predicate<ActorModel> pred, ActorDataLoadDelegate del)
+        {
+            actorLoaders.Add(pred, del);
         }
 
         public static void RegisterCustomActorModel(Identifiable.Id id, CreateActorDelegate del)

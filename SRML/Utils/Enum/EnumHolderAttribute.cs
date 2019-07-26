@@ -13,4 +13,4 @@ namespace SRML.Utils.Enum
            
         }
     }
-}
+}   

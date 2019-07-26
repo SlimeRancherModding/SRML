@@ -27,7 +27,7 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhere(__instance.ranch.plots,__state.landplots,(x)=>SaveRegistry.IsCustom(x)||ModdedStringRegistry.IsModdedString(x.id));
             __state.AddAndRemoveWhere(__instance.world.gordos, new Dictionary<string, GordoV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
             __state.AddAndRemoveWhere(__instance.world.treasurePods, new Dictionary<string, TreasurePodV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
-
+            __state.AddAndRemoveWhere(__instance.world.offers, new Dictionary<ExchangeDirector.OfferType, ExchangeOfferV04>(), x => SaveRegistry.IsCustom(x.Value) || ModdedIDRegistry.IsModdedID(x.Key) || ExchangeOfferRegistry.IsCustom(x.Value));
 
             __state.AddAndRemoveWhereCustom(__instance.player.upgrades,__state.upgrades);
             __state.AddAndRemoveWhereCustom(__instance.player.availUpgrades, __state.availUpgrades);
@@ -108,6 +108,11 @@ namespace SRML.SR.SaveSystem.Patches
             foreach(var actor in __instance.world.treasurePods)
             {
                 RemovePartial(actor.Value, __state);
+            }
+
+            foreach(var offer in __instance.world.offers)
+            {
+                RemovePartial(offer.Value, __state);
             }
 
             var partialAppearance = new PartialAppearancesData();

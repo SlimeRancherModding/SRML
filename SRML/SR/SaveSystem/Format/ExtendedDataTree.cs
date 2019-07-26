@@ -20,18 +20,16 @@ namespace SRML.SR.SaveSystem.Format
 
         public override void Read(BinaryReader reader)
         {
-            bool isOld = false;
+            bool isOld = ModdedSaveData.LATEST_READ_VERSION<4;
             int number =  reader.ReadInt32();
-            if (number < 3)
-            {
-                isOld = true; number += 3;
-            }
+            isOld = number < 3;
+            if (number >= 3) number -= 3;
             idType = (IdentifierType)number;
             if(!isOld) base.Read(reader);
             longIdentifier = reader.ReadInt64();
             stringIdentifier = isOld ? "" : reader.ReadString();
             dataPiece = DataPiece.Deserialize(reader) as CompoundDataPiece;
-            if (dataPiece == null) throw new Exception("Invalid top level data piece!");
+            if (dataPiece == null) throw new Exception("Invalid top level datapiece!");
         }
 
         public override void Write(BinaryWriter writer)
@@ -54,9 +52,9 @@ namespace SRML.SR.SaveSystem.Format
 
         internal enum IdentifierType
         {
-            ACTOR=3,
-            GADGET=4,
-            LANDPLOT=5
+            ACTOR,
+            GADGET,
+            LANDPLOT,
         }
     }
 

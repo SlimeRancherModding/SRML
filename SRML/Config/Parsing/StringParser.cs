@@ -60,4 +60,9 @@ namespace SRML.Config.Parsing
 
         string GetUsageString();
     }
+
+    public interface IStringParserProvider
+    {
+        IStringParser GetParser();
+    }
 }

@@ -25,6 +25,7 @@ namespace SRML.SR.SaveSystem.Format
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, IdentifiedData data) =>
                 {
                     EnumTranslator.FixEnumValues(translator,mode,data.data);
+                    data.dataID = data.dataID.TranslateWithEnum(translator, mode);
                 });
         }
         public void Read(BinaryReader reader, ModSaveInfo info)
@@ -42,6 +43,15 @@ namespace SRML.SR.SaveSystem.Format
                     break;
                 case IdentifierType.LANDPLOT:
                     ReadData<CustomLandPlotData, VanillaPlotData>(reader, info);
+                    break;
+                case IdentifierType.GORDO:
+                    ReadData<GordoV01>(reader);
+                    break;
+                case IdentifierType.TREASUREPOD:
+                    ReadData<TreasurePodV01>(reader);
+                    break;
+                case IdentifierType.EXCHANGEOFFER:
+                    ReadData<ExchangeOfferV04>(reader);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -65,6 +75,11 @@ namespace SRML.SR.SaveSystem.Format
                     break;
                 case IdentifierType.LANDPLOT:
                     WriteData<CustomLandPlotData>(writer, info);
+                    break;
+                case IdentifierType.GORDO:
+                case IdentifierType.TREASUREPOD:
+                case IdentifierType.EXCHANGEOFFER:
+                    WriteData(writer);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -95,6 +110,12 @@ namespace SRML.SR.SaveSystem.Format
 
         }
 
+        void ReadData<T>(BinaryReader reader) where T : PersistedDataSet, new()
+        {
+            data = new T();
+            data.Load(reader.BaseStream);
+        }
+
         void WriteData<T>(BinaryWriter writer, ModSaveInfo info) where T : PersistedDataSet, IDataRegistryMember
         {
             if (!IsCustomModel)
@@ -107,6 +128,11 @@ namespace SRML.SR.SaveSystem.Format
 
                 data.Write(writer.BaseStream);
             }
+        }
+
+        void WriteData(BinaryWriter writer)
+        {
+            data.Write(writer.BaseStream);
         }
     }
 }

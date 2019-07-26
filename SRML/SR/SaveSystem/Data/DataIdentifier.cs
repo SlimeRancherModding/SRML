@@ -13,7 +13,11 @@ namespace SRML.SR.SaveSystem.Data
         public long longID;
         public string stringID;
 
-
+        public DataIdentifier TranslateWithEnum(EnumTranslator translator, EnumTranslator.TranslationMode mode)
+        {
+            if (Type != IdentifierType.EXCHANGEOFFER) return this;
+            return new DataIdentifier() { Type = Type, longID =(int)translator.TranslateEnum(mode, (ExchangeDirector.OfferType)(int)longID), stringID = stringID };
+        }
 
         public static readonly Dictionary<IdentifierType, Type> IdentifierTypeToData =
             new Dictionary<IdentifierType, Type>()
@@ -22,7 +26,8 @@ namespace SRML.SR.SaveSystem.Data
                 {IdentifierType.GADGET,typeof(PlacedGadgetV08) },
                 {IdentifierType.LANDPLOT,typeof(LandPlotV08) },
                 {IdentifierType.GORDO,typeof(GordoV01) },
-                {IdentifierType.TREASUREPOD,typeof(TreasurePodV01) }
+                {IdentifierType.TREASUREPOD,typeof(TreasurePodV01) },
+                {IdentifierType.EXCHANGEOFFER, typeof(ExchangeOfferV04) }
             };
 
         public static DataIdentifier GetActorIdentifier(long actorId)
@@ -77,6 +82,7 @@ namespace SRML.SR.SaveSystem.Data
         GADGET,
         LANDPLOT,
         GORDO,
-        TREASUREPOD
+        TREASUREPOD,
+        EXCHANGEOFFER
     }
 }

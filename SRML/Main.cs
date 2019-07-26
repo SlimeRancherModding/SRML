@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using HarmonyLib;
+using SRML.Config;
+using SRML.Console;
 using SRML.Editor;
 using SRML.SR;
 using SRML.Utils;
@@ -43,7 +45,7 @@ namespace SRML
             }
             FileLogger.Init();
             Console.Console.Init();
-
+            HarmonyOverrideHandler.PatchAll();
             try
             {
                 SRModLoader.PreLoadMods();
@@ -55,7 +57,9 @@ namespace SRML
                 return;
             }
             ReplacerCache.ClearCache();
+            
 
+            
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
 
@@ -67,7 +71,10 @@ namespace SRML
         {
             if (isInitialized) return;
             isInitialized = true;
+            SRCallbacks.OnLoad();
             PrefabUtils.ProcessReplacements();
+            KeyBindManager.ReadBinds();
+            GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
             try
             {
                 SRModLoader.LoadMods();
