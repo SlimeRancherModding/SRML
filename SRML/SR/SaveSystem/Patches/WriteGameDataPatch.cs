@@ -28,6 +28,8 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhere(__instance.world.gordos, new Dictionary<string, GordoV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
             __state.AddAndRemoveWhere(__instance.world.treasurePods, new Dictionary<string, TreasurePodV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
             __state.AddAndRemoveWhere(__instance.world.offers, new Dictionary<ExchangeDirector.OfferType, ExchangeOfferV04>(), x => SaveRegistry.IsCustom(x.Value) || ModdedIDRegistry.IsModdedID(x.Key) || ExchangeOfferRegistry.IsCustom(x.Value));
+            __state.AddAndRemoveWhere(__instance.world.econSaturations, new Dictionary<Identifiable.Id, float>(), (x) => ModdedIDRegistry.IsModdedID(x.Key));
+
 
             __state.AddAndRemoveWhereCustom(__instance.player.upgrades,__state.upgrades);
             __state.AddAndRemoveWhereCustom(__instance.player.availUpgrades, __state.availUpgrades);

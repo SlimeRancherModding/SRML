@@ -51,7 +51,6 @@ namespace SRML.SR.SaveSystem.Format
 
         public void ReadData(BinaryReader reader)
         {
-
             ammoDataEntries.Clear();
 
             int count = reader.ReadInt32();

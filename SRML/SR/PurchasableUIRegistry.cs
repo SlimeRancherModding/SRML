@@ -20,6 +20,26 @@ namespace SRML.SR
             customPurchasables.Add(pred, creator);
         }
 
+        public static void RegisterEntrySorter(PurchasableUIPredicate pred, IComparer<PurchaseUI.Purchasable> comparer)
+        {
+            RegisterManipulator(pred, new PurchasableManipulatorDelegate((BaseUI x, ref PurchaseUI.Purchasable[] y) =>
+            {
+                var list = y.ToList();
+                list.Sort(comparer);
+                y = list.ToArray();
+            }));
+        }
+
+        public static void RegisterEntrySorter<T>(IComparer<PurchaseUI.Purchasable> comparer) where T : BaseUI
+        {
+            RegisterManipulator((x,y)=>typeof(T).IsAssignableFrom(x), new PurchasableManipulatorDelegate((BaseUI x, ref PurchaseUI.Purchasable[] y) =>
+            {
+                var list = y.ToList();
+                list.Sort(comparer);
+                y = list.ToArray();
+            }));
+        }
+
         public static void RegisterManipulator(PurchasableUIPredicate pred, PurchasableManipulatorDelegate man)
         {
             customManipulators.Add(pred, man);

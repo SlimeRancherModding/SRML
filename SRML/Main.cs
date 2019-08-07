@@ -10,6 +10,7 @@ using SRML.Config;
 using SRML.Console;
 using SRML.Editor;
 using SRML.SR;
+using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
 using SRML.Utils.Prefab.Patches;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace SRML
             if (isPreInitialized) return;
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
+
 
             foreach(var v in Assembly.GetExecutingAssembly().GetTypes())
             {
@@ -71,6 +73,8 @@ namespace SRML
         {
             if (isInitialized) return;
             isInitialized = true;
+
+            BaseObjects.Populate();
             SRCallbacks.OnLoad();
             PrefabUtils.ProcessReplacements();
             KeyBindManager.ReadBinds();

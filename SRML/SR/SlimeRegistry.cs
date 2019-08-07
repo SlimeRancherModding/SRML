@@ -25,6 +25,7 @@ namespace SRML.SR
             definitions.largoDefinitionByBasePlorts.Clear();
             definitions.largoDefinitionByBaseDefinitions.Clear();
             definitions.slimeDefinitionsByIdentifiable.Clear();
+            definitions.Slimes = definitions.Slimes.Where(x => x.IdentifiableId != definition.IdentifiableId).ToArray();
             definitions.Slimes = definitions.Slimes.AddToArray(definition);
             definitions.OnEnable();
 

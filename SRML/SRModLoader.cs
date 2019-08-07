@@ -154,6 +154,15 @@ namespace SRML
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
                     ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
+                    Console.Console.Reload += () =>
+                    {
+                        SRMod.ForceModContext(mod);
+                        foreach(var v in mod.Configs)
+                        {
+                            v.TryLoadFromFile();
+                        }
+                        SRMod.ClearModContext();
+                    };
                 }
                 catch (Exception e)
                 {

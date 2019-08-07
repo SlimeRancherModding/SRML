@@ -25,15 +25,13 @@ namespace SRML.SR.SaveSystem.Data.Gadget
             fashions.Push(data.fashions);
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            base.Read(reader);
             fashions.Read(reader);
         }
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
-            base.Write(writer);
             fashions.Write(writer);
         }
 
@@ -44,7 +42,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
                 translator.FixEnumValues(mode, data.fashions);
                 data.fashions.InternalList.Remove(Identifiable.Id.NONE);
             });
-
+                
             CustomChecker.RegisterCustomChecker<GordoV01>((x) =>
             {
                 if (x.fashions.Any(ModdedIDRegistry.IsModdedID)) return CustomChecker.CustomLevel.PARTIAL;

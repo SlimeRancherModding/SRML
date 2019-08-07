@@ -1,4 +1,5 @@
-﻿using MonomiPark.SlimeRancher.DataModel;
+﻿using HarmonyLib;
+using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Regions;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Format;
@@ -41,8 +42,8 @@ namespace SRML.SR.SaveSystem
                 }
                 var actualMod = SRModLoader.GetMod(mod.modid);
                 if (actualMod == null) continue;
-                worldSaveData.Add(actualMod, mod.worldData);
-                SaveRegistry.GetSaveInfo(actualMod).WorldDataPreLoad(mod.worldData);
+                worldSaveData.Add(actualMod, mod.extendedWorldData);
+                SaveRegistry.GetSaveInfo(actualMod).WorldDataPreLoad(mod.extendedWorldData);
             }
         }
 
@@ -221,7 +222,7 @@ namespace SRML.SR.SaveSystem
                 if (pair.Value.DataList.Count > 0)
                 {
                     SaveRegistry.GetSaveInfo(pair.Key).WorldDataSave(pair.Value);
-                    data.GetSegmentForMod(pair.Key).worldData = pair.Value;
+                    data.GetSegmentForMod(pair.Key).extendedWorldData = pair.Value;
                 }   
             }
         }

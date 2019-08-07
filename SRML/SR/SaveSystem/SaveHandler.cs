@@ -137,6 +137,12 @@ namespace SRML.SR.SaveSystem
                 var segment = data.GetSegmentForMod(mod);
                 segment.pediaData.Pull(buf, mod);
             }
+
+            foreach(var mod in ModWorldData.FindAllModsWithData(game.world))
+            {
+                var segment = data.GetSegmentForMod(mod);
+                segment.worldData.Pull(game.world,mod);
+            }
         }
 
         private static void PullFullData(ModdedSaveData data, GameV11 game)
@@ -231,6 +237,7 @@ namespace SRML.SR.SaveSystem
         {
             mod.playerData.Push(game.player);
             mod.pediaData.Push(game.pedia);
+            mod.worldData.Push(game.world);
         }
 
         private static void PushSegmentFullData(GameV11 game, ModDataSegment mod)

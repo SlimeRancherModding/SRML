@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using HarmonyLib;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace SRML.SR.SaveSystem.Format
@@ -19,17 +21,15 @@ namespace SRML.SR.SaveSystem.Format
 
         public override int LatestVersion => 0;
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
-            base.Write(writer);
             BinaryUtils.WriteList(writer,unlockedIds,(x,y)=>x.Write(y));
             BinaryUtils.WriteList(writer, completedTuts, (x, y) => x.Write(y));
             BinaryUtils.WriteList(writer, popupQueue, (x, y) => x.Write(y));
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            base.Read(reader);
             BinaryUtils.ReadList(reader,unlockedIds,(x)=>x.ReadString());
             BinaryUtils.ReadList(reader,completedTuts, (x) => x.ReadString());
             BinaryUtils.ReadList(reader, popupQueue, (x) => x.ReadString());

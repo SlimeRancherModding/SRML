@@ -62,9 +62,8 @@ namespace SRML.SR.SaveSystem.Format
 
         }
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
-            base.Write(writer);
             BinaryUtils.WriteList(writer,upgrades,(x,y)=>x.Write((int)y));
             BinaryUtils.WriteList(writer, availUpgrades, (x, y) => x.Write((int)y));
             BinaryUtils.WriteDictionary(writer, upgradeLocks, (x, y) => x.Write((int)y),(x,y)=> {x.Write(y.timedLock);x.Write(y.lockedUntil);});
@@ -86,9 +85,8 @@ namespace SRML.SR.SaveSystem.Format
             BinaryUtils.WriteList(writer,unlockedZoneMaps,(x,y)=>enumser.Serialize(x,y));
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            base.Read(reader);
             BinaryUtils.ReadList(reader,upgrades,(x)=>(PlayerState.Upgrade)x.ReadInt32());
             BinaryUtils.ReadList(reader, availUpgrades, (x) => (PlayerState.Upgrade)x.ReadInt32());
             BinaryUtils.ReadDictionary(reader,upgradeLocks,(x)=> (PlayerState.Upgrade)x.ReadInt32(),(x)=>new PlayerState.UpgradeLockData(x.ReadBoolean(),x.ReadDouble()));

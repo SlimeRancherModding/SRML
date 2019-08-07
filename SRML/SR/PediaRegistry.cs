@@ -22,6 +22,7 @@ namespace SRML.SR
         internal static Dictionary<PediaDirector.Id, PediaCategory> pediaMappings = new Dictionary<PediaDirector.Id, PediaCategory>();
         internal static Dictionary<PediaDirector.Id, IPediaRenderer> customPediaRenderers = new Dictionary<PediaDirector.Id, IPediaRenderer>();
         internal static Dictionary<PediaTab, SRMod> customTabs = new Dictionary<PediaTab, SRMod>();
+        
 
         internal static IPediaRenderer activeRenderer;
         internal static ITabRenderer activeTabRenderer;
@@ -73,7 +74,7 @@ namespace SRML.SR
 
         internal static IPediaRenderer GetRenderer(PediaDirector.Id id)
         {
-            if(!customPediaRenderers.TryGetValue(id, out var renderer))
+                if(!customPediaRenderers.TryGetValue(id, out var renderer))
             {
                 var tab = GetCustomPediaTab(id);
                 if (tab != null)
@@ -127,6 +128,13 @@ namespace SRML.SR
                     return ref PediaUI.SCIENCE_ENTRIES;
             }
             throw new Exception();
+        }
+
+        public static void SortPediaCategory(PediaCategory category, IComparer<PediaDirector.Id> comparer)
+        {
+            var cat = GetCategory(category).ToList();
+            cat.Sort(comparer);
+            GetCategory(category) = cat.ToArray();
         }
 
         public static void SetPediaCategory(PediaDirector.Id id, PediaCategory category)

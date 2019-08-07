@@ -21,7 +21,15 @@ namespace SRML.Console.Commands
             var section = config.Sections.First(x => x.Name.ToLower() == args[2].ToLower());
             var element = section.Elements.First(x => x.Options.Name.ToLower() == args[3].ToLower());
 
-            element.SetValue(element.Options.Parser.ParseObject(args[4]));
+            if (args.Length >= 5)
+            {
+                element.SetValue(element.Options.Parser.ParseObject(args[4]));
+                Debug.Log(element.GetValue<object>()+" "+element.GetType()+"!");
+            }
+            else
+            {
+                Console.Log("Current Value: "+element.Options.Parser.EncodeObject(element.GetValue<object>()));
+            }
             SRMod.ForceModContext(mod);
             config.SaveToFile();
             SRMod.ClearModContext();
@@ -36,15 +44,15 @@ namespace SRML.Console.Commands
 
             var mod = SRModLoader.GetMod(strs[1]);
 
-            if (argIndex == 1) return mod.Configs.Select(x => x.FileName).ToList();
+            if (argIndex == 1) return mod?.Configs.Select(x => x.FileName).ToList();
 
-            var config = mod.Configs.First(x => x.FileName.ToLower() == strs[2].ToLower());
+            var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLower() == strs[2].ToLower());
 
-            if (argIndex == 2) return config.Sections.Select(x => x.Name).ToList();
+            if (argIndex == 2) return config?.Sections.Select(x => x.Name).ToList();
 
-            var section = config.Sections.First(x => x.Name.ToLower() == strs[3].ToLower());
+            var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == strs[3].ToLower());
 
-            if (argIndex == 3) return section.Elements.Select(x => x.Options.Name).ToList();
+            if (argIndex == 3) return section?.Elements.Select(x => x.Options.Name).ToList();
 
             
 

@@ -88,7 +88,7 @@ namespace SRML.Config
             var configpath = FileSystem.GetMyConfigPath();
             var parser = new IniParser.FileIniDataParser();
             var filePath = Path.ChangeExtension(Path.Combine(configpath, FileName), "ini");
-            IniData data;           
+            IniData data;
             try
             {
                 data = parser.ReadFile(filePath);

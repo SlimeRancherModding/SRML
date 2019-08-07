@@ -61,12 +61,17 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public override void Write(BinaryWriter writer)
         {
             writer.Write(LatestVersion);
+            WriteData(writer);
         }
 
         public override void Read(BinaryReader reader)
         {
             Version = reader.ReadInt32();
+            ReadData(reader);
         }
+
+        public abstract void WriteData(BinaryWriter writer);
+        public abstract void ReadData(BinaryReader reader);
     }
 
     internal abstract class PartialData<T> : PartialData

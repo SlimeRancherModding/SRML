@@ -30,18 +30,28 @@ namespace SRML.SR.SaveSystem.Data.Actor
             partialEmotions.Push(data.emotions.emotionData);
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            if (ModdedSaveData.LATEST_READ_VERSION > 3) base.Read(reader);
+            if (ModdedSaveData.LATEST_READ_VERSION > 3) Version = reader.ReadInt32();
             partialFashions.Read(reader);
             partialEmotions.Read(reader);
+        }
+        
+        public override void WriteData(BinaryWriter writer)
+        {
+            writer.Write(LatestVersion);
+            partialFashions.Write(writer);
+            partialEmotions.Write(writer);
         }
 
         public override void Write(BinaryWriter writer)
         {
-            base.Write(writer);
-            partialFashions.Write(writer);
-            partialEmotions.Write(writer);
+            WriteData(writer);
+        }
+
+        public override void Read(BinaryReader reader)
+        {
+            ReadData(reader);
         }
 
         static PartialActorData()

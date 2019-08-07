@@ -12,7 +12,7 @@ namespace SRML.SR.Patches
     {
         public static void Prefix(MarketUI __instance)
         {
-            __instance.plorts = __instance.plorts.AddRangeToArray(PlortRegistry.plortsToPatch.ToArray());
+            __instance.plorts = __instance.plorts.Where(x=>!PlortRegistry.plortsToPatch.Any(y=>y.id==x.id)).ToArray().AddRangeToArray(PlortRegistry.plortsToPatch.ToArray());
         }
     }
 }

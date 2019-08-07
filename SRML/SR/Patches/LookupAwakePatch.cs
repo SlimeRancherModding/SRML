@@ -11,15 +11,27 @@ namespace SRML.SR.Patches
     {
         public static void Prefix(LookupDirector __instance)
         {
-            __instance.identifiablePrefabs.AddRange(LookupRegistry.objectsToPatch);
-            __instance.vacEntries.AddRange(LookupRegistry.vacEntriesToPatch);
-            __instance.gadgetEntries.AddRange(LookupRegistry.gadgetEntriesToPatch);
-            __instance.upgradeEntries.AddRange(LookupRegistry.upgradeEntriesToPatch);
-            __instance.plotPrefabs.AddRange(LookupRegistry.landPlotsToPatch);
-            __instance.resourceSpawnerPrefabs.AddRange(LookupRegistry.resourceSpawnersToPatch);
-            __instance.liquidEntries.AddRange(LookupRegistry.liquidsToPatch);
-            __instance.gordoEntries.AddRange(LookupRegistry.gordosToPatch);
-            __instance.toyEntries.AddRange(LookupRegistry.toysToPatch);
+            __instance.identifiablePrefabs.AddAndRemoveRangeWhere(LookupRegistry.objectsToPatch,(x,y)=>Identifiable.GetId(x)==Identifiable.GetId(y));
+            __instance.vacEntries.AddAndRemoveRangeWhere(LookupRegistry.vacEntriesToPatch,(x,y)=>x.id==y.id);
+            __instance.gadgetEntries.AddAndRemoveRangeWhere(LookupRegistry.gadgetEntriesToPatch, (x, y) =>x.id == y.id);
+            __instance.upgradeEntries.AddAndRemoveRangeWhere(LookupRegistry.upgradeEntriesToPatch, (x, y) =>x.upgrade==y.upgrade);
+            __instance.plotPrefabs.AddAndRemoveRangeWhere(LookupRegistry.landPlotsToPatch, (x, y) =>x.GetComponentInChildren<LandPlot>().typeId==y.GetComponentInChildren<LandPlot>().typeId);
+            __instance.resourceSpawnerPrefabs.AddAndRemoveRangeWhere(LookupRegistry.resourceSpawnersToPatch, (x, y) =>x.GetComponent<SpawnResource>().id==y.GetComponent<SpawnResource>().id);
+            __instance.liquidEntries.AddAndRemoveRangeWhere(LookupRegistry.liquidsToPatch, (x, y) =>x.id==y.id);
+            __instance.gordoEntries.AddAndRemoveRangeWhere(LookupRegistry.gordosToPatch, (x, y) =>y.GetComponent<GordoIdentifiable>().id==x.GetComponent<GordoIdentifiable>().id);
+            __instance.toyEntries.AddAndRemoveRangeWhere(LookupRegistry.toysToPatch, (x, y) =>x.toyId==y.toyId);
+        }
+
+        internal static void AddAndRemoveRangeWhere<T>(this List<T> list, IEnumerable<T> range, Func<T, T, bool> cond)
+        {
+            var listToAdd = range.ToList();
+
+            var v = list.Where(x => listToAdd.Any(y=>cond(x,y))).ToList();
+            foreach (var a in v)
+            {
+                list.Remove(a);
+            }
+            list.AddRange(listToAdd);
         }
     }
 }

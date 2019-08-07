@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using SRML.SR.Utils.Debug;
 
 namespace SRML.Console
 {
@@ -70,6 +71,12 @@ namespace SRML.Console
             RegisterCommand(new Commands.GiveCommand());
             RegisterCommand(new Commands.BindCommand());
             RegisterCommand(new Commands.ConfigCommand());
+            RegisterCommand(new Commands.KillAllCommand());
+            RegisterCommand(new Commands.RemoveCommand());
+            RegisterCommand(new Commands.NoclipCommand());
+            RegisterCommand(new Commands.UnbindCommand());
+            RegisterCommand(new Commands.FastForwardCommand());
+            RegisterCommand(new DebugCommand());
 
             RegisterButton("clear", new ConsoleButton("Clear Console", "clear"));
             RegisterButton("help", new ConsoleButton("Show Help", "help"));

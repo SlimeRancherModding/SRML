@@ -15,11 +15,16 @@ namespace SRML.SR.SaveSystem
         public virtual void Read(BinaryReader reader)
         {
             Version = reader.ReadInt32();
+            ReadData(reader);
         }
 
         public virtual void Write(BinaryWriter writer)
         {
             writer.Write(LatestVersion);
+            WriteData(writer);
         }
+
+        public abstract void ReadData(BinaryReader reader);
+        public abstract void WriteData(BinaryWriter writer);
     }
 }

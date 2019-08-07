@@ -25,16 +25,14 @@ namespace SRML.SR.SaveSystem.Data.World
             rewards.Push(data.rewards);
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            base.Read(reader);
             requests.Read(reader);
             rewards.Read(reader);
         }
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
-            base.Write(writer);
             requests.Write(writer);
             rewards.Write(writer);
         }

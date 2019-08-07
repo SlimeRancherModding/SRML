@@ -67,7 +67,7 @@ namespace SRML.Console
         public static void RemoveBinding(Key key)
         {
             var existingAction = customKeyBinds.FirstOrDefault(x => (x.action.BindingsOfTypes(BindingSourceType.KeyBindingSource).FirstOrDefault() as KeyBindingSource)?.Control.GetInclude(0) == key);
-            existingAction.action.ClearBindings();
+            existingAction?.action.ClearBindings();
             if (existingAction != null) customKeyBinds.Remove(existingAction);
         }
 

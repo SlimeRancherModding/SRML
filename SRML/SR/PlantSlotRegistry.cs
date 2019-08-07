@@ -20,12 +20,12 @@ namespace SRML.SR
 
         public static void RegisterPlantSlot(GardenCatcher.PlantSlot plantSlot)
         {
-            RegisterGardenCatcherPatcher(x => x.plantable = x.plantable.AddToArray(plantSlot));
+            RegisterGardenCatcherPatcher(x => x.plantable = x.plantable.Where(y=>y.id!=plantSlot.id).ToArray().AddToArray(plantSlot));
         }
 
         public static void RegisterPlantSlotFor(Predicate<GardenCatcher> condition, GardenCatcher.PlantSlot slot)
         {
-            RegisterGardenCatcherPatcher(x => {if (condition(x)) x.plantable = x.plantable.AddToArray(slot); });
+            RegisterGardenCatcherPatcher(x => {if (condition(x)) x.plantable = x.plantable.Where(y => y.id != slot.id).ToArray().AddToArray(slot); });
         }
     }
 }

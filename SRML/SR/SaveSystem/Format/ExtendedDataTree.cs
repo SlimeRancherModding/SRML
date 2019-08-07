@@ -18,28 +18,43 @@ namespace SRML.SR.SaveSystem.Format
 
         public override int LatestVersion => 0;
 
-        public override void Read(BinaryReader reader)
+
+
+        public override void ReadData(BinaryReader reader)
         {
             bool isOld = ModdedSaveData.LATEST_READ_VERSION<4;
             int number =  reader.ReadInt32();
-            isOld = number < 3;
+            if (number >= 3) isOld = false;
+
             if (number >= 3) number -= 3;
             idType = (IdentifierType)number;
-            if(!isOld) base.Read(reader);
+            if (!isOld) Version = reader.ReadInt32();
             longIdentifier = reader.ReadInt64();
             stringIdentifier = isOld ? "" : reader.ReadString();
             dataPiece = DataPiece.Deserialize(reader) as CompoundDataPiece;
             if (dataPiece == null) throw new Exception("Invalid top level datapiece!");
         }
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
             
             writer.Write((int)idType);
-            base.Write(writer);
+            writer.Write(Version);
             writer.Write(longIdentifier);
             writer.Write(stringIdentifier);
             DataPiece.Serialize(writer, dataPiece);
+        }
+
+        
+
+        public override void Read(BinaryReader reader)
+        {
+            ReadData(reader);
+        }
+
+        public override void Write(BinaryWriter writer)
+        {
+            WriteData(writer);
         }
 
         static ExtendedDataTree()

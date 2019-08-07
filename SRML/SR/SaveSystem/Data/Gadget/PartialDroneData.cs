@@ -26,15 +26,13 @@ namespace SRML.SR.SaveSystem.Data.Gadget
             fashions.Push(data.drone.fashions);
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            base.Read(reader);
             fashions.Read(reader);
         }
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
-            base.Write(writer);
             fashions.Write(writer);
         }
 

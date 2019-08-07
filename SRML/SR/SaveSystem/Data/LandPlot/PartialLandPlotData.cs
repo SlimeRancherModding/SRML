@@ -43,19 +43,29 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
             upgrades.Push(data.upgrades);
         }
 
-        public override void Read(BinaryReader reader)
+        public override void ReadData(BinaryReader reader)
         {
-            if(ModdedSaveData.LATEST_READ_VERSION>3) base.Read(reader);
+            if (ModdedSaveData.LATEST_READ_VERSION > 3) Version = reader.ReadInt32();
             Debug.Log(ModdedSaveData.LATEST_READ_VERSION+" test");
             attachedId = (SpawnResource.Id)reader.ReadInt32();
             upgrades.Read(reader);
         }
 
-        public override void Write(BinaryWriter writer)
+        public override void WriteData(BinaryWriter writer)
         {
-            base.Write(writer);
+            writer.Write(Version);
             writer.Write((int)attachedId);
             upgrades.Write(writer);
+        }
+
+        public override void Write(BinaryWriter writer)
+        {
+            WriteData(writer);
+        }
+
+        public override void Read(BinaryReader reader)
+        {
+            ReadData(reader);
         }
 
         static PartialLandPlotData()

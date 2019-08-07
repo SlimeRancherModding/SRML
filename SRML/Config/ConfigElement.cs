@@ -1,10 +1,13 @@
-﻿using SRML.Config.Attributes;
+﻿using HarmonyLib;
+using SRML.Config.Attributes;
 using SRML.Config.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using UnityEngine;
+
 namespace SRML.Config
 {
 
@@ -17,7 +20,7 @@ namespace SRML.Config
         protected override object Value
         {
             get { return field.GetValue(null); }
-            set { field.SetValue(null, value); }
+            set { Debug.Log(value); field.SetValue(null, value); }
         }
         static bool GetAttributeOfType<T>(FieldInfo field, out T attribute) where T : Attribute
         {
@@ -43,7 +46,7 @@ namespace SRML.Config
             Options.DefaultValue = Value;
             if (Value is IStringParserProvider val) Options.Parser = val.GetParser();
             if (Options.Parser == null) throw new Exception(field.FieldType.ToString());
-            if (GetAttributeOfType<ConfigCallbackAttribute>(field,out var attribute)) OnValueChanged += (x) => attribute.OnValueChanged(Value, x);
+            if (GetAttributeOfType<ConfigCallbackAttribute>(field,out var attribute)) OnValueChanged += x => AccessTools.Method(field.DeclaringType, attribute.methodName).Invoke(null, new object[] { Value, x }); ;
         }
     }
     public class ConfigElement<T> : ConfigElement

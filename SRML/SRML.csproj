@@ -67,6 +67,9 @@
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -74,6 +77,9 @@
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
@@ -112,12 +118,17 @@
     <Compile Include="Console\Commands\ConfigCommand.cs" />
     <Compile Include="Console\Commands\DumpCommand.cs" />
     <Compile Include="Console\Commands\EditButtonCommand.cs" />
+    <Compile Include="Console\Commands\FastForwardCommand.cs" />
     <Compile Include="Console\Commands\GiveCommand.cs" />
     <Compile Include="Console\Commands\HelpCommand.cs" />
+    <Compile Include="Console\Commands\KillAllCommand.cs" />
     <Compile Include="Console\Commands\ModsCommand.cs" />
+    <Compile Include="Console\Commands\NoclipCommand.cs" />
     <Compile Include="Console\Commands\ReloadCommand.cs" />
     <Compile Include="Console\Commands\RemoveButtonCommand.cs" />
+    <Compile Include="Console\Commands\RemoveCommand.cs" />
     <Compile Include="Console\Commands\SpawnCommand.cs" />
+    <Compile Include="Console\Commands\UnbindCommand.cs" />
     <Compile Include="Console\Console.cs" />
     <Compile Include="Console\ConsoleBinder.cs" />
     <Compile Include="Console\ConsoleButton.cs" />
@@ -142,8 +153,15 @@
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SR\AmmoRegistry.cs" />
+    <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\Utils\Debug\AddDebugMarker.cs" />
+    <Compile Include="SR\Utils\Debug\DebugCommand.cs" />
+    <Compile Include="SR\Utils\Debug\DebugMarker.cs" />
+    <Compile Include="SR\Utils\Debug\DebugSystem.cs" />
+    <Compile Include="SR\Utils\Debug\MarkerType.cs" />
     <Compile Include="SR\DirectedActorSpawnerRegistry.cs" />
+    <Compile Include="SR\DroneRegistry.cs" />
     <Compile Include="SR\ExchangeOfferRegistry.cs" />
     <Compile Include="SR\GadgetRegistry.cs" />
     <Compile Include="SR\IdentifiableRegistry.cs" />
@@ -165,10 +183,12 @@
     <Compile Include="SR\Patches\MailReadPatch.cs" />
     <Compile Include="SR\Patches\OptionsUISetupInputPatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorAwakePatch.cs" />
+    <Compile Include="SR\Patches\PediaDirectorMaybeShowPopupPatch.cs" />
     <Compile Include="SR\Patches\PediaUIAwakePatch.cs" />
     <Compile Include="SR\Patches\PediaUISelectEntryPatch.cs" />
     <Compile Include="SR\Patches\PediaUISelectTabPatch.cs" />
     <Compile Include="SR\Patches\PlayerStateGetPotentialAmmoPatch.cs" />
+    <Compile Include="SR\Patches\PlayerStateNullCheckPatches.cs" />
     <Compile Include="SR\Patches\PlayerStateResetPatch.cs" />
     <Compile Include="SR\Patches\RefineryUIPatch.cs" />
     <Compile Include="SR\Patches\RegisterActorPatch.cs" />
@@ -178,6 +198,7 @@
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
     <Compile Include="SR\Patches\SRInputConstructorPatch.cs" />
     <Compile Include="SR\Patches\StorageTypeExtensionsGetContentsPatch.cs" />
+    <Compile Include="SR\Patches\PediaDirectorNullCheckPatches.cs" />
     <Compile Include="SR\PediaRegistry.cs" />
     <Compile Include="SR\PlantSlotRegistry.cs" />
     <Compile Include="SR\PurchasableUIRegistry.cs" />
@@ -185,6 +206,7 @@
     <Compile Include="SR\SaveSystem\Data\World\PartialExchangeData.cs" />
     <Compile Include="SR\SaveSystem\Data\Gadget\PartialGordoData.cs" />
     <Compile Include="SR\SaveSystem\Data\World\PartialTreasurePodData.cs" />
+    <Compile Include="SR\SaveSystem\Format\ModWorldData.cs" />
     <Compile Include="SR\SaveSystem\ModdedStringRegistry.cs" />
     <Compile Include="SR\SaveSystem\Patches\AmmoSetAmmoSlotPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\GameModelRegisterLandPlotPatch.cs" />
@@ -267,6 +289,35 @@
     <Compile Include="SR\SlimeRegistry.cs" />
     <Compile Include="SR\SpawnResourceRegistry.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
+    <Compile Include="SR\Templates\Components\ActionOnAwake.cs" />
+    <Compile Include="SR\Templates\Components\ActionOnStart.cs" />
+    <Compile Include="SR\Templates\Create.cs" />
+    <Compile Include="SR\Templates\GameObjectTemplate.cs" />
+    <Compile Include="SR\Templates\ICreateComponent.cs" />
+    <Compile Include="SR\Templates\Identifiables\AnimalTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\CraftResourceTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\CrateTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\FashionAttachTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\FashionTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\FloatingDecoTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\FoodTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\GordoTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\LiquidTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\PlortTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\SlimeTemplate.cs" />
+    <Compile Include="SR\Templates\Identifiables\ToyTemplate.cs" />
+    <Compile Include="SR\Templates\Misc\TechActivatorTemplate.cs" />
+    <Compile Include="SR\Templates\ModPrefab.cs" />
+    <Compile Include="SR\Templates\Patches\FixedFearProfile.cs" />
+    <Compile Include="SR\Templates\Patches\FixedSlimeVariatyModules.cs" />
+    <Compile Include="SR\Templates\Plantables\BushPlantableTemplate.cs" />
+    <Compile Include="SR\Templates\Plantables\FruitPlantableTemplate.cs" />
+    <Compile Include="SR\Templates\Plantables\VeggiePlantableTemplate.cs" />
+    <Compile Include="SR\Templates\Plots\CustomPlotTemplate.cs" />
+    <Compile Include="SR\Templates\Plots\PlotFrameTemplate.cs" />
+    <Compile Include="SR\Templates\Plots\PlotUpgradeTemplate.cs" />
+    <Compile Include="SR\Templates\TemplateActions.cs" />
+    <Compile Include="SR\Templates\UIs\ActivatorUITemplate.cs" />
     <Compile Include="SR\ToyRegistry.cs" />
     <Compile Include="SR\TranslationPatcher.cs" />
     <Compile Include="SR\Translation\GadgetTranslation.cs" />
@@ -282,6 +333,16 @@
     <Compile Include="SR\UI\ModMenuUIHandler.cs" />
     <Compile Include="SR\UI\Utils\MainMenuUtils.cs" />
     <Compile Include="SR\PersonalUpgradeRegistry.cs" />
+    <Compile Include="SR\Utils\BaseObjects\BaseObjects.cs" />
+    <Compile Include="SR\Utils\BaseObjects\EffectObjects.cs" />
+    <Compile Include="SR\Utils\BaseObjects\GardenObjects.cs" />
+    <Compile Include="SR\Utils\BaseObjects\ObjectTransformValues.cs" />
+    <Compile Include="SR\Utils\BaseObjects\RanchObjects.cs" />
+    <Compile Include="SR\Utils\BaseObjects\TheWildsObjects.cs" />
+    <Compile Include="SR\Utils\BoneMappingUtils.cs" />
+    <Compile Include="SR\Utils\ComponentExtensions.cs" />
+    <Compile Include="SR\Utils\GameObjectExtensions.cs" />
+    <Compile Include="SR\Utils\LookupDirectorExtension.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
     <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
     <Compile Include="Utils\HarmonyOverrideAttribute.cs" />

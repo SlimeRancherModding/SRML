@@ -20,7 +20,7 @@ namespace SRML.SR.SaveSystem.Format
 {
     class ModDataSegment
     {
-        public const int DATA_VERSION = 2;
+        public const int DATA_VERSION = 3;
 
         public int version;
         public string modid;
@@ -34,10 +34,11 @@ namespace SRML.SR.SaveSystem.Format
 
         public ModPediaData pediaData = new ModPediaData();
 
+        public ModWorldData worldData = new ModWorldData();
 
         public Dictionary<AmmoIdentifier, List<VanillaAmmoData>> customAmmo = new Dictionary<AmmoIdentifier, List<VanillaAmmoData>>();
 
-        public CompoundDataPiece worldData = new CompoundDataPiece("root");
+        public CompoundDataPiece extendedWorldData = new CompoundDataPiece("root");
 
         public void Read(BinaryReader reader)
         {
@@ -90,7 +91,9 @@ namespace SRML.SR.SaveSystem.Format
                     return list;
                 } );
                 if (version < 2) return;
-                worldData = (CompoundDataPiece)DataPiece.Deserialize(reader);
+                extendedWorldData = (CompoundDataPiece)DataPiece.Deserialize(reader);
+                if (version < 3) return;
+                worldData.Read(reader);
             }
             else
             {
@@ -137,7 +140,9 @@ namespace SRML.SR.SaveSystem.Format
                 }
             });
 
-            DataPiece.Serialize(writer,worldData);
+            DataPiece.Serialize(writer,extendedWorldData);
+
+            worldData.Write(writer);
 
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);
@@ -153,6 +158,7 @@ namespace SRML.SR.SaveSystem.Format
             EnumTranslator.FixEnumValues(enumTranslator,mode,identifiableData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,playerData);
             EnumTranslator.FixEnumValues(enumTranslator,mode,customAmmo);
+            EnumTranslator.FixEnumValues(enumTranslator, mode, worldData);
             var newDict = new Dictionary<AmmoIdentifier, List<VanillaAmmoData>>();
             long FixValue(AmmoType type, long original)
             {
@@ -171,7 +177,7 @@ namespace SRML.SR.SaveSystem.Format
             }
             customAmmo = newDict;
             EnumTranslator.FixEnumValues(enumTranslator, mode, extendedData);
-            EnumTranslator.FixEnumValues(enumTranslator, mode, worldData);
+            EnumTranslator.FixEnumValues(enumTranslator, mode, extendedWorldData);
         }
     }
 
