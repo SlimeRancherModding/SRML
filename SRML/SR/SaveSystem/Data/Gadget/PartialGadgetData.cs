@@ -48,6 +48,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
             if (baitTypeId != Identifiable.Id.NONE) data.baitTypeId = baitTypeId;
             if (gordoTypeId != Identifiable.Id.NONE) data.gordoTypeId = gordoTypeId;
             if (data.drone != null) partialDrone.Push(data.drone);
+            while (fashions.InternalList.Contains(Identifiable.Id.NONE)) fashions.InternalList.Remove(Identifiable.Id.NONE);
             fashions.Push(data.fashions);
         }
 

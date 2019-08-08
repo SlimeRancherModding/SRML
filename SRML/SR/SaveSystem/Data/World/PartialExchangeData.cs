@@ -23,6 +23,8 @@ namespace SRML.SR.SaveSystem.Data.World
         {
             requests.Push(data.requests);
             rewards.Push(data.rewards);
+            data.requests.RemoveAll(x => x.id == Identifiable.Id.NONE);
+            data.rewards.RemoveAll(x => x.id == Identifiable.Id.NONE);
         }
 
         public override void ReadData(BinaryReader reader)

@@ -22,6 +22,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
 
         public override void Push(GordoV01 data)
         {
+            while (fashions.InternalList.Contains(Identifiable.Id.NONE)) fashions.InternalList.Remove(Identifiable.Id.NONE);
             fashions.Push(data.fashions);
         }
 
@@ -40,7 +41,6 @@ namespace SRML.SR.SaveSystem.Data.Gadget
             EnumTranslator.RegisterEnumFixer<PartialGordoData>((translator, mode, data) =>
             {
                 translator.FixEnumValues(mode, data.fashions);
-                data.fashions.InternalList.Remove(Identifiable.Id.NONE);
             });
                 
             CustomChecker.RegisterCustomChecker<GordoV01>((x) =>

@@ -45,6 +45,15 @@ namespace SRML.SR.SaveSystem
                 worldSaveData.Add(actualMod, mod.extendedWorldData);
                 SaveRegistry.GetSaveInfo(actualMod).WorldDataPreLoad(mod.extendedWorldData);
             }
+            foreach (var v in SRModLoader.GetMods())
+            {
+                if (!worldSaveData.ContainsKey(v))
+                {
+                    var newData = new CompoundDataPiece("root");
+                    worldSaveData.Add(v, newData);
+                    SaveRegistry.GetSaveInfo(v).WorldDataPreLoad(newData);
+                }
+            }
         }
 
         public static CompoundDataPiece GetWorldSaveData()
@@ -219,9 +228,10 @@ namespace SRML.SR.SaveSystem
             }
             foreach(var pair in worldSaveData)
             {
+                SaveRegistry.GetSaveInfo(pair.Key).WorldDataSave(pair.Value);
                 if (pair.Value.DataList.Count > 0)
                 {
-                    SaveRegistry.GetSaveInfo(pair.Key).WorldDataSave(pair.Value);
+
                     data.GetSegmentForMod(pair.Key).extendedWorldData = pair.Value;
                 }   
             }
@@ -290,6 +300,17 @@ namespace SRML.SR.SaveSystem
         static bool IsValid(long actorId)
         {
             return SceneContext.Instance.GameModel.actors.ContainsKey(actorId);
+        }
+
+        static ExtendedData()
+        {
+            SRCallbacks.OnSaveGameLoaded += (s) =>
+            {
+                foreach (var v in worldSaveData)
+                {
+                    SaveRegistry.GetSaveInfo(v.Key)?.WorldDataLoad(v.Value);
+                }
+            };
         }
 
 

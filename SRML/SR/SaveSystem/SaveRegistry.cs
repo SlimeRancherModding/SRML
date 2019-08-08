@@ -109,6 +109,10 @@ namespace SRML.SR.SaveSystem
         {
             GetSaveInfo(SRMod.GetCurrentMod()).OnWorldSave += del;
         }
+        public static void RegisterWorldDataLoadDelegate(WorldDataLoadDelegate del)
+        {
+            GetSaveInfo(SRMod.GetCurrentMod()).OnDataLoad += del;
+        }
 
     }
 }

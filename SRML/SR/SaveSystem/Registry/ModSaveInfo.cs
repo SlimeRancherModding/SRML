@@ -39,7 +39,7 @@ namespace SRML.SR.SaveSystem.Registry
 
         internal void WorldDataPreLoad(CompoundDataPiece tag) => OnDataPreload?.Invoke(tag);
         internal void WorldDataLoad(CompoundDataPiece tag) => OnDataLoad?.Invoke(tag);
-        internal void WorldDataSave(CompoundDataPiece tag) => OnWorldSave(tag);
+        internal void WorldDataSave(CompoundDataPiece tag) => OnWorldSave?.Invoke(tag);
         public ModSaveInfo()
         {
             Registries.Add(CustomActorDataRegistry);

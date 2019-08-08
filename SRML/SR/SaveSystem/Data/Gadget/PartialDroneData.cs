@@ -23,6 +23,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
 
         public override void Push(VanillaDroneData data)
         {
+            while (fashions.InternalList.Contains(Identifiable.Id.NONE)) fashions.InternalList.Remove(Identifiable.Id.NONE);
             fashions.Push(data.drone.fashions);
         }
 

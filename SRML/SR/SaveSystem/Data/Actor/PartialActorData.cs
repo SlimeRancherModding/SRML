@@ -26,6 +26,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
 
         public override void Push(VanillaActorData data)
         {
+            while (partialFashions.InternalList.Contains(Identifiable.Id.NONE)) partialFashions.InternalList.Remove(Identifiable.Id.NONE);
             partialFashions.Push(data.fashions);
             partialEmotions.Push(data.emotions.emotionData);
         }
@@ -40,6 +41,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
         public override void WriteData(BinaryWriter writer)
         {
             writer.Write(LatestVersion);
+           
             partialFashions.Write(writer);
             partialEmotions.Write(writer);
         }
@@ -59,6 +61,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
             EnumTranslator.RegisterEnumFixer(
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, PartialActorData v) =>
                 {
+                    
                     translator.FixEnumValues(mode,v.partialEmotions);
                     translator.FixEnumValues(mode,v.partialFashions);
                 });

@@ -21,6 +21,7 @@ namespace SRML.SR.SaveSystem.Data.World
         public override void Push(TreasurePodV01 data)
         {
             spawnQueue.Push(data.spawnQueue);
+            data.spawnQueue.RemoveAll(x => x == Identifiable.Id.NONE);
         }
 
         public override void Read(BinaryReader reader)
@@ -44,7 +45,6 @@ namespace SRML.SR.SaveSystem.Data.World
             EnumTranslator.RegisterEnumFixer<PartialTreasurePodData>((translator, mode, data) =>
             {
                 translator.FixEnumValues(mode, data.spawnQueue);
-                data.spawnQueue.InternalList.Remove(Identifiable.Id.NONE);
             });
 
             PartialData.RegisterPartialData(() => new PartialTreasurePodData());
