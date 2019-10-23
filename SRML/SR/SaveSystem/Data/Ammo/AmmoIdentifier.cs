@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SRML.SR.SaveSystem.Data.Ammo
 {
 
-    internal struct AmmoIdentifier
+    public struct AmmoIdentifier
     {
 
         static readonly Dictionary<AmmoIdentifier, AmmoModel> _cache = new Dictionary<AmmoIdentifier, AmmoModel>();
@@ -170,15 +170,34 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             }
         }
 
+        static readonly Dictionary<AmmoIdentifier, global::Ammo> _ammoCache = new Dictionary<AmmoIdentifier, global::Ammo>();
+        
         public static global::Ammo ResolveAmmo(AmmoIdentifier identifier)
+        {
+            if (_ammoCache.TryGetValue(identifier, out var model)) return model;
+            var newModel = ResolveAmmoInternal(identifier);
+            if (newModel != null) _ammoCache.Add(identifier, newModel);
+            return newModel;
+        }
+
+        static global::Ammo ResolveAmmoInternal(AmmoIdentifier identifier)
         {
             switch (identifier.AmmoType)
             {
                 case AmmoType.PLAYER:
                     return SceneContext.Instance.PlayerState.ammoDict[(PlayerState.AmmoMode)identifier.longIdentifier];
                 default:
-                    throw new NotImplementedException();
+                    foreach(var v in Resources.FindObjectsOfTypeAll<Drone>())
+                    {
+                        if (v.ammo!=null&&AmmoIdentifier.GetIdentifier(v.ammo).Equals(identifier)) return v.ammo;
+                    }
+                    foreach(var v in Resources.FindObjectsOfTypeAll<SiloStorage>())
+                    {
+                        if (v.ammo != null && AmmoIdentifier.GetIdentifier(v.ammo).Equals(identifier)) return v.ammo;
+                    }
+                    break;
             }
+            return null;
         }
 
         public static List<AmmoDataV02> ResolveToData(AmmoIdentifier identifier, GameV11 game)
@@ -188,7 +207,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 case AmmoType.PLAYER:
                     return game.player.ammo[(PlayerState.AmmoMode)identifier.longIdentifier];
                 case AmmoType.GADGET:
-                    return ModdedStringRegistry.IsValidString(identifier.stringIdentifier)?game.world.placedGadgets[identifier.stringIdentifier].ammo:null;
+                    return ModdedStringRegistry.IsValidString(identifier.stringIdentifier) ? (game.world.placedGadgets[identifier.stringIdentifier].drone?.drone?.ammo is AmmoDataV02 amdat ? new AmmoDataV02[] { amdat }.ToList() : game.world.placedGadgets[identifier.stringIdentifier].ammo) :null;
                 case AmmoType.LANDPLOT:
                     return game.ranch.plots.FirstOrDefault((x) => x.id == identifier.stringIdentifier)?
                         .siloAmmo[(SiloStorage.StorageType)identifier.longIdentifier];
@@ -229,6 +248,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         internal static void ClearCache()
         {
             _cache.Clear();
+            _ammoCache.Clear();
         }
 
         public override bool Equals(object obj)
@@ -256,7 +276,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             return id.AmmoType.IsCustom();
         }
 
-        public static SRMod GetModForIdentifier(AmmoIdentifier id)
+        internal static SRMod GetModForIdentifier(AmmoIdentifier id)
         {
             switch (id.AmmoType)
             {
@@ -287,7 +307,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         }
     }
 
-    internal enum AmmoType
+    public enum AmmoType
     {
         NONE,
         PLAYER,
