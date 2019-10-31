@@ -10,6 +10,9 @@ using UnityEngine.UI;
 
 namespace SRML
 {
+    /// <summary>
+    /// Class used to generate an error message 
+    /// </summary>
     internal class ErrorGUI : MonoBehaviour
     {
 

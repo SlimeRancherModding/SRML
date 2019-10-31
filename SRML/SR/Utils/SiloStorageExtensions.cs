@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+/// <summary>
+/// Adds more methods to <see cref="SiloStorage"/> to allow for more flexable addition 
+/// </summary>
 public static class SiloStorageExtensions
 {
     public static bool MaybeAddIdentifiable(this SiloStorage storage, Identifiable id)

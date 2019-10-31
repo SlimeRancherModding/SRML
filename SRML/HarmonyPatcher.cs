@@ -3,6 +3,9 @@ using HarmonyLib;
 
 namespace SRML
 {
+    /// <summary>
+    /// Utility class to help manage the main SRML harmony instance
+    /// </summary>
     public static class HarmonyPatcher
     {
         private static Harmony _instance;

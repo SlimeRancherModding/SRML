@@ -21,6 +21,10 @@ namespace SRML
     {
 
         private static bool isPreInitialized;
+
+        /// <summary>
+        /// Called before GameContext.Awake()
+        /// </summary>
         internal static void PreLoad() 
         {
             if (isPreInitialized) return;
@@ -59,16 +63,19 @@ namespace SRML
                 return;
             }
             ReplacerCache.ClearCache();
-            
 
-            
+
+
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
-                new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
+                prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
 
         }
 
         private static bool isInitialized;
 
+        /// <summary>
+        /// Called before GameContext.Start()
+        /// </summary>
         static void Load()
         {
             if (isInitialized) return;
@@ -94,6 +101,9 @@ namespace SRML
         
         private static bool isPostInitialized;
 
+        /// <summary>
+        /// Called after Load
+        /// </summary>
         static void PostLoad()
         {
             if (isPostInitialized) return;

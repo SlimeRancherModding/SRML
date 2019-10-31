@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem
 {
+
+    /// <summary>
+    /// Class allowing for the addition of arbitrary data to Actors, similar to minecrafts nbt system
+    /// </summary>
     public static class ExtendedData
     {
         internal static Dictionary<DataIdentifier, CompoundDataPiece> extendedData =
@@ -67,6 +71,16 @@ namespace SRML.SR.SaveSystem
             preparedData.Clear();
             worldSaveData.Clear();
         }
+
+        /// <summary>
+        /// Instantiate an an Actor with the given data
+        /// </summary>
+        /// <param name="prefab"></param>
+        /// <param name="id"></param>
+        /// <param name="pos"></param>
+        /// <param name="rot"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static GameObject InstantiateActorWithData(GameObject prefab, RegionRegistry.RegionSetId id, Vector3 pos, Quaternion rot,
             CompoundDataPiece data)
         {
@@ -180,7 +194,7 @@ namespace SRML.SR.SaveSystem
             if (!removeParticipants) return;
             foreach (Component participant in b.GetComponents<ExtendedData.Participant>())
             {
-                MonoBehaviour.Destroy(participant);
+                MonoBehaviour.Destroy(participant); 
             }
         }
 
@@ -331,9 +345,15 @@ namespace SRML.SR.SaveSystem
             var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
             return p.IsDataValid(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid, p, piece));
         }
-
+        /// <summary>
+        /// A participant of the data system
+        /// </summary>
         public interface Participant
         {
+            /// <summary>
+            /// Used to initialize the values in a data piece 
+            /// </summary>
+            /// <param name="piece">The data piece to initialize</param>
             void InitData(CompoundDataPiece piece);
             void SetData(CompoundDataPiece piece);
             bool IsDataValid(CompoundDataPiece piece);

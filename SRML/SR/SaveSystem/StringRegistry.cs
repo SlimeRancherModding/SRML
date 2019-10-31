@@ -7,6 +7,9 @@ using SRML.Utils;
 
 namespace SRML.SR.SaveSystem
 {
+    /// <summary>
+    /// Class for handling string ID's for the save system
+    /// </summary>
     internal class StringRegistry : Dictionary<SRMod,HashSet<string>>
     {
         public string Prefix { get; }

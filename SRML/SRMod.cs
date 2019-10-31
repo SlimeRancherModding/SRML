@@ -10,6 +10,9 @@ using SRML.Utils;
 
 namespace SRML
 {
+    /// <summary>
+    /// A basic mod data class that is safe to share between mods (no logic in it)
+    /// </summary>
     public class SRModInfo
     {
         public SRModInfo(string modid,string name, string author, ModVersion version,string description)
@@ -32,6 +35,9 @@ namespace SRML
             return SRModLoader.GetModForAssembly(assembly).ModInfo;
         }
 
+        /// <summary>
+        /// Data structure to simplify versioning and the comparing of versions
+        /// </summary>
         public struct ModVersion : IComparable<ModVersion>
         {
             public int Major;
@@ -78,11 +84,19 @@ namespace SRML
             }
         }
     }
-
+    /// <summary>
+    /// Actual internal implementation of a mod
+    /// </summary>
     internal class SRMod 
     {
-
+        /// <summary>
+        /// Mods associated SRModInfo object
+        /// </summary>
         public SRModInfo ModInfo { get; private set; }
+
+        /// <summary>
+        /// Path of the mod (usually the directory where the core modinfo.json is located)
+        /// </summary>
         public String Path { get; private set; }
         public List<ConfigFile> Configs { get; private set; } = new List<ConfigFile>();
         public Type EntryType { get; private set; }
@@ -90,19 +104,30 @@ namespace SRML
 
         private IModEntryPoint entryPoint;
 
+       
         private static SRMod forcedContext;
 
+        /// <summary>
+        /// Gets the current executing mod as an SRMod instance 
+        /// </summary>
+        /// <returns>The current executing mod</returns>
         public static SRMod GetCurrentMod()
         {
             if (forcedContext != null) return forcedContext;
             return SRModLoader.GetModForAssembly(ReflectionUtils.GetRelevantAssembly());
         }
 
+        /// <summary>
+        /// Forces a certain mod to be returned from <see cref="SRMod.GetCurrentMod"/> 
+        /// </summary>
+        /// <param name="mod">The mod to be forced</param>
         internal static void ForceModContext(SRMod mod)
         {
             forcedContext = mod;
         }
-
+        /// <summary>
+        /// Clears the current mod context
+        /// </summary>
         internal static void ClearModContext()
         {
             forcedContext = null;

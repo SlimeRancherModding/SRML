@@ -76,6 +76,11 @@ namespace SRML.SR.SaveSystem
             return null;
         }
 
+        /// <summary>
+        /// Register a serializable <see cref="ActorModel"/>
+        /// </summary>
+        /// <typeparam name="T">The actor model to register</typeparam>
+        /// <param name="id">The mod specific integer ID that the save system will use to refer to this <see cref="ActorModel"/></param>
         public static void RegisterSerializableActorModel<T>(int id) where T : ActorModel, ISerializableModel
         {
             GetSaveInfo().GetRegistryFor<CustomActorData>().AddCustomData<T>(id, () => new BinaryActorData<T>());
@@ -90,6 +95,11 @@ namespace SRML.SR.SaveSystem
         {
             GetSaveInfo().GetRegistryFor<CustomLandPlotData>().AddCustomData<T>(id, () => new BinaryLandPlotData<T>());
         }
+
+        /// <summary>
+        /// Register a <see cref="Component"/> that will take part in the extended data system
+        /// </summary>
+        /// <typeparam name="T">Type of the participant to register</typeparam>
         public static void RegisterDataParticipant<T>() where T : Component, ExtendedData.Participant
         {
             GetSaveInfo().onExtendedActorDataLoaded += (model, obj, tag) =>

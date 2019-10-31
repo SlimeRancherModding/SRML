@@ -27,10 +27,15 @@ namespace SRML
         
         internal static LoadingStep CurrentLoadingStep { get; private set; }
 
+        /// <summary>
+        /// Searches for valid mods and their assemblies, and decides the load order based on their settings
+        /// </summary>
         internal static void InitializeMods()
         {
             FileSystem.CheckDirectory(FileSystem.ModPath);
             HashSet<ProtoMod> foundMods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
+
+            // process mods without embedded modinfo.jsons
             foreach (var jsonFile in Directory.GetFiles(FileSystem.ModPath, ModJson, SearchOption.AllDirectories))
             {
                 var mod = ProtoMod.ParseFromJson(jsonFile);
@@ -42,7 +47,7 @@ namespace SRML
 
 
             }
-
+            // process mods with embedded modinfo.jsons
             foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
             {
                 if(!ProtoMod.TryParseFromDLL(dllFile,out var mod)||mod.id==null) continue;
@@ -52,13 +57,22 @@ namespace SRML
                 }
             }
 
+            
+            // Make sure all dependencies are in order, otherwise throw an exception from checkdependencies
             DependencyChecker.CheckDependencies(foundMods);
             
             DependencyChecker.CalculateLoadOrder(foundMods,loadOrder);
 
+            // Start loading the assemblies
             DiscoverAndLoadAssemblies(foundMods);
         }
 
+
+        /// <summary>
+        /// Check if <paramref name="modid"/> corresponds with a valid mod
+        /// </summary>
+        /// <param name="modid">Mod ID to check</param>
+        /// <returns>Whether or not the mod exists</returns>
         public static bool IsModPresent(string modid)
         {
             return loadOrder.Any((x) => modid == x);
@@ -119,7 +133,12 @@ namespace SRML
                 AppDomain.CurrentDomain.AssemblyResolve -= FindAssembly;
             }
         }
-
+        
+        /// <summary>
+        /// Get an <see cref="SRMod"/> instance from a Mod ID
+        /// </summary>
+        /// <param name="id">The ModID</param>
+        /// <returns>The corresponding <see cref="SRMod"/> instance, or null</returns>
         internal static SRMod GetMod(string id)
         {
             return Mods.TryGetValue(id,out var mod)?mod:null;
@@ -208,7 +227,9 @@ namespace SRML
 
             CurrentLoadingStep = LoadingStep.FINISHED;
         }
-
+        /// <summary>
+        /// Utility class to help with the discovery and loading of mod assemblies
+        /// </summary>
         internal class AssemblyInfo
         {
             public AssemblyName AssemblyName;
@@ -240,7 +261,9 @@ namespace SRML
             POSTLOAD,
             FINISHED
         }
-
+        /// <summary>
+        /// Class that represents a mod before it has been loaded or fully processed
+        /// </summary>
         internal class ProtoMod
         {
             public string id;
@@ -270,7 +293,11 @@ namespace SRML
                     return dependencies != null && dependencies.Length > 0;
                 }
             }
-
+            /// <summary>
+            /// Create a protomod from json info
+            /// </summary>
+            /// <param name="jsonFile">Path of the json file</param>
+            /// <returns>The parsed <see cref="ProtoMod"/></returns>
             public static ProtoMod ParseFromJson(String jsonFile)
             {
 
@@ -290,7 +317,12 @@ namespace SRML
                 return proto;
 
             }
-
+            /// <summary>
+            /// Try to create a protomod from an embedded modinfo json in a DLL
+            /// </summary>
+            /// <param name="dllFile">Path to the DLL file to process</param>
+            /// <param name="mod">The parsed <see cref="ProtoMod"/>, or null</param>
+            /// <returns>Whether the parsing was successful</returns>
             public static bool TryParseFromDLL(String dllFile,out ProtoMod mod)
             {
                 
@@ -319,7 +351,9 @@ namespace SRML
             {
                 return $"{id} {version}";
             }
-
+            /// <summary>
+            /// Make sure no fields are null and in the correct form
+            /// </summary>
             void ValidateFields()
             {
                 if (id == null) throw new Exception($"{path} is missing an id field!");
@@ -328,7 +362,10 @@ namespace SRML
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
             }
-
+            /// <summary>
+            /// Turn the protomod into a proper <see cref="SRModInfo"/> instance
+            /// </summary>
+            /// <returns>Converted <see cref="SRModInfo"/></returns>
             public SRModInfo ToModInfo()
             {
                 return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version),description);

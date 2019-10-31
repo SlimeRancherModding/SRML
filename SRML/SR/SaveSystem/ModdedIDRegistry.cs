@@ -6,6 +6,9 @@ using SRML;
 using SRML.SR.SaveSystem;
 using UnityEngine;
 
+/// <summary>
+/// Handles identification of Modded ID's
+/// </summary>
 static internal class ModdedIDRegistry
 {
     internal static Dictionary<Type,IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();

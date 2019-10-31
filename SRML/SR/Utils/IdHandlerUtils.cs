@@ -42,6 +42,13 @@ namespace SRML.SR.Utils
 
             return newG;
         }
+
+        /// <summary>
+        /// Create a new instance of an IdHandler
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static GameObject CreateIdInstance<T>(string id) where T : IdHandler
         {
             var newG = CreateIdInstanceInternal<T>(id);

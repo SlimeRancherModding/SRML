@@ -8,15 +8,30 @@ using UnityEngine;
 
 namespace SRML
 {
+    /// <summary>
+    /// Serializable table that maps enum values from placeholder numerical values to their string counterparts
+    /// Used to assure that enum values map properly between game loads, even if registration order changes
+    /// Mapped values are always negative
+    /// </summary>
     public partial class EnumTranslator
     {
         public Dictionary<Type,Dictionary<int,string>> MappedValues = new Dictionary<Type, Dictionary<int, string>>();
 
+        /// <summary>
+        /// Get the next free value for the given enumType
+        /// </summary>
+        /// <param name="enumType">The enum type</param>
+        /// <returns>The next free value</returns>
         public int GetFreeValue(Type enumType)
         {
             if (!MappedValues.ContainsKey(enumType)) return -1;
             return MappedValues[enumType].Keys.LastOrDefault()-1;
         }   
+
+        /// <summary>
+        /// Generate a translation table for  a list of enumValues
+        /// </summary>
+        /// <param name="enumValues">List of enum values to translate</param>
         public void GenerateTranslationTable(IList enumValues)
         {
             if (enumValues.Count == 0) return;
@@ -31,6 +46,10 @@ namespace SRML
 
         }
 
+
+        /// <summary>
+        /// Replace missing enum values with default values, or remove them all together
+        /// </summary>
         public void FixMissingEnumValues()
         {
             var toChangeList = new Dictionary<int,string>();
@@ -71,6 +90,11 @@ namespace SRML
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Translate an enum value
+        /// </summary>
+        /// <param name="val">Original enum value</param>
+        /// <returns>Translated integer</returns>
         public int TranslateTo(object val)
         {
             var type = val.GetType();
@@ -194,7 +218,11 @@ namespace SRML
                 return true;
             })
         };
-
+        /// <summary>
+        /// Register an EnumFixer that allows for objects of type <typeparamref name="T"/> to have their enum values processed by an enumtranslator 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="del"></param>
         public static void RegisterEnumFixer<T>(EnumFixerGenericDelegate<T> del)
         {
             RegisterEnumFixer(typeof(T),((EnumTranslator translator,TranslationMode mode, object fix) => del(translator,mode,(T)fix)));
@@ -255,6 +283,12 @@ namespace SRML
             }
         }
 
+        /// <summary>
+        /// Fix enum values in an object using the registered EnumFixer
+        /// </summary>
+        /// <param name="translator">the <see cref="EnumTranslator"/> to use for translating</param>
+        /// <param name="mode">Whether to translate TO or FROM the translated form</param>
+        /// <param name="toFix">Object to fix</param>
         public static void FixEnumValues(EnumTranslator translator, TranslationMode mode, object toFix)
         {
             if (toFix == null) return;
@@ -287,6 +321,7 @@ namespace SRML
 
         static EnumTranslator()
         {
+            // basic enum fixer for lists
             RegisterEnumFixer((EnumTranslator translator, TranslationMode mode, IList list) =>
             {
                 for(int i = list.Count-1;i>=0;i--)
@@ -303,6 +338,8 @@ namespace SRML
                     }
                 }
             });
+
+            // basic enum fixer for dictionaries
             RegisterEnumFixer((EnumTranslator translator, TranslationMode mode, IDictionary dict) =>
             {
                 var keyArray = new object[dict.Count];

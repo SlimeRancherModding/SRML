@@ -11,6 +11,9 @@ using SRML.SR;
 
 namespace SRML
 {
+    /// <summary>
+    /// Allows adding values to any Enum
+    /// </summary>
     public static class EnumPatcher
     {
         internal delegate object AlternateEnumRegister(object value, string name);
@@ -41,14 +44,24 @@ namespace SRML
             global_cache_monitor = AccessTools.Field(t,"global_cache_monitor");
             global_cache = AccessTools.Field(t, "global_cache");
         }
-
+        /// <summary>
+        /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
+        /// </summary>
+        /// <param name="enumType">Type of enum to add the value to</param>
+        /// <param name="name">Name of the new enum value</param>
+        /// <returns>The new enum value</returns>
         public static object AddEnumValue(Type enumType, string name)
         {
             var newVal = GetFirstFreeValue(enumType);
             AddEnumValue(enumType, newVal, name);
             return newVal;
         }
-
+        /// <summary>
+        /// Add a new value to the given <paramref name="enumType"/> 
+        /// </summary>
+        /// <param name="enumType">Enum to add the new value to</param>
+        /// <param name="value">Value to add to the enum</param>
+        /// <param name="name">The name of the new value</param>
         public static void AddEnumValue(Type enumType, object value, string name)
         {
             if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
@@ -65,13 +78,17 @@ namespace SRML
 
             patch.AddValue(value, name);
         }
-
+        
         internal static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
         {
             if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
             else AddEnumValue(enumType,value,name);
         }
-
+        /// <summary>
+        /// Get first undefined value in an enum
+        /// </summary>
+        /// <param name="enumType"></param>
+        /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
             var allValues = Enum.GetValues(enumType);
