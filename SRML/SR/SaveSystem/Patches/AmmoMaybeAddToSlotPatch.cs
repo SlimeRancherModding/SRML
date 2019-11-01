@@ -30,10 +30,10 @@ namespace SRML.SR.SaveSystem.Patches
                 }
 
                 if (count == -1) throw new Exception();
-                if (identifiable&&ExtendedData.IsRegistered(identifiable.gameObject))
+                if (identifiable&&ExtendedData.HasExtendedData(identifiable.gameObject))
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
-                    ammo.DataModel.slots[count].PushTop(ExtendedData.extendedData[DataIdentifier.GetActorIdentifier(identifiable.GetActorId())]);
+                    ammo.DataModel.slots[count].PushTop(ExtendedData.ReadDataFromGameObject(identifiable.gameObject));
                     ammo.Sync();
                 }
                 else
@@ -61,13 +61,13 @@ namespace SRML.SR.SaveSystem.Patches
             if (AmmoIdentifier.TryGetIdentifier(__instance, out var identifier))
             {
 
-                if (identifiable && ExtendedData.IsRegistered(identifiable.gameObject))
+                if (identifiable && ExtendedData.HasExtendedData(identifiable.gameObject))
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);
                     if (ammo == null) return;
                     for (int i = 0; i < count; i++)
                         ammo.DataModel.slots[slotIdx]
-                            .PushTop(ExtendedData.extendedData[DataIdentifier.GetActorIdentifier(identifiable.GetActorId())]);
+                            .PushTop(ExtendedData.ReadDataFromGameObject(identifiable.gameObject));
                     ammo.Sync();
                 }
                 else

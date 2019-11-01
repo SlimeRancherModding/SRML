@@ -35,7 +35,7 @@ namespace SRML.SR.SaveSystem.Patches
     {
         public static void Prefix(GameObject gameObj)
         {
-            ExtendedData.DestroyActor(gameObj);
+            //ExtendedData.DestroyActor(gameObj);
         }
     }
 }

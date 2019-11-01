@@ -7,19 +7,56 @@ namespace SRML.SR
 {
     public static class PurchasableUIRegistry
     {
+        /// <summary>
+        /// Predicate for choosing purchasable ui's
+        /// </summary>
+        /// <param name="uiType">The type of the Purchasable UI</param>
+        /// <param name="ui">The UI instance</param>
+        /// <returns></returns>
         public delegate bool PurchasableUIPredicate(Type uiType, BaseUI ui);
+
+        /// <summary>
+        /// Creates purchasables on demand
+        /// </summary>
+        /// <param name="ui">The <see cref="BaseUI"/> that the <see cref="PurchaseUI.Purchasable"/> will be added to</param>
+        /// <returns></returns>
         public delegate PurchaseUI.Purchasable PurchasableCreatorDelegate(BaseUI ui);
+        /// <summary>
+        /// Creates a purchasable on demand
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ui">The UI that the <see cref="PurchaseUI.Purchasable"/> will be added to</param>
+        /// <returns></returns>
         public delegate PurchaseUI.Purchasable PurchasableCreatorDelegateGeneric<T>(T ui) where T : BaseUI;
+        /// <summary>
+        /// Delegate for arbitarily manipulating a list of purchasables
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ui"></param>
+        /// <param name="purchasables"></param>
         public delegate void PurchasableManipulatorDelegateGeneric<T>(T ui, ref PurchaseUI.Purchasable[] purchasables) where T : BaseUI;
+        /// <summary>
+        /// Delegate for arbitarily manipulating a list of purchasables
+        /// </summary>
         public delegate void PurchasableManipulatorDelegate(BaseUI ui, ref PurchaseUI.Purchasable[] purchasables);
 
         internal static Dictionary<PurchasableUIPredicate, PurchasableCreatorDelegate> customPurchasables = new Dictionary<PurchasableUIPredicate, PurchasableCreatorDelegate>();
         internal static Dictionary<PurchasableUIPredicate, PurchasableManipulatorDelegate> customManipulators = new Dictionary<PurchasableUIPredicate, PurchasableManipulatorDelegate>();
+        /// <summary>
+        /// Register a <paramref name="creator"/> to all UI's pointed to by the <paramref name="pred"/>
+        /// </summary>
+        /// <param name="pred">The prediate for filtering the Purchasable UI</param>
+        /// <param name="creator">The creator of the new purchasable</param>
         public static void RegisterPurchasable(PurchasableUIPredicate pred, PurchasableCreatorDelegate creator)
         {
             customPurchasables.Add(pred, creator);
         }
 
+        /// <summary>
+        /// Register a compararer to sort a list of purchasables
+        /// </summary>
+        /// <param name="pred">Filter for PurchasableUI's</param>
+        /// <param name="comparer">Comparer to use when sorting</param>
         public static void RegisterEntrySorter(PurchasableUIPredicate pred, IComparer<PurchaseUI.Purchasable> comparer)
         {
             RegisterManipulator(pred, new PurchasableManipulatorDelegate((BaseUI x, ref PurchaseUI.Purchasable[] y) =>
@@ -30,6 +67,11 @@ namespace SRML.SR
             }));
         }
 
+        /// <summary>
+        /// Register a compararer to sort a list of purchasables
+        /// </summary>
+        /// <typeparam name="T">The type of the UI</typeparam>
+        /// <param name="comparer">Comparer used for sorting</param>
         public static void RegisterEntrySorter<T>(IComparer<PurchaseUI.Purchasable> comparer) where T : BaseUI
         {
             RegisterManipulator((x,y)=>typeof(T).IsAssignableFrom(x), new PurchasableManipulatorDelegate((BaseUI x, ref PurchaseUI.Purchasable[] y) =>

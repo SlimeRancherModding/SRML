@@ -13,11 +13,21 @@ namespace SRML.SR
         internal static List<Identifiable.Id> customRefineryResources = new List<Identifiable.Id>();
         internal static Dictionary<SiloStorage.StorageType, HashSet<Identifiable.Id>> siloPrefabs = new Dictionary<SiloStorage.StorageType, HashSet<Identifiable.Id>>();
 
+        /// <summary>
+        /// Register an ammo prefab to allow it to be put in a player's ammos (use <see cref="RegisterPlayerAmmo(PlayerState.AmmoMode, Identifiable.Id)"/>)
+        /// </summary>
+        /// <param name="mode"><see cref="PlayerState.AmmoMode"/> to register the prefab to</param>
+        /// <param name="prefab"></param>
         public static void RegisterAmmoPrefab(PlayerState.AmmoMode mode, GameObject prefab)
         {
             RegisterPlayerAmmo(mode, Identifiable.GetId(prefab));
         }
 
+        /// <summary>
+        /// Allow an <paramref name="id"/> to be put into a players inventory
+        /// </summary>
+        /// <param name="mode">Which inventory to allow the <paramref name="id"/> into</param>
+        /// <param name="id">The <see cref="Identifiable.Id"/> to allow</param>
         public static void RegisterPlayerAmmo(PlayerState.AmmoMode mode, Identifiable.Id id)
         {
             if (!inventoryPrefabsToPatch.ContainsKey(mode))
@@ -26,7 +36,11 @@ namespace SRML.SR
             }
             inventoryPrefabsToPatch[mode].Add(id);
         }
-
+        /// <summary>
+        /// Allow an Identifiable.Id to be put into a <see cref="SiloStorage"/> inventory
+        /// </summary>
+        /// <param name="typeId"></param>
+        /// <param name="id"></param>
         public static void RegisterSiloAmmo(SiloStorage.StorageType typeId, Identifiable.Id id)
         {
 
@@ -45,6 +59,10 @@ namespace SRML.SR
             }
         }
 
+        /// <summary>
+        /// Allow an Identifiable to be put into the Refinery
+        /// </summary>
+        /// <param name="id"></param>
         public static void RegisterRefineryResource(Identifiable.Id id)
         {
             customRefineryResources.Add(id);

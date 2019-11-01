@@ -125,7 +125,7 @@ namespace SRML.SR.SaveSystem.Data
 
         public void SetValue(string key, object value)
         {
-            this[key].SetValue(value);
+            GetPiece(key,value.GetType()).SetValue(value);
         }
 
         public override String ToString()

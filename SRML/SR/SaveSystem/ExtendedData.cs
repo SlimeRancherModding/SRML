@@ -16,8 +16,6 @@ namespace SRML.SR.SaveSystem
     /// </summary>
     public static class ExtendedData
     {
-        internal static Dictionary<DataIdentifier, CompoundDataPiece> extendedData =
-            new Dictionary<DataIdentifier, CompoundDataPiece>();
         internal static Dictionary<DataIdentifier, PreparedData> preparedData = new Dictionary<DataIdentifier, PreparedData>();
 
         internal static Dictionary<SRMod, CompoundDataPiece> worldSaveData = new Dictionary<SRMod, CompoundDataPiece>();
@@ -33,11 +31,13 @@ namespace SRML.SR.SaveSystem
                     switch (extendedDataTree.idType)
                     {
                         case ExtendedDataTree.IdentifierType.ACTOR:
-                            var list = ExtendedDataUtils.GetPieceForMod(mod.modid, GetDataForActor(extendedDataTree.longIdentifier)).DataList;
-                            foreach (var h in extendedDataTree.dataPiece.DataList)
-                            {
-                                list.Add(h);
+                            var identifier = DataIdentifier.GetActorIdentifier(extendedDataTree.longIdentifier);
+                            PreparedData pdata;
+                            if (!preparedData.TryGetValue(identifier, out pdata)) {
+                                pdata = new PreparedData() { Data = new CompoundDataPiece("root"), SourceType = PreparedData.PreparationSource.SPAWN };
+                                preparedData[identifier] = pdata;
                             }
+                            extendedDataTree.dataPiece.DataList.Do((x) => pdata.Data.GetCompoundPiece(mod.modid).DataList.Add(x));
                             break;
                         default:
                             throw new NotImplementedException();
@@ -67,7 +67,6 @@ namespace SRML.SR.SaveSystem
 
         internal static void Clear()
         {
-            extendedData.Clear();
             preparedData.Clear();
             worldSaveData.Clear();
         }
@@ -114,42 +113,15 @@ namespace SRML.SR.SaveSystem
             if (Identifiable.GetId(gameObject) == Identifiable.Id.NONE) return;
 
             var actorIdentifier = DataIdentifier.GetActorIdentifier(actorId);
-            PreparedData pdata = new PreparedData();
-            if (IsRegistered(actorId) || preparedData.TryGetValue(DataIdentifier.GetActorIdentifier(actorId), out pdata))
+            if (preparedData.TryGetValue(actorIdentifier, out var pdata))
             {
-                if (pdata.Data != null) extendedData[DataIdentifier.GetActorIdentifier(actorId)] = pdata.Data;
+                var data = pdata.Data;
                 foreach (var saveInfoPair in SaveRegistry.modToSaveInfo)
                 {
-                    if (extendedData[actorIdentifier].HasPiece(saveInfoPair.Key.ModInfo.Id)) saveInfoPair.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, ExtendedDataUtils.GetPieceForMod(saveInfoPair.Key.ModInfo.Id, extendedData[actorIdentifier]));
+                    if (data.HasPiece(saveInfoPair.Key.ModInfo.Id)) saveInfoPair.Value.OnExtendedActorDataLoaded(model.actors[actorId], gameObject, ExtendedDataUtils.GetPieceForMod(saveInfoPair.Key.ModInfo.Id, data));
                 }
-
-                foreach (var participant in gameObject.GetComponentsInChildren<ExtendedData.Participant>())
-                    if (!ValidateParticipant(participant, (extendedData[actorIdentifier])))
-                        InitParticipant(participant, (extendedData[actorIdentifier]));
-
-                foreach (var participant in gameObject.GetComponentsInChildren<ExtendedData.Participant>())
-                {
-                    try
-                    {
-                        SetParticipant(participant, (extendedData[actorIdentifier]));
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        Debug.Log($"Yipes! seems like {participant.GetType()} isn't initialized!");
-                        // a bit gross hack but it'll help when mods add new participants to things that already have actor data stored
-                        InitParticipant(participant, (extendedData[actorIdentifier]));
-                        SetParticipant(participant, (extendedData[actorIdentifier]));
-                    }
-                }
-
-            }
-            else
-            {
-                var participants = gameObject.GetComponents<ExtendedData.Participant>();
-                if (participants != null && participants.Length > 0)
-                {
-                    RegisterExtendedActorData(actorId, gameObject, skipNotify);
-                }
+                ApplyDataToGameObject(gameObject, data);
+                preparedData.Remove(actorIdentifier);
             }
 
 
@@ -157,70 +129,11 @@ namespace SRML.SR.SaveSystem
 
         }
 
-        internal static void CullIfNotValid(GameModel model)
-        {
-
-            List<DataIdentifier> toRemove = new List<DataIdentifier>();
-            foreach (var actor in extendedData)
-            {
-                if (!model.actors.ContainsKey(actor.Key.longID) || actor.Value.DataList.Count == 0)
-                {
-                    toRemove.Add(actor.Key);
-                }
-            }
-
-            foreach (var actor in toRemove)
-            {
-                extendedData.Remove(actor);
-            }
-
-            if (toRemove.Count > 0)
-                Debug.Log($"Culled {toRemove.Count} invalid actor datas");
-        }
-
-        internal static void DestroyActor(GameObject b)
-        {
-            if (b?.GetComponent<Identifiable>()?.model == null) return;
-            long id = Identifiable.GetActorId(b);
-            if (IsRegistered(id)) extendedData.Remove(DataIdentifier.GetActorIdentifier(id));
-        }
-
-
-        public static void UnregisterActor(GameObject b, bool removeParticipants = true)
-        {
-            if (b?.GetComponent<Identifiable>()?.model == null) return;
-            long id = Identifiable.GetActorId(b);
-            if (IsRegistered(id)) extendedData.Remove(DataIdentifier.GetActorIdentifier(id));
-            if (!removeParticipants) return;
-            foreach (Component participant in b.GetComponents<ExtendedData.Participant>())
-            {
-                MonoBehaviour.Destroy(participant); 
-            }
-        }
-
-        public static void RemoveParticipant<T>(GameObject b) where T : ExtendedData.Participant
-        {
-            if (b?.GetComponent<Identifiable>()?.model == null) return;
-            long id = Identifiable.GetActorId(b);
-            if (IsRegistered(id))
-            {
-                var part = b.GetComponent<T>();
-                if (part != null)
-                {
-                    var piece = GetDataForActor(id);
-                    var modPiece = ExtendedDataUtils.GetPieceForMod(ExtendedDataUtils.GetModForParticipant(part)?.ModInfo.Id, piece);
-                    var participantPiece = ExtendedDataUtils.GetPieceForParticipant<T>(modPiece);
-                    MonoBehaviour.Destroy(part as UnityEngine.Object);
-                    modPiece.DataList.Remove(participantPiece);
-                    if (ExtendedDataUtils.GetParticipantCount(modPiece) == 0) piece.DataList.Remove(modPiece);
-                    if (ExtendedDataUtils.GetModPieceCount(piece) == 0) UnregisterActor(b);
-                }
-            }
-        }
-
+        public static bool HasExtendedData(GameObject obj) => obj.GetComponents<ExtendedData.Participant>().Length > 0;
+        
         internal static void Push(ModdedSaveData data)
         {
-            foreach (var actorData in extendedData)
+            foreach (var actorData in GetAllData(SceneContext.Instance.GameModel))
             {
                 foreach (CompoundDataPiece modPiece in actorData.Value.DataList)
                 {
@@ -257,58 +170,9 @@ namespace SRML.SR.SaveSystem
             return ExtendedDataUtils.GetPieceForMod(strin, piece);
         }
 
-        public static void RegisterExtendedActorData(GameObject obj)
-        {
-            RegisterExtendedActorData(Identifiable.GetActorId(obj), obj, false);
-        }
-
-        public static bool IsRegistered(long id)
-        {
-            return extendedData.ContainsKey(DataIdentifier.GetActorIdentifier(id));
-        }
-
-        public static bool IsRegistered(GameObject b)
-        {
-            return IsRegistered(Identifiable.GetActorId(b));
-        }
-
-        public static T AddNewParticipant<T>(GameObject gameObj) where T : Component, ExtendedData.Participant
-        {
-            if (!IsRegistered(gameObj)) RegisterExtendedActorData(gameObj);
-            var newPart = gameObj.AddComponent<T>();
-            var id = Identifiable.GetActorId(gameObj);
-            if (!ValidateParticipant(newPart, GetDataForActor(id))) InitParticipant(newPart, GetDataForActor(id));
-            SetParticipant(newPart, GetDataForActor(id));
-            return newPart;
-        }
-
-        public static void RegisterExtendedActorData(long actorId, GameObject obj, bool skipNotify)
-        {
-
-            if (IsRegistered(actorId))
-            {
-                Debug.LogWarning(obj.name + " is already registered!");
-                return;
-            }
-
-
-            var tag = GetDataForActor(actorId);
-            var participants = obj.GetComponents<ExtendedData.Participant>();
-            foreach (var participant in participants)
-            {
-                if (!ValidateParticipant(participant, tag)) InitParticipant(participant, tag);
-            }
-
-            foreach (var participant in participants)
-            {
-                SetParticipant(participant, tag);
-            }
-        }
-
         static CompoundDataPiece GetDataForActor(long actorId)
         {
-            if (!IsRegistered(actorId)) extendedData.Add(DataIdentifier.GetActorIdentifier(actorId), new CompoundDataPiece("root"));
-            return extendedData[DataIdentifier.GetActorIdentifier(actorId)];
+            return SceneContext.Instance.GameModel.actors.TryGetValue(actorId, out var model) ? ReadDataFromGameObject(model.transform.gameObject) : null;
         }
 
         static bool IsValid(long actorId)
@@ -327,36 +191,48 @@ namespace SRML.SR.SaveSystem
             };
         }
 
-
-        static void SetParticipant(ExtendedData.Participant p, CompoundDataPiece piece)
+        static bool HasValidDataForParticipant(Participant p, CompoundDataPiece piece)
         {
             var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
-            p.SetData(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid, p, piece));
+            return piece.HasPiece(modid) && piece.GetCompoundPiece(modid).HasPiece(ExtendedDataUtils.GetParticipantName(p));
+        }
+            
+        public static void ApplyDataToGameObject(GameObject obj, CompoundDataPiece piece)
+        {
+            foreach(var participant in obj.GetComponents<Participant>())
+            {
+                if (HasValidDataForParticipant(participant, piece)) participant.ReadData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant, piece));
+            }
         }
 
-        static void InitParticipant(ExtendedData.Participant p, CompoundDataPiece piece)
+        public static CompoundDataPiece ReadDataFromGameObject(GameObject obj)
         {
-            var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
-            p.InitData(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid, p, piece));
+            var newCompound = new CompoundDataPiece("root");
+            foreach(var participant in obj.GetComponents<Participant>())
+            {
+                participant.WriteData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant,newCompound));
+            }
+
+            return newCompound;
         }
 
-        static bool ValidateParticipant(ExtendedData.Participant p, CompoundDataPiece piece)
+
+
+        static IEnumerable<KeyValuePair<DataIdentifier,CompoundDataPiece>> GetAllData(GameModel model)
         {
-            var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
-            return p.IsDataValid(ExtendedDataUtils.GetPieceForParticipantFromRoot(modid, p, piece));
+            foreach(var v in model.actors)
+            {
+                if (v.Value?.transform == null) continue;
+                yield return new KeyValuePair<DataIdentifier, CompoundDataPiece>(DataIdentifier.GetActorIdentifier(v.Key), ReadDataFromGameObject(v.Value.transform.gameObject));
+            }
         }
         /// <summary>
         /// A participant of the data system
         /// </summary>
         public interface Participant
         {
-            /// <summary>
-            /// Used to initialize the values in a data piece 
-            /// </summary>
-            /// <param name="piece">The data piece to initialize</param>
-            void InitData(CompoundDataPiece piece);
-            void SetData(CompoundDataPiece piece);
-            bool IsDataValid(CompoundDataPiece piece);
+            void ReadData(CompoundDataPiece piece);
+            void WriteData(CompoundDataPiece piece);
         }
 
         internal struct PreparedData

@@ -16,6 +16,7 @@ namespace SRML.SR
 
         internal static List<PlayerAction> ephemeralActions = new List<PlayerAction>();
 
+        
         internal static void RegisterAction(PlayerAction action, SRMod mod)
         {
             moddedActions.Add(action, mod);
@@ -25,6 +26,10 @@ namespace SRML.SR
             return moddedActions.ContainsKey(action) || ephemeralActions.Contains(action);
         }
 
+        /// <summary>
+        /// Register all <see cref="PlayerAction"/>'s in a Type
+        /// </summary>
+        /// <param name="type">Type holding the <see cref="PlayerAction"/>'s</param>
         public static void RegisterActions(Type type)
         {
             var mod = SRMod.GetCurrentMod();

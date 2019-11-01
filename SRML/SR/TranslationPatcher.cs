@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace SRML.SR
 {
+    /// <summary>
+    /// Localization
+    /// </summary>
     public static class TranslationPatcher
     {
 
@@ -29,21 +32,42 @@ namespace SRML.SR
             SetModForTranslationKey(bundlename,key,mod);
         }
 
+        /// <summary>
+        /// Add a plaintext translation for a localization key
+        /// </summary>
+        /// <param name="bundlename">Key bundle the localization key is located in</param>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
         public static void AddTranslationKey(string bundlename, string key, string value)
         {
             AddTranslationKey(bundlename, key, value, SRMod.GetCurrentMod());
         }
 
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'pedia' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
         public static void AddPediaTranslation(string key, string value)
         {
             AddTranslationKey("pedia",key,value);
         }
 
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'actor' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
         public static void AddActorTranslation(string key, string value)
         {
             AddTranslationKey("actor",key,value);
         }
 
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'ui' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
         public static void AddUITranslation(string key, string value)
         {
             AddTranslationKey("ui",key,value);

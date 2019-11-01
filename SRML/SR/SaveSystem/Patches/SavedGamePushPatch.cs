@@ -14,7 +14,7 @@ namespace SRML.SR.SaveSystem.Patches
     {
         public static void Postfix(GameModel gameModel)
         {
-            ExtendedData.CullIfNotValid(gameModel);
+            //ExtendedData.CullIfNotValid(gameModel);
             PersistentAmmoManager.SyncAll();
         }
     }

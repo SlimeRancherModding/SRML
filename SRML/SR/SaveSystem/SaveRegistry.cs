@@ -86,11 +86,22 @@ namespace SRML.SR.SaveSystem
             GetSaveInfo().GetRegistryFor<CustomActorData>().AddCustomData<T>(id, () => new BinaryActorData<T>());
         }
 
+
+        /// <summary>
+        /// Register a serializable <see cref="GadgetModel"/>
+        /// </summary>
+        /// <typeparam name="T">Gadget model to register</typeparam>
+        /// <param name="id">The mod specific integer ID that the save system will use to refer to this <see cref="GadgetModel"/></param>
         public static void RegisterSerializableGadgetModel<T>(int id) where T : GadgetModel, ISerializableModel
         {
             GetSaveInfo().GetRegistryFor<CustomGadgetData>().AddCustomData<T>(id, () => new BinaryGadgetData<T>());
         }
 
+        /// <summary>
+        /// Register a serializable <see cref="LandPlotModel"/>
+        /// </summary>
+        /// <typeparam name="T">LandPlot model to register</typeparam>
+        /// <param name="id">The mod specific integer ID that the save system will use to refer to this <see cref="LandPlotModel"/></param>
         public static void RegisterSerializableLandPlotModel<T>(int id) where T : LandPlotModel, ISerializableModel
         {
             GetSaveInfo().GetRegistryFor<CustomLandPlotData>().AddCustomData<T>(id, () => new BinaryLandPlotData<T>());
@@ -107,6 +118,7 @@ namespace SRML.SR.SaveSystem
                 if (tag.HasPiece(ExtendedDataUtils.GetParticipantName(typeof(T))))
                 {
                     obj.AddComponent<T>();
+                    
                 }
             };
         }

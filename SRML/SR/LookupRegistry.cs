@@ -25,6 +25,10 @@ namespace SRML.SR
 
         internal static HashSet<LookupDirector.ToyEntry> toysToPatch = new HashSet<LookupDirector.ToyEntry>();
 
+        /// <summary>
+        /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="b"></param>
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -44,6 +48,10 @@ namespace SRML.SR
             RegisterIdentifiablePrefab(b.gameObject);
         }
 
+        /// <summary>
+        /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="entry"></param>
         public static void RegisterVacEntry(LookupDirector.VacEntry entry)
         {
             switch (CurrentLoadingStep)
@@ -57,7 +65,10 @@ namespace SRML.SR
                     break;
             }
         }
-
+        /// <summary>
+        /// Register a landplot prefab into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="prefab"></param>
         public static void RegisterLandPlot(GameObject prefab)
         {
             switch (CurrentLoadingStep)
@@ -71,7 +82,10 @@ namespace SRML.SR
                     break;
             }
         }
-
+        /// <summary>
+        /// Register a gadget entry to the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="entry"></param>
         public static void RegisterGadget(LookupDirector.GadgetEntry entry)
         {
             switch (CurrentLoadingStep)
@@ -85,12 +99,20 @@ namespace SRML.SR
                     break;
             }
         }
-
+        /// <summary>
+        /// Register a vacuumable item into the <see cref=""/>
+        /// </summary>
+        /// <param name="id">Id of the vacuumable item</param>
+        /// <param name="color">Color of the background of the inventory slot</param>
+        /// <param name="icon">Icon that will be used for the item in inventory</param>
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)
         {
             RegisterVacEntry(new LookupDirector.VacEntry(){id=id,color=color,icon=icon});
         }
-
+        /// <summary>
+        /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="entry">Upgrade Entry to register</param>
         public static void RegisterUpgradeEntry(LookupDirector.UpgradeEntry entry)
         {
             switch (CurrentLoadingStep)
@@ -105,6 +127,13 @@ namespace SRML.SR
             }
         }
 
+
+        /// <summary>
+        /// Create and register an upgrade entry
+        /// </summary>
+        /// <param name="upgrade">Upgrade ID</param>
+        /// <param name="icon">Icon that will show up in the upgrade shop</param>
+        /// <param name="cost">The cost of the upgrade</param>
         public static void RegisterUpgradeEntry(PlayerState.Upgrade upgrade, Sprite icon, int cost)
         {
             RegisterUpgradeEntry(new LookupDirector.UpgradeEntry()
@@ -115,6 +144,11 @@ namespace SRML.SR
             });
         }
 
+
+        /// <summary>
+        /// Register a <see cref="SpawnResource"/> into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="b"></param>
         public static void RegisterSpawnResource(GameObject b)
         {
             switch (SRModLoader.CurrentLoadingStep)
@@ -129,6 +163,10 @@ namespace SRML.SR
             }
         }
 
+        /// <summary>
+        /// Register a gordo prefab into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="gordo"></param>
         public static void RegisterGordo(GameObject gordo)
         {
             switch (SRModLoader.CurrentLoadingStep)
@@ -143,6 +181,10 @@ namespace SRML.SR
             }
         }
 
+        /// <summary>
+        /// Register <paramref name="liquid"/> into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="liquid">Liquid to register</param>
         public static void RegisterLiquid(LookupDirector.Liquid liquid)
         {
             switch (SRModLoader.CurrentLoadingStep)
@@ -157,6 +199,10 @@ namespace SRML.SR
             }
         }
 
+        /// <summary>
+        /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="entry">Entry to register</param>
         public static void RegisterToy(LookupDirector.ToyEntry entry)
         {
             switch (SRModLoader.CurrentLoadingStep)
@@ -181,6 +227,13 @@ namespace SRML.SR
             list.Add(value);
         }
 
+        /// <summary>
+        /// Register a toy (note: does not register the identifiable itself, only the toy, do that separately)
+        /// </summary>
+        /// <param name="id"><see cref="Identifiable.Id"/> of the toy</param>
+        /// <param name="icon">Icon for the toy in the toy store</param>
+        /// <param name="cost">How much the toy costs in the toy store</param>
+        /// <param name="nameKey"></param>
         public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
         {
             RegisterToy(new LookupDirector.ToyEntry() { toyId = id, icon = icon, cost = cost, nameKey = nameKey });

@@ -9,6 +9,11 @@ namespace SRML.SR
     public static class SlimeRegistry
     {
         internal static Dictionary<SlimeDefinition, SRMod> slimeDefinitions = new Dictionary<SlimeDefinition, SRMod>();
+
+        /// <summary>
+        /// Register a slime definition in the <see cref="SlimeDefinitions"/> database
+        /// </summary>
+        /// <param name="definition">Slime definition to register</param>
         public static void RegisterSlimeDefinition(SlimeDefinition definition)
         {
             slimeDefinitions[definition] = SRMod.GetCurrentMod();
