@@ -5,6 +5,7 @@ using System.Text;
 
 namespace SRML.SR
 {
+    // associated patch is DirectedActorSpawnerStartPatch
     public static class DirectedActorSpawnerRegistry
     {
         public delegate void DirectedActorSpawnerPatcher(DirectedActorSpawner spawner);

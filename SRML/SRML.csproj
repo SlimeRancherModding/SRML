@@ -148,6 +148,7 @@
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
+    <Compile Include="IntermodCommunication.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="IModEntryPoint.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />

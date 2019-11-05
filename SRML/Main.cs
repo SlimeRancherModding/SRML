@@ -118,6 +118,8 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
+
+            IntermodCommunication.CallIMCMethod("slime_genetics", "print_out_epic_stuff", 203,"lol");
         }
 
     }
