@@ -119,7 +119,6 @@ namespace SRML
                 return;
             }
 
-            IntermodCommunication.CallIMCMethod("slime_genetics", "print_out_epic_stuff", 203,"lol");
         }
 
     }

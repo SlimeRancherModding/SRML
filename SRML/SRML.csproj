@@ -38,8 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Desktop\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\publicized_assemblies\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\publicized_assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
@@ -156,6 +157,7 @@
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\UI\Utils\UIUtils.cs" />
     <Compile Include="SR\Utils\Debug\AddDebugMarker.cs" />
     <Compile Include="SR\Utils\Debug\DebugCommand.cs" />
     <Compile Include="SR\Utils\Debug\DebugMarker.cs" />

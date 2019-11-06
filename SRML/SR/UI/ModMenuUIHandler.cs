@@ -29,33 +29,11 @@ namespace SRML.SR.UI
                 .GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
             var h = bundle.LoadAsset<GameObject>("ModPanel");
             h.AddComponent<ModMenuUI>().infoButtonPrefab = bundle.LoadAsset<GameObject>("ModInfoButton");
-            FixStyles(h);
+            UIUtils.FixStyles(h);
             h.GetComponent<Image>().color = Color.green;
             mainMenuUIPrefab = h;
         }
 
-        internal static void FixStyles(GameObject h)
-        {
-            foreach (var v in h.GetComponentsInChildren<Component>())
-            {
-                if(v.GetComponent<Scrollbar>())
-                {
-                    v.gameObject.AddComponent<ScrollbarStyler>().styleName =
-                "Default";
 
-                }
-                else if (v.GetComponent<Text>())
-                {
-                    v.gameObject.AddComponent<TextStyler>().styleName = "Default";
-                }
-                else if(v.GetComponent<Image>()&&!v.GetComponent<Button>())
-                {
-                    v.gameObject.AddComponent<PanelStyler>().styleName = "Default";
-                }
-
-
-            }
-            
-        }
     }
 }

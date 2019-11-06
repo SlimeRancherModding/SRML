@@ -137,7 +137,9 @@ namespace SRML.SR.SaveSystem.Data
             }
             EnumTranslator.RegisterEnumFixer<DataPiece>((translator, mode, piece) =>
             {
-                if (piece.dataFixer != null) piece.dataFixer.Invoke(translator, mode, piece.data); else translator.FixEnumValues(mode, piece.data);
+
+                if (piece.dataFixer != null) piece.dataFixer.Invoke(translator, mode, piece.data); else if (piece.typeId == DataType.ENUM) piece.data = translator.TranslateEnum(piece.data.GetType(), mode, piece.data); else translator.FixEnumValues(mode, piece.data);
+                
             });
         }
 
