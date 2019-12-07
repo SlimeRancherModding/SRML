@@ -11,6 +11,21 @@ namespace SRML.SR.Utils
 {
     public static class IdHandlerUtils
     {
+        static IdDirector globalIdDirector;
+
+        public static IdDirector GlobalIdDirector
+        {
+            get
+            {
+                if (!globalIdDirector)
+                {
+                    var g = new GameObject();
+                    globalIdDirector = g.AddComponent<IdDirector>();
+                }
+                return globalIdDirector;
+            }
+        }
+
         internal static Dictionary<Type, GameObject> idHandlerPrefabs = new Dictionary<Type, GameObject>();
         static IdHandlerUtils()
         {
@@ -38,7 +53,8 @@ namespace SRML.SR.Utils
             if (!idHandlerPrefabs.TryGetValue(typeof(T), out var gameObj)) return null;
             var newG = GameObjectUtils.InstantiateInactive(gameObj);
 
-            newG.GetComponent<T>().id = ModdedStringRegistry.IsModdedString(id) ? id : ModdedStringRegistry.ClaimID(GetPrefix<T>(), id);
+            newG.GetComponent<T>().director = GlobalIdDirector;
+            GlobalIdDirector.persistenceDict[newG.GetComponent<T>()] = ModdedStringRegistry.IsModdedString(id) ? id : ModdedStringRegistry.ClaimID(GetPrefix<T>(), id);
 
             return newG;
         }

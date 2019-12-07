@@ -101,6 +101,11 @@ namespace SRMLInstaller
 
                 void SendFilesOver()
                 {
+                    foreach(var file in Directory.GetFiles(GetAlternateRoot()))
+                    {
+                        File.Delete(file);
+                    }
+                    
                     foreach (var v in Assembly.GetExecutingAssembly().GetManifestResourceNames().Where((x) =>
                         x.Length > embeddedResourceProject.Length &&
                         x.Substring(0, embeddedResourceProject.Length) == embeddedResourceProject))

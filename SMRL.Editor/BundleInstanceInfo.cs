@@ -6,13 +6,12 @@ using UnityEngine;
 
 namespace SRML.Editor
 {
-    [CreateAssetMenu(menuName = "SRML/Replacers/InstanceInfo")]
-    public class BundleInstanceInfo : ScriptableObject, IInstanceInfo
+    public struct BundleInstanceInfo : IInstanceInfo
     {
         [SerializeField]
-        IDType idtype;
+        public IDType idtype;
         [SerializeField]
-        int id;
+        public int id;
         public IDType idType => idtype;
         public int ID => id;
 

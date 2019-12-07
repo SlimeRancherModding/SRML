@@ -17,13 +17,14 @@ using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
 using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
+using Game = MonomiPark.SlimeRancher.Persist.GameV12;
 namespace SRML.SR.SaveSystem
 {
     internal static class SaveHandler
     {
         public static ModdedSaveData data = new ModdedSaveData();
         #region pulling data
-        public static void PullModdedData(ModdedSaveData data, GameV11 game)
+        public static void PullModdedData(ModdedSaveData data, Game game)
         {
             data.Clear();
 
@@ -38,7 +39,7 @@ namespace SRML.SR.SaveSystem
             PersistentAmmoManager.Push(data);
         }
 
-        private static void PullPartialData(ModdedSaveData data, GameV11 game)
+        private static void PullPartialData(ModdedSaveData data, Game game)
         {
             void Check<T>(T v, Action
                             <T, PartialData> onSuccess)
@@ -96,7 +97,7 @@ namespace SRML.SR.SaveSystem
             data.appearancesData.Pull(game.appearances);
         }
 
-        private static void PullAmmoData(ModdedSaveData data, GameV11 game)
+        private static void PullAmmoData(ModdedSaveData data, GameV12 game)
         {
             foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game))
             {
@@ -121,7 +122,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullTertiaryData(ModdedSaveData data, GameV11 game)
+        private static void PullTertiaryData(ModdedSaveData data, GameV12 game)
         {
             foreach (var mod in ModPlayerData.FindAllModsWithData(game.player))
             {
@@ -145,7 +146,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullFullData(ModdedSaveData data, GameV11 game)
+        private static void PullFullData(ModdedSaveData data, GameV12 game)
         {
             foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
@@ -199,7 +200,7 @@ namespace SRML.SR.SaveSystem
         #endregion
 
         #region pushing data
-        public static void PushAllModdedData(ModdedSaveData data, GameV11 game)
+        public static void PushAllModdedData(ModdedSaveData data, GameV12 game)
         {
 
 
@@ -212,7 +213,7 @@ namespace SRML.SR.SaveSystem
             PushAllPartialData(data, game);
         }
 
-        private static void PushAllSegmentData(ModdedSaveData data, GameV11 game)
+        private static void PushAllSegmentData(ModdedSaveData data, GameV12 game)
         {
             foreach (var mod in data.segments)
             {
@@ -224,7 +225,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PushSegmentAmmoData(GameV11 game, ModDataSegment mod)
+        private static void PushSegmentAmmoData(Game game, ModDataSegment mod)
         {
             foreach (var ammo in mod.customAmmo)
             {
@@ -233,14 +234,14 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PushSegmentTertiaryData(GameV11 game, ModDataSegment mod)
+        private static void PushSegmentTertiaryData(Game game, ModDataSegment mod)
         {
             mod.playerData.Push(game.player);
             mod.pediaData.Push(game.pedia);
             mod.worldData.Push(game.world);
         }
 
-        private static void PushSegmentFullData(GameV11 game, ModDataSegment mod)
+        private static void PushSegmentFullData(GameV12 game, ModDataSegment mod)
         {
             Debug.Log($"Splicing data from mod {mod.modid} which has {mod.identifiableData.Count} pieces of identifiable data");
             foreach (var customData in mod.identifiableData)
@@ -272,7 +273,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public static void PushAllPartialData(ModdedSaveData data,GameV11 game)
+        public static void PushAllPartialData(ModdedSaveData data,GameV12 game)
         {
             foreach (var partial in data.partialData)
             {
@@ -315,7 +316,7 @@ namespace SRML.SR.SaveSystem
 
         public static void LoadModdedSave(AutoSaveDirector director, string savename)
         {   
-            var storageprovider = director.storageProvider as FileStorageProvider;
+            var storageprovider = director.StorageProvider as FileStorageProvider;
             if (storageprovider == null) return;
             var modpath = GetModdedPath(storageprovider, savename);
             Debug.Log(modpath+" is our modded path");
@@ -329,17 +330,17 @@ namespace SRML.SR.SaveSystem
 
             data.enumTranslator?.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            PushAllModdedData(data,director.savedGame.gameState);
+            PushAllModdedData(data,director.SavedGame.gameState);
 
         }
 
         public static void SaveModdedSave(AutoSaveDirector director, string nextfilename)
         {
-            var storageprovider = director.storageProvider as FileStorageProvider;
+            var storageprovider = director.StorageProvider as FileStorageProvider;
             if (storageprovider == null) return;
             var modpath = GetModdedPath(storageprovider, nextfilename);
             Debug.Log(modpath + " is our modded path");
-            PullModdedData(data,director.savedGame.gameState);
+            PullModdedData(data,director.SavedGame.gameState);
             data.InitializeEnumTranslator();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.TOTRANSLATED);
             if (File.Exists(modpath)) File.Delete(modpath);
@@ -349,7 +350,7 @@ namespace SRML.SR.SaveSystem
             }
 
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            PushAllPartialData(data, director.savedGame.gameState); // re-apply the data we took out so we leave the game state relatively untouched
+            PushAllPartialData(data, director.SavedGame.gameState); // re-apply the data we took out so we leave the game state relatively untouched
         }
 
         static SaveHandler()

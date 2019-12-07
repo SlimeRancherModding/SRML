@@ -13,15 +13,19 @@ using UnityEngine;
 namespace SRML.SR.SaveSystem.Patches
 {
     [HarmonyPatch]
-    // Need to get rid of 4 instructions after savedgame load
+    // Need to get rid of 4 instructions after savedgame load 
     internal static class LoadFallBackSavePatch
     {
         private static Type targetType = typeof(AutoSaveDirector).GetNestedTypes(BindingFlags.NonPublic)
-            .First((x) => x.Name == "<LoadFallbackSave_Coroutine>c__Iterator2");
+            .First((x) => x.Name == "<LoadFallbackSave_Coroutine>d__70");
 
         public static MethodInfo TargetMethod()
         {
-            return targetType.GetMethod("MoveNext");
+            foreach(var type in AccessTools.GetDeclaredMethods(targetType))
+            {
+                Debug.Log(type);
+            }
+            return AccessTools.Method(targetType,"MoveNext");
         }
 
         public static void LoadModSave(AutoSaveDirector director, GameData.Summary summary)
@@ -39,10 +43,10 @@ namespace SRML.SR.SaveSystem.Patches
                     {
                         yield return cur;
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                        yield return new CodeInstruction(OpCodes.Ldfld, targetType.GetField("$this", flags));
+
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(targetType,"<>4__this"));
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldfld, targetType.GetField("<summary>__1", flags));
+                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(targetType,"<summary>5__5"));
                         yield return new CodeInstruction(OpCodes.Call,
                             AccessTools.Method(typeof(LoadFallBackSavePatch), "LoadModSave"));
                     }

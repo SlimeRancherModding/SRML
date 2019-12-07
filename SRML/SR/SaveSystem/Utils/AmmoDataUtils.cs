@@ -52,7 +52,7 @@ namespace SRML.SR.SaveSystem.Utils
             return ammo.Any((x) => ModdedIDRegistry.IsModdedID(x.id));
         }
 
-        public static List<List<VanillaAmmoData>> GetAllAmmoData(GameV11 game)
+        public static List<List<VanillaAmmoData>> GetAllAmmoData(GameV12 game)
         {
             List<List<VanillaAmmoData>> ammoDataData = new List<List<VanillaAmmoData>>();
 
@@ -67,7 +67,7 @@ namespace SRML.SR.SaveSystem.Utils
             return ammoDataData;
         }
 
-        public static Action RemoveAmmoDataWithAddBack(List<VanillaAmmoData> data,GameV11 game)
+        public static Action RemoveAmmoDataWithAddBack(List<VanillaAmmoData> data,GameV12 game)
         {
             var player = game.player.ammo.FirstOrDefault(x => x.Value == data);
             if (player.Value != null)

@@ -27,7 +27,9 @@ namespace SRMLInstaller
         {
             try
             {
-                curAssembly = AssemblyDefinition.ReadAssembly(filename);
+                var resolver = new DefaultAssemblyResolver();
+                resolver.AddSearchDirectory(Path.GetDirectoryName(filename));
+                curAssembly = AssemblyDefinition.ReadAssembly(filename,new ReaderParameters() { AssemblyResolver = resolver});
             }
             catch
             {

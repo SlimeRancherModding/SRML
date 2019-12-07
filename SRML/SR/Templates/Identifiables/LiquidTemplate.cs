@@ -159,20 +159,7 @@ namespace SRML.SR.Templates.Identifiables
                     main.startColor = color;
                 }
 
-                GameObject outFX = EffectObjects.fxVacWaterOut.CreatePrefabCopy();
-                outFX.name = outFX.name.Replace("(Clone)", "." + mainObject.Name);
-                part = outFX.GetComponent<ParticleSystem>();
-                if (part != null)
-                {
-                    ParticleSystem.MainModule main = part.main;
-                    main.startColor = color;
-                }
 
-                foreach (ParticleSystem childPart in outFX.GetComponentsInChildren<ParticleSystem>())
-                {
-                    ParticleSystem.MainModule main = childPart.main;
-                    main.startColor = color;
-                }
 
                 GameObject vacFailFX = EffectObjects.fxWaterVacFail.CreatePrefabCopy();
                 vacFailFX.name = vacFailFX.name.Replace("(Clone)", "." + mainObject.Name);
@@ -210,21 +197,20 @@ namespace SRML.SR.Templates.Identifiables
                     main.startColor = color;
                 }
 
-                LookupRegistry.RegisterLiquid(new LookupDirector.Liquid()
+                LookupRegistry.RegisterLiquid(new LiquidDefinition()
                 {
                     id = ID,
                     inFX = inFX,
-                    outFX = outFX,
                     vacFailFX = vacFailFX
                 });
             }
             else
             {
-                LookupRegistry.RegisterLiquid(new LookupDirector.Liquid()
+                LookupRegistry.RegisterLiquid(new LiquidDefinition()
                 {
                     id = ID,
                     inFX = EffectObjects.fxWaterAcquire,
-                    outFX = EffectObjects.fxVacWaterOut,
+                    
                     vacFailFX = EffectObjects.fxWaterVacFail
                 });
             }

@@ -15,11 +15,11 @@ namespace SRML.SR.SaveSystem.Patches
     internal static class LoadSavePatch
     {
         private static Type targetType = typeof(AutoSaveDirector).GetNestedTypes(BindingFlags.NonPublic)
-            .First((x) => x.Name == "<LoadSave_Coroutine>c__Iterator1");
+            .First((x) => x.Name == "<LoadSave_Coroutine>d__68");
 
         public static MethodInfo TargetMethod()
         {
-            return targetType.GetMethod("MoveNext");
+            return AccessTools.Method(targetType,"MoveNext");
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr)
@@ -30,12 +30,11 @@ namespace SRML.SR.SaveSystem.Patches
                 {
                     yield return v;
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
-                    var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                    yield return new CodeInstruction(OpCodes.Ldfld, targetType.GetField("$this", flags));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(targetType, "<>4__this"));
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
-                    yield return new CodeInstruction(OpCodes.Ldfld, targetType.GetField("gameName", flags));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(targetType, "gameName"));
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
-                    yield return new CodeInstruction(OpCodes.Ldfld, targetType.GetField("saveName", flags));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(targetType, "saveName"));
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(LoadSavePatch), "LoadModSave"));
                 }   

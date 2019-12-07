@@ -67,7 +67,7 @@ namespace SRML.Console.Commands
         {
             if(argIndex == 0)
             {
-                return GameContext.Instance.LookupDirector.GetAllPrefabs().Select(x=>Identifiable.GetId(x).ToString()).ToList();
+                return GameContext.Instance.LookupDirector.identifiablePrefabs.Select(x=>Identifiable.GetId(x).ToString()).ToList();
             }
             return base.GetAutoComplete(argIndex, argText);
         }

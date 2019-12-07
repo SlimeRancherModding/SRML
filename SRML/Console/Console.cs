@@ -18,7 +18,7 @@ namespace SRML.Console
         public const int HISTORY = 10; // NUMBER OF COMMANDS TO KEEP ON HISTORY
 
         // LOG STUFF
-        internal static string unityLogFile = Path.Combine(Application.persistentDataPath, "output_log.txt");
+        internal static string unityLogFile = Path.Combine(Application.persistentDataPath, "Player.log");
         internal static string srmlLogFile = Path.Combine(Application.persistentDataPath, "SRML/srml.log");
         private static readonly Console console = new Console();
 

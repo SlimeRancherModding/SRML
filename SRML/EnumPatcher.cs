@@ -31,19 +31,16 @@ namespace SRML
             BANNED_ENUMS.Add(type, del);
         }
 
-        private static PropertyInfo cache;
-        private static FieldInfo global_cache_monitor;
-        private static FieldInfo global_cache;
+        private static FieldInfo cache;
         
         private static Dictionary<Type, EnumPatch> patches = new Dictionary<Type, EnumPatch>();
 
         static EnumPatcher()
         {
-            var t = AccessTools.TypeByName("System.MonoEnumInfo");
-            cache = AccessTools.Property(t, "Cache");
-            global_cache_monitor = AccessTools.Field(t,"global_cache_monitor");
-            global_cache = AccessTools.Field(t, "global_cache");
+            var t = AccessTools.TypeByName("System.RuntimeType");
+            cache = AccessTools.Field(t, "GenericCache");
         }
+        
         /// <summary>
         /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
         /// </summary>
@@ -67,7 +64,7 @@ namespace SRML
             if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
 
-            value = Enum.ToObject(enumType, value);
+            value = (ulong)Convert.ToInt64(value, CultureInfo.InvariantCulture);
             if (!patches.TryGetValue(enumType, out var patch))
             {
                 patch = new EnumPatch();
@@ -76,7 +73,7 @@ namespace SRML
 
             ClearEnumCache(enumType);
 
-            patch.AddValue(value, name);
+            patch.AddValue((ulong)value, name);
         }
         
         internal static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
@@ -105,21 +102,7 @@ namespace SRML
 
         public static void ClearEnumCache(Type enumType)
         {
-            var cache = (Hashtable)EnumPatcher.cache.GetValue(null, null);
-            var global_cache_monitor = EnumPatcher.global_cache_monitor.GetValue(null);
-            var global_cache = (Hashtable)EnumPatcher.global_cache.GetValue(null);
-            if (cache.Contains(enumType))
-            {
-                cache.Remove(enumType);
-            }
-
-            lock (global_cache_monitor)
-            {
-                if (global_cache.Contains(enumType))
-                {
-                    global_cache.Remove(enumType);
-                }
-            }
+            cache.SetValue(enumType, null);
         }
         
         internal static bool TryGetRawPatch(Type enumType, out EnumPatch patch)
@@ -129,14 +112,14 @@ namespace SRML
 
         public class EnumPatch 
         {
-            private Dictionary<object, String> values = new Dictionary<object, String>();
-            public void AddValue(object enumValue, string name)
+            private Dictionary<ulong, String> values = new Dictionary<ulong, String>();
+            public void AddValue(ulong enumValue, string name)
             {
                 if (values.ContainsKey(enumValue)) return;
                 values.Add(enumValue, name);
             }
 
-            public void GetArrays(out string[] names, out object[] values)
+            public void GetArrays(out string[] names, out ulong[] values)
             {
                 names = this.values.Values.ToArray();
                 values = this.values.Keys.ToArray();

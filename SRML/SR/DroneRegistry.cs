@@ -38,7 +38,7 @@ namespace SRML.SR
             HashSet<DroneMetadata> metadataCache = new HashSet<DroneMetadata>();
             foreach(var v in Gadget.DRONE_CLASS)
             {
-                var data = context.LookupDirector.GetGadgetEntry(v).prefab.GetComponentInChildren<DroneGadget>().metadata;
+                var data = context.LookupDirector.GetGadgetDefinition(v).prefab.GetComponentInChildren<DroneGadget>().metadata;
                 if (metadataCache.Add(data)) yield return data;
             }
         }

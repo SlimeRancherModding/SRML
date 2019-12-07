@@ -38,17 +38,18 @@ namespace SRML.Editor
         bool TryResolveSource(out FieldInfo field);
         bool TryResolveTarget(out FieldInfo field);
     }
-    [CreateAssetMenu(menuName = "SRML/Replacers/FieldReplacement")]
-    public class BundleFieldReplacement : ScriptableObject, IFieldReplacement //if this isnt a scriptable object unity absolutely refuses to serialize it correctly
+
+    [Serializable]
+    public struct BundleFieldReplacement : IFieldReplacement //if this isnt a scriptable object unity absolutely refuses to serialize it correctly
     {
         [SerializeField]
-        string fieldToReplaceType;
+        public string fieldToReplaceType;
         [SerializeField]
-        string fieldToReplaceFieldName;
+        public string fieldToReplaceFieldName;
         [SerializeField]
-        string replacementSourceType;
+        public string replacementSourceType;
         [SerializeField]
-        string replacementSourceFieldName;
+        public string replacementSourceFieldName;
 
         public bool TryResolveSource(out FieldInfo field)
         {
@@ -61,7 +62,7 @@ namespace SRML.Editor
 
         private bool Resolve(String typeName, String fieldName, out FieldInfo field)
         {
-            Debug.Log("Found "+ Type.GetType(typeName + ", Assembly-CSharp"));
+            
             if (Type.GetType(typeName+", Assembly-CSharp") is System.Type type &&
                 type.GetField(fieldName) is FieldInfo foundField)
             {

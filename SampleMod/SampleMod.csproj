@@ -63,16 +63,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SRML\SRML.csproj">
-      <Project>{5733599a-5318-4a2c-9998-f7e0cdc664de}</Project>
-      <Name>SRML</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SRML\SRML.csproj">
+      <Project>{5733599a-5318-4a2c-9998-f7e0cdc664de}</Project>
+      <Name>SRML</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

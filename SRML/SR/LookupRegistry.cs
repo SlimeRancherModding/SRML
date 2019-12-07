@@ -9,11 +9,11 @@ namespace SRML.SR
     public static class LookupRegistry
     {
         internal static HashSet<GameObject> objectsToPatch = new HashSet<GameObject>();
-        internal static HashSet<LookupDirector.VacEntry> vacEntriesToPatch = new HashSet<LookupDirector.VacEntry>();
-        internal static HashSet<LookupDirector.GadgetEntry> gadgetEntriesToPatch = new HashSet<LookupDirector.GadgetEntry>();
+        internal static HashSet<VacItemDefinition> vacEntriesToPatch = new HashSet<VacItemDefinition>();
+        internal static HashSet<GadgetDefinition> gadgetEntriesToPatch = new HashSet<GadgetDefinition>();
 
-        internal static HashSet<LookupDirector.UpgradeEntry> upgradeEntriesToPatch =
-            new HashSet<LookupDirector.UpgradeEntry>();
+        internal static HashSet<UpgradeDefinition> upgradeEntriesToPatch =
+            new HashSet<UpgradeDefinition>();
 
         internal static HashSet<GameObject> landPlotsToPatch = new HashSet<GameObject>();
 
@@ -21,9 +21,9 @@ namespace SRML.SR
 
         internal static HashSet<GameObject> gordosToPatch = new HashSet<GameObject>();
 
-        internal static HashSet<LookupDirector.Liquid> liquidsToPatch = new HashSet<LookupDirector.Liquid>();
+        internal static HashSet<LiquidDefinition> liquidsToPatch = new HashSet<LiquidDefinition>();
 
-        internal static HashSet<LookupDirector.ToyEntry> toysToPatch = new HashSet<LookupDirector.ToyEntry>();
+        internal static HashSet<ToyDefinition> toysToPatch = new HashSet<ToyDefinition>();
 
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
@@ -52,16 +52,17 @@ namespace SRML.SR
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry"></param>
-        public static void RegisterVacEntry(LookupDirector.VacEntry entry)
+        public static void RegisterVacEntry(VacItemDefinition entry)
         {
+            
             switch (CurrentLoadingStep)
             {
                 case LoadingStep.PRELOAD:
                     vacEntriesToPatch.Add(entry);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.vacEntries.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
-                    GameContext.Instance.LookupDirector.vacEntryDict[entry.id] = entry;
+                    GameContext.Instance.LookupDirector.vacItemDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
+                    GameContext.Instance.LookupDirector.vacItemDict[entry.id] = entry;
                     break;
             }
         }
@@ -86,7 +87,7 @@ namespace SRML.SR
         /// Register a gadget entry to the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry"></param>
-        public static void RegisterGadget(LookupDirector.GadgetEntry entry)
+        public static void RegisterGadget(GadgetDefinition entry)
         {
             switch (CurrentLoadingStep)
             {
@@ -94,8 +95,8 @@ namespace SRML.SR
                     gadgetEntriesToPatch.Add(entry);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.gadgetEntries.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
-                    GameContext.Instance.LookupDirector.gadgetEntryDict[entry.id] = entry;
+                    GameContext.Instance.LookupDirector.gadgetDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
+                    GameContext.Instance.LookupDirector.gadgetDefinitionDict[entry.id] = entry;
                     break;
             }
         }
@@ -107,13 +108,13 @@ namespace SRML.SR
         /// <param name="icon">Icon that will be used for the item in inventory</param>
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)
         {
-            RegisterVacEntry(new LookupDirector.VacEntry(){id=id,color=color,icon=icon});
+            RegisterVacEntry(new VacItemDefinition(){id=id,color=color,icon=icon});
         }
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry">Upgrade Entry to register</param>
-        public static void RegisterUpgradeEntry(LookupDirector.UpgradeEntry entry)
+        public static void RegisterUpgradeEntry(UpgradeDefinition entry)
         {
             switch (CurrentLoadingStep)
             {
@@ -121,8 +122,8 @@ namespace SRML.SR
                     upgradeEntriesToPatch.Add(entry);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.upgradeEntries.AddAndRemoveWhere(entry,(x,y)=>x.upgrade==y.upgrade);
-                    GameContext.Instance.LookupDirector.upgradeEntryDict[entry.upgrade] = entry;
+                    GameContext.Instance.LookupDirector.upgradeDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.upgrade==y.upgrade);
+                    GameContext.Instance.LookupDirector.upgradeDefinitionDict[entry.upgrade] = entry;
                     break;
             }
         }
@@ -136,7 +137,7 @@ namespace SRML.SR
         /// <param name="cost">The cost of the upgrade</param>
         public static void RegisterUpgradeEntry(PlayerState.Upgrade upgrade, Sprite icon, int cost)
         {
-            RegisterUpgradeEntry(new LookupDirector.UpgradeEntry()
+            RegisterUpgradeEntry(new UpgradeDefinition()
             {
                 cost = cost,
                 icon = icon,
@@ -185,7 +186,7 @@ namespace SRML.SR
         /// Register <paramref name="liquid"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="liquid">Liquid to register</param>
-        public static void RegisterLiquid(LookupDirector.Liquid liquid)
+        public static void RegisterLiquid(LiquidDefinition liquid)
         {
             switch (SRModLoader.CurrentLoadingStep)
             {
@@ -193,7 +194,7 @@ namespace SRML.SR
                     liquidsToPatch.Add(liquid);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.liquidEntries.AddAndRemoveWhere(liquid,(x,y)=>x.id==y.id);
+                    GameContext.Instance.LookupDirector.liquidDefinitions.AddAndRemoveWhere(liquid,(x,y)=>x.id==y.id);
                     GameContext.Instance.LookupDirector.liquidDict[liquid.id] = liquid;
                     break;
             }
@@ -203,7 +204,7 @@ namespace SRML.SR
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry">Entry to register</param>
-        public static void RegisterToy(LookupDirector.ToyEntry entry)
+        public static void RegisterToy(ToyDefinition entry)
         {
             switch (SRModLoader.CurrentLoadingStep)
             {
@@ -211,20 +212,20 @@ namespace SRML.SR
                     toysToPatch.Add(entry);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.toyEntries.AddAndRemoveWhere(entry,(x,y)=>x.toyId==y.toyId);
+                    GameContext.Instance.LookupDirector.toyDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.toyId==y.toyId);
                     GameContext.Instance.LookupDirector.toyDict[entry.toyId] = entry;
                     break;
             }
         }
 
-        internal static void AddAndRemoveWhere<T>(this List<T> list,T value,Func<T,T,bool> cond)
+        internal static void AddAndRemoveWhere<T>(this ListAsset<T> list,T value,Func<T,T,bool> cond)
         {
             var v = list.Where(x => cond(value, x)).ToList();
             foreach(var a in v)
             {
-                list.Remove(a);
+                list.items.Remove(a);
             }
-            list.Add(value);
+            list.items.Add(value);
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace SRML.SR
         /// <param name="nameKey"></param>
         public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
         {
-            RegisterToy(new LookupDirector.ToyEntry() { toyId = id, icon = icon, cost = cost, nameKey = nameKey });
+            RegisterToy(new ToyDefinition() { toyId = id, icon = icon, cost = cost, nameKey = nameKey });
         }
     }
 }

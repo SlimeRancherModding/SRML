@@ -10,35 +10,30 @@ namespace SRML.Patches
     [HarmonyPatch]
     internal static class EnumInfoPatch
     {
-        private static FieldInfo values;
-        private static FieldInfo names;
         static EnumInfoPatch()
         {
-            var t = AccessTools.TypeByName("System.MonoEnumInfo");
-            names = AccessTools.Field(t, "names");
-            values = AccessTools.Field(t,"values");
         }
         static MethodBase TargetMethod()
         {
-            return AccessTools.Method(Type.GetType("System.MonoEnumInfo"),"GetInfo");
+            return AccessTools.Method(Type.GetType("System.Enum"), "GetCachedValuesAndNames");
 
         }
-        static object FixMono(Type enumType, object mono)
+        static void FixEnum(object type, ref ulong[] oldValues, ref string[] oldNames)
         {
+            var enumType = type as Type;
             if (EnumPatcher.TryGetRawPatch(enumType, out var patch))
             {
 
-                var oldValues = (int[])values.GetValue(mono);
-                var oldNames = (string[])names.GetValue(mono);
-                patch.GetArrays(out string[] toBePatchedNames,out object[] toBePatchedValues);
+                patch.GetArrays(out string[] toBePatchedNames,out ulong[] toBePatchedValues);
                 Array.Resize(ref toBePatchedNames, toBePatchedNames.Length + oldNames.Length);
                 Array.Resize(ref toBePatchedValues, toBePatchedValues.Length + oldValues.Length);
                 Array.Copy(oldNames, 0, toBePatchedNames, toBePatchedNames.Length - oldNames.Length, oldNames.Length);
                 Array.Copy(oldValues, 0, toBePatchedValues, toBePatchedValues.Length - oldValues.Length, oldValues.Length);
-                names.SetValue(mono,toBePatchedNames);
-                values.SetValue(mono,toBePatchedValues);
+                oldValues = toBePatchedValues;
+                oldNames = toBePatchedNames;
+
+                Array.Sort<ulong, string>(oldValues, oldNames, Comparer<ulong>.Default);
             }
-            return mono;
         }
         
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -48,22 +43,18 @@ namespace SRML.Patches
                 while (enumerator.MoveNext())
                 {
                     var v = enumerator.Current;
-                    if (v.operand is MethodInfo me&&me.Name=="get_enum_info")
+                    if (v.operand is MethodInfo me&&me.Name=="Sort")
                     {
                         yield return v;
                         enumerator.MoveNext();
-                        enumerator.MoveNext();
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldarg_1);
-                        var operand = Type.GetType("System.MonoEnumInfo");
-                        yield return new CodeInstruction(OpCodes.Ldobj, operand);
-                        yield return new CodeInstruction(OpCodes.Box, operand);
-                        yield return new CodeInstruction(OpCodes.Call, typeof(EnumInfoPatch).GetMethod("FixMono", BindingFlags.Static | BindingFlags.NonPublic));
-                        yield return new CodeInstruction(OpCodes.Unbox_Any, operand);
-                        yield return new CodeInstruction(OpCodes.Stobj, operand);
-                        yield return new CodeInstruction(OpCodes.Ldnull);
-                        yield return new CodeInstruction(OpCodes.Stloc_0);
+                        v = enumerator.Current;
+                        var labels = v.labels;
+                        v.labels = new List<Label>();
+                        yield return new CodeInstruction(OpCodes.Ldarg_0) { labels = labels};
+                        yield return new CodeInstruction(OpCodes.Ldloca, 1);
+                        yield return new CodeInstruction(OpCodes.Ldloca, 2);
+                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(EnumInfoPatch), "FixEnum"));
+                        yield return v;
                     }
                     else
                     {

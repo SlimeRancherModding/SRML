@@ -14,11 +14,11 @@ using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem.Patches
 {
-    [HarmonyPatch(typeof(GameV11))]
+    [HarmonyPatch(typeof(GameV12))]
     [HarmonyPatch("WriteGameData")]
     internal static class WriteGameDataPatch
     {
-        public static void Prefix(GameV11 __instance, ref RemovalData __state)
+        public static void Prefix(GameV12 __instance, ref RemovalData __state)
         {
             __state = new RemovalData();
 

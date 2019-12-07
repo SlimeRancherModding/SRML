@@ -34,7 +34,6 @@ namespace SRML.SR.Utils.BaseObjects
 		public static GameObject fxGordoSplat;
 
 		public static GameObject fxWaterAcquire;
-		public static GameObject fxVacWaterOut;
 		public static GameObject fxWaterVacFail;
 
 		// Audio Cues
@@ -83,7 +82,6 @@ namespace SRML.SR.Utils.BaseObjects
 			fxGordoSplat = BaseObjects.originFXs["FX Gordo Splat"];
 
 			fxWaterAcquire = BaseObjects.originFXs["fxWaterAcquire"];
-			fxVacWaterOut = BaseObjects.originFXs["FX VacWaterOut"];
 			fxWaterVacFail = BaseObjects.originFXs["FX waterVacFail"];
 
 			// Audio Cues

@@ -71,7 +71,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Libs\**" />
+    <EmbeddedResource Include="Libs\*" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.4.2.1\build\Fody.targets" Condition="Exists('..\packages\Fody.4.2.1\build\Fody.targets')" />
@@ -88,7 +88,7 @@ xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.dll" "$(ProjectDir)Li
 xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\Newtonsoft.Json.dll" "$(ProjectDir)Libs\"
 xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\0Harmony.dll" "$(ProjectDir)Libs\"
 xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.Editor.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\INIFileParser.dll" "$(ProjectDir)Libs\"</PreBuildEvent>
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\INIFileParser.dll" "$(ProjectDir)Libs\"
+xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll" "$(ProjectDir)Libs\"</PreBuildEvent>
   </PropertyGroup>
 </Project>
