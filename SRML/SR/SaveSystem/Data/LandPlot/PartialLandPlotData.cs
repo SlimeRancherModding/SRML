@@ -72,6 +72,7 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
             EnumTranslator.RegisterEnumFixer<PartialLandPlotData>((translator, mode, data) => 
             {
                 translator.FixEnumValues(mode, data.upgrades);
+                while (data.upgrades.InternalList.Contains(global::LandPlot.Upgrade.NONE)) data.upgrades.InternalList.Remove(global::LandPlot.Upgrade.NONE);
                 data.attachedId = translator.TranslateEnum(mode, data.attachedId);
             });
             

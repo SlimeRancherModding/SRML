@@ -71,6 +71,7 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
             EnumTranslator.RegisterEnumFixer<VanillaLandPlotData>((translator, mode, data) =>
             {
                 translator.FixEnumValues(mode, data.upgrades);
+                data.upgrades.RemoveAll(x => x == global::LandPlot.Upgrade.NONE); ;
                 data.attachedId = translator.TranslateEnum<SpawnResource.Id>(mode, data.attachedId);
             });
 

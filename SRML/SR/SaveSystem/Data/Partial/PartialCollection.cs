@@ -13,11 +13,12 @@ namespace SRML.SR.SaveSystem.Data.Partial
         List<T> hoistedValues = new List<T>();
         private Predicate<T> hoistCondition;
         private SerializerPair<T> serializer;
-
-        public PartialCollection(Predicate<T> hoistCondition, SerializerPair<T> serializer)
+        private Predicate<T> forbiddenValueTester;
+        public PartialCollection(Predicate<T> hoistCondition, SerializerPair<T> serializer, Predicate<T> valueFilter = null)
         {
             this.hoistCondition = hoistCondition;
             this.serializer = serializer;
+            this.forbiddenValueTester = valueFilter ?? (x => true);
         }
 
         public IList InternalList => hoistedValues;
@@ -35,11 +36,12 @@ namespace SRML.SR.SaveSystem.Data.Partial
             {
                 data.Remove(v);
             }
+            hoistedValues.RemoveAll(x=>!forbiddenValueTester(x));
         }
 
         public override void Push(ICollection<T> data)
         {
-            foreach(var v in hoistedValues) data.Add(v);
+            foreach(var v in hoistedValues.Where(x=>forbiddenValueTester(x))) data.Add(v);
         }
 
         public override void Read(BinaryReader reader)

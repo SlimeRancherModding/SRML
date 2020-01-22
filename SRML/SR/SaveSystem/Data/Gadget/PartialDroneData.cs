@@ -43,6 +43,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, PartialDroneData v) =>
                 {
                     translator.FixEnumValues(mode,v.fashions);
+                    
                 });
         }
     }

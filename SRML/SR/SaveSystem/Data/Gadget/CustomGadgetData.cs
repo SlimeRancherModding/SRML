@@ -69,6 +69,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
                 {
                     v.gadgetId = translator.TranslateEnum(mode, v.gadgetId);
                     translator.FixEnumValues(mode, v.fashions);
+                    v.fashions.RemoveAll(x => x == Identifiable.Id.NONE);
                     v.baitTypeId = translator.TranslateEnum(mode, v.baitTypeId);
                     v.gordoTypeId = translator.TranslateEnum(mode, v.gordoTypeId);
                     if(v.drone!=null) translator.FixEnumValues(mode,v.drone);
@@ -78,6 +79,7 @@ namespace SRML.SR.SaveSystem.Data.Gadget
                 VanillaDroneData v) =>
             {
                 translator.FixEnumValues(mode,v.drone.fashions);
+                v.drone.fashions.RemoveAll(x => x == Identifiable.Id.NONE);
             });
             PartialGadgetData.RegisterEnumFixer();
             PartialDroneData.RegisterEnumFixer();

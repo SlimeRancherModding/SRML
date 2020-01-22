@@ -355,7 +355,6 @@ namespace SRML
                     }
                     catch (MissingTranslationException)
                     {
-                        Debug.Log("Key invalid "+temp);
                         keyArray[counter++] = null;
                     }
 

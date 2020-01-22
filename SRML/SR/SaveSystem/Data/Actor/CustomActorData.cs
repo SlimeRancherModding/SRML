@@ -69,6 +69,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
             {
                 v.typeId = (int)translator.TranslateEnum(mode, ((Identifiable.Id)v.typeId));
                 translator.FixEnumValues(mode, v.fashions);
+                v.fashions.RemoveAll(x => x == Identifiable.Id.NONE);
                 translator.FixEnumValues(mode, v.emotions.emotionData);
             });
             CustomChecker.RegisterCustomChecker((VanillaActorData data) =>

@@ -28,6 +28,7 @@ namespace SRML.SR.SaveSystem.Data.Actor
         {
             while (partialFashions.InternalList.Contains(Identifiable.Id.NONE)) partialFashions.InternalList.Remove(Identifiable.Id.NONE);
             partialFashions.Push(data.fashions);
+            
             partialEmotions.Push(data.emotions.emotionData);
         }
 
