@@ -90,7 +90,7 @@ namespace SRML.Utils
                     {
                         curType = curType.BaseType;
                         if (curType == null) break;
-                        info = AccessTools.Method(curType, v.Name, v.GetParameters().Select(x => x.ParameterType).ToArray(), v.GetGenericArguments());
+                        info = AccessTools.Method(curType, v.Name, v.GetParameters().Select(x => x.ParameterType).ToArray(), v.IsGenericMethod?v.GetGenericArguments():null);
                         if (info != null) break;
                     }
 

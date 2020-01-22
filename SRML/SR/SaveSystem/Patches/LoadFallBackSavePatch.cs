@@ -21,10 +21,6 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static MethodInfo TargetMethod()
         {
-            foreach(var type in AccessTools.GetDeclaredMethods(targetType))
-            {
-                Debug.Log(type);
-            }
             return AccessTools.Method(targetType,"MoveNext");
         }
 

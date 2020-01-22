@@ -20,7 +20,7 @@ namespace SRML.Config
         protected override object Value
         {
             get { return field.GetValue(null); }
-            set { Debug.Log(value); field.SetValue(null, value); }
+            set { field.SetValue(null, value); }
         }
         static bool GetAttributeOfType<T>(FieldInfo field, out T attribute) where T : Attribute
         {

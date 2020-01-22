@@ -46,7 +46,6 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
         public override void ReadData(BinaryReader reader)
         {
             if (ModdedSaveData.LATEST_READ_VERSION > 3) Version = reader.ReadInt32();
-            Debug.Log(ModdedSaveData.LATEST_READ_VERSION+" test");
             attachedId = (SpawnResource.Id)reader.ReadInt32();
             upgrades.Read(reader);
         }

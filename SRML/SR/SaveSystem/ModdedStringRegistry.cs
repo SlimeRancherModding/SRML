@@ -57,7 +57,9 @@ namespace SRML.SR.SaveSystem
         internal static bool IsModdedString(string str) => StringRegistry.IsLongForm(str);
 
         internal static bool IsValidString(string str) => !IsModdedString(str) || GetModForModdedString(str) != null;
-        
+
+        internal static bool IsValidModdedString(string str) => IsModdedString(str) && GetModForModdedString(str) != null;
+
         internal static SRMod GetModForModdedString(string str)
         {
             if (!StringRegistry.IsLongForm(str)) return null;

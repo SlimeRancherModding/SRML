@@ -97,7 +97,7 @@ namespace SRML.SR.SaveSystem
             data.appearancesData.Pull(game.appearances);
         }
 
-        private static void PullAmmoData(ModdedSaveData data, GameV12 game)
+        private static void PullAmmoData(ModdedSaveData data, Game game)
         {
             foreach (var ammo in AmmoDataUtils.GetAllAmmoData(game))
             {
@@ -122,7 +122,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullTertiaryData(ModdedSaveData data, GameV12 game)
+        private static void PullTertiaryData(ModdedSaveData data, Game game)
         {
             foreach (var mod in ModPlayerData.FindAllModsWithData(game.player))
             {
@@ -146,7 +146,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        private static void PullFullData(ModdedSaveData data, GameV12 game)
+        private static void PullFullData(ModdedSaveData data, Game game)
         {
             foreach (var actor in game.actors.Where((x) => SaveRegistry.IsCustom(x)))
             {
@@ -159,7 +159,7 @@ namespace SRML.SR.SaveSystem
             }
 
 
-            foreach(var plot in game.ranch.plots.Where(x => SaveRegistry.IsCustom(x) || ModdedStringRegistry.IsModdedString(x.id)))
+            foreach(var plot in game.ranch.plots.Where(x => ModdedStringRegistry.IsValidString(x.id) && (SaveRegistry.IsCustom(x) || ModdedStringRegistry.IsModdedString(x.id))))
             {
                 var segment = data.GetSegmentForMod(SaveRegistry.ModForData(plot) is SRMod mod ? mod : ModdedStringRegistry.GetModForModdedString(plot.id));
                 segment.identifiableData.Add(new IdentifiedData()
@@ -171,7 +171,7 @@ namespace SRML.SR.SaveSystem
 
             void GetStringIndexedModdedData<T>(Dictionary<string, T> source, Func<KeyValuePair<string, T>, DataIdentifier> dataIdentifier) where T : PersistedDataSet
             {
-                foreach (var pair in source.Where(x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key)))
+                foreach (var pair in source.Where(x =>ModdedStringRegistry.IsValidString(x.Key) && (SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key))))
                 {
                     var segment = data.GetSegmentForMod(SaveRegistry.ModForData(pair.Value) ?? ModdedStringRegistry.GetModForModdedString(pair.Key));
                     segment.identifiableData.Add(new IdentifiedData()
@@ -200,7 +200,7 @@ namespace SRML.SR.SaveSystem
         #endregion
 
         #region pushing data
-        public static void PushAllModdedData(ModdedSaveData data, GameV12 game)
+        public static void PushAllModdedData(ModdedSaveData data, Game game)
         {
 
 
@@ -213,7 +213,7 @@ namespace SRML.SR.SaveSystem
             PushAllPartialData(data, game);
         }
 
-        private static void PushAllSegmentData(ModdedSaveData data, GameV12 game)
+        private static void PushAllSegmentData(ModdedSaveData data, Game game)
         {
             foreach (var mod in data.segments)
             {
@@ -241,7 +241,7 @@ namespace SRML.SR.SaveSystem
             mod.worldData.Push(game.world);
         }
 
-        private static void PushSegmentFullData(GameV12 game, ModDataSegment mod)
+        private static void PushSegmentFullData(Game game, ModDataSegment mod)
         {
             Debug.Log($"Splicing data from mod {mod.modid} which has {mod.identifiableData.Count} pieces of identifiable data");
             foreach (var customData in mod.identifiableData)
@@ -252,16 +252,16 @@ namespace SRML.SR.SaveSystem
                         game.actors.Add((VanillaActorData)customData.data);
                         break;
                     case IdentifierType.GADGET:
-                        if(ModdedStringRegistry.IsValidString(customData.dataID.stringID)) game.world.placedGadgets[customData.dataID.stringID] = (VanillaGadgetData)customData.data;
+                        game.world.placedGadgets[customData.dataID.stringID] = (VanillaGadgetData)customData.data;
                         break;
                     case IdentifierType.LANDPLOT:
-                        if(ModdedStringRegistry.IsValidString(customData.dataID.stringID)) game.ranch.plots.Add((VanillaPlotData)customData.data);
+                        game.ranch.plots.Add((VanillaPlotData)customData.data);
                         break;
                     case IdentifierType.GORDO:
-                        if (ModdedStringRegistry.IsValidString(customData.dataID.stringID)) game.world.gordos[customData.dataID.stringID] = (GordoV01)customData.data;
+                        game.world.gordos[customData.dataID.stringID] = (GordoV01)customData.data;
                         break;
                     case IdentifierType.TREASUREPOD:
-                        if (ModdedStringRegistry.IsValidString(customData.dataID.stringID)) game.world.treasurePods[customData.dataID.stringID] = (TreasurePodV01)customData.data;
+                        game.world.treasurePods[customData.dataID.stringID] = (TreasurePodV01)customData.data;
                         break;
                     case IdentifierType.EXCHANGEOFFER:
                         var offertype = (ExchangeDirector.OfferType)(int)customData.dataID.longID;
@@ -273,7 +273,7 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public static void PushAllPartialData(ModdedSaveData data,GameV12 game)
+        public static void PushAllPartialData(ModdedSaveData data, Game game)
         {
             foreach (var partial in data.partialData)
             {

@@ -23,7 +23,7 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr)
         {
-            foreach (var v in instr)
+            foreach (var v in instr)    
             {
                 if (v.opcode == OpCodes.Newobj && v.operand is ConstructorInfo con &&
                     con.DeclaringType == typeof(VanillaLandPlotData))
