@@ -73,10 +73,15 @@ namespace SRML
         /// </summary>
         /// <param name="modid">Mod ID to check</param>
         /// <returns>Whether or not the mod exists</returns>
-        public static bool IsModPresent(string modid)
-        {
-            return loadOrder.Any((x) => modid == x);
-        }
+        public static bool IsModPresent(string modid) => loadOrder.Any((x) => modid == x);
+
+
+        /// <summary>
+        /// Gets the associated <see cref="SRModInfo"/> for the associated <paramref name="modid"/>
+        /// </summary>
+        /// <param name="modid">Relevant Mod ID</param>
+        /// <returns>The associated ModInfo</returns>
+        public static SRModInfo GetModInfo(string modid) => Mods.TryGetValue(modid, out var mod) ? mod.ModInfo : null;
 
         internal static bool TryGetEntryType(Assembly assembly,out Type entryType)
         {

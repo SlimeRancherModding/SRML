@@ -48,6 +48,7 @@ namespace SRML.SR.SaveSystem
 
         internal static SRMod ModForModelType(Type model)
         {
+            if (model == null) return null;
             foreach (var v in modToSaveInfo)
             {
                 if (v.Value.IsModelRegistered(model)) return v.Key;

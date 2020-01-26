@@ -32,13 +32,6 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
 
-            LogUtils.OpenLogSession();
-            foreach (var v in typeof(Identifiable.Id).Assembly.GetTypes().Where(x=>typeof(UnityEngine.MonoBehaviour).IsAssignableFrom(x)||typeof(UnityEngine.ScriptableObject).IsAssignableFrom(x)))
-            {
-                LogUtils.Log($"\"{v.FullName}\",");
-            }
-            LogUtils.CloseLogSession();
-
             foreach(var v in Assembly.GetExecutingAssembly().GetTypes())
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);

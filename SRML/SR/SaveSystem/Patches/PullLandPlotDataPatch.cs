@@ -28,7 +28,7 @@ namespace SRML.SR.SaveSystem.Patches
                 if (v.opcode == OpCodes.Newobj && v.operand is ConstructorInfo con &&
                     con.DeclaringType == typeof(VanillaLandPlotData))
                 {
-                    yield return new CodeInstruction(OpCodes.Ldloca_S, 5);
+                    yield return new CodeInstruction(OpCodes.Ldloca_S, 4);
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(KeyValuePair<string, LandPlotModel>), "get_Value"));
                     yield return new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(PullLandPlotDataPatch),"CreateLandPlotData"));
@@ -42,7 +42,9 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static VanillaLandPlotData CreateLandPlotData(LandPlotModel model)
         {
+
             var mod = SaveRegistry.ModForModelType(model.GetType());
+
             if (mod != null)
             {
                 var info = SaveRegistry.GetSaveInfo(mod).GetRegistryFor<CustomLandPlotData>();
