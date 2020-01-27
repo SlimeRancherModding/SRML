@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace SRML.Console.Commands
 {
@@ -36,7 +37,9 @@ namespace SRML.Console.Commands
 
             if (args.Length != 2 || !Int32.TryParse(args[1], out count)) count = 1;
 
-            for (int i = 0; i < count; i++) SceneContext.Instance.PlayerState?.Ammo.MaybeAddToSlot(id, null);
+            var g = SRBehaviour.InstantiateActor(GameContext.Instance.LookupDirector.GetPrefab(id),SceneContext.Instance.PlayerState.model.currRegionSetId);
+            for (int i = 0; i < count; i++) SceneContext.Instance.PlayerState?.Ammo.MaybeAddToSlot(id,g.GetComponent<Identifiable>());
+            GameObject.DestroyImmediate(g);
             return true; 
         }
 
