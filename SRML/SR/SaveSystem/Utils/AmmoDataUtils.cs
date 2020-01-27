@@ -62,6 +62,8 @@ namespace SRML.SR.SaveSystem.Utils
 
             ammoDataData.AddRange(game.world.placedGadgets.Values.Select((x)=>x.ammo));
 
+            ammoDataData.AddRange(game.world.placedGadgets.Select(x => x.Value.drone?.drone?.ammo).Where(x=>x!=null).Select(x=>new List<VanillaAmmoData>() { x }));
+
             ammoDataData.RemoveAll((x) => x == null);
 
             return ammoDataData;
@@ -72,8 +74,8 @@ namespace SRML.SR.SaveSystem.Utils
             var player = game.player.ammo.FirstOrDefault(x => x.Value == data);
             if (player.Value != null)
             {
-                game.player.ammo.Remove(player.Key);
-                return () => game.player.ammo.Add(player.Key, player.Value);
+                game.player.ammo[player.Key] = new List<VanillaAmmoData>();
+                return () => game.player.ammo[player.Key] = player.Value;
             }
 
             foreach(var plot in game.ranch.plots)
@@ -81,8 +83,8 @@ namespace SRML.SR.SaveSystem.Utils
                 var silo = plot.siloAmmo.FirstOrDefault(x => x.Value == data);
                 if (silo.Value != null)
                 {
-                    plot.siloAmmo.Remove(silo.Key);
-                    return () => plot.siloAmmo.Add(silo.Key,silo.Value);
+                    plot.siloAmmo[silo.Key] = new List<VanillaAmmoData>();
+                    return () => plot.siloAmmo[silo.Key] = silo.Value;
                 }
             }
 
@@ -92,6 +94,12 @@ namespace SRML.SR.SaveSystem.Utils
                 {
                     gadget.Value.ammo = new List<VanillaAmmoData>();
                     return () => gadget.Value.ammo = data;
+                }
+                else if (data.Count>0 && object.ReferenceEquals(data[0], gadget.Value.drone?.drone?.ammo))
+                {
+                    gadget.Value.drone.drone.ammo = new VanillaAmmoData() { emotionData = new SlimeEmotionDataV02() { emotionData = new Dictionary<SlimeEmotions.Emotion, float>() } };
+                    var original = data[0];
+                    return () => gadget.Value.drone.drone.ammo = original;
                 }
             }
             return () => throw new Exception();
