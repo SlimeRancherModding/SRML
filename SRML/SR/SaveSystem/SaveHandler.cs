@@ -294,6 +294,9 @@ namespace SRML.SR.SaveSystem
                     case IdentifierType.TREASUREPOD:
                         if (game.world.treasurePods.TryGetValue(partial.Key.stringID, out var treasurepod)) partial.Value.Push(treasurepod);
                         break;
+                    case IdentifierType.EXCHANGEOFFER:
+                        if (game.world.offers.TryGetValue((ExchangeDirector.OfferType)partial.Key.longID, out var offer)) partial.Value.Push(offer);
+                        break;
                     default:
                         throw new NotImplementedException();
 

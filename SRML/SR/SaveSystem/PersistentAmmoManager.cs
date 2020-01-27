@@ -103,7 +103,7 @@ namespace SRML.SR.SaveSystem
                 }
             }
             invalidIdentifiers.ForEach(x => PersistentAmmoData.Remove(x));
-            foreach (var v in PersistentAmmoData) v.Value.Sync();
+            foreach (var v in PersistentAmmoData) v.Value.Sync(true);
         }
 
 

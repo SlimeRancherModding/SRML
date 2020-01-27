@@ -22,7 +22,6 @@ namespace SRML.Utils.Prefab.Patches
             }
         }
     }
-
     [HarmonyPatch(typeof(UnityEngine.Object))]
     internal static class InstantiateGenericPatch
     {

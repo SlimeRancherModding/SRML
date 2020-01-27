@@ -23,12 +23,14 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr)
         {
-            foreach (var v in instr)    
+            var instrList = instr.ToList();
+            foreach (var v in instrList)    
             {
                 if (v.opcode == OpCodes.Newobj && v.operand is ConstructorInfo con &&
                     con.DeclaringType == typeof(VanillaLandPlotData))
                 {
-                    yield return new CodeInstruction(OpCodes.Ldloca_S, 4);
+                    var prevInstr = instrList[instrList.IndexOf(v) - 1];
+                    yield return new CodeInstruction(OpCodes.Ldloca_S, prevInstr.operand);
                     yield return new CodeInstruction(OpCodes.Call,
                         AccessTools.Method(typeof(KeyValuePair<string, LandPlotModel>), "get_Value"));
                     yield return new CodeInstruction(OpCodes.Call,AccessTools.Method(typeof(PullLandPlotDataPatch),"CreateLandPlotData"));
@@ -42,9 +44,7 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static VanillaLandPlotData CreateLandPlotData(LandPlotModel model)
         {
-
             var mod = SaveRegistry.ModForModelType(model.GetType());
-
             if (mod != null)
             {
                 var info = SaveRegistry.GetSaveInfo(mod).GetRegistryFor<CustomLandPlotData>();

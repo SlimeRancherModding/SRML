@@ -25,5 +25,7 @@ namespace SRML.SR
         {
             return customRanchers.Get(offer.rancherId) ?? customOfferIDs.Get(offer.offerId);
         }
+
+        internal static SRMod GetModForID(string id) => customRanchers.Get(id) ?? customOfferIDs.Get(id);
     }
 }

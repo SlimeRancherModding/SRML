@@ -29,7 +29,8 @@ namespace SRML.SR.SaveSystem.Patches
             __state.AddAndRemoveWhere(__instance.world.treasurePods, new Dictionary<string, TreasurePodV01>(), x => SaveRegistry.IsCustom(x.Value) || ModdedStringRegistry.IsModdedString(x.Key));
             __state.AddAndRemoveWhere(__instance.world.offers, new Dictionary<ExchangeDirector.OfferType, ExchangeOfferV04>(), x => SaveRegistry.IsCustom(x.Value) || ModdedIDRegistry.IsModdedID(x.Key) || ExchangeOfferRegistry.IsCustom(x.Value));
             __state.AddAndRemoveWhere(__instance.world.econSaturations, new Dictionary<Identifiable.Id, float>(), (x) => ModdedIDRegistry.IsModdedID(x.Key));
-
+            __state.AddAndRemoveWhere(__instance.world.lastOfferRancherIds, new List<string>(),ExchangeOfferRegistry.IsCustom);
+            __state.AddAndRemoveWhere(__instance.world.pendingOfferRancherIds, new List<string>(), ExchangeOfferRegistry.IsCustom);
 
             __state.AddAndRemoveWhereCustom(__instance.player.upgrades,__state.upgrades);
             __state.AddAndRemoveWhereCustom(__instance.player.availUpgrades, __state.availUpgrades);
@@ -125,7 +126,7 @@ namespace SRML.SR.SaveSystem.Patches
         public static void Postfix(GameV11 __instance, ref RemovalData __state)
         {
             __state.AddAllBack();
-        }
+        }   
 
 
 
