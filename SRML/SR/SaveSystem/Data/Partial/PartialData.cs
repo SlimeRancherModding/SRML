@@ -6,7 +6,7 @@ using System.Linq;
 namespace SRML.SR.SaveSystem.Data.Partial
 {
 
-    internal class CompoundPartialData<T> : PartialData<T>
+    public class CompoundPartialData<T> : PartialData<T>
     {
         private List<PartialData> partialDatas = new List<PartialData>();
 
@@ -52,7 +52,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
         }
     }
 
-    internal abstract class VersionedPartialData<T> : PartialData<T>, IVersionedSerializable
+    public abstract class VersionedPartialData<T> : PartialData<T>, IVersionedSerializable
     {
         public abstract int LatestVersion { get; }
 
@@ -74,7 +74,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public abstract void ReadData(BinaryReader reader);
     }
 
-    internal abstract class PartialData<T> : PartialData
+    public abstract class PartialData<T> : PartialData
     {
         public abstract void Pull(T data);
         public abstract void Push(T data);
@@ -94,7 +94,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public abstract override void Write(BinaryWriter writer);
         public abstract override void Read(BinaryReader reader);
     }
-    internal abstract partial class PartialData : ISerializable
+    public abstract partial class PartialData : ISerializable
     {
         public abstract void Pull(object data);
         public abstract void Push(object data);
@@ -103,7 +103,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public abstract void Read(BinaryReader reader);
     }
 
-    internal abstract partial class PartialData
+    public abstract partial class PartialData
     {
         public delegate PartialData PartialDataCreatorDelegate();
 

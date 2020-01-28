@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SRML.SR.SaveSystem.Data.Partial
 {
-    internal class PartialCollection<T> : PartialData<ICollection<T>>, IListProvider
+    public class PartialCollection<T> : PartialData<ICollection<T>>, IListProvider
     {
         List<T> hoistedValues = new List<T>();
         private Predicate<T> hoistCondition;

@@ -1,8 +1,10 @@
 ﻿using SRML.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data
@@ -225,7 +227,7 @@ namespace SRML.SR.SaveSystem.Data
 
         public static DataType GetTypeID(Type type)
         {
-            return type.IsArray ? DataType.ARRAY : type.IsEnum ? DataType.ENUM : typeToDataType[type];
+            return type.IsArray ? DataType.ARRAY : type.IsEnum ? DataType.ENUM : (typeToDataType.TryGetValue(type,out var dataType) ? dataType : DataType.NULL);
         }
 
         public static DataType GetTypeID(object val)
@@ -257,8 +259,116 @@ namespace SRML.SR.SaveSystem.Data
         {
             dataFixer = del;   
         }
+        public static DataPiece ObjectToPiece(object obj)
+        {
+            List<object> serializedObjects = new List<object>();
+           
+            return ObjectToPieceInternal(obj);
+            DataPiece ObjectToPieceInternal(object b)
+            {
+                
+                
+                if (DataPiece.GetTypeID(b.GetType()) != DataType.NULL) return new DataPiece("root", b);
+                
+                var comp = new CompoundDataPiece("root");
+                if (serializedObjects.Any(x=>object.ReferenceEquals(b,x))) return comp;
+                
+                comp.SetValue("__type", b.GetType().AssemblyQualifiedName);
 
+                void ProcessCollection(ICollection collection, string name)
+                {
+
+                    if (collection == null) return;
+                    if (collection is IDictionary dict)
+                    {
+                        var dictComp = new CompoundDataPiece(name);
+                        dictComp.SetValue("__type", dict.GetType().AssemblyQualifiedName);
+                        
+                        var valueComp = dictComp.GetCompoundPiece("values");
+                        var keyComp = dictComp.GetCompoundPiece("keys");
+                        var keyEnumerator = dict.Keys.GetEnumerator();
+                        var valueEnumerator = dict.Values.GetEnumerator();
+                        keyEnumerator.MoveNext();
+                        valueEnumerator.MoveNext();
+                        for (int i = 0; i < dict.Count; i++)
+                        {
+                            var valuePiece = ObjectToPieceInternal(valueEnumerator.Current);
+                            valuePiece.key = i.ToString();
+                            valueComp.AddPiece(valuePiece);
+
+                            var keyPiece = ObjectToPieceInternal(keyEnumerator.Current);
+                            keyPiece.key = i.ToString();
+                            keyComp.AddPiece(keyPiece);
+
+                            valueEnumerator.MoveNext();
+                            keyEnumerator.MoveNext();
+                        }
+                        comp.AddPiece(dictComp);
+                    }
+                    else
+                    {
+                        var arrayComp = new CompoundDataPiece(name);
+                        arrayComp.SetValue("__type", collection.GetType().AssemblyQualifiedName);
+
+                        int counter = 0;
+                        foreach (var v in collection)
+                        {
+                            var piece = ObjectToPieceInternal(v);
+                            piece.key = counter.ToString();
+                            arrayComp.AddPiece(piece);
+                            counter++;
+                        }
+                        comp.AddPiece(arrayComp);
+                    }
+                }
+                if (b is ICollection colle)
+                {
+                    ProcessCollection(colle, "root");
+                    return comp.GetPiece("root", null);
+                }
+                else
+                foreach (var field in b.GetType().GetFields())
+                {
+                    if (DataPiece.typeToDataType.ContainsKey(field.FieldType))
+                    {
+                        comp.SetValue(field.Name, field.GetValue(b));
+                    }
+                    else if (typeof(ICollection).IsAssignableFrom((field.FieldType)))
+                    {
+                        ProcessCollection(field.GetValue(b) as ICollection, field.Name);
+                    }
+                    else
+                    {
+                        serializedObjects.Add(b);
+                        if (field.GetValue(b) == null) continue;
+                        var piece = ObjectToPieceInternal(field.GetValue(b));
+                        piece.key = field.Name;
+                        comp.AddPiece(piece);
+                    }
+
+                }
+                return comp;
+            }
+
+        }
+
+        public static object PieceToObject(DataPiece piece)
+        {
+            if (DataPiece.GetTypeID(piece.GetDataType()) != DataType.COMPOUND) return piece.data;
+            var comp = piece as CompoundDataPiece;
+            
+            
+            foreach (var v in comp.DataList)
+            {
+                if (v.key == "__type") continue;    
+            }
+            throw new NotImplementedException();
+        }
+
+  
     }
+
+    
 
     public enum DataType
     {

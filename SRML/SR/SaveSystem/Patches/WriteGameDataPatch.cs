@@ -20,6 +20,7 @@ namespace SRML.SR.SaveSystem.Patches
     {
         public static void Prefix(GameV12 __instance, ref RemovalData __state)
         {
+            Debug.Log("Removing it all!");
             __state = new RemovalData();
 
             __state.AddAndRemoveWhereCustom(__instance.actors);
@@ -121,10 +122,20 @@ namespace SRML.SR.SaveSystem.Patches
             var partialAppearance = new PartialAppearancesData();
             partialAppearance.Pull(__instance.appearances);
             __state.addBacks.Add(() => partialAppearance.Push(__instance.appearances));
+
+
+            foreach(var pipeline in SaveRegistry.Pipelines.OrderByDescending(x=>x.PullPriority))
+            {
+                foreach(var mod in SRModLoader.GetMods())
+                {
+                    //__state.addBacks.AddRange(pipeline.RemoveData(SaveRegistry.GetSaveInfo(mod), __instance).Select(x=>new Action(()=>x())));
+                }
+            }
         }
 
         public static void Postfix(GameV11 __instance, ref RemovalData __state)
         {
+            Debug.Log("Adding all the stuff back");
             __state.AddAllBack();
         }   
 

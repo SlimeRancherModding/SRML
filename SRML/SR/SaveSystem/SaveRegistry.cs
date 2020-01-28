@@ -7,6 +7,7 @@ using MonomiPark.SlimeRancher.DataModel;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Data.LandPlot;
+using SRML.SR.SaveSystem.Pipeline;
 using SRML.SR.SaveSystem.Registry;
 using SRML.SR.SaveSystem.Utils;
 using UnityEngine;
@@ -19,10 +20,26 @@ namespace SRML.SR.SaveSystem
     {
         internal static Dictionary<SRMod,ModSaveInfo> modToSaveInfo = new Dictionary<SRMod, ModSaveInfo>();
 
+        internal static List<Pipeline.ISavePipeline> Pipelines =  new List<Pipeline.ISavePipeline>();
+
         internal static ModSaveInfo GetSaveInfo(SRMod mod)
         {
-            if (!modToSaveInfo.ContainsKey(mod)) modToSaveInfo.Add(mod,new ModSaveInfo());
+            if (!modToSaveInfo.ContainsKey(mod)) modToSaveInfo.Add(mod,new ModSaveInfo(mod.ModInfo.Id));
             return modToSaveInfo[mod];
+        }
+
+        internal static void RegisterPipeline(ISavePipeline pipeline)
+        {
+            Pipelines.Add(pipeline);
+            Pipelines = Pipelines.OrderBy(x => x.PullPriority).ToList();
+        }
+
+        public static ModSaveInfo GetSaveInfo(SRModInfo info) => GetSaveInfo(info.Id);
+
+        public static ModSaveInfo GetSaveInfo(string id)
+        {
+            var mod = SRModLoader.GetMod(id);
+            return GetSaveInfo(mod);
         }
 
         internal static ModSaveInfo GetSaveInfo()

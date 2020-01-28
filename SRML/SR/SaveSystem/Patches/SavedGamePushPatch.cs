@@ -12,9 +12,14 @@ namespace SRML.SR.SaveSystem.Patches
     [HarmonyPatch("Push",new Type[]{typeof(GameModel)})]
     internal static class SavedGamePushPatch
     {
+        public static void Prefix(SavedGame __instance)
+        {
+            SaveHandler.PushAllModdedData(SaveHandler.data, __instance.gameState);
+        }
         public static void Postfix(GameModel gameModel)
         {
             //ExtendedData.CullIfNotValid(gameModel);
+
             PersistentAmmoManager.SyncAll();
         }
     }

@@ -16,11 +16,13 @@ using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Registry;
 using SRML.Utils;
 using VanillaAmmoData = MonomiPark.SlimeRancher.Persist.AmmoDataV02;
+using SRML.SR.SaveSystem.Pipeline;
+
 namespace SRML.SR.SaveSystem.Format
 {
     class ModDataSegment
     {
-        public const int DATA_VERSION = 3;
+        public const int DATA_VERSION = 4;
 
         public int version;
         public string modid;
@@ -39,6 +41,8 @@ namespace SRML.SR.SaveSystem.Format
         public Dictionary<AmmoIdentifier, List<VanillaAmmoData>> customAmmo = new Dictionary<AmmoIdentifier, List<VanillaAmmoData>>();
 
         public CompoundDataPiece extendedWorldData = new CompoundDataPiece("root");
+
+        public List<IPipelineData> pipelineDatas = new List<IPipelineData>();
 
         public void Read(BinaryReader reader)
         {
@@ -94,10 +98,21 @@ namespace SRML.SR.SaveSystem.Format
                 extendedWorldData = (CompoundDataPiece)DataPiece.Deserialize(reader);
                 if (version < 3) return;
                 worldData.Read(reader);
+                
             }
             else
             {
                 identifiableData.Clear(); // with the new enum translator system we need to make sure old id's are gone
+            }
+
+            if (version >= 4)
+            {
+                pipelineDatas.Clear();
+                count = reader.ReadInt32();
+                for(int i = 0;i<count;i++)
+                {
+                    pipelineDatas.Add(PipelineSerializer.ReadPipelineObject(reader, SaveRegistry.Pipelines,modid));
+                }
             }
         }
 
@@ -144,6 +159,13 @@ namespace SRML.SR.SaveSystem.Format
 
             worldData.Write(writer);
 
+            writer.Write(pipelineDatas.Count);
+            foreach(var v in pipelineDatas)
+            {
+                PipelineSerializer.WritePipelineObject(writer, SaveRegistry.GetSaveInfo(mod), v, false);
+            }
+
+            // do not edit past here
             var cur = writer.BaseStream.Position;
             writer.BaseStream.Seek(overwritePosition, SeekOrigin.Begin);
             byteLength = cur - (start);
@@ -178,6 +200,7 @@ namespace SRML.SR.SaveSystem.Format
             customAmmo = newDict;
             EnumTranslator.FixEnumValues(enumTranslator, mode, extendedData);
             EnumTranslator.FixEnumValues(enumTranslator, mode, extendedWorldData);
+            EnumTranslator.FixEnumValues(enumTranslator, mode, pipelineDatas);
         }
     }
 

@@ -1,11 +1,15 @@
 ﻿using HarmonyLib;
 using MonomiPark.SlimeRancher.DataModel;
+using MonomiPark.SlimeRancher.Persist;
 using MonomiPark.SlimeRancher.Regions;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Format;
+using SRML.SR.SaveSystem.Pipeline;
+using SRML.SR.SaveSystem.Registry;
 using SRML.SR.SaveSystem.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace SRML.SR.SaveSystem
@@ -247,6 +251,53 @@ namespace SRML.SR.SaveSystem
                 SPAWN
             }
 
+        }
+
+
+
+        internal class WorldDataPipeline : SavePipeline<WorldDataPipeline.WorldSaveData>
+        {
+            public override string UniqueID => "world_data_pipeline";
+
+            public override int PullPriority => 10000; // we want to be pulled last so we can be pushed first, so WorldDataPreload is called before anything else is processed
+
+            public override IEnumerable<IPipelineData> Pull(ModSaveInfo mod, GameV12 data)
+            {
+                var piece = new CompoundDataPiece("root");
+                mod.OnWorldSave(piece);
+                if (piece.DataList.Count == 0) yield break;
+                yield return new WorldSaveData(this) { Piece = piece };
+            }
+
+            public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+            {
+                return new WorldSaveData(this) { Piece = CompoundDataPiece.Deserialize(reader) as CompoundDataPiece };
+            }
+
+            public override void RemoveExtraModdedData(ModSaveInfo mod, GameV12 data)
+            {
+            }
+
+            protected override void PushData(ModSaveInfo mod, GameV12 data, WorldSaveData item)
+            {
+                var piece = item.Piece;
+                mod.WorldDataPreLoad(piece);
+                worldSaveData[SRModLoader.GetMod(mod.ModID)] = piece;
+            }
+
+            protected override void WriteData(BinaryWriter writer, ModSaveInfo info, WorldSaveData item)
+            {
+                DataPiece.Serialize(writer,item.Piece);
+            }
+
+            public class WorldSaveData : PipelineData
+            {
+                public CompoundDataPiece Piece;
+
+                public WorldSaveData(ISavePipeline pipeline) : base(pipeline)
+                {
+                }
+            }
         }
     }
 }

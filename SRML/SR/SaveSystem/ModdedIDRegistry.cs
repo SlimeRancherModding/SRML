@@ -13,6 +13,10 @@ static internal class ModdedIDRegistry
 {
     internal static Dictionary<Type,IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();
 
+    internal static SRMod modScope;
+    internal static void SetModScope(SRMod ModScope) => modScope = ModScope;
+    internal static void ClearModScope() => modScope = null;
+
     internal static void RegisterIDRegistry(IIDRegistry registry)
     {
         moddedIdRegistries[registry.RegistryType] = registry;
@@ -28,7 +32,7 @@ static internal class ModdedIDRegistry
     public static bool IsModdedID(object id)
     {
         if (!id.GetType().IsEnum) throw new Exception(id.GetType() + " is not an enum!");
-        return moddedIdRegistries.Any((x) => x.Key == id.GetType() && x.Value.IsModdedID(id));
+        return moddedIdRegistries.Any((x) =>  x.Key == id.GetType() && x.Value.IsModdedID(id) && (!SRMod.HasModContext || x.Value.GetModForID(id)==SRMod.GetCurrentMod()));
     }
 
     public static bool IsModdedID<T>(T id)

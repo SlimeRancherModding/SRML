@@ -4,7 +4,7 @@ using MonomiPark.SlimeRancher.DataModel;
 
 namespace SRML.SR.SaveSystem.Registry
 {
-    internal class DataRegistry<K> : DataRegistry where K : IDataRegistryMember
+    public class DataRegistry<K> : DataRegistry where K : IDataRegistryMember
     {
         public delegate bool OwnershipCheckerDelegate<T>(T value);
 
@@ -53,14 +53,14 @@ namespace SRML.SR.SaveSystem.Registry
         }
     }
 
-    internal abstract class DataRegistry
+    public abstract class DataRegistry
     {
         public abstract bool BelongsToMe(object b);
         public abstract int GetIDForModel(Type model);
         public abstract bool IsModelRegistered(Type model);
     }
 
-    internal interface IDataRegistryMember
+    public interface IDataRegistryMember
     {
         Type GetModelType();
     }

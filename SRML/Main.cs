@@ -23,6 +23,8 @@ namespace SRML
 
         private static bool isPreInitialized;
 
+        private static DateTime loadStartTime;
+
         /// <summary>
         /// Called before GameContext.Awake()
         /// </summary>
@@ -30,8 +32,10 @@ namespace SRML
         {
             if (isPreInitialized) return;
             isPreInitialized = true;
-            Debug.Log("SRML has successfully invaded the game!");
+            Debug.Log("SRML has started!");
+            loadStartTime = DateTime.Now;
 
+            
             foreach(var v in Assembly.GetExecutingAssembly().GetTypes())
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
@@ -65,7 +69,7 @@ namespace SRML
             ReplacerCache.ClearCache();
 
 
-
+            
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
 
@@ -96,6 +100,7 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
+            Debug.Log($"SRML took {(DateTime.Now - loadStartTime).Milliseconds / 1000f:F} seconds to load");
             PostLoad();
         }
         

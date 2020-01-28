@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data.Partial
 {
-    internal class PartialDictionary<K,V> : PartialData<IDictionary<K,V>>, IDictionaryProvider
+    public class PartialDictionary<K,V> : PartialData<IDictionary<K,V>>, IDictionaryProvider
     {
         Predicate<KeyValuePair<K, V>> hoistPredicate;
         public readonly Dictionary<K, V> hoistedValues = new Dictionary<K, V>();

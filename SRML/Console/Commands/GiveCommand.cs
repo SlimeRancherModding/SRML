@@ -39,7 +39,7 @@ namespace SRML.Console.Commands
 
             var g = SRBehaviour.InstantiateActor(GameContext.Instance.LookupDirector.GetPrefab(id),SceneContext.Instance.PlayerState.model.currRegionSetId);
             for (int i = 0; i < count; i++) SceneContext.Instance.PlayerState?.Ammo.MaybeAddToSlot(id,g.GetComponent<Identifiable>());
-            GameObject.DestroyImmediate(g);
+            GameObject.Destroy(g);
             return true; 
         }
 

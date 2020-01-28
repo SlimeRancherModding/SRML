@@ -62,10 +62,11 @@ namespace SRML.SR.SaveSystem.Data.Actor
             EnumTranslator.RegisterEnumFixer(
                 (EnumTranslator translator, EnumTranslator.TranslationMode mode, PartialActorData v) =>
                 {
-                    
-                    translator.FixEnumValues(mode,v.partialEmotions);
-                    translator.FixEnumValues(mode,v.partialFashions);
+
+                    translator.FixEnumValues(mode, v.partialEmotions);
+                    translator.FixEnumValues(mode, v.partialFashions);
                 });
+                SaveRegistry.RegisterPipeline(new SimplePartialDataPipeline<PartialActorData>("partial_actor_pipeline", (x) => x.actors.Select(y => new KeyValuePair<DataIdentifier, object>(new DataIdentifier() { Type = IdentifierType.ACTOR, longID = y.actorId }, y))));
         }
     }
 }

@@ -18,6 +18,7 @@ namespace SRML.SR.SaveSystem.Data.LandPlot
 
         public SpawnResource.Id attachedId;
         public PartialCollection<global::LandPlot.Upgrade> upgrades = new PartialCollection<global::LandPlot.Upgrade>(ModdedIDRegistry.IsModdedID, SerializerPair.GetEnumSerializerPair<global::LandPlot.Upgrade>());
+
         public override void Pull(VanillaLandPlotData data)
         {
 

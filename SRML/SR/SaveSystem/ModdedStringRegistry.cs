@@ -58,7 +58,7 @@ namespace SRML.SR.SaveSystem
 
         internal static bool IsValidString(string str) => !IsModdedString(str) || GetModForModdedString(str) != null;
 
-        internal static bool IsValidModdedString(string str) => IsModdedString(str) && GetModForModdedString(str) != null;
+        internal static bool IsValidModdedString(string str) => IsModdedString(str) && (GetModForModdedString(str) != null && (!SRMod.HasModContext || GetModForModdedString(str)==SRMod.GetCurrentMod()));
 
         internal static SRMod GetModForModdedString(string str)
         {

@@ -7,7 +7,7 @@ using MonomiPark.SlimeRancher.Persist;
 
 namespace SRML.SR.SaveSystem.Data
 {
-    internal struct DataIdentifier
+    public struct DataIdentifier
     {
         public IdentifierType Type;
         public long longID;
@@ -73,10 +73,11 @@ namespace SRML.SR.SaveSystem.Data
         }
 
         public static bool operator ==(DataIdentifier me, DataIdentifier other) => me.Equals(other);
-        public static bool operator !=(DataIdentifier me, DataIdentifier other) => !me.Equals(other); 
+        public static bool operator !=(DataIdentifier me, DataIdentifier other) => !me.Equals(other);
+
     }
-    public enum IdentifierType
-    {
+    public enum IdentifierType { 
+
         NONE,
         ACTOR,
         GADGET,

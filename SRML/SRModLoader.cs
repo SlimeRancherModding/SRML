@@ -162,6 +162,7 @@ namespace SRML
         static SRMod AddMod(ProtoMod modInfo, Type entryType)
         {
             IModEntryPoint entryPoint = (IModEntryPoint) Activator.CreateInstance(entryType);
+            (entryPoint.GetType().GetCustomAttributes(true).FirstOrDefault(x => x is SRModAttribute) as SRModAttribute)?.PutInfo(modInfo);
             var newmod = new SRMod(modInfo.ToModInfo(), entryPoint,modInfo.path);
             Mods.Add(modInfo.id,newmod);
             return newmod;
@@ -330,7 +331,7 @@ namespace SRML
             /// <returns>Whether the parsing was successful</returns>
             public static bool TryParseFromDLL(String dllFile,out ProtoMod mod)
             {
-                
+
                 var assembly = Assembly.LoadFile(dllFile);
                 
                 mod = new ProtoMod();
@@ -341,12 +342,33 @@ namespace SRML
                     fileName)
                 {
                     using (var reader = new StreamReader(assembly.GetManifestResourceStream(fileName)))
-                    {
+                    {   
                         mod = ParseFromJson(reader.ReadToEnd(), dllFile);
                         mod.isFromJSON = false;
                     }
                 }
-                else return false;
+                else
+                {
+                    try
+                    {
+
+                        foreach(var v in assembly.GetTypes())
+                        {
+                            if (!typeof(IModEntryPoint).IsAssignableFrom(v)) continue;
+                            foreach(SRModAttribute a in v.GetCustomAttributes(true).Where(x=>x is SRModAttribute))
+                            {
+                                a.PutInfo(mod);
+                                mod.ValidateFields();
+                            }
+                        }
+
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.Log(e);
+                        return false;
+                    }
+                }
 
 
                 return true;

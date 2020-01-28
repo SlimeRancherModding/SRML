@@ -18,6 +18,8 @@ using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
 using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 using Game = MonomiPark.SlimeRancher.Persist.GameV12;
+using SRML.SR.SaveSystem.Pipeline;
+
 namespace SRML.SR.SaveSystem
 {
     internal static class SaveHandler
@@ -28,6 +30,21 @@ namespace SRML.SR.SaveSystem
         {
             data.Clear();
 
+            foreach(var pipeline in SaveRegistry.Pipelines)
+            {
+                foreach(var mod in SRModLoader.GetMods())
+                {
+                    Debug.Log($"Trying pipeline {pipeline.UniqueID} with mod {mod.ModInfo.Id}");
+                    var saveinfo = SaveRegistry.GetSaveInfo(mod);
+                    var objects = pipeline.Pull(saveinfo, game)?.ToList();
+                    
+                    pipeline.RemoveExtraModdedData(saveinfo, game);
+                    if (objects == null || !objects.Any()) continue;
+                    data.GetSegmentForMod(mod).pipelineDatas.AddRange(objects);
+
+                }
+                
+            }
 
             PullFullData(data,game);
             PullTertiaryData(data,game);
@@ -203,8 +220,16 @@ namespace SRML.SR.SaveSystem
         public static void PushAllModdedData(ModdedSaveData data, Game game)
         {
 
-
-            
+            var dict = new List<KeyValuePair<IPipelineData, string>>();
+            foreach(var seg in data.segments)
+            {
+                foreach (var item in seg.pipelineDatas) dict.Add(new KeyValuePair<IPipelineData, string>(item,seg.modid));
+            }
+            foreach (var item in dict.OrderByDescending(x => x.Key.Pipeline.PullPriority))
+            {
+                Debug.Log($"Pushing {item.Key.Pipeline.UniqueID} pipeline data for mod {item.Value}");
+                item.Key.Pipeline.Push(SaveRegistry.GetSaveInfo(item.Value), game, item.Key);
+            }
             ExtendedData.Pull(data);
             PushAllSegmentData(data, game);
 
@@ -316,6 +341,8 @@ namespace SRML.SR.SaveSystem
             ExtendedData.Clear();
             PersistentAmmoManager.Clear();
         }
+        
+
 
         public static void LoadModdedSave(AutoSaveDirector director, string savename)
         {   
@@ -333,7 +360,8 @@ namespace SRML.SR.SaveSystem
 
             data.enumTranslator?.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            PushAllModdedData(data,director.SavedGame.gameState);
+            
+            //PushAllModdedData(data,director.SavedGame.gameState);
 
         }
 

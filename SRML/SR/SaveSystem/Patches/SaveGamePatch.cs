@@ -17,18 +17,25 @@ namespace SRML.SR.SaveSystem.Patches
         {
             using (var code = instr.GetEnumerator())
             {
+                bool passedone = false;
                 while (code.MoveNext())
                 {
                     var cur = code.Current;
 
-                    if (cur.opcode == OpCodes.Call && cur.operand is MethodInfo info && info.Name == "GetNextFileName")
+                    if (cur.opcode == OpCodes.Callvirt && cur.operand is MethodInfo info && info.Name == "GetName")
                     {
+                        if (!passedone)
+                        {
+                            passedone = true;
+                            yield return cur;
+                            continue;
+                        }
                         yield return cur;
                         code.MoveNext();
                         yield return code.Current;
 
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Ldloc_3);
+                        yield return new CodeInstruction(OpCodes.Ldloc_0);
 
                         yield return new CodeInstruction(OpCodes.Call,
                             AccessTools.Method(typeof(SaveGamePatch), "OnSaveGame"));
@@ -44,7 +51,7 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static void OnSaveGame(AutoSaveDirector director, string nextfilename)
         {
-            SaveHandler.SaveModdedSave(director, nextfilename);
+            SaveHandler.SaveModdedSave(director, director.GetNextFileName(nextfilename,0, "{0}_{1}"));
         }
 
 

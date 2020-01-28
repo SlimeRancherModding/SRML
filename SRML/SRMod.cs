@@ -7,15 +7,17 @@ using System.Text.RegularExpressions;
 using HarmonyLib;
 using SRML.Config;
 using SRML.Utils;
+using static SRML.SRModInfo;
 
 namespace SRML
 {
     /// <summary>
     /// A basic mod data class that is safe to share between mods (no logic in it)
     /// </summary>
+    
     public class SRModInfo
     {
-        public SRModInfo(string modid,string name, string author, ModVersion version,string description)
+        public SRModInfo(string modid, string name, string author, ModVersion version, string description)
         {
             Id = modid;
             Name = name;
@@ -60,13 +62,13 @@ namespace SRML
             {
                 string[] splits = s.Split('.');
                 if (splits.Length < 2 || splits.Length > 3) goto uhoh;
-                if (!Int32.TryParse(splits[0], out int major)|| !Int32.TryParse(splits[1], out int minor)) goto uhoh;
+                if (!Int32.TryParse(splits[0], out int major) || !Int32.TryParse(splits[1], out int minor)) goto uhoh;
                 int revision = 0;
                 if (splits.Length == 3 && !Int32.TryParse(splits[2], out revision)) goto uhoh;
 
                 return new ModVersion(major, minor, revision);
 
-                uhoh:
+            uhoh:
                 throw new Exception($"Invalid Version String: {s}");
             }
 
@@ -82,12 +84,30 @@ namespace SRML
                 if (Revision < other.Revision) return 1;
                 return 0;
             }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ModVersion version &&
+                       Major == version.Major &&
+                       Minor == version.Minor &&
+                       Revision == version.Revision;
+            }
+
+            public static bool operator ==(ModVersion left, ModVersion right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(ModVersion left, ModVersion right)
+            {
+                return !(left == right);
+            }
         }
     }
     /// <summary>
     /// Actual internal implementation of a mod
     /// </summary>
-    internal class SRMod 
+    internal class SRMod
     {
         /// <summary>
         /// Mods associated SRModInfo object
@@ -104,8 +124,10 @@ namespace SRML
 
         private IModEntryPoint entryPoint;
 
-       
+
         private static SRMod forcedContext;
+
+        public static bool HasModContext => forcedContext != null;
 
         /// <summary>
         /// Gets the current executing mod as an SRMod instance 
@@ -154,10 +176,10 @@ namespace SRML
 
         public String GetDefaultHarmonyName()
         {
-            return $"net.{(ModInfo.Author==null||ModInfo.Author.Length==0?"srml":Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
+            return $"net.{(ModInfo.Author == null || ModInfo.Author.Length == 0 ? "srml" : Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
 
-        public SRMod(SRModInfo info,IModEntryPoint entryPoint)
+        public SRMod(SRModInfo info, IModEntryPoint entryPoint)
         {
             this.ModInfo = info;
             this.EntryType = entryPoint.GetType();
@@ -184,5 +206,39 @@ namespace SRML
             entryPoint.PostLoad();
         }
     }
-    
+
+    public class SRModAttribute : Attribute
+    {
+        public string ModID;
+        public string Name;
+        public ModVersion Version;
+        public string Author;
+        public string Description;
+        public string[] LoadBefore;
+        public string[] LoadAfter;
+
+
+        public SRModAttribute(string modid, string version = "1.0.0", string name = null, string author = null, string description = null, string[] load_after = null, string[] load_before = null)
+        {
+            ModID = modid;
+            Name = name;
+            Version = ModVersion.Parse(version);
+            Author = author;
+            Description = description;
+            LoadBefore = load_before;
+            LoadAfter = load_after;
+        }
+
+        internal void PutInfo(SRModLoader.ProtoMod proto)
+        {
+            proto.name = Name ?? proto.name;
+            proto.id = ModID ?? proto.id;
+            proto.version = Version==default ? (proto.version ?? ModVersion.DEFAULT.ToString()) : Version.ToString();
+            proto.author = Author ?? proto.author;
+            proto.description = Description ?? proto.description;
+            proto.load_after = proto.load_after!=null?LoadAfter.AddRangeToArray(proto.load_after).ToArray():LoadAfter;
+            proto.load_before = proto.load_before != null ? LoadBefore.AddRangeToArray(proto.load_before).ToArray() : LoadBefore;
+
+        }
+    }
 }

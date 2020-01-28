@@ -47,6 +47,7 @@ namespace SRML.SR.SaveSystem.Format
             segments.Clear();
             ammoDataEntries.Clear();
             partialData.Clear();
+            
         }
 
         public void ReadData(BinaryReader reader)
