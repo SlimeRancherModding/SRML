@@ -167,6 +167,8 @@
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\SaveSystem\Data\DataPipelines.cs" />
+    <Compile Include="SR\SaveSystem\Data\FullCustomDataPipeline.cs" />
     <Compile Include="SR\SaveSystem\Data\Macro\PartialWorldData.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\PartialDataPipeline.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\PartialDataUtils.cs" />

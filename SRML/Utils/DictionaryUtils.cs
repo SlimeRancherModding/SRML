@@ -13,6 +13,8 @@ using System.Text;
             return newDict;
         }
 
-        public static K GetKeyOfValue<K, V>(this Dictionary<K, V> dict, V val) => dict.First(x => x.Value.Equals(val)).Key;
+        public static K GetKeyOfValue<K, V>(this Dictionary<K, V> dict, V val) => dict.GetPairForValue(val).Key;
+
+    public static KeyValuePair<K, V> GetPairForValue<K, V>(this Dictionary<K, V> dict, V val) => dict.First(x => x.Value.Equals(val));
     }
 

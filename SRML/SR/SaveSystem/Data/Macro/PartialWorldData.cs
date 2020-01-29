@@ -6,9 +6,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data.Macro
 {
+    /// <summary>
+    /// Pulls out all data in <see cref="WorldV22"/> based on if its string index is modded (note: make sure to pull custom data out of the save before using this, otherwise it'll be saved in the wrong place!)
+    /// </summary>
     public class PartialWorldData : VersionedPartialData<WorldV22>
     {
         
@@ -20,9 +24,10 @@ namespace SRML.SR.SaveSystem.Data.Macro
         public AmbianceDirector.Weather weather;
         public PartialDictionary<string, EchoNoteGordoV01> echoNoteGordos = PartialDataUtils.CreatePartialDictionaryWithStringKey<EchoNoteGordoV01>();
         private static readonly SerializerPair<Identifiable.Id> identifiableIdSerializer = SerializerPair.GetEnumSerializerPair<Identifiable.Id>();
-        public PartialDictionary<Identifiable.Id, float> econSaturations = new PartialDictionary<Identifiable.Id, float>(ModdedIDRegistry.IsModdedID, identifiableIdSerializer,SerializerPair.FLOAT);
+        public PartialDictionary<Identifiable.Id, float> econSaturations = new PartialDictionary<Identifiable.Id, float>((x)=>ModdedIDRegistry.IsModdedID(x.Key), identifiableIdSerializer,SerializerPair.FLOAT, checkValueValid:(x) => ModdedIDRegistry.IsModdedID(x.Key));
         public PartialGlitchSimulation glitch = new PartialGlitchSimulation();
         public PartialDictionary<string, GordoV01> gordos = PartialDataUtils.CreatePartialDictionaryWithStringKey<GordoV01>();
+        public PartialDictionary<string, PlacedGadgetV08> placedGadgets = PartialDataUtils.CreatePartialDictionaryWithStringKey<PlacedGadgetV08>();
 
         static PartialCollection<string> MakeRanchOfferFilter() => new PartialCollection<string>(ExchangeOfferRegistry.IsCustom, SerializerPair.STRING, ExchangeOfferRegistry.IsCustom);
         public PartialCollection<string> lastOfferRancherIds = MakeRanchOfferFilter();
@@ -59,8 +64,10 @@ namespace SRML.SR.SaveSystem.Data.Macro
             glitch.Pull(data.glitch);
             echoNoteGordos.Pull(data.echoNoteGordos);
             econSaturations.Pull(data.econSaturations);
+            placedGadgets.Pull(data.placedGadgets);
             weather = ModdedIDRegistry.IsModdedID(data.weather) ? data.weather : AmbianceDirector.Weather.NONE;
 
+            Debug.Log("Econs had: " + econSaturations.InternalDictionary.Count);
         }
 
         public override void Push(WorldV22 data)
@@ -79,6 +86,7 @@ namespace SRML.SR.SaveSystem.Data.Macro
             glitch.Push(data.glitch);
             echoNoteGordos.Push(data.echoNoteGordos);
             econSaturations.Push(data.econSaturations);
+            placedGadgets.Push(data.placedGadgets);
             data.weather = ModdedIDRegistry.IsModdedID(weather) ? weather : data.weather;
 
         }
@@ -99,6 +107,7 @@ namespace SRML.SR.SaveSystem.Data.Macro
             glitch.Read(reader);
             echoNoteGordos.Read(reader);
             econSaturations.Read(reader);
+            placedGadgets.Read(reader);
             weather = (AmbianceDirector.Weather)reader.ReadInt32();
         }
 
@@ -118,8 +127,12 @@ namespace SRML.SR.SaveSystem.Data.Macro
             glitch.Write(writer);
             echoNoteGordos.Write(writer);
             econSaturations.Write(writer);
+            placedGadgets.Write(writer);
             writer.Write((int)weather);
         }
+
+        static bool GetIsCustom<T>(KeyValuePair<string, T> pair) => ModdedStringRegistry.IsValidModdedString(pair.Key);
+        static bool GetIsCustom(string pair) => ModdedStringRegistry.IsValidModdedString(pair);
 
         static PartialWorldData()
         {
@@ -129,6 +142,39 @@ namespace SRML.SR.SaveSystem.Data.Macro
             {
                 trans.FixEnumValues(mode, world.glitch);
                 world.weather = trans.TranslateEnum(mode, world.weather);
+            });
+            CustomChecker.RegisterCustomChecker<WorldV22>((y) =>
+            {
+                if (
+                    ModdedIDRegistry.IsModdedID(y.weather) ||
+                    y.activeGingerPatches.Any(x => GetIsCustom(x)) ||
+                    y.switches.Any(x => GetIsCustom(x)) ||
+                    y.treasurePods.Any(x => GetIsCustom(x)) ||
+                    y.oasisStates.Any(x => GetIsCustom(x)) ||
+                    y.puzzleSlotsFilled.Any(x => GetIsCustom(x)) ||
+                    y.quicksilverEnergyGenerators.Any(x => GetIsCustom(x)) ||
+                    y.gordos.Any(x => GetIsCustom(x)) ||
+                    y.occupiedPhaseSites.Any(x => GetIsCustom(x)) ||
+                    y.teleportNodeActivations.Any(x => GetIsCustom(x)) ||
+                    y.lastOfferRancherIds.Any(x => GetIsCustom(x)) ||
+                    y.pendingOfferRancherIds.Any(x => GetIsCustom(x)) ||
+                    CustomChecker.GetCustomLevel(y.glitch) == CustomChecker.CustomLevel.PARTIAL ||
+                    y.echoNoteGordos.Any(x => GetIsCustom(x)) ||
+                    y.placedGadgets.Any(x => GetIsCustom(x)) ||
+                    y.econSaturations.Any(x => ModdedIDRegistry.IsModdedID(x.Key))) return CustomChecker.CustomLevel.PARTIAL;
+                Debug.Log("Guess we vanlla");
+                return CustomChecker.CustomLevel.VANILLA;
+
+            });
+
+            CustomChecker.RegisterCustomChecker<GlitchSlimulationV02>((y) =>
+            {
+                if (y.teleporters.Any(GetIsCustom) ||
+                y.nodes.Any(GetIsCustom) ||
+                y.impostos.Any(GetIsCustom) ||
+                y.impostoDirectors.Any(GetIsCustom) ||
+                y.storage.Any(GetIsCustom)) return CustomChecker.CustomLevel.PARTIAL;
+                return CustomChecker.CustomLevel.VANILLA;
             });
         }
 

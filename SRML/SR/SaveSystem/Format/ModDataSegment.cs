@@ -111,7 +111,14 @@ namespace SRML.SR.SaveSystem.Format
                 count = reader.ReadInt32();
                 for(int i = 0;i<count;i++)
                 {
-                    pipelineDatas.Add(PipelineSerializer.ReadPipelineObject(reader, SaveRegistry.Pipelines,modid));
+                    try
+                    {
+                        pipelineDatas.Add(PipelineSerializer.ReadPipelineObject(reader, SaveRegistry.Pipelines, modid));
+                    }
+                    catch(Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
                 }
             }
         }

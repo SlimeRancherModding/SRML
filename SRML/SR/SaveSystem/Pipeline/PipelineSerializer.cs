@@ -33,9 +33,9 @@ namespace SRML.SR.SaveSystem.Pipeline
 
             if (!candidatePipelines.Any(x => x.UniqueID == pipeline) || !SRModLoader.IsModPresent(mod))
             {
-                Debug.LogError($"Missing Mod: {mod} or missing data pipeline: {pipeline}, skipping {size} bytes...");
                 reader.BaseStream.Position += size;
-                return null;
+                throw new Exception($"Missing Mod: {mod} or missing data pipeline: {pipeline}, skipping {size} bytes...");
+                
             }
             return candidatePipelines.First(x => x.UniqueID == pipeline).Read(reader, SaveRegistry.GetSaveInfo(mod));
         }

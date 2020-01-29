@@ -27,20 +27,29 @@ namespace SRML.SR.SaveSystem.Data
                 {IdentifierType.LANDPLOT,typeof(LandPlotV08) },
                 {IdentifierType.GORDO,typeof(GordoV01) },
                 {IdentifierType.TREASUREPOD,typeof(TreasurePodV01) },
-                {IdentifierType.EXCHANGEOFFER, typeof(ExchangeOfferV04) }
+                {IdentifierType.EXCHANGEOFFER, typeof(ExchangeOfferV04) },
+                {IdentifierType.RANCH, typeof(RanchV07) },
+                {IdentifierType.WORLD, typeof(WorldV22) },
+                {IdentifierType.PLAYER, typeof(PlayerV14) }
             };
 
 
 
         public static readonly Dictionary<Type,IdentifierType> PersistedDataSetsToIdentifiers = new Dictionary<IdentifierType, Type>()
         {
-            {IdentifierType.ACTOR,typeof(VersionedPersistedDataSet<ActorDataV09>) },
-                {IdentifierType.GADGET,typeof(VersionedPersistedDataSet<PlacedGadgetV08>) },
-                {IdentifierType.LANDPLOT,typeof(VersionedPersistedDataSet<LandPlotV08>) },
-                {IdentifierType.GORDO,typeof(VersionedPersistedDataSet<GordoV01>) },
-                {IdentifierType.TREASUREPOD,typeof(VersionedPersistedDataSet<TreasurePodV01>) },
-                {IdentifierType.EXCHANGEOFFER, typeof(VersionedPersistedDataSet<ExchangeOfferV04>) }
+            {IdentifierType.ACTOR,typeof(VersionedPersistedDataSet<ActorDataV08>) },
+                {IdentifierType.GADGET,typeof(VersionedPersistedDataSet<PlacedGadgetV07>) },
+                {IdentifierType.LANDPLOT,typeof(VersionedPersistedDataSet<LandPlotV07>) },
+                {IdentifierType.GORDO,typeof(GordoV01) },
+                {IdentifierType.TREASUREPOD,typeof(TreasurePodV01) },
+                {IdentifierType.EXCHANGEOFFER, typeof(VersionedPersistedDataSet<ExchangeOfferV03>) },
+                {IdentifierType.RANCH, typeof(VersionedPersistedDataSet<RanchV06>) },
+                {IdentifierType.WORLD, typeof(VersionedPersistedDataSet<WorldV21>) },
+                {IdentifierType.PLAYER,typeof(VersionedPersistedDataSet<PlayerV13>) }
         }.Invert();
+
+
+        public static KeyValuePair<DataIdentifier, object> Convert<T>(KeyValuePair<string, T> obj) => new KeyValuePair<DataIdentifier, object>(new DataIdentifier() { Type = GetIdentifierType(obj.Value.GetType()), stringID = obj.Key }, obj.Value);
         public static IdentifierType GetIdentifierType(Type type) => PersistedDataSetsToIdentifiers.FirstOrDefault(x => x.Key.IsAssignableFrom(type)).Value;
 
         public static DataIdentifier GetIdentifier(GameV12 game, object obj)
@@ -62,8 +71,13 @@ namespace SRML.SR.SaveSystem.Data
                     return CreateIdentifierL((long)game.world.offers.GetKeyOfValue(offer));
                 case LandPlotV08 plot:
                     return CreateIdentifierS(plot.id);
+                case WorldV22 world:
+                    return CreateIdentifierL(0);
+                case RanchV07 ranch:
+                    return CreateIdentifierL(0);
+                case PlayerV14 player:
+                    return CreateIdentifierL(0);
 
-                    
             }
             throw new NotImplementedException();
         }
@@ -74,7 +88,7 @@ namespace SRML.SR.SaveSystem.Data
             {
                 case IdentifierType.ACTOR:
                     return game.actors.FirstOrDefault(x => x.actorId == identifier.longID);
-                    
+
                 case IdentifierType.GADGET:
                     return game.world.placedGadgets.Get(identifier.stringID);
                 case IdentifierType.LANDPLOT:
@@ -85,6 +99,12 @@ namespace SRML.SR.SaveSystem.Data
                     return game.world.treasurePods.Get(identifier.stringID);
                 case IdentifierType.EXCHANGEOFFER:
                     return game.world.offers.Get((ExchangeDirector.OfferType)identifier.Type);
+                case IdentifierType.WORLD:
+                    return game.world;
+                case IdentifierType.RANCH:
+                    return game.ranch;
+                case IdentifierType.PLAYER:
+                    return game.player;
             }
             throw new NotImplementedException();
         }
@@ -148,6 +168,9 @@ namespace SRML.SR.SaveSystem.Data
         LANDPLOT,
         GORDO,
         TREASUREPOD,
-        EXCHANGEOFFER
+        EXCHANGEOFFER,
+        WORLD,
+        RANCH,
+        PLAYER
     }
 }

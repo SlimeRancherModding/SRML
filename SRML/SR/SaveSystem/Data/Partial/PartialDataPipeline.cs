@@ -51,6 +51,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
         {
             var id = DataIdentifier.Read(reader);
+            Debug.Log(id.Type);
             var dataType = DataIdentifier.IdentifierTypeToData[id.Type];
             if (PartialData.TryGetPartialData(dataType, out var data))
             {
@@ -85,6 +86,8 @@ namespace SRML.SR.SaveSystem.Data.Partial
         protected override void WriteData(BinaryWriter writer, ModSaveInfo info, IdentifiedPartialData<T> item)
         {
             DataIdentifier.Write(writer,item.Identifier);
+            Debug.Log(item.Identifier.Type+" "+item.Data);
+            
             item.Data.Write(writer);
         }
         

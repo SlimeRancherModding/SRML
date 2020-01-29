@@ -5,6 +5,7 @@ using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Data.LandPlot;
+using SRML.SR.SaveSystem.Pipeline;
 using SRML.SR.SaveSystem.Registry;
 using UnityEngine;
 using VanillaActorData = MonomiPark.SlimeRancher.Persist.ActorDataV09;
@@ -12,7 +13,7 @@ using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 namespace SRML.SR.SaveSystem.Format
 {
-    internal class IdentifiedData
+    public class IdentifiedData : PipelineData
     {
         public DataIdentifier dataID;
         public PersistedDataSet data;
@@ -28,6 +29,12 @@ namespace SRML.SR.SaveSystem.Format
                     data.dataID = data.dataID.TranslateWithEnum(translator, mode);
                 });
         }
+
+        public IdentifiedData(ISavePipeline pipeline) : base(pipeline)
+        {
+        }
+        public IdentifiedData() : this(null) { }
+
         public void Read(BinaryReader reader, ModSaveInfo info)
         {
             dataLength = reader.ReadInt64();
