@@ -1,4 +1,5 @@
 ﻿using SRML.SR.SaveSystem.Data;
+using SRML.SR.SaveSystem.Pipeline;
 using SRML.Utils;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,14 @@ namespace SRML.SR.SaveSystem.Format
 
         public override int LatestVersion => 0;
 
+        public ISavePipeline Pipeline { get; }
 
+        public ExtendedDataTree(ISavePipeline pipeline)
+        {
+            Pipeline = pipeline;
+        }
+
+        public ExtendedDataTree() : this(null) { }
 
         public override void ReadData(BinaryReader reader)
         {

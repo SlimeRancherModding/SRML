@@ -10,6 +10,7 @@ using SRML.SR.SaveSystem.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace SRML.SR.SaveSystem
@@ -137,6 +138,7 @@ namespace SRML.SR.SaveSystem
         
         internal static void Push(ModdedSaveData data)
         {
+            return;
             foreach (var actorData in GetAllData(SceneContext.Instance.GameModel))
             {
                 foreach (CompoundDataPiece modPiece in actorData.Value.DataList)
@@ -209,18 +211,24 @@ namespace SRML.SR.SaveSystem
             }
         }
 
-        public static CompoundDataPiece ReadDataFromGameObject(GameObject obj)
+        public static CompoundDataPiece ReadDataFromGameObject(GameObject obj, Predicate<Participant> filter = null)
         {
             var newCompound = new CompoundDataPiece("root");
-            foreach(var participant in obj.GetComponents<Participant>())
+            if (filter == null) filter = x => true;
+            foreach(var participant in obj.GetComponents<Participant>().Where(x=>filter(x)))
             {
                 participant.WriteData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant,newCompound));
             }
 
             return newCompound;
         }
-
-
+        
+        public static CompoundDataPiece ReadDataFromGameObjectForMod(GameObject obj, string modid)
+        {
+            var mod = SRModLoader.GetMod(modid);
+            return ReadDataFromGameObject(obj, x => ExtendedDataUtils.GetModForParticipant(x) == mod);
+        }
+         
 
         static IEnumerable<KeyValuePair<DataIdentifier,CompoundDataPiece>> GetAllData(GameModel model)
         {
@@ -295,6 +303,73 @@ namespace SRML.SR.SaveSystem
                 public CompoundDataPiece Piece;
 
                 public WorldSaveData(ISavePipeline pipeline) : base(pipeline)
+                {
+                }
+            }
+        }
+
+        public abstract class ExtendedDataPipeline : SavePipeline<ExtendedDataPipeline.ExtendedDataData>
+        {
+            public abstract IEnumerable<DataIdentifier> GetIdentifiers(GameV12 v);
+
+            public override int PullPriority => 0;
+
+            public override IEnumerable<IPipelineData> Pull(ModSaveInfo mod, GameV12 data)
+            {
+                foreach (var v in GetIdentifiers(data))
+                {
+                    var gameObj = DataIdentifier.ResolveIdentifierToGameObject(SceneContext.Instance.GameModel, v);
+                    var comp = ExtendedData.ReadDataFromGameObjectForMod(gameObj, mod.ModID);
+                    if (comp.GetCompoundPiece(mod.ModID).DataList.Count == 0) continue; // we didnt found nothing
+                    yield return new ExtendedDataData(this)
+                    {
+                        Data = comp,
+                        Identifier = v
+                    };
+                }
+            }
+
+            public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+            {
+                return new ExtendedDataData(this)
+                {
+                    Identifier = DataIdentifier.Read(reader),
+                    Data = CompoundDataPiece.Deserialize(reader) as CompoundDataPiece
+                };
+            }
+
+            public override void RemoveExtraModdedData(ModSaveInfo mod, GameV12 data)
+            {
+               
+            }
+
+            protected override void PushData(ModSaveInfo mod, GameV12 data, ExtendedDataData item)
+            {
+                PreparedData newData = default;
+                if(!preparedData.TryGetValue(item.Identifier,out newData))
+                {
+                    newData = new PreparedData()
+                    {
+                        Data = new CompoundDataPiece("root"),
+                        Source = this,
+                        SourceType = PreparedData.PreparationSource.UNKNOWN
+                    };
+                }
+                item.Data.DataList.Do(x => newData.Data.AddPiece(x));
+                preparedData[item.Identifier] = newData;
+            }
+
+            protected override void WriteData(BinaryWriter writer, ModSaveInfo info, ExtendedDataData item)
+            {
+                DataIdentifier.Write(writer, item.Identifier);
+                CompoundDataPiece.Serialize(writer, item.Data);
+            }
+
+            public class ExtendedDataData : PipelineData
+            {
+                public DataIdentifier Identifier;
+                public CompoundDataPiece Data;
+                public ExtendedDataData(ISavePipeline pipeline) : base(pipeline)
                 {
                 }
             }

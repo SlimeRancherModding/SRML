@@ -110,6 +110,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
             EnumTranslator.RegisterEnumFixer<IdentifiedPartialData>((translator, mode, data) =>
             {
                 translator.FixEnumValues(mode, data.PartialData);
+                data.Identifier = data.Identifier.TranslateWithEnum(translator, mode);
             });
         }
     }

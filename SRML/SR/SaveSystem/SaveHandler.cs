@@ -45,6 +45,8 @@ namespace SRML.SR.SaveSystem
                 }
                 
             }
+            // Taking the plunge into the pipeline system
+            return;
 
             PullFullData(data,game);
             PullTertiaryData(data,game);
@@ -381,7 +383,7 @@ namespace SRML.SR.SaveSystem
             }
 
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            PushAllPartialData(data, director.SavedGame.gameState); // re-apply the data we took out so we leave the game state relatively untouched
+            //PushAllPartialData(data, director.SavedGame.gameState); // re-apply the data we took out so we leave the game state relatively untouched
         }
 
         static SaveHandler()

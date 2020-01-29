@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using MonomiPark.SlimeRancher.DataModel;
 using MonomiPark.SlimeRancher.Persist;
+using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data
 {
@@ -80,6 +82,28 @@ namespace SRML.SR.SaveSystem.Data
 
             }
             throw new NotImplementedException();
+        }
+
+        public static GameObject ResolveIdentifierToGameObject(GameModel model, DataIdentifier identifier)
+        {
+            switch (identifier.Type)
+            {
+                case IdentifierType.ACTOR:
+                    return model.actors.Get(identifier.longID).transform?.gameObject;
+                case IdentifierType.GADGET:
+                    return model.gadgetSites.Get(identifier.stringID).transform?.gameObject;
+                case IdentifierType.LANDPLOT:
+                    return model.landPlots.Get(identifier.stringID).gameObj;
+                case IdentifierType.GORDO:
+                    return model.gordos.Get(identifier.stringID).gameObj;
+                case IdentifierType.TREASUREPOD:
+                    return model.pods.Get(identifier.stringID).gameObj;
+               
+                case IdentifierType.PLAYER:
+
+                    return SceneContext.Instance.Player;
+            }
+            return null;
         }
 
         public static object ResolveIdentifier(GameV12 game, DataIdentifier identifier)
