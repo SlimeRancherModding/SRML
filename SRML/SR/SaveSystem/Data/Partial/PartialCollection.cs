@@ -14,11 +14,11 @@ namespace SRML.SR.SaveSystem.Data.Partial
         private Predicate<T> hoistCondition;
         private SerializerPair<T> serializer;
         private Predicate<T> forbiddenValueTester;
-        public PartialCollection(Predicate<T> hoistCondition, SerializerPair<T> serializer, Predicate<T> valueFilter = null)
+        public PartialCollection(Predicate<T> hoistCondition, SerializerPair<T> serializer, Predicate<T> checkValueValid = null)
         {
             this.hoistCondition = hoistCondition;
             this.serializer = serializer;
-            this.forbiddenValueTester = valueFilter ?? (x => true);
+            this.forbiddenValueTester = checkValueValid ?? (x => true);
         }
 
         public IList InternalList => hoistedValues;

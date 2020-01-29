@@ -19,15 +19,16 @@ namespace SRML.SR.SaveSystem.Data.Partial
         private SerializerPair<K> keySerializer;
         private SerializerPair<V> valueSerializer;
 
-  
+        Predicate<KeyValuePair<K, V>> forbiddenValueFilter;
 
-        public PartialDictionary(Predicate<KeyValuePair<K,V>> hoistPredicate,SerializerPair<K> keySerializer,SerializerPair<V> valueSerializer,Func<KeyValuePair<K,V>,KeyValuePair<K,V>?> filler=null)
+        public PartialDictionary(Predicate<KeyValuePair<K,V>> hoistPredicate,SerializerPair<K> keySerializer,SerializerPair<V> valueSerializer,Func<KeyValuePair<K,V>,KeyValuePair<K,V>?> filler=null, Predicate<KeyValuePair<K,V>> checkValueValid = null)
         {
             this.hoistPredicate = hoistPredicate;
             this.keySerializer = keySerializer;
             this.valueSerializer = valueSerializer;
             if (filler == null) filler = (x) => null;
             this.hoistFiller = filler;
+            this.forbiddenValueFilter = checkValueValid ?? ((x)=>true);
         }
 
         public IDictionary InternalDictionary => hoistedValues;
@@ -49,12 +50,13 @@ namespace SRML.SR.SaveSystem.Data.Partial
                 var newkey = hoistFiller(pair);
                 if(newkey.HasValue) data.Add(newkey.Value.Key,newkey.Value.Value);
             }
+            
         }
 
         public override void Push(IDictionary<K, V> data)
         {
 
-            foreach(var v in hoistedValues) data[v.Key]=v.Value;
+            foreach(var v in hoistedValues.Where(x=>forbiddenValueFilter(x))) data[v.Key]=v.Value;
         }
 
         public override void Read(BinaryReader reader)

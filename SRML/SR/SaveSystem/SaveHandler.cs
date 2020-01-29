@@ -360,9 +360,9 @@ namespace SRML.SR.SaveSystem
 
             data.enumTranslator?.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
-            
-            //PushAllModdedData(data,director.SavedGame.gameState);
 
+            //File.WriteAllText("fullgame.txt", DataPiece.ObjectToPiece(DataPiece.PieceToObject(DataPiece.ObjectToPiece(director.SavedGame.gameState.ranch))).ToString());
+            // push with a SavedGame.Push prefix patch
         }
 
         public static void SaveModdedSave(AutoSaveDirector director, string nextfilename)

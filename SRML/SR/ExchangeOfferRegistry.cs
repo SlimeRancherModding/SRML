@@ -13,7 +13,7 @@ namespace SRML.SR
 
         public static bool IsCustom(string id)
         {
-            return customRanchers.ContainsKey(id) || customOfferIDs.ContainsKey(id);
+            return (customRanchers.ContainsKey(id) || customOfferIDs.ContainsKey(id))&&(SRMod.IsContextMod(GetModForID(id)));
         }
 
         internal static bool IsCustom(ExchangeOfferV04 offer)

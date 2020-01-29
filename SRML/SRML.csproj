@@ -169,6 +169,7 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\SaveSystem\Data\Macro\PartialWorldData.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\PartialDataPipeline.cs" />
+    <Compile Include="SR\SaveSystem\Data\Partial\PartialDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Pipeline\IPipeline.cs" />
     <Compile Include="SR\SaveSystem\Pipeline\PipelineSerializer.cs" />
     <Compile Include="SR\UI\Utils\UIUtils.cs" />
@@ -360,6 +361,7 @@
     <Compile Include="SR\Utils\ComponentExtensions.cs" />
     <Compile Include="SR\Utils\GameObjectExtensions.cs" />
     <Compile Include="SR\Utils\LookupDirectorExtension.cs" />
+    <Compile Include="Utils\DictionaryUtils.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
     <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
     <Compile Include="Utils\HarmonyOverrideAttribute.cs" />

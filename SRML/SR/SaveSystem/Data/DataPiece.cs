@@ -356,13 +356,36 @@ namespace SRML.SR.SaveSystem.Data
         {
             if (DataPiece.GetTypeID(piece.GetDataType()) != DataType.COMPOUND) return piece.data;
             var comp = piece as CompoundDataPiece;
-            
-            
+
+            var type = Type.GetType((piece as CompoundDataPiece).GetValue<string>("__type"));
+
+            var obj = Activator.CreateInstance(type);
+
+
+            if (obj is IDictionary dict)
+            {
+                var valueComp = comp["values"] as CompoundDataPiece;
+                var keyComp = comp["keys"] as CompoundDataPiece;
+                for(int i = 0; i < valueComp.DataList.Count; i++)
+                {
+                    dict[PieceToObject(keyComp[i.ToString()])] = PieceToObject(valueComp[i.ToString()]);
+                }
+            }
+            else if (obj is IList list)
+            {
+                for (int i = 0; i < comp.DataList.Count - 1; i++)
+                {
+                    list.Add(PieceToObject(comp[i.ToString()]));
+                }
+            }
+            else
             foreach (var v in comp.DataList)
             {
-                if (v.key == "__type") continue;    
+                if (v.key == "__type") continue;
+                type.GetField(v.key).SetValue(obj,PieceToObject(v));
+
             }
-            throw new NotImplementedException();
+            return obj;
         }
 
   

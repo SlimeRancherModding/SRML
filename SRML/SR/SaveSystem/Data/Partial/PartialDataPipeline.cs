@@ -123,12 +123,18 @@ namespace SRML.SR.SaveSystem.Data.Partial
 
         public override string UniqueID { get; }
 
+        public override int PullPriority => base.PullPriority + priorityOffset;
+        int priorityOffset;
         public override IEnumerable<KeyValuePair<DataIdentifier, object>> GetAllRelevantObjects(GameV12 data)=>generatorFunc(data);
-        public SimplePartialDataPipeline(string id, Func<GameV12, IEnumerable<KeyValuePair<DataIdentifier, object>>> generator)
+        public SimplePartialDataPipeline(string id, Func<GameV12, IEnumerable<KeyValuePair<DataIdentifier, object>>> generator,int priorityOffset = 0)
         {
             UniqueID = id;
             generatorFunc = generator;
-            
+            this.priorityOffset = priorityOffset;
         }
+        public SimplePartialDataPipeline(string id, Func<GameV12, IEnumerable<object>> generator, int priorityOffset = 0) :this(id,(x)=>generator(x).Select(y=>new KeyValuePair<DataIdentifier,object>(DataIdentifier.GetIdentifier(x,y),y)),priorityOffset)
+        {
+        }
+
     }
 }

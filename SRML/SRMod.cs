@@ -139,6 +139,8 @@ namespace SRML
             return SRModLoader.GetModForAssembly(ReflectionUtils.GetRelevantAssembly());
         }
 
+
+        public static bool IsContextMod(SRMod mod) => !HasModContext || mod == forcedContext;
         /// <summary>
         /// Forces a certain mod to be returned from <see cref="SRMod.GetCurrentMod"/> 
         /// </summary>

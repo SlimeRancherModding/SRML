@@ -308,8 +308,14 @@ namespace SRML.Utils
         public abstract object Deserialize(BinaryReader reader);
         public abstract void Serialize(BinaryWriter writer,object b);
         public abstract Type GetSerializedType();
+		public static SerializerPair<float> FLOAT = new SerializerPair<float>((x, y) => x.Write(y), (x) => x.ReadSingle());
+		public static SerializerPair<long> INT32 = new SerializerPair<long>((x, y) => x.Write(y), (x) => x.ReadInt32());
+		public static SerializerPair<long> INT64 = new SerializerPair<long>((x, y) => x.Write(y), (x) => x.ReadInt64());
+		public static SerializerPair<string> STRING = new SerializerPair<string>((x, y) => x.Write(y), (x) => x.ReadString());
+        public static SerializerPair<bool> BOOL = new SerializerPair<bool>((x,y)=>x.Write(y),(x)=>x.ReadBoolean());
+
         public static SerializerPair<K> GetEnumSerializerPair<K>()
-        {
+		{
             return new SerializerPair<K>((writer, obj) => writer.Write((int)(object)obj),
                 (reader => (K)(object)reader.ReadInt32()));
         }
