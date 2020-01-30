@@ -11,7 +11,7 @@ using UnityEngine;
 /// </summary>
 static internal class ModdedIDRegistry
 {
-    internal static Dictionary<Type,IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();
+    internal static Dictionary<Type, IIDRegistry> moddedIdRegistries = new Dictionary<Type, IIDRegistry>();
 
     internal static SRMod modScope;
     internal static void SetModScope(SRMod ModScope) => modScope = ModScope;
@@ -32,7 +32,7 @@ static internal class ModdedIDRegistry
     public static bool IsModdedID(object id)
     {
         if (!id.GetType().IsEnum) throw new Exception(id.GetType() + " is not an enum!");
-        return moddedIdRegistries.Any((x) =>  x.Key == id.GetType() && x.Value.IsModdedID(id) && SRMod.IsContextMod(x.Value.GetModForID(id)));
+        return moddedIdRegistries.Any((x) => x.Key == id.GetType() && x.Value.IsModdedID(id) && SRMod.IsContextMod(x.Value.GetModForID(id)));
     }
 
     public static bool IsModdedID<T>(T id)
@@ -40,9 +40,17 @@ static internal class ModdedIDRegistry
         return IsModdedID((object)id);
     }
 
+    public static bool IsEitherModdedID<K, V>(KeyValuePair<K, V> item)
+    {
+        bool keyState = typeof(K).IsEnum ? IsModdedID(item.Key) : false;
+        if (typeof(V).IsEnum) keyState = keyState || IsModdedID(item.Value);
+
+        return keyState;
+    }
+
     public static bool IsNullID(object id)
     {
-        return id.GetType().IsEnum && ((int) id) == 0;
+        return id.GetType().IsEnum && ((int) id) == EnumTranslator.SmallestValue(id.GetType());
         
     }
 

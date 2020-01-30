@@ -37,9 +37,17 @@ namespace SRML.Console.Commands
 
             if (args.Length != 2 || !Int32.TryParse(args[1], out count)) count = 1;
 
-            var g = SRBehaviour.InstantiateActor(GameContext.Instance.LookupDirector.GetPrefab(id),SceneContext.Instance.PlayerState.model.currRegionSetId);
-            for (int i = 0; i < count; i++) SceneContext.Instance.PlayerState?.Ammo.MaybeAddToSlot(id,g.GetComponent<Identifiable>());
-            GameObject.Destroy(g);
+            
+            for (int i = 0; i < count; i++) SceneContext.Instance.PlayerState?.Ammo.MaybeAddToSlot(id,null);
+            var slot = SceneContext.Instance.PlayerState?.Ammo.Slots.FirstOrDefault(x => x.id == id);
+            if (slot != null && slot.emotions == null) slot.emotions = new SlimeEmotionData()
+            {
+                {SlimeEmotions.Emotion.AGITATION,0 },
+                {SlimeEmotions.Emotion.FEAR,0 },
+                {SlimeEmotions.Emotion.HUNGER,0 },
+            };
+
+
             return true; 
         }
 

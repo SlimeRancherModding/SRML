@@ -66,8 +66,6 @@ namespace SRML.SR.SaveSystem.Data.Macro
             econSaturations.Pull(data.econSaturations);
             placedGadgets.Pull(data.placedGadgets);
             weather = ModdedIDRegistry.IsModdedID(data.weather) ? data.weather : AmbianceDirector.Weather.NONE;
-
-            Debug.Log("Econs had: " + econSaturations.InternalDictionary.Count);
         }
 
         public override void Push(WorldV22 data)

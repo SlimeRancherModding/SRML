@@ -19,6 +19,7 @@ using VanillaGadgetData = MonomiPark.SlimeRancher.Persist.PlacedGadgetV08;
 using VanillaPlotData = MonomiPark.SlimeRancher.Persist.LandPlotV08;
 using Game = MonomiPark.SlimeRancher.Persist.GameV12;
 using SRML.SR.SaveSystem.Pipeline;
+using SRML.SR.SaveSystem.Data.Macro;
 
 namespace SRML.SR.SaveSystem
 {
@@ -29,22 +30,24 @@ namespace SRML.SR.SaveSystem
         public static void PullModdedData(ModdedSaveData data, Game game)
         {
             data.Clear();
-
+            LogUtils.OpenLogSession();
             foreach(var pipeline in SaveRegistry.Pipelines)
             {
                 foreach(var mod in SRModLoader.GetMods())
                 {
-                    Debug.Log($"Trying pipeline {pipeline.UniqueID} with mod {mod.ModInfo.Id}");
+                    
                     var saveinfo = SaveRegistry.GetSaveInfo(mod);
                     var objects = pipeline.Pull(saveinfo, game)?.ToList();
                     
                     pipeline.RemoveExtraModdedData(saveinfo, game);
                     if (objects == null || !objects.Any()) continue;
+                    LogUtils.Log($"Applying pipeline {pipeline.UniqueID} to mod {mod.ModInfo.Id}");
                     data.GetSegmentForMod(mod).pipelineDatas.AddRange(objects);
 
                 }
                 
             }
+            LogUtils.CloseLogSession();
             // Taking the plunge into the pipeline system
             return;
 
@@ -221,7 +224,7 @@ namespace SRML.SR.SaveSystem
         #region pushing data
         public static void PushAllModdedData(ModdedSaveData data, Game game)
         {
-
+            LogUtils.OpenLogSession();
             var dict = new List<KeyValuePair<IPipelineData, string>>();
             foreach(var seg in data.segments)
             {
@@ -229,15 +232,16 @@ namespace SRML.SR.SaveSystem
             }
             foreach (var item in dict.OrderByDescending(x => x.Key.Pipeline.PullPriority))
             {
-                Debug.Log($"Pushing {item.Key.Pipeline.UniqueID} pipeline data for mod {item.Value}");
+                LogUtils.Log($"Pushing {item.Key.Pipeline.UniqueID} pipeline data for mod {item.Value}");
                 item.Key.Pipeline.Push(SaveRegistry.GetSaveInfo(item.Value), game, item.Key);
             }
-            ExtendedData.Pull(data);
-            PushAllSegmentData(data, game);
+            LogUtils.CloseLogSession();
+            //ExtendedData.Pull(data);
+            //PushAllSegmentData(data, game);
 
 
-            PersistentAmmoManager.Pull(data);
-            PushAllPartialData(data, game);
+            //PersistentAmmoManager.Pull(data);
+            //PushAllPartialData(data, game);
         }
 
         private static void PushAllSegmentData(ModdedSaveData data, Game game)
@@ -388,12 +392,7 @@ namespace SRML.SR.SaveSystem
 
         static SaveHandler()
         {
-            EnumTranslator.RegisterEnumFixer(
-                (EnumTranslator translator, EnumTranslator.TranslationMode mode, AmmoDataV02 data) =>
-                {
-                    data.id = translator.TranslateEnum(mode, data.id);
-                    translator.FixEnumValues(mode,data.emotionData.emotionData);
-                });
+
             CustomGadgetData.RegisterGadgetThings();
         }
     }

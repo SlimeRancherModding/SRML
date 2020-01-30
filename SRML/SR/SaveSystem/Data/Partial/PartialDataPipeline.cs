@@ -1,4 +1,5 @@
-﻿using MonomiPark.SlimeRancher.Persist;
+﻿using HarmonyLib;
+using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Pipeline;
 using SRML.SR.SaveSystem.Registry;
@@ -12,6 +13,33 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem.Data.Partial
 {
+    public static class Initializer
+    {
+        static Initializer()
+        {
+            try
+            {
+                EnumTranslator.RegisterEnumFixer<IdentifiedPartialData>((translator, mode, data) =>
+                {
+                    try
+                    {
+                        translator.FixEnumValues(mode, data.PartialData);
+                        data.Identifier = data.Identifier.TranslateWithEnum(translator, mode);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log(data.GetType().Name + " OOGAAGAG" + e);
+                        throw;
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                throw;
+            }
+        }
+    }
     public abstract class PartialDataPipeline<T>: SavePipeline<IdentifiedPartialData<T>> where T : PartialData
     {
         public override int PullPriority => 2000;
@@ -25,6 +53,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
                 var tempCont = SRMod.GetCurrentMod();
                 SRMod.ClearModContext();
                 SRMod.ForceModContext(SRModLoader.GetMod(mod.ModID));
+                Debug.Log(x.Value + " " + x.Key);
                 bool result = CustomChecker.GetCustomLevel(x.Value)==CustomChecker.CustomLevel.PARTIAL;
                 SRMod.ClearModContext();
                 SRMod.ForceModContext(tempCont);
@@ -32,23 +61,45 @@ namespace SRML.SR.SaveSystem.Data.Partial
             });
         }
         public override IEnumerable<IPipelineData> Pull(ModSaveInfo mod, GameV12 data)
-        {   
-
+        {
             var objs = GetAllRelevantObjectsForMod(data, mod);
+            List<IdentifiedPartialData<T>> list = new List<IdentifiedPartialData<T>>();
             SRMod.ForceModContext(SRModLoader.GetMod(mod.ModID));
-            foreach(var v in objs)
+            try
             {
-                Debug.Log(mod.ModID + " " + v);
-                var partial = PartialData.GetPartialData(v.Value.GetType());
-                partial.Pull(v.Value);
-                yield return new IdentifiedPartialData<T>(this, v.Key, partial as T);
+
+                    foreach (var v in objs)
+                    {
+                    try
+                    {
+                        var partial = PartialData.GetPartialData(v.Value.GetType());
+                        partial.Pull(v.Value);
+                        list.Add(new IdentifiedPartialData<T>(this, v.Key, partial as T));
+                    }
+
+                    catch
+                    {
+                        Debug.Log(v.Key + " "+v.Value);
+                        throw;
+                    }
+
+                }
                 
 
             }
-            SRMod.ClearModContext();
+            catch
+            {
+                Debug.Log(UniqueID+" "+mod.ModID);
+                throw;
+            }
+            finally
+            {
+                SRMod.ClearModContext();
+            }
+            return list;
         }
 
-        public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+        public override IdentifiedPartialData<T> ReadData(BinaryReader reader, ModSaveInfo info)
         {
             var id = DataIdentifier.Read(reader);
             Debug.Log(id.Type);
@@ -90,8 +141,12 @@ namespace SRML.SR.SaveSystem.Data.Partial
             
             item.Data.Write(writer);
         }
+
         
     }
+
+    
+
     public class IdentifiedPartialData<T> : PipelineData,IdentifiedPartialData where T : PartialData
     {
         public DataIdentifier Identifier { get; set; }
@@ -105,15 +160,9 @@ namespace SRML.SR.SaveSystem.Data.Partial
 
         PartialData IdentifiedPartialData.PartialData => Data;
 
-        static IdentifiedPartialData()
-        {
-            EnumTranslator.RegisterEnumFixer<IdentifiedPartialData>((translator, mode, data) =>
-            {
-                translator.FixEnumValues(mode, data.PartialData);
-                data.Identifier = data.Identifier.TranslateWithEnum(translator, mode);
-            });
-        }
+        
     }
+
 
     public interface IdentifiedPartialData
     {
@@ -128,6 +177,9 @@ namespace SRML.SR.SaveSystem.Data.Partial
         public override string UniqueID { get; }
 
         public override int PullPriority => base.PullPriority + priorityOffset;
+
+        public override int LatestVersion => 0;
+
         int priorityOffset;
         public override IEnumerable<KeyValuePair<DataIdentifier, object>> GetAllRelevantObjects(GameV12 data)=>generatorFunc(data);
         public SimplePartialDataPipeline(string id, Func<GameV12, IEnumerable<KeyValuePair<DataIdentifier, object>>> generator,int priorityOffset = 0)

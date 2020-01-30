@@ -4,9 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
+using MonomiPark.SlimeRancher.Persist;
 using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Ammo;
 using SRML.SR.SaveSystem.Format;
+using SRML.SR.SaveSystem.Pipeline;
+using SRML.SR.SaveSystem.Registry;
 using UnityEngine;
 using static PlayerState;
 
@@ -108,5 +111,54 @@ namespace SRML.SR.SaveSystem
 
 
 
+    }
+    internal class PersistentAmmoDataPipeline : SavePipeline<IdentifiableAmmoData>
+    {
+        public override string UniqueID => "PersistentAmmoData_pipeline";
+
+        public override int PullPriority => 0;
+
+        public override int LatestVersion => 0;
+
+        public override IEnumerable<IPipelineData> Pull(ModSaveInfo mod, GameV12 data)
+        {
+            foreach(var v in PersistentAmmoManager.PersistentAmmoData)
+            {
+                var model = v.Value.DataModel.TearDataForMod(mod.ModID);
+                if (model.HasNoData()) continue;
+                yield return new IdentifiableAmmoData(this) { identifier = v.Key, model = model };
+            }
+        }
+
+        public override IdentifiableAmmoData ReadData(BinaryReader reader, ModSaveInfo info)
+        {
+            var e = new IdentifiableAmmoData(this);
+            e.Read(reader);
+            return e;
+        }
+
+        public override void RemoveExtraModdedData(ModSaveInfo mod, GameV12 data)
+        {
+        }
+
+        protected override void PushData(ModSaveInfo mod, GameV12 data, IdentifiableAmmoData item)
+        {
+            PersistentAmmo persistentAmmo = null;
+            if(!PersistentAmmoManager.PersistentAmmoData.TryGetValue(item.identifier, out persistentAmmo))
+            {
+                persistentAmmo = new PersistentAmmo(item.identifier,item.model);
+               
+            }
+            else
+            {
+                persistentAmmo.DataModel.CombineData(item.model);
+            }
+            PersistentAmmoManager.PersistentAmmoData[item.identifier] = persistentAmmo;
+        }
+
+        protected override void WriteData(BinaryWriter writer, ModSaveInfo info, IdentifiableAmmoData item)
+        {
+            item.Write(writer);
+        }
     }
 }

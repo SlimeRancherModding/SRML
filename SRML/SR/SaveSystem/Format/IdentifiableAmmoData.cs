@@ -4,10 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SRML.SR.SaveSystem.Data.Ammo;
+using SRML.SR.SaveSystem.Pipeline;
 
 namespace SRML.SR.SaveSystem.Format
 {
-    internal class IdentifiableAmmoData
+    internal class IdentifiableAmmoData : PipelineData
     {
         public AmmoIdentifier identifier;
         public PersistentAmmoModel model = new PersistentAmmoModel();
@@ -43,5 +44,13 @@ namespace SRML.SR.SaveSystem.Format
                 data.identifier = new AmmoIdentifier(data.identifier.AmmoType,   FixValue(data.identifier.AmmoType,data.identifier.longIdentifier), data.identifier.stringIdentifier, data.identifier.custommodid);
             });
         }
+
+        public IdentifiableAmmoData(ISavePipeline pipeline) : base(pipeline)
+        {
+        }
+
+        public IdentifiableAmmoData() : this(null) { }
+
+
     }
 }

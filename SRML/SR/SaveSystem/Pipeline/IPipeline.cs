@@ -37,6 +37,10 @@ namespace SRML.SR.SaveSystem.Pipeline
     {
         public abstract string UniqueID { get; }
 
+        public abstract int LatestVersion { get; }
+
+        public int Version { get; protected set; }
+
         public virtual int PullPriority => 1000;
 
         public bool OurData(IPipelineData data) => data is T;
@@ -47,11 +51,20 @@ namespace SRML.SR.SaveSystem.Pipeline
 
         protected abstract void PushData(ModSaveInfo mod, Game data, T item);
 
-        public abstract IPipelineData Read(BinaryReader reader, ModSaveInfo info);
+        public IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+        {
+            Version = reader.ReadInt32();
+            return ReadData(reader, info);
+        }
 
+        public abstract T ReadData(BinaryReader reader, ModSaveInfo info);
         public abstract void RemoveExtraModdedData(ModSaveInfo mod, Game data);
 
-        public void Write(BinaryWriter writer, ModSaveInfo info, IPipelineData item)=>WriteData(writer,info,(T)item);
+        public void Write(BinaryWriter writer, ModSaveInfo info, IPipelineData item)
+        {
+            writer.Write(LatestVersion);
+            WriteData(writer, info, (T)item);
+        }
         protected abstract void WriteData(BinaryWriter writer, ModSaveInfo info, T item);
 
         

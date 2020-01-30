@@ -29,7 +29,7 @@ namespace SRML.SR.SaveSystem.Data
             }
         }
 
-        public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+        public override IdentifiedData ReadData(BinaryReader reader, ModSaveInfo info)
         {
             var id = new IdentifiedData(this);
             id.Read(reader, info);
@@ -62,6 +62,9 @@ namespace SRML.SR.SaveSystem.Data
     public class SimpleFullCustomDataPipeline<T> : FullCustomDataPipeline<T> where T : PersistedDataSet
     {
         public override string UniqueID { get; }
+
+        public override int LatestVersion => 0;
+
         Func<GameV12, IEnumerable<KeyValuePair<DataIdentifier, T>>> getRelevantObjects;
         Action<GameV12, DataIdentifier, T> insertObject;
         Action<GameV12, DataIdentifier, T> removeObject;

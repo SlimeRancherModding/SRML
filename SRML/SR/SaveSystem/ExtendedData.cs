@@ -269,15 +269,17 @@ namespace SRML.SR.SaveSystem
 
             public override int PullPriority => 10000; // we want to be pulled last so we can be pushed first, so WorldDataPreload is called before anything else is processed
 
+            public override int LatestVersion => 0 ;
+
             public override IEnumerable<IPipelineData> Pull(ModSaveInfo mod, GameV12 data)
             {
                 var piece = new CompoundDataPiece("root");
-                mod.OnWorldSave(piece);
+                mod.WorldDataSave(piece);
                 if (piece.DataList.Count == 0) yield break;
                 yield return new WorldSaveData(this) { Piece = piece };
             }
 
-            public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+            public override WorldSaveData ReadData(BinaryReader reader, ModSaveInfo info)
             {
                 return new WorldSaveData(this) { Piece = CompoundDataPiece.Deserialize(reader) as CompoundDataPiece };
             }
@@ -329,7 +331,7 @@ namespace SRML.SR.SaveSystem
                 }
             }
 
-            public override IPipelineData Read(BinaryReader reader, ModSaveInfo info)
+            public override ExtendedDataData ReadData(BinaryReader reader, ModSaveInfo info)
             {
                 return new ExtendedDataData(this)
                 {
@@ -345,17 +347,16 @@ namespace SRML.SR.SaveSystem
 
             protected override void PushData(ModSaveInfo mod, GameV12 data, ExtendedDataData item)
             {
-                PreparedData newData = default;
-                if(!preparedData.TryGetValue(item.Identifier,out newData))
+
+                PreparedData newData = preparedData.ContainsKey(item.Identifier)?preparedData[item.Identifier] : new PreparedData()
                 {
-                    newData = new PreparedData()
-                    {
-                        Data = new CompoundDataPiece("root"),
-                        Source = this,
-                        SourceType = PreparedData.PreparationSource.UNKNOWN
-                    };
-                }
+                    Data = new CompoundDataPiece("root"),
+                    Source = this,
+                    SourceType = PreparedData.PreparationSource.SPAWN
+                };
+
                 item.Data.DataList.Do(x => newData.Data.AddPiece(x));
+                //Debug.Log(item.Identifier + " " + newData.Data.ToString());
                 preparedData[item.Identifier] = newData;
             }
 
@@ -365,6 +366,15 @@ namespace SRML.SR.SaveSystem
                 CompoundDataPiece.Serialize(writer, item.Data);
             }
 
+            static ExtendedDataPipeline()
+            {
+                EnumTranslator.RegisterEnumFixer<ExtendedDataData>((trans, mode, obj) =>
+                {
+                    trans.FixEnumValues(mode, obj.Data);
+                    obj.Identifier = obj.Identifier.TranslateWithEnum(trans, mode);
+                });
+            }
+
             public class ExtendedDataData : PipelineData
             {
                 public DataIdentifier Identifier;
@@ -372,6 +382,26 @@ namespace SRML.SR.SaveSystem
                 public ExtendedDataData(ISavePipeline pipeline) : base(pipeline)
                 {
                 }
+            }
+        }
+
+        public class SimpleExtendedDataPipeline : ExtendedDataPipeline
+        {
+            public override string UniqueID { get; }
+
+            public override int LatestVersion => 0;
+
+            Func<GameV12, IEnumerable<DataIdentifier>> identifierGen;
+
+            public SimpleExtendedDataPipeline(string uniqueID, Func<GameV12, IEnumerable<DataIdentifier>> identifierGen)
+            {
+                UniqueID = uniqueID;
+                this.identifierGen = identifierGen;
+            }
+
+            public override IEnumerable<DataIdentifier> GetIdentifiers(GameV12 v)
+            {
+                return identifierGen(v);
             }
         }
     }

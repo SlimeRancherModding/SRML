@@ -167,11 +167,17 @@
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\Patches\SceneContextAwakePatch.cs" />
+    <Compile Include="SR\SaveSystem\Data\Ammo\PartialAmmoData.cs" />
     <Compile Include="SR\SaveSystem\Data\DataPipelines.cs" />
     <Compile Include="SR\SaveSystem\Data\FullCustomDataPipeline.cs" />
+    <Compile Include="SR\SaveSystem\Data\Macro\PartialPediaData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Macro\PartialPlayerData.cs" />
+    <Compile Include="SR\SaveSystem\Data\Macro\PartialRanchData.cs" />
     <Compile Include="SR\SaveSystem\Data\Macro\PartialWorldData.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\PartialDataPipeline.cs" />
     <Compile Include="SR\SaveSystem\Data\Partial\PartialDataUtils.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SceneContextAwakePatch.cs" />
     <Compile Include="SR\SaveSystem\Pipeline\IPipeline.cs" />
     <Compile Include="SR\SaveSystem\Pipeline\PipelineSerializer.cs" />
     <Compile Include="SR\UI\Utils\UIUtils.cs" />

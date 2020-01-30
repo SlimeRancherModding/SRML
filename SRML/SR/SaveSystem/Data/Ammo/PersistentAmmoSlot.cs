@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HarmonyLib;
+using SRML.SR.SaveSystem.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 {
     internal class PersistentAmmoSlot
     {
-        private List<CompoundDataPiece> data= new List<CompoundDataPiece>();
+        private List<CompoundDataPiece> data = new List<CompoundDataPiece>();
 
         public int Count => data.Count;
 
@@ -74,6 +76,37 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
         }
 
+        public PersistentAmmoSlot TearDataForMod(string modid)
+        {
+            var list = new List<CompoundDataPiece>();
+            foreach (var v in data)
+            {
+                if (v == null)
+                {
+                    list.Add(null);
+                    continue;
+                }
+                var comp = v[modid] as CompoundDataPiece;
+                if (comp == null) list.Add(null);
+                else
+                {
+                    var newComp = new CompoundDataPiece("root");
+                    newComp.AddPiece(comp);
+                    v.DataList.Remove(comp);
+                    list.Add(newComp);
+                }
+            }
+            return new PersistentAmmoSlot() { data = list };
+        }
+
+        public void CombineData(PersistentAmmoSlot other)
+        {
+            other.CompensateForExternalChanges(other.Count);
+            for (int i = 0; i < Count; i++)
+            {
+                if (other.data[i] != null) other.data[i].DataList.Do(x => { if (x is CompoundDataPiece comp) data[i]?.AddPiece(x); });
+            }
+        }
         public bool HasNoData()
         {
             foreach(var v in data)

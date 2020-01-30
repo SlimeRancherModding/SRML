@@ -8,20 +8,22 @@ using SRML.Utils;
 
 namespace SRML.SR.SaveSystem.Data.Partial
 {
-    internal class PartialList<T> : PartialData<IList<T>>, IDictionaryProvider
+    public class PartialList<T> : PartialData<IList<T>>, IDictionaryProvider
     {
         private Predicate<T> hoistCondition;
         private Func<T> emptyValueCreator;
         private SerializerPair<T> serializer;
+        private Predicate<T> forbiddenValueFilter;
 
         Dictionary<int,T> hoistedValues = new Dictionary<int, T>();
 
-        public PartialList(Predicate<T> hoistCondition, SerializerPair<T> serializer, Func<T> emptyValueCreator=null)
+        public PartialList(Predicate<T> hoistCondition, SerializerPair<T> serializer, Func<T> emptyValueCreator=null, Predicate<T> checkIfValid = null)
         {
             this.hoistCondition = hoistCondition;
             if (emptyValueCreator == null) emptyValueCreator = () => default(T);
             this.emptyValueCreator = emptyValueCreator;
             this.serializer = serializer;
+            this.forbiddenValueFilter = checkIfValid ?? (x=>true);
         }
 
         public IDictionary InternalDictionary => hoistedValues;
@@ -41,7 +43,7 @@ namespace SRML.SR.SaveSystem.Data.Partial
 
         public override void Push(IList<T> data)
         {
-            foreach (var pair in hoistedValues)
+            foreach (var pair in hoistedValues.Where(x=>forbiddenValueFilter(x.Value)))
             {
                 data[pair.Key] = pair.Value;
             }

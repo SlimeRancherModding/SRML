@@ -32,7 +32,9 @@ namespace SRML.SR.SaveSystem.Data
                 {IdentifierType.EXCHANGEOFFER, typeof(ExchangeOfferV04) },
                 {IdentifierType.RANCH, typeof(RanchV07) },
                 {IdentifierType.WORLD, typeof(WorldV22) },
-                {IdentifierType.PLAYER, typeof(PlayerV14) }
+                {IdentifierType.PLAYER, typeof(PlayerV14) },
+                {IdentifierType.APPEARANCES, typeof(AppearancesV01) },
+                {IdentifierType.PEDIA, typeof(PediaV03) }
             };
 
 
@@ -47,7 +49,9 @@ namespace SRML.SR.SaveSystem.Data
                 {IdentifierType.EXCHANGEOFFER, typeof(VersionedPersistedDataSet<ExchangeOfferV03>) },
                 {IdentifierType.RANCH, typeof(VersionedPersistedDataSet<RanchV06>) },
                 {IdentifierType.WORLD, typeof(VersionedPersistedDataSet<WorldV21>) },
-                {IdentifierType.PLAYER,typeof(VersionedPersistedDataSet<PlayerV13>) }
+                {IdentifierType.PLAYER,typeof(VersionedPersistedDataSet<PlayerV13>) },
+                {IdentifierType.APPEARANCES,typeof(AppearancesV01) },
+                {IdentifierType.PEDIA,typeof(VersionedPersistedDataSet<PediaV02>) }
         }.Invert();
 
 
@@ -79,6 +83,10 @@ namespace SRML.SR.SaveSystem.Data
                     return CreateIdentifierL(0);
                 case PlayerV14 player:
                     return CreateIdentifierL(0);
+                case AppearancesV01 _:
+                    return CreateIdentifierL(0);
+                case PediaV03 _:
+                    return CreateIdentifierL(0);
 
             }
             throw new NotImplementedException();
@@ -102,6 +110,7 @@ namespace SRML.SR.SaveSystem.Data
                 case IdentifierType.PLAYER:
 
                     return SceneContext.Instance.Player;
+
             }
             return null;
         }
@@ -129,6 +138,10 @@ namespace SRML.SR.SaveSystem.Data
                     return game.ranch;
                 case IdentifierType.PLAYER:
                     return game.player;
+                case IdentifierType.APPEARANCES:
+                    return game.appearances;
+                case IdentifierType.PEDIA:
+                    return game.pedia;
             }
             throw new NotImplementedException();
         }
@@ -180,6 +193,11 @@ namespace SRML.SR.SaveSystem.Data
             return hashCode;
         }
 
+        public override string ToString()
+        {
+            return $"(Type: {Type}, LongID: {longID} StringID: {stringID}";
+        }
+
         public static bool operator ==(DataIdentifier me, DataIdentifier other) => me.Equals(other);
         public static bool operator !=(DataIdentifier me, DataIdentifier other) => !me.Equals(other);
 
@@ -195,6 +213,8 @@ namespace SRML.SR.SaveSystem.Data
         EXCHANGEOFFER,
         WORLD,
         RANCH,
-        PLAYER
+        PLAYER,
+        APPEARANCES,
+        PEDIA
     }
 }

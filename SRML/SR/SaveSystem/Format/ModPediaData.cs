@@ -6,6 +6,7 @@ using System.Text;
 using HarmonyLib;
 using MonomiPark.SlimeRancher;
 using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem.Data.Macro;
 using SRML.SR.SaveSystem.Data.Partial;
 using SRML.Utils;
 using UnityEngine;
@@ -61,17 +62,5 @@ namespace SRML.SR.SaveSystem.Format
         }
     }
 
-    internal class PediaDataBuffer
-    {
-        public List<PediaDirector.Id> unlockedIds;
-        public List<TutorialDirector.Id> completedTuts;
-        public List<TutorialDirector.Id> popupQueue;
-
-        public PediaDataBuffer(PediaV03 pediaData)
-        {
-            unlockedIds = SavedGame.StringsToEnums<PediaDirector.Id>(pediaData.unlockedIds);
-            completedTuts = SavedGame.StringsToEnums<TutorialDirector.Id>(pediaData.completedTuts);
-            popupQueue = SavedGame.StringsToEnums<TutorialDirector.Id>(pediaData.popupQueue);
-        }
-    }
+    
 }

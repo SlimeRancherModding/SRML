@@ -19,6 +19,16 @@ namespace SRML.SR.SaveSystem.Utils
             }
         }
 
+        public static AmmoDataV02 CreateEmpty()=> new AmmoDataV02()
+        {
+            count = 0,
+            emotionData = new SlimeEmotionDataV02()
+            {
+                emotionData = new Dictionary<SlimeEmotions.Emotion, float>()
+            },
+            id = Identifiable.Id.NONE
+        };
+
         public static List<VanillaAmmoData> RipOutWhere(List<VanillaAmmoData> original, Predicate<VanillaAmmoData> pred,bool doRip = true)
         {
             var newData = new VanillaAmmoData[original.Count];

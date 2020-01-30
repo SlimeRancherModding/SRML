@@ -51,6 +51,25 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             UpdateFromExistingSlots(model.slots);
         }
 
+        public PersistentAmmoModel TearDataForMod(string modid)
+        {
+            var newModel = new PersistentAmmoModel() { slots = new PersistentAmmoSlot[slots.Length] }; 
+            for(int i = 0; i < slots.Length; i++)
+            {
+                newModel.slots[i] = slots[i].TearDataForMod(modid);
+            }
+            return newModel;
+        }
+
+        public void CombineData(PersistentAmmoModel other)
+        {
+            other.AdjustSlotCount(slots.Length);
+            for(int i = 0; i < slots.Length; i++)
+            {
+                slots[i].CombineData(other.slots[i]);
+            }
+        }
+
         public PersistentAmmoModel() { }
 
         static PersistentAmmoModel()

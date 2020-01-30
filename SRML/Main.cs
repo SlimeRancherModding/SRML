@@ -85,6 +85,7 @@ namespace SRML
             if (isInitialized) return;
             isInitialized = true;
 
+            SRCallbacks.OnMainMenuLoaded += (m) => GameContext.Instance.DLCDirector.provider.cache[DLCPackage.Id.SECRET_STYLE] = DLCPackage.State.INSTALLED;
             BaseObjects.Populate();
             SRCallbacks.OnLoad();
             PrefabUtils.ProcessReplacements();

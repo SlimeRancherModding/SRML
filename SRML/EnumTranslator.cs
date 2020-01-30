@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonomiPark.SlimeRancher.Regions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ namespace SRML
     /// Used to assure that enum values map properly between game loads, even if registration order changes
     /// Mapped values are always negative
     /// </summary>
+    
     public partial class EnumTranslator
     {
         public Dictionary<Type,Dictionary<int,string>> MappedValues = new Dictionary<Type, Dictionary<int, string>>();
@@ -101,7 +103,7 @@ namespace SRML
             if (!MappedValues.ContainsKey(type)) return ((int) val);
             
             var potential = MappedValues[type].FirstOrDefault((x) => Enum.GetName(type, val) == x.Value);
-            return potential.Key<0?potential.Key : ((int)val);
+            return potential.Key<SmallestValue(type)?potential.Key : ((int)val);
         }
 
         public T TranslateFrom<T>(int val)
@@ -111,7 +113,7 @@ namespace SRML
 
         public object TranslateFrom(Type enumType, int val)
         {
-            if (val < 0)
+            if (val < SmallestValue(enumType))
             {
                 if(!MappedValues.ContainsKey(enumType)||!MappedValues[enumType].ContainsKey(val)||!Enum.IsDefined(enumType,MappedValues[enumType][val])) throw new MissingTranslationException(val,TranslationMode.FROMTRANSLATED);
                 return Enum.ToObject(enumType, Enum.Parse(enumType, MappedValues[enumType][val]));
@@ -186,6 +188,8 @@ namespace SRML
 
     public partial class EnumTranslator
     {
+        public static int SmallestValue(Type type) => (type==typeof(ZoneDirector.Zone)||type == typeof(RegionRegistry.RegionSetId)) ? -1 : 0;
+
         public delegate void EnumFixerGenericDelegate<T>(EnumTranslator translator,TranslationMode mode, T toFix);
         public delegate void EnumFixerDelegate(EnumTranslator translator, TranslationMode mode, object toFix);
         static Dictionary<Type,EnumFixerDelegate> enumFixers = new Dictionary<Type, EnumFixerDelegate>();
@@ -217,6 +221,16 @@ namespace SRML
             ConvertGenericFallback<SpawnResource.Id>((ref string x) =>
             {
                 x = SpawnResource.Id.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<RegionRegistry.RegionSetId>((ref string x) =>
+            {
+                x = RegionRegistry.RegionSetId.UNSET.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<ZoneDirector.Zone>((ref string x) =>
+            {
+                x = ZoneDirector.Zone.NONE.ToString();
                 return true;
             })
         };
@@ -275,18 +289,26 @@ namespace SRML
 
         static void FixEnumValues(EnumTranslator translator, TranslationMode mode, ref object toFix)
         {
-            if (toFix == null) return;
-            var type = toFix.GetType();
-            if (type.IsEnum)
+            try
             {
-                toFix = TranslateEnum(type, translator, mode, toFix);
+                if (toFix == null) return;
+                var type = toFix.GetType();
+                if (type.IsEnum)
+                {
+                    toFix = TranslateEnum(type, translator, mode, toFix);
+                }
+                else
+                    foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type)))
+                    {
+                        v.Value(translator, mode, toFix);
+                    }
+                DoDefaultTranslationFallbacks = true;
             }
-            else
-            foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type)))
+            catch(Exception e)
             {
-                v.Value(translator, mode, toFix);
+                Debug.Log(toFix.GetType().Name);
+                throw;
             }
-            DoDefaultTranslationFallbacks = true;
         }
 
         /// <summary>
@@ -297,14 +319,22 @@ namespace SRML
         /// <param name="toFix">Object to fix</param>
         public static void FixEnumValues(EnumTranslator translator, TranslationMode mode, object toFix)
         {
-            if (toFix == null) return;
-            var type = toFix.GetType();
-            if (type.IsEnum)
+            try
             {
-                throw new Exception("Use TranslateEnum for enumvalues");
+                if (toFix == null) return;
+                var type = toFix.GetType();
+                if (type.IsEnum)
+                {
+                    throw new Exception("Use TranslateEnum for enumvalues");
+                }
+                else
+                    foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type))) v.Value(translator, mode, toFix);
             }
-            else
-                foreach (var v in enumFixers.Where((x) => x.Key.IsAssignableFrom(type))) v.Value(translator, mode, toFix);
+            catch(Exception e)
+            {
+                Debug.Log(toFix.GetType().Name);
+                throw;
+            }
         }
 
         public static T TranslateEnum<T>(EnumTranslator translator,TranslationMode mode, T id)
