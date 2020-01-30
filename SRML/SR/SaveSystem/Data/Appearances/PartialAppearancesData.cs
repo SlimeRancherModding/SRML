@@ -58,10 +58,11 @@ namespace SRML.SR.SaveSystem.Data.Appearances
             
             unlocksCustom.Push(data.unlocks);
 
-
+            unlocksPartial.Remove(Identifiable.Id.NONE);
 
             foreach(var v in unlocksPartial)
             {
+                if (!data.unlocks.ContainsKey(v.Key)) data.unlocks[v.Key] = new List<AppearanceSaveSet>();
                 v.Value.Push(data.unlocks[v.Key]);
             }
 

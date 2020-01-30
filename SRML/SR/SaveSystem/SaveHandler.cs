@@ -236,12 +236,13 @@ namespace SRML.SR.SaveSystem
                 item.Key.Pipeline.Push(SaveRegistry.GetSaveInfo(item.Value), game, item.Key);
             }
             LogUtils.CloseLogSession();
-            //ExtendedData.Pull(data);
-            //PushAllSegmentData(data, game);
+            if (dict.Count != 0) return;
+            ExtendedData.Pull(data);
+            PushAllSegmentData(data, game);
 
 
-            //PersistentAmmoManager.Pull(data);
-            //PushAllPartialData(data, game);
+            PersistentAmmoManager.Pull(data);
+            PushAllPartialData(data, game);
         }
 
         private static void PushAllSegmentData(ModdedSaveData data, Game game)

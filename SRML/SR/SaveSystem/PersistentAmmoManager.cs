@@ -143,8 +143,8 @@ namespace SRML.SR.SaveSystem
 
         protected override void PushData(ModSaveInfo mod, GameV12 data, IdentifiableAmmoData item)
         {
-            PersistentAmmo persistentAmmo = null;
-            if(!PersistentAmmoManager.PersistentAmmoData.TryGetValue(item.identifier, out persistentAmmo))
+            PersistentAmmo persistentAmmo;
+            if (!PersistentAmmoManager.PersistentAmmoData.TryGetValue(item.identifier, out persistentAmmo))
             {
                 persistentAmmo = new PersistentAmmo(item.identifier,item.model);
                
@@ -153,6 +153,7 @@ namespace SRML.SR.SaveSystem
             {
                 persistentAmmo.DataModel.CombineData(item.model);
             }
+            Debug.Log(item.identifier);
             PersistentAmmoManager.PersistentAmmoData[item.identifier] = persistentAmmo;
         }
 

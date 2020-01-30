@@ -34,25 +34,23 @@ namespace SRML.SR.SaveSystem.Data
                 {IdentifierType.WORLD, typeof(WorldV22) },
                 {IdentifierType.PLAYER, typeof(PlayerV14) },
                 {IdentifierType.APPEARANCES, typeof(AppearancesV01) },
-                {IdentifierType.PEDIA, typeof(PediaV03) }
+                {IdentifierType.PEDIA, typeof(PediaV03) },
+                {IdentifierType.GLITCHSTORAGE, typeof(GlitchStorageV01) },
+                {IdentifierType.DECORIZERSETTINGS, typeof(DecorizerSettingsV01) },
+                {IdentifierType.ACHIEVEMENTS, typeof(GameAchieveV03) }
             };
 
 
-
-        public static readonly Dictionary<Type,IdentifierType> PersistedDataSetsToIdentifiers = new Dictionary<IdentifierType, Type>()
+        static DataIdentifier()
         {
-            {IdentifierType.ACTOR,typeof(VersionedPersistedDataSet<ActorDataV08>) },
-                {IdentifierType.GADGET,typeof(VersionedPersistedDataSet<PlacedGadgetV07>) },
-                {IdentifierType.LANDPLOT,typeof(VersionedPersistedDataSet<LandPlotV07>) },
-                {IdentifierType.GORDO,typeof(GordoV01) },
-                {IdentifierType.TREASUREPOD,typeof(TreasurePodV01) },
-                {IdentifierType.EXCHANGEOFFER, typeof(VersionedPersistedDataSet<ExchangeOfferV03>) },
-                {IdentifierType.RANCH, typeof(VersionedPersistedDataSet<RanchV06>) },
-                {IdentifierType.WORLD, typeof(VersionedPersistedDataSet<WorldV21>) },
-                {IdentifierType.PLAYER,typeof(VersionedPersistedDataSet<PlayerV13>) },
-                {IdentifierType.APPEARANCES,typeof(AppearancesV01) },
-                {IdentifierType.PEDIA,typeof(VersionedPersistedDataSet<PediaV02>) }
-        }.Invert();
+            PersistedDataSetsToIdentifiers.Clear();
+            foreach (var v in IdentifierTypeToData)
+            {
+                PersistedDataSetsToIdentifiers[v.Value] = v.Key;
+            }
+        }
+
+        public static readonly Dictionary<Type, IdentifierType> PersistedDataSetsToIdentifiers = new Dictionary<Type, IdentifierType>();
 
 
         public static KeyValuePair<DataIdentifier, object> Convert<T>(KeyValuePair<string, T> obj) => new KeyValuePair<DataIdentifier, object>(new DataIdentifier() { Type = GetIdentifierType(obj.Value.GetType()), stringID = obj.Key }, obj.Value);
@@ -87,6 +85,10 @@ namespace SRML.SR.SaveSystem.Data
                     return CreateIdentifierL(0);
                 case PediaV03 _:
                     return CreateIdentifierL(0);
+                case DecorizerSettingsV01 ds:
+                    return CreateIdentifierS(game.player.decorizer.settings.GetKeyOfValue(ds));
+                case GameAchieveV03 _:
+                    return CreateIdentifierL(0);
 
             }
             throw new NotImplementedException();
@@ -110,6 +112,7 @@ namespace SRML.SR.SaveSystem.Data
                 case IdentifierType.PLAYER:
 
                     return SceneContext.Instance.Player;
+                
 
             }
             return null;
@@ -142,6 +145,12 @@ namespace SRML.SR.SaveSystem.Data
                     return game.appearances;
                 case IdentifierType.PEDIA:
                     return game.pedia;
+                case IdentifierType.GLITCHSTORAGE:
+                    return game.world.glitch.storage.Get(identifier.stringID);
+                case IdentifierType.DECORIZERSETTINGS:
+                    return game.player.decorizer.settings.Get(identifier.stringID);
+                case IdentifierType.ACHIEVEMENTS:
+                    return game.achieve;
             }
             throw new NotImplementedException();
         }
@@ -215,6 +224,9 @@ namespace SRML.SR.SaveSystem.Data
         RANCH,
         PLAYER,
         APPEARANCES,
-        PEDIA
+        PEDIA,
+        DECORIZERSETTINGS,
+        GLITCHSTORAGE,
+        ACHIEVEMENTS
     }
 }

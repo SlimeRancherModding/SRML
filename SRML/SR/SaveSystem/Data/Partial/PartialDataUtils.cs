@@ -14,6 +14,8 @@ namespace SRML.SR.SaveSystem.Data.Partial
         {
             return new PartialDictionary<string, T>(x => ModdedStringRegistry.IsValidModdedString(x.Key), SerializerPair.STRING, pair, checkValueValid: x => ModdedStringRegistry.IsValidModdedString(x.Key));
         }
+
+        public static PartialDictionary<K, T> CreatePartialDictionaryWithEnumKey<K, T>(SerializerPair<T> pair) => new PartialDictionary<K, T>(x => ModdedIDRegistry.IsModdedID(x.Key), SerializerPair.GetEnumSerializerPair<K>(), pair, checkValueValid: x => ModdedIDRegistry.IsModdedID(x.Key));
         public static PartialDictionary<string, T> CreatePartialDictionaryWithStringKey<T>() where T : PersistedDataSet, new()
         {
             return CreatePartialDictionaryWithStringKey(CreateSerializerForPersistedDataSet<T>());
@@ -23,9 +25,12 @@ namespace SRML.SR.SaveSystem.Data.Partial
 
         public static PartialCollection<string> CreatePartialModdedStringCollection() => new PartialCollection<string>(ModdedStringRegistry.IsValidModdedString, SerializerPair.STRING, ModdedStringRegistry.IsValidModdedString);
 
+        
+
         public static object GetEnumNullValue(Type enumType)
         {
-            return Enum.IsDefined(enumType, "NONE") ? Enum.Parse(enumType, "NONE", true) : null; 
+            
+            return Enum.IsDefined(enumType, "NONE") ? Enum.Parse(enumType, "NONE", true) : Enum.ToObject(enumType,EnumTranslator.SmallestValue(enumType)); 
         }
 
         

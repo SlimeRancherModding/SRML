@@ -305,6 +305,11 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             hashCode = hashCode * -1521134295 + longIdentifier.GetHashCode();
             return hashCode;
         }
+
+        public override string ToString()
+        {
+            return $"(Type: {this.AmmoType}, Long: {this.longIdentifier}, String: {this.stringIdentifier}";
+        }
     }
 
     public enum AmmoType
@@ -313,6 +318,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         PLAYER,
         LANDPLOT,
         GADGET,
+        GLITCH,
         CUSTOM = -2147483648
 
     }

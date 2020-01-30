@@ -314,11 +314,14 @@ namespace SRML.Utils
 		public static SerializerPair<long> INT64 = new SerializerPair<long>((x, y) => x.Write(y), (x) => x.ReadInt64());
 		public static SerializerPair<string> STRING = new SerializerPair<string>((x, y) => x.Write(y), (x) => x.ReadString());
         public static SerializerPair<bool> BOOL = new SerializerPair<bool>((x,y)=>x.Write(y),(x)=>x.ReadBoolean());
-
+        static Dictionary<Type, SerializerPair> pairs = new Dictionary<Type, SerializerPair>();
         public static SerializerPair<K> GetEnumSerializerPair<K>()
 		{
-            return new SerializerPair<K>((writer, obj) => writer.Write((int)(object)obj),
+            if (pairs.ContainsKey(typeof(K))) return pairs[typeof(K)] as SerializerPair<K>;
+            var v = new SerializerPair<K>((writer, obj) => writer.Write((int)(object)obj),
                 (reader => (K)(object)reader.ReadInt32()));
+            pairs[typeof(K)] = v;
+            return v;
         }
     }
 }

@@ -51,64 +51,65 @@ namespace SRML.SR.SaveSystem.Format
             byteLength = reader.ReadInt64();
             if (!(SRModLoader.GetMod(modid) is SRMod mod)) throw new Exception($"Unrecognized mod id: {modid}");
             var saveInfo = SaveRegistry.GetSaveInfo(mod);
-
-            identifiableData.Clear();
-            int count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
+            if (version < 4)
             {
-                var e = new IdentifiedData();
-                e.Read(reader,saveInfo);
-                identifiableData.Add(e);
-            }
-
-            extendedData.Clear();
-            count = reader.ReadInt32();
-            for (int i = 0; i < count; i++)
-            {
-                var e = new ExtendedDataTree();
-                e.Read(reader);
-                extendedData.Add(e);
-            }
-
-            if (version >= 1)
-            {
-                playerData.Read(reader);
-                pediaData.Read(reader);
-                BinaryUtils.ReadDictionary(reader,customAmmo,(x)=>AmmoIdentifier.Read(x), (x) =>
+                identifiableData.Clear();
+                int count = reader.ReadInt32();
+                for (int i = 0; i < count; i++)
                 {
-                    var list = new List<VanillaAmmoData>();
-                    int ammoCount = x.ReadInt32();
-                    for (int i = 0; i < ammoCount; i++)
-                    {
-                        if (x.ReadBoolean())
-                        {
-                            var newData = new VanillaAmmoData();
-                            newData.Load(x.BaseStream);
-                            list.Add(newData);
-                        }
-                        else
-                        {
-                            list.Add(null);
-                        }
-                    }
+                    var e = new IdentifiedData();
+                    e.Read(reader, saveInfo);
+                    identifiableData.Add(e);
+                }
 
-                    return list;
-                } );
-                if (version < 2) return;
-                extendedWorldData = (CompoundDataPiece)DataPiece.Deserialize(reader);
-                if (version < 3) return;
-                worldData.Read(reader);
-                
+                extendedData.Clear();
+                count = reader.ReadInt32();
+                for (int i = 0; i < count; i++)
+                {
+                    var e = new ExtendedDataTree();
+                    e.Read(reader);
+                    extendedData.Add(e);
+                }
+
+                if (version >= 1)
+                {
+                    playerData.Read(reader);
+                    pediaData.Read(reader);
+                    BinaryUtils.ReadDictionary(reader, customAmmo, (x) => AmmoIdentifier.Read(x), (x) =>
+                        {
+                            var list = new List<VanillaAmmoData>();
+                            int ammoCount = x.ReadInt32();
+                            for (int i = 0; i < ammoCount; i++)
+                            {
+                                if (x.ReadBoolean())
+                                {
+                                    var newData = new VanillaAmmoData();
+                                    newData.Load(x.BaseStream);
+                                    list.Add(newData);
+                                }
+                                else
+                                {
+                                    list.Add(null);
+                                }
+                            }
+
+                            return list;
+                        });
+                    if (version < 2) return;
+                    extendedWorldData = (CompoundDataPiece)DataPiece.Deserialize(reader);
+                    if (version < 3) return;
+                    worldData.Read(reader);
+
+                }
+                else
+                {
+                    identifiableData.Clear(); // with the new enum translator system we need to make sure old id's are gone
+                }
             }
             else
             {
-                identifiableData.Clear(); // with the new enum translator system we need to make sure old id's are gone
-            }
-
-            if (version >= 4)
-            {
                 pipelineDatas.Clear();
-                count = reader.ReadInt32();
+                int count = reader.ReadInt32();
                 for(int i = 0;i<count;i++)
                 {
                     try
@@ -134,42 +135,11 @@ namespace SRML.SR.SaveSystem.Format
             if (!(SRModLoader.GetMod(modid) is SRMod mod)) throw new Exception($"Unrecognized mod id: {modid}");
             var saveInfo = SaveRegistry.GetSaveInfo(mod);
 
-            writer.Write(identifiableData.Count);
-            foreach (var data in identifiableData)
-            {
-                data.Write(writer,saveInfo);
-            }
-
-            writer.Write(extendedData.Count);
-            foreach (var data in extendedData)
-            {
-                data.Write(writer);
-            }
-
-            playerData.Write(writer);
-            pediaData.Write(writer);
-            
-            BinaryUtils.WriteDictionary(writer,customAmmo,(x,y)=>AmmoIdentifier.Write(y,x), (x, y) =>
-            {
-                x.Write(y.Count);
-                foreach (var v in y)
-                {
-                    x.Write(v!=null);
-                    if (v != null)
-                    {
-                        v.Write(x.BaseStream);
-                    }
-                }
-            });
-
-            DataPiece.Serialize(writer,extendedWorldData);
-
-            worldData.Write(writer);
-
+        
             writer.Write(pipelineDatas.Count);
             foreach(var v in pipelineDatas)
             {
-                PipelineSerializer.WritePipelineObject(writer, SaveRegistry.GetSaveInfo(mod), v, false);
+                PipelineSerializer.WritePipelineObject(writer, saveInfo, v, false);
             }
 
             // do not edit past here
