@@ -149,7 +149,7 @@ namespace SRML.SR.Templates.Identifiables
         }
 
         /// <summary>
-        /// Sets the translation for this slime's name
+        /// Sets the translation for this food's name
         /// </summary>
         /// <param name="name">The translated name</param>
         public override FoodTemplate SetTranslation(string name)
