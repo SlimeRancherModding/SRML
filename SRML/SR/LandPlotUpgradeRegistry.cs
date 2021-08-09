@@ -91,33 +91,4 @@ namespace SRML.SR
             public string NameKey => $"m.upgrade.name.{landplotName}.{upgrade.ToString().ToLower()}";
         }
     }
-
-    [HarmonyPatch(typeof(UITemplates))]
-    [HarmonyPatch("CreatePurchaseUI")]
-    internal static class Patch_LandPlot
-    {
-
-        private static List<PediaDirector.Id> ValidPedias = new List<PediaDirector.Id>
-        {
-            PediaDirector.Id.COOP,
-            PediaDirector.Id.CORRAL,
-            PediaDirector.Id.GARDEN,
-            PediaDirector.Id.INCINERATOR,
-            PediaDirector.Id.POND,
-            PediaDirector.Id.SILO
-        };
-
-        private static bool IsPedia(string titleKey)
-        {
-            string titleNoT = titleKey.Replace("t.", "");
-            foreach (PediaDirector.Id id in ValidPedias)
-                if (id.ToString().ToLower() == titleNoT)
-                    return true;
-            return false;
-        }
-
-        private static void Prefix(UITemplates __instance, string titleKey, ref Purchasable[] purchasables)
-        {
-        }
-    }
 }
