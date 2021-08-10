@@ -6,10 +6,20 @@ using System.Text;
 
 namespace SRML.SR
 {
-    internal static class ExchangeOfferRegistry
+    public static class ExchangeOfferRegistry
     {
         internal static Dictionary<string, SRMod> customRanchers = new Dictionary<string, SRMod>();
         internal static Dictionary<string, SRMod> customOfferIDs = new Dictionary<string, SRMod>();
+        
+        public static void RegisterRancher(string id)
+        {
+            customRanchers.Add(name, SRMod.GetCurrentMod());
+        }
+        
+        public static void RegisterOfferID(string id)
+        {
+            customOfferIDs.Add(id, SRMod.GetCurrentMod());
+        }
 
         public static bool IsCustom(string id)
         {
