@@ -206,6 +206,21 @@ namespace SRML.SR
         }
 
         /// <summary>
+        /// Register a liquid
+        /// </summary>
+        /// <param name="id"><see cref="Identifiable.Id"/> of the liquid</param>
+        /// <param name="inFX">The effect when vacced in</param>
+        /// <param name="vacFailFX">The effect when vaccing fails</param>
+        public static void RegisterLiquid(Identifiable.Id id, GameObject inFX, GameObject vacFailFX)
+        {
+            LiquidDefinition definition = ScriptableObject.CreateInstance<LiquidDefinition>();
+            definition.id = id;
+            definition.inFX = inFX;
+            definition.vacFailFX = vacFailFX;
+            RegisterLiquid(definition);
+        }
+
+        /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry">Entry to register</param>
