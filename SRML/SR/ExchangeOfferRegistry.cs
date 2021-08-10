@@ -1,8 +1,10 @@
 ﻿using MonomiPark.SlimeRancher.Persist;
+using SRML.SR.SaveSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace SRML.SR
 {
@@ -13,7 +15,7 @@ namespace SRML.SR
         
         public static void RegisterRancher(string id)
         {
-            customRanchers.Add(name, SRMod.GetCurrentMod());
+            customRanchers.Add(id, SRMod.GetCurrentMod());
         }
         
         public static void RegisterOfferID(string id)
