@@ -111,10 +111,10 @@ namespace SRML.SR
         /// <param name="icon">Icon that will be used for the item in inventory</param>
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)
         {
-			VacItemDefinition definition = ScriptableObject.CreateInstance<VacItemDefinition>();
-			definition.id = id;
-			definition.color = color;
-			definition.icon = icon;
+            VacItemDefinition definition = ScriptableObject.CreateInstance<VacItemDefinition>();
+            definition.id = id;
+            definition.color = color;
+            definition.icon = icon;
             RegisterVacEntry(definition);
         }
         
@@ -144,10 +144,10 @@ namespace SRML.SR
         /// <param name="cost">The cost of the upgrade</param>
         public static void RegisterUpgradeEntry(PlayerState.Upgrade upgrade, Sprite icon, int cost)
         {
-			UpgradeDefinition definition = ScriptableObject.CreateInstance<UpgradeDefinition>();
-			definition.upgrade = upgrade;
-			definition.icon = icon;
-			definition.cost = cost;
+            UpgradeDefinition definition = ScriptableObject.CreateInstance<UpgradeDefinition>();
+            definition.upgrade = upgrade;
+            definition.icon = icon;
+            definition.cost = cost;
             RegisterUpgradeEntry(definition);
         }
 
@@ -242,11 +242,11 @@ namespace SRML.SR
         /// <param name="nameKey"></param>
         public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
         {
-			ToyDefinition definition = ScriptableObject.CreateInstance<ToyDefinition>();
-			definition.toyId = toyId;
-			definition.icon = icon;
-			definition.cost = cost;
-			definition.nameKey = nameKey?.ToLower() ?? toyId.ToString().ToLower();
+            ToyDefinition definition = ScriptableObject.CreateInstance<ToyDefinition>();
+            definition.toyId = toyId;
+            definition.icon = icon;
+            definition.cost = cost;
+            definition.nameKey = nameKey?.ToLower() ?? toyId.ToString().ToLower();
             RegisterToy(definition);
         }
     }
