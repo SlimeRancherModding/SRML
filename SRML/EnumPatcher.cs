@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Reflection;
 using HarmonyLib;
 using SRML.SR;
+using SRML.Utils;
 
 namespace SRML
 {
@@ -88,16 +89,14 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
-            var allValues = Enum.GetValues(enumType);
-            for (int i = 0; i < allValues.Length - 1; i++)
-            {
-                if ((int)allValues.GetValue(i + 1) - (int)allValues.GetValue(i)>1)
-                {
-                    return Enum.ToObject(enumType, (int) allValues.GetValue(i) + 1);
-                }
-            }
+            var allValues = EnumUtils.GetAll(enumType).Cast<int>();
+            var min = allValues.Min();
+            var max = allValues.Max();
+            for (int i = (min + 1); i < max; i++)
+                if (!allValues.Contains(i))
+                    return Enum.ToObject(enumType, i);
 
-            return Enum.ToObject(enumType,(int)allValues.GetValue(allValues.Length - 1) + 1);
+            return Enum.ToObject(enumType, max + 1);
         }
 
         public static void ClearEnumCache(Type enumType)

@@ -34,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, PublicKeyToken=01a7d145a488a7d1, processorArchitecture=MSIL">
@@ -81,6 +82,9 @@
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
@@ -356,6 +360,7 @@
     <Compile Include="SR\Utils\ComponentExtensions.cs" />
     <Compile Include="SR\Utils\GameObjectExtensions.cs" />
     <Compile Include="SR\Utils\LookupDirectorExtension.cs" />
+    <Compile Include="Utils\EnumUtils.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
     <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
     <Compile Include="Utils\HarmonyOverrideAttribute.cs" />
