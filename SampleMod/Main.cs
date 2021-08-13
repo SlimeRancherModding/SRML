@@ -17,7 +17,7 @@ namespace SampleMod
         // Called before GameContext.Awake
         // this is where you want to register stuff (like custom enum values or identifiable id's)
         // and patch anything you want to patch with harmony
-        public void PreLoad()
+        public override void PreLoad()
         {
             Debug.Log("We did it!");
             HarmonyPatcher.GetInstance().PatchAll(Assembly.GetExecutingAssembly());
@@ -40,7 +40,6 @@ namespace SampleMod
         // Used to register stuff that needs lookupdirector access
         public override void Load()
         {
-            
         }
 
 
@@ -49,7 +48,22 @@ namespace SampleMod
         // ingame prefabs and the such
         public override void PostLoad()
         {
-            Debug.Log("We did it! Again! ");
+            Debug.Log("We did it! Again!");
+        }
+
+        public override void ReLoad()
+        {
+            Debug.Log("We reloaded!");
+        }
+
+        public override void UnLoad()
+        {
+            Debug.Log("We unloaded!");
+        }
+
+        public override void Update()
+        {
+            Debug.Log("We updated!");
         }
     }
 

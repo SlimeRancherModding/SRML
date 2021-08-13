@@ -59,7 +59,7 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.Message}");
+                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
             ReplacerCache.ClearCache();
@@ -85,6 +85,7 @@ namespace SRML
             SRCallbacks.OnLoad();
             PrefabUtils.ProcessReplacements();
             KeyBindManager.ReadBinds();
+            GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
             try
             {
@@ -121,5 +122,47 @@ namespace SRML
 
         }
 
+        internal static void ReLoad()
+        {
+            try
+            {
+                SRModLoader.ReLoadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void UnLoad()
+        {
+            try
+            {
+                SRModLoader.UnLoadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void Update()
+        {
+            try
+            {
+                SRModLoader.UpdateMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+    }
+
+    internal class ModManager : MonoBehaviour
+    {
+        void Update() => Main.Update();
+
+        void OnApplicationQuit() => Main.UnLoad();
     }
 }

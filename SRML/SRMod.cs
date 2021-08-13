@@ -169,20 +169,17 @@ namespace SRML
             this.Path = path;
         }
 
-        public void PreLoad()
-        {
-            entryPoint.PreLoad();
-        }
+        public void PreLoad() => entryPoint.PreLoad();
 
-        public void Load()
-        {
-            entryPoint.Load();
-        }
+        public void Load() => entryPoint.Load();
 
-        public void PostLoad()
-        {
-            entryPoint.PostLoad();
-        }
+        public void PostLoad() => entryPoint.PostLoad();
+
+        public void ReLoad() => entryPoint.ReLoad();
+
+        public void UnLoad() => entryPoint.UnLoad();
+
+        public void Update() => entryPoint.Update();
     }
     
 }
