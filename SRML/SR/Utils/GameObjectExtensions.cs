@@ -4,6 +4,7 @@ using SRML;
 using SRML.SR.Templates.Components;
 using SRML.SR.Utils.BaseObjects;
 using SRML.SR.Utils.Debug;
+using SRML.Utils;
 using UnityEngine;
 
 public static class GameObjectExtensions
@@ -172,5 +173,93 @@ public static class GameObjectExtensions
 		return SRML.Utils.PrefabUtils.CopyPrefab(obj);
 	}
 
+	// COMPONENT STUFF
+	public static Component[] GetComponents(this GameObject gameObject)
+	{
+		var allComponents = gameObject.GetComponents<Component>();
+		return allComponents;
+	}
 
+	public static void RemoveComponent<T>(this GameObject go) where T : Component => UnityEngine.Object.Destroy(go.GetComponent<T>());
+	public static void RemoveComponentImmediate<T>(this GameObject go) where T : Component => UnityEngine.Object.DestroyImmediate(go.GetComponent<T>());
+	public static void RemoveComponent<T>(this GameObject go, T component) where T : Component => UnityEngine.Object.Destroy(component);
+	public static void RemoveComponentImmediate<T>(this GameObject go, T component) where T : Component => UnityEngine.Object.DestroyImmediate(component);
+
+	public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
+	{
+		var toGet = gameObject.GetComponent<T>();
+		if (toGet != null) return toGet;
+		return gameObject.AddComponent<T>();
+	}
+
+	/// <summary>
+	/// Is the component present in the object?
+	/// </summary>
+	/// <param name="obj">Object to test</param>
+	/// <param name="comp">The component if found, null if not</param>
+	/// <typeparam name="T">The type of component</typeparam>
+	/// <returns>True if the component is found, false otherwise</returns>
+	public static bool HasComponent<T>(this GameObject obj, out T comp) where T : Component
+	{
+		comp = obj.GetComponent<T>();
+
+		return comp != null;
+	}
+
+	/// <summary>
+	/// Is the component present in the object?
+	/// </summary>
+	/// <param name="obj">Object to test</param>
+	/// <typeparam name="T">The type of component</typeparam>
+	/// <returns>True if the component is found, false otherwise</returns>
+	public static bool HasComponent<T>(this GameObject obj) where T : Component
+	{
+		return obj.GetComponent<T>() != null;
+	}
+
+	// SHORTCUTS
+	public static void Prefabitize(this GameObject go) => GameObjectUtils.Prefabitize(go);
+	public static void Activate(this GameObject obj) => obj.SetActive(true);
+	public static void Deactivate(this GameObject obj) => obj.SetActive(false);
+
+	// INSTANTIATE INACTIVE
+	public static GameObject InstantiateInactive(this GameObject original, bool keepOriginalName = false)
+	{
+		GameObject clone = GameObjectUtils.InstantiateInactive(original);
+		if (keepOriginalName)
+			clone.name = original.name;
+		return clone;
+	}
+
+	public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Transform parent, bool keepOriginalName = false)
+	{
+		GameObject clone = GameObjectUtils.InstantiateInactive(original, parent);
+		if (keepOriginalName)
+			clone.name = original.name;
+		return clone;
+	}
+
+	public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Transform parent, bool worldPositionStays, bool keepOriginalName = false)
+	{
+		GameObject clone = GameObjectUtils.InstantiateInactive(original, parent, worldPositionStays);
+		if (keepOriginalName)
+			clone.name = original.name;
+		return clone;
+	}
+
+	public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, bool keepOriginalName = false)
+	{
+		GameObject clone = GameObjectUtils.InstantiateInactive(original, position, rotation);
+		if (keepOriginalName)
+			clone.name = original.name;
+		return clone;
+	}
+
+	public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, UnityEngine.Transform parent, bool keepOriginalName = false)
+	{
+		GameObject clone = GameObjectUtils.InstantiateInactive(original, position, rotation, parent);
+		if (keepOriginalName)
+			clone.name = original.name;
+		return clone;
+	}
 }

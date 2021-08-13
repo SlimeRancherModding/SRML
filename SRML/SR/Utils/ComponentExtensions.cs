@@ -29,53 +29,27 @@ public static class ComponentExtensions
 	}
 
 	// PRIVATE FIELDS STUFF
+	[System.Obsolete("Use ObjectExtensions.SetField instead.")]
 	public static T SetPrivateField<T>(this T comp, string name, object value) where T : Component
 	{
-		try
-		{
-			FieldInfo field = comp.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			field.SetValue(comp, value);
-		}
-		catch { }
+		comp.SetField(name, value);
 
 		return comp;
 	}
 
+	[System.Obsolete("Use ObjectExtensions.SetProperty instead.")]
 	public static T SetPrivateProperty<T>(this T comp, string name, object value) where T : Component
 	{
-		try
-		{
-			PropertyInfo field = comp.GetType().GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			field.SetValue(comp, value, null);
-		}
-		catch { }
+		comp.SetProperty(name, value);
 
 		return comp;
 	}
 
-	public static E GetPrivateField<E>(this Component comp, string name)
-	{
-		try
-		{
-			FieldInfo field = comp.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			return (E)field.GetValue(comp);
-		}
-		catch { }
+	[System.Obsolete("Use ObjectExtensions.GetField instead.")]
+	public static E GetPrivateField<E>(this Component comp, string name) => comp.GetField<E>(name);
 
-		return default;
-	}
-
-	public static E GetPrivateProperty<E>(this Component comp, string name)
-	{
-		try
-		{
-			PropertyInfo field = comp.GetType().GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			return (E)field.GetValue(comp, null);
-		}
-		catch { }
-
-		return default;
-	}
+	[System.Obsolete("Use ObjectExtensions.GetProperty instead.")]
+	public static E GetPrivateProperty<E>(this Component comp, string name) => comp.GetProperty<E>(name);
 
 	public static void CopyAllTo<T>(this T comp, T otherComp) where T : Component
 	{
@@ -108,5 +82,38 @@ public static class ComponentExtensions
 			}
 			catch { continue; }
 		}
+	}
+
+
+	public static T GetOrAddComponent<T>(this Component component) where T : Component
+	{
+		var toGet = component.gameObject.GetComponent<T>();
+		if (toGet != null) return toGet;
+		return component.gameObject.AddComponent<T>();
+	}
+
+	/// <summary>
+	/// Is the component present in the object?
+	/// </summary>
+	/// <param name="obj">Object to test</param>
+	/// <param name="comp">The component if found, null if not</param>
+	/// <typeparam name="T">The type of component</typeparam>
+	/// <returns>True if the component is found, false otherwise</returns>
+	public static bool HasComponent<T>(this Component obj, out T comp) where T : Component
+	{
+		comp = obj.GetComponent<T>();
+
+		return comp != null;
+	}
+
+	/// <summary>
+	/// Is the component present in the object?
+	/// </summary>
+	/// <param name="obj">Object to test</param>
+	/// <typeparam name="T">The type of component</typeparam>
+	/// <returns>True if the component is found, false otherwise</returns>
+	public static bool HasComponent<T>(this Component obj) where T : Component
+	{
+		return obj.GetComponent<T>() != null;
 	}
 }
