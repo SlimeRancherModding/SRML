@@ -169,7 +169,7 @@ namespace SRML
 
         internal static void PreLoadMods()
         {
-
+            Console.Console.Reload += (Console.Console.ReloadAction)Main.ReLoad;
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
@@ -178,15 +178,6 @@ namespace SRML
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
                     ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
-                    Console.Console.Reload += () =>
-                    {
-                        SRMod.ForceModContext(mod);
-                        foreach(var v in mod.Configs)
-                        {
-                            v.TryLoadFromFile();
-                        }
-                        SRMod.ClearModContext();
-                    };
                 }
                 catch (Exception e)
                 {
@@ -232,6 +223,65 @@ namespace SRML
 
             CurrentLoadingStep = LoadingStep.FINISHED;
         }
+
+        internal static void ReLoadMods()
+        {
+            CurrentLoadingStep = LoadingStep.RELOAD;
+            foreach (string key in loadOrder)
+            {
+                SRMod mod = Mods[key];
+                try
+                {
+                    SRMod.ForceModContext(mod);
+                    foreach (var v in mod.Configs)
+                    {
+                        v.TryLoadFromFile();
+                    }
+                    SRMod.ClearModContext();
+                    mod.ReLoad();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(new Exception(string.Format("Error reloading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex)));
+                }
+            }
+            CurrentLoadingStep = LoadingStep.FINISHED;
+        }
+
+        internal static void UnLoadMods()
+        {
+            CurrentLoadingStep = LoadingStep.UNLOAD;
+            foreach (string key in loadOrder.ToList().Reverse<string>())
+            {
+                SRMod mod = Mods[key];
+                try
+                {
+                    mod.UnLoad();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(new Exception(string.Format("Error unloading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex)));
+                }
+            }
+        }
+
+        internal static void UpdateMods()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (string key in loadOrder)
+            {
+                SRMod mod = Mods[key];
+                try
+                {
+                    mod.Update();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(new Exception(string.Format("Error updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex)));
+                }
+            }
+        }
+
         /// <summary>
         /// Utility class to help with the discovery and loading of mod assemblies
         /// </summary>
@@ -264,7 +314,9 @@ namespace SRML
             PRELOAD,
             LOAD,
             POSTLOAD,
-            FINISHED
+            FINISHED,
+            RELOAD,
+            UNLOAD
         }
 
         /// <summary>
