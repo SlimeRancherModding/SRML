@@ -86,7 +86,7 @@ public static class GameObjectExtensions
 	public static GameObject FindChild(this GameObject obj, string name, bool dive = false)
 	{
 		if (!dive)
-			return obj.transform.Find(name).gameObject;
+			return obj.transform.Find(name)?.gameObject;
 		else
 		{
 			GameObject result = null;
