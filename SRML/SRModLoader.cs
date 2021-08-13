@@ -25,7 +25,7 @@ namespace SRML
 
         private static readonly List<string> loadOrder = new List<string>();
         
-        internal static LoadingStep CurrentLoadingStep { get; private set; }
+        public static LoadingStep CurrentLoadingStep { get; private set; }
 
         /// <summary>
         /// Searches for valid mods and their assemblies, and decides the load order based on their settings
@@ -259,13 +259,14 @@ namespace SRML
             }
         }
 
-        internal enum LoadingStep
+        public enum LoadingStep
         {
             PRELOAD,
             LOAD,
             POSTLOAD,
             FINISHED
         }
+
         /// <summary>
         /// Class that represents a mod before it has been loaded or fully processed
         /// </summary>
