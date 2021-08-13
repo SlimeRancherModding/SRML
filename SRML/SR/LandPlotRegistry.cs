@@ -18,7 +18,7 @@ namespace SRML.SR
         public static LandPlot.Id CreateLandPlotId(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register landplots outside of the PreLoad step");
+                throw new LoadingStepException("Can't register landplots outside of the PreLoad step");
             return landplots.RegisterValueWithEnum((LandPlot.Id)value, name);
         }
 

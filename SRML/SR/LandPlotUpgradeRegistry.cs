@@ -40,7 +40,7 @@ namespace SRML.SR
         public static LandPlot.Upgrade CreateLandPlotUpgrade(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register landplot upgrades outside of the PreLoad step");
+                throw new LoadingStepException("Can't register landplot upgrades outside of the PreLoad step");
             return moddedUpgrades.RegisterValueWithEnum((LandPlot.Upgrade)value, name);
         }
 

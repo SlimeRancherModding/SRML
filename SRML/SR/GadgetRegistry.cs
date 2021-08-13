@@ -23,7 +23,7 @@ namespace SRML.SR
         public static Gadget.Id CreateGadgetId(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register gadgets outside of the PreLoad step");
+                throw new LoadingStepException("Can't register gadgets outside of the PreLoad step");
             return moddedGadgets.RegisterValueWithEnum((Gadget.Id) value, name);
         }
 

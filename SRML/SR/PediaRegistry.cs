@@ -47,7 +47,7 @@ namespace SRML.SR
         public static PediaDirector.Id CreatePediaId(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register slimepedia entries outside of the PreLoad step");
+                throw new LoadingStepException("Can't register slimepedia entries outside of the PreLoad step");
             return moddedIds.RegisterValueWithEnum((PediaDirector.Id)value, name);
         }
 

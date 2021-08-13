@@ -396,4 +396,18 @@ namespace SRML
 
         }
     }
+
+    public class LoadingStepException : Exception
+    {
+        /// <summary>
+        /// The loading step when the exception was created.
+        /// </summary>
+        public SRModLoader.LoadingStep Step { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadingStepException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes that error.</param>
+        public LoadingStepException(string message) : base(message) => Step = SRModLoader.CurrentLoadingStep;
+    }
 }

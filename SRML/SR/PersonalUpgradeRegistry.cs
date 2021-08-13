@@ -31,7 +31,7 @@ namespace SRML.SR
         public static PlayerState.Upgrade CreatePersonalUpgrade(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register upgrades outside of the PreLoad step");
+                throw new LoadingStepException("Can't register upgrades outside of the PreLoad step");
             return moddedUpgrades.RegisterValueWithEnum((PlayerState.Upgrade) value, name);
         }
 

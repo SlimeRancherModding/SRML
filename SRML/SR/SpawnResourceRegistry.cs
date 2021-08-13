@@ -20,7 +20,7 @@ namespace SRML.SR
         public static SpawnResource.Id CreateSpawnResourceId(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register landplot upgrades outside of the PreLoad step");
+                throw new LoadingStepException("Can't register landplot upgrades outside of the PreLoad step");
             return moddedSpawnResources.RegisterValueWithEnum((SpawnResource.Id)value, name);
         }
     }
