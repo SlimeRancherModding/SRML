@@ -258,10 +258,10 @@ namespace SRML.SR
         public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
         {
             ToyDefinition definition = ScriptableObject.CreateInstance<ToyDefinition>();
-            definition.toyId = toyId;
+            definition.toyId = id;
             definition.icon = icon;
             definition.cost = cost;
-            definition.nameKey = nameKey?.ToLower() ?? toyId.ToString().ToLower();
+            definition.nameKey = nameKey?.ToLower() ?? id.ToString().ToLower();
             RegisterToy(definition);
         }
     }
