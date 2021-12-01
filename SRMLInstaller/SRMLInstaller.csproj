@@ -71,7 +71,30 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Libs\*" />
+    <EmbeddedResource Include="..\SRML\bin\$(ConfigurationName)\SRML.dll">
+      <Link>Libs\SRML.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\SRML\bin\$(ConfigurationName)\SRML.Editor.dll">
+      <Link>Libs\SRML.Editor.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\SRML\bin\$(ConfigurationName)\Newtonsoft.Json.dll">
+      <Link>Libs\Newtonsoft.Json.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\SRML\bin\$(ConfigurationName)\0Harmony.dll">
+      <Link>Libs\0Harmony.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\SRML\bin\$(ConfigurationName)\INIFileParser.dll">
+      <Link>Libs\INIFileParser.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\SRML\bin\Debug\System.Runtime.Serialization.dll">
+      <Link>Libs\System.Runtime.Serialization.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.4.2.1\build\Fody.targets" Condition="Exists('..\packages\Fody.4.2.1\build\Fody.targets')" />
@@ -82,13 +105,4 @@
     <Error Condition="!Exists('..\packages\Fody.4.2.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.4.2.1\build\Fody.targets'))" />
     <Error Condition="!Exists('..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.3.3.3\build\Costura.Fody.props'))" />
   </Target>
-  <PropertyGroup>
-    <PreBuildEvent>mkdir "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\Newtonsoft.Json.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\0Harmony.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\SRML.Editor.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\INIFileParser.dll" "$(ProjectDir)Libs\"
-xcopy /Y "$(SolutionDir)SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll" "$(ProjectDir)Libs\"</PreBuildEvent>
-  </PropertyGroup>
 </Project>
