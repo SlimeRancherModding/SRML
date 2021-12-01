@@ -9,13 +9,13 @@ namespace SRML
     public interface IModEntryPoint 
     {
         /// <summary>
-        /// Called before MainScript.Awake<br/>
+        /// Called before <see cref="GameContext.Awake"/><br/>
         /// You want to register new things and enum values here, as well as do all your harmony patching
         /// </summary>
         void PreLoad();
 
         /// <summary>
-        /// Called before MainScript.Start<br/>
+        /// Called before <see cref="GameContext.Start"/><br/>
         /// Used for registering things that require a loaded gamecontext
         /// </summary>
         void Load();
