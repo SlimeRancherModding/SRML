@@ -1,13 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.106
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML", "SRML\SRML.csproj", "{5733599A-5318-4A2C-9998-F7E0CDC664DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRMLInstaller", "SRMLInstaller\SRMLInstaller.csproj", "{6F065C56-9575-45CA-846D-9660A0F80F79}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D462E179-1C78-452B-94BF-64ABAAF2AB35} = {D462E179-1C78-452B-94BF-64ABAAF2AB35}
+		{5733599A-5318-4A2C-9998-F7E0CDC664DE} = {5733599A-5318-4A2C-9998-F7E0CDC664DE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleMod", "SampleMod\SampleMod.csproj", "{9593A86F-00E8-4F6B-BCB1-04D049250085}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5733599A-5318-4A2C-9998-F7E0CDC664DE} = {5733599A-5318-4A2C-9998-F7E0CDC664DE}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML.Editor", "SMRL.Editor\SRML.Editor.csproj", "{D462E179-1C78-452B-94BF-64ABAAF2AB35}"
 EndProject
