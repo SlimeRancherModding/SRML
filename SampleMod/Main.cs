@@ -65,6 +65,16 @@ namespace SampleMod
         {
             Debug.Log("We updated!");
         }
+
+        public override void FixedUpdate()
+        {
+            Debug.Log("We fixed updated!");
+        }
+
+        public override void LateUpdate()
+        {
+            Debug.Log("We late updated!");
+        }
     }
 
 }

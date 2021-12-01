@@ -282,6 +282,40 @@ namespace SRML
             }
         }
 
+        internal static void UpdateModsFixed()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (string key in loadOrder)
+            {
+                SRMod mod = Mods[key];
+                try
+                {
+                    mod.FixedUpdate();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(new Exception(string.Format("Error fixed updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex)));
+                }
+            }
+        }
+
+        internal static void UpdateModsLate()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (string key in loadOrder)
+            {
+                SRMod mod = Mods[key];
+                try
+                {
+                    mod.LateUpdate();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError(new Exception(string.Format("Error late updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex)));
+                }
+            }
+        }
+
         /// <summary>
         /// Utility class to help with the discovery and loading of mod assemblies
         /// </summary>

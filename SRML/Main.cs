@@ -157,11 +157,39 @@ namespace SRML
                 Debug.LogError(e);
             }
         }
+
+        internal static void FixedUpdate()
+        {
+            try
+            {
+                SRModLoader.UpdateModsFixed();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void LateUpdate()
+        {
+            try
+            {
+                SRModLoader.UpdateModsLate();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
     }
 
     internal class ModManager : MonoBehaviour
     {
         void Update() => Main.Update();
+
+        void FixedUpdate() => Main.FixedUpdate();
+
+        void LateUpdate() => Main.LateUpdate();
 
         void OnApplicationQuit() => Main.UnLoad();
     }

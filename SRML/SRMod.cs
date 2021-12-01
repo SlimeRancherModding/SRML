@@ -180,6 +180,10 @@ namespace SRML
         public void UnLoad() => entryPoint.UnLoad();
 
         public void Update() => entryPoint.Update();
+
+        public void FixedUpdate() => entryPoint.FixedUpdate();
+
+        public void LateUpdate() => entryPoint.LateUpdate();
     }
     
 }

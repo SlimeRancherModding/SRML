@@ -41,6 +41,16 @@ namespace SRML
         /// Called every frame, if <see cref="SRModLoader.CurrentLoadingStep"/> equals <see cref="SRModLoader.LoadingStep.FINISHED"/>
         /// </summary>
         void Update();
+
+        /// <summary>
+        /// Called every fixed frame-rate frame, if <see cref="SRModLoader.CurrentLoadingStep"/> equals <see cref="SRModLoader.LoadingStep.FINISHED"/>
+        /// </summary>
+        void FixedUpdate();
+
+        /// <summary>
+        /// Called every frame after all mods' Update functions have been called, if <see cref="SRModLoader.CurrentLoadingStep"/> equals <see cref="SRModLoader.LoadingStep.FINISHED"/>
+        /// </summary>
+        void LateUpdate();
     }
 
     public abstract class ModEntryPoint : IModEntryPoint
@@ -68,6 +78,14 @@ namespace SRML
         }
 
         public virtual void Update()
+        {
+        }
+
+        public virtual void FixedUpdate()
+        {
+        }
+
+        public virtual void LateUpdate()
         {
         }
     }
