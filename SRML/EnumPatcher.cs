@@ -17,7 +17,7 @@ namespace SRML
     /// </summary>
     public static class EnumPatcher
     {
-        internal delegate object AlternateEnumRegister(object value, string name);
+        public delegate object AlternateEnumRegister(object value, string name);
         private static readonly Dictionary<Type, AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type, AlternateEnumRegister>()
         {
             { typeof(Identifiable.Id),(x,y)=>IdentifiableRegistry.CreateIdentifiableId(x,y)},
@@ -27,8 +27,11 @@ namespace SRML
             {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) }
         };
 
-        internal static void RegisterAlternate(Type type, AlternateEnumRegister del)
+        public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) => RegisterAlternate(typeof(TEnum), del);
+
+        public static void RegisterAlternate(Type type, AlternateEnumRegister del)
         {
+            if (!type.IsEnum) throw new Exception($"The given type isn't an enum ({type.FullName} isn't an Enum)");
             BANNED_ENUMS.Add(type, del);
         }
 
@@ -41,7 +44,15 @@ namespace SRML
             var t = AccessTools.TypeByName("System.RuntimeType");
             cache = AccessTools.Field(t, "GenericCache");
         }
-        
+
+        /// <summary>
+        /// Add a new enum value to the given <typeparamref name="TEnum"/> with the first free value
+        /// </summary>
+        /// <typeparam name="TEnum">Type of enum to add the value to</typeparam>
+        /// <param name="name">Name of the new enum value</param>
+        /// <returns>The new enum value</returns>
+        public static TEnum AddEnumValue<TEnum>(string name) => (TEnum)AddEnumValue(typeof(TEnum), name);
+
         /// <summary>
         /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
         /// </summary>
@@ -54,6 +65,15 @@ namespace SRML
             AddEnumValue(enumType, newVal, name);
             return newVal;
         }
+
+        /// <summary>
+        /// Add a new value to the given <typeparamref name="TEnum"/> 
+        /// </summary>
+        /// <typeparam name="TEnum">Enum to add the new value to</typeparam>
+        /// <param name="value">Value to add to the enum</param>
+        /// <param name="name">The name of the new value</param>
+        public static void AddEnumValue<TEnum>(object value, string name) => AddEnumValue(typeof(TEnum), value, name);
+
         /// <summary>
         /// Add a new value to the given <paramref name="enumType"/> 
         /// </summary>
@@ -77,11 +97,21 @@ namespace SRML
             patch.AddValue((ulong)value, name);
         }
         
-        internal static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
+        public static void AddEnumValueWithAlternatives<TEnum>(object value, string name) => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
+
+        public static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
         {
             if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
-            else AddEnumValue(enumType,value,name);
+            else AddEnumValue(enumType, value, name);
         }
+
+        /// <summary>
+        /// Get first undefined value in an enum
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <returns>The first undefined enum value</returns>
+        public static TEnum GetFirstFreeValue<TEnum>() => (TEnum)GetFirstFreeValue(typeof(TEnum));
+
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
@@ -89,6 +119,9 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
+            if (!enumType.IsEnum)
+                throw new Exception($"The given type isn't an enum ({enumType.FullName} isn't an Enum)");
+
             var allValues = EnumUtils.GetAll(enumType).Cast<int>();
             var min = allValues.Min();
             var max = allValues.Max();
@@ -111,7 +144,8 @@ namespace SRML
 
         public class EnumPatch 
         {
-            private Dictionary<ulong, String> values = new Dictionary<ulong, String>();
+            private Dictionary<ulong, string> values = new Dictionary<ulong, string>();
+
             public void AddValue(ulong enumValue, string name)
             {
                 if (values.ContainsKey(enumValue)) return;
