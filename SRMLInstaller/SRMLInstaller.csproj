@@ -91,7 +91,7 @@
       <Link>Libs\INIFileParser.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\SRML\bin\Debug\System.Runtime.Serialization.dll">
+    <EmbeddedResource Include="..\SRML\bin\$(ConfigurationName)\System.Runtime.Serialization.dll">
       <Link>Libs\System.Runtime.Serialization.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
