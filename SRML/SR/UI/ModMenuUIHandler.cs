@@ -15,9 +15,9 @@ namespace SRML.SR.UI
         private static GameObject mainMenuUIPrefab;
         internal static void OnMainMenuLoaded(MainMenuUI ui)
         {
-            MainMenuUtils.AddMainMenuButton(ui, "Mods", () =>
+            MainMenuUtils.AddMainMenuButtonWithTranslation(ui, "ModsButton", "b.mods", () =>
             {
-                var g = MainMenuUtils.DisplayBlankPanel<BaseUI>(ui, "Mods");
+                var g = MainMenuUtils.DisplayBlankPanelWithTranslation<BaseUI>(ui, "ModsUI", "b.mods");
                 GameObject.Instantiate(mainMenuUIPrefab)
                 .transform.SetParent(g.transform.GetChild(0),false);
                 

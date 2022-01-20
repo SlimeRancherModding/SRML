@@ -15,16 +15,15 @@ namespace SRML
     /// </summary>
     internal class ErrorGUI : MonoBehaviour
     {
-
-
         public static void CreateError(string error, bool doAbort=true)
         {
             SRCallbacks.OnMainMenuLoaded+=((u) =>
             {
-
-
-                var mainmen = MainMenuUtils.DisplayBlankPanel<BaseUI>(u, "SRML ERROR", () => Application.Quit());
-                var g = GameObject.Instantiate(mainmen.transform.GetChild(0).Find("Title").gameObject);
+                var mainmen = MainMenuUtils.DisplayBlankPanelWithTranslation<BaseUI>(u, "ErrorUI", "t.srml_error", () => Application.Quit());
+                var panel = mainmen.transform.GetChild(0);
+                var title = panel.Find("Title").gameObject;
+                var g = GameObject.Instantiate(title);
+                g.name = "ErrorText";
                 MonoBehaviour.Destroy(g.GetComponent<XlateText>());
                 g.GetComponent<TMP_Text>().text = error;
                 g.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Top;
@@ -32,14 +31,14 @@ namespace SRML
                 g.GetComponent<TMP_Text>().enableWordWrapping = true;
                 if (doAbort)
                 {
-                    var h = GameObject.Instantiate(mainmen.transform.GetChild(0).Find("Title").gameObject);
-                    MonoBehaviour.Destroy(h.GetComponent<XlateText>());
+                    var h = GameObject.Instantiate(title);
+                    h.name = "AbortText";
                     h.GetComponent<TMP_Text>().enableWordWrapping = true;
 
-                    h.GetComponent<TMP_Text>().text = "Aborting mod loading...";
+                    h.GetComponent<XlateText>().SetKey("t.srml_abort");
                     h.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Bottom;
 
-                    h.transform.SetParent(mainmen.transform.GetChild(0), false);
+                    h.transform.SetParent(panel, false);
                     var rect2 = h.GetComponent<RectTransform>();
                     rect2.anchorMin = new Vector2(0, 0);
                     rect2.anchorMax = new Vector2(1, 1);
@@ -48,7 +47,7 @@ namespace SRML
                    
                 }
 
-                g.transform.SetParent(mainmen.transform.GetChild(0), false);
+                g.transform.SetParent(panel, false);
                 var rect = g.GetComponent<RectTransform>();
                 rect.anchorMin = new Vector2(0, 0);
                 rect.anchorMax = new Vector2(1,1);
