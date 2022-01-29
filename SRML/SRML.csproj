@@ -171,6 +171,7 @@
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\UI\Utils\UIUtils.cs" />
     <Compile Include="SR\Utils\Debug\AddDebugMarker.cs" />
     <Compile Include="SR\Utils\Debug\DebugCommand.cs" />
