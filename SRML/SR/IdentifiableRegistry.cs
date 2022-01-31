@@ -24,16 +24,16 @@ namespace SRML.SR
             if (shouldCategorize) CategorizeId(id);
             return id;
         }
+
         /// <summary>
         /// Check if an <see cref="Identifiable.Id"/> was registered by a mod
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static bool IsModdedIdentifiable(Identifiable.Id id)
+        public static bool IsModdedIdentifiable(this Identifiable.Id id)
         {
             return moddedIdentifiables.ContainsKey(id);
         }
-
 
         /// <summary>
         /// Put an <see cref="Identifiable.Id"/> into one of the vanilla categories based on its name postfix (see <see cref="LookupDirector"/>)
