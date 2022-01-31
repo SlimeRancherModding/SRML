@@ -29,7 +29,7 @@ namespace SRML.SR.Utils
         internal static Dictionary<Type, GameObject> idHandlerPrefabs = new Dictionary<Type, GameObject>();
         static IdHandlerUtils()
         {
-            SRCallbacks.PreSaveGameLoaded += (s) =>
+            SRCallbacks.PreSaveGameLoad += (s) =>
             {
                 foreach (IdHandler handler in UnityEngine.Object.FindObjectsOfType<IdHandler>())
                 {
