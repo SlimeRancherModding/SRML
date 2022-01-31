@@ -188,6 +188,7 @@
     <Compile Include="SR\LandPlotRegistry.cs" />
     <Compile Include="SR\LandPlotUpgradeRegistry.cs" />
     <Compile Include="SR\MailRegistry.cs" />
+    <Compile Include="SR\SecretStyleRegistry.cs" />
     <Compile Include="SR\Options\ModOptionsV01.cs" />
     <Compile Include="SR\Options\OptionsHandler.cs" />
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
