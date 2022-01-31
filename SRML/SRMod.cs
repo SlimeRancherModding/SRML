@@ -40,9 +40,9 @@ namespace SRML
         /// </summary>
         public struct ModVersion : IComparable<ModVersion>
         {
-            public int Major;
-            public int Minor;
-            public int Revision;
+            public readonly int Major;
+            public readonly int Minor;
+            public readonly int Revision;
             public static readonly ModVersion DEFAULT = new ModVersion(1, 0);
             public ModVersion(int major, int minor, int revision = 0)
             {
@@ -69,8 +69,6 @@ namespace SRML
                 uhoh:
                 throw new Exception($"Invalid Version String: {s}");
             }
-
-
 
             public int CompareTo(ModVersion other)
             {
