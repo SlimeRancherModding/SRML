@@ -85,6 +85,8 @@ namespace SRML.SR
             }
         }
 
+        public static void RegisterIdentifiableMapping(Gadget.Id gadget, Identifiable.Id ident) => Identifiable.GADGET_NAME_DICT.Add(ident, gadget);
+
         public enum GadgetClassification
         {
             MISC,
