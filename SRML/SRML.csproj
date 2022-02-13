@@ -174,7 +174,6 @@
     <Compile Include="SR\ChromaPackRegistry.cs" />
     <Compile Include="SR\FoodGroupRegistry.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
-    <Compile Include="SR\Patches\FoodGroupPatch.cs" />
     <Compile Include="SR\Patches\RanchPaletteSelectPatch.cs" />
     <Compile Include="SR\Patches\RanchAwakePatch.cs" />
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
