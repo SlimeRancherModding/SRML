@@ -171,7 +171,12 @@
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\ChromaPackRegistry.cs" />
+    <Compile Include="SR\FoodGroupRegistry.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
+    <Compile Include="SR\Patches\FoodGroupPatch.cs" />
+    <Compile Include="SR\Patches\RanchPaletteSelectPatch.cs" />
+    <Compile Include="SR\Patches\RanchAwakePatch.cs" />
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\UI\Utils\UIUtils.cs" />
     <Compile Include="SR\Utils\Debug\AddDebugMarker.cs" />

@@ -24,7 +24,9 @@ namespace SRML
             { typeof(Gadget.Id),(x,y)=>(object)GadgetRegistry.CreateGadgetId(x,y)},
             { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)},
             {typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) },
-            {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) }
+            {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) },
+            { typeof(RanchDirector.Palette),(x,y)=>ChromaPackRegistry.CreatePalette(x,y)},
+            { typeof(RanchDirector.PaletteType),(x,y)=>ChromaPackRegistry.CreatePaletteType(x,y)}
         };
 
         public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) => RegisterAlternate(typeof(TEnum), del);

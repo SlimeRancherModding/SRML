@@ -218,6 +218,16 @@ namespace SRML
             {
                 x = SpawnResource.Id.NONE.ToString();
                 return true;
+            }),
+            ConvertGenericFallback<RanchDirector.Palette>((ref string x) =>
+            {
+                x = RanchDirector.Palette.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MonomiPark.SlimeRancher.DataModel.InstrumentModel.Instrument>((ref string x) =>
+            {
+                x = MonomiPark.SlimeRancher.DataModel.InstrumentModel.Instrument.NONE.ToString();
+                return true;
             })
         };
         /// <summary>
