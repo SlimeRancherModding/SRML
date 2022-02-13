@@ -8,13 +8,13 @@ namespace SRML.Config.Parsing
 
     public class DelegateStringParser<T> : StringParser<T>
     {
-        public delegate string EncodeGenericDelegate<T>(T obj);
-        public delegate T ParseGenericDelegate<T>(string str);
+        public delegate string EncodeGenericDelegate(T obj);
+        public delegate T ParseGenericDelegate(string str);
 
-        EncodeGenericDelegate<T> encoder;
-        ParseGenericDelegate<T> parser;
+        EncodeGenericDelegate encoder;
+        ParseGenericDelegate parser;
 
-        public DelegateStringParser(EncodeGenericDelegate<T> encoder, ParseGenericDelegate<T> parser)
+        public DelegateStringParser(EncodeGenericDelegate encoder, ParseGenericDelegate parser)
         {
             this.encoder = encoder;
             this.parser = parser;
