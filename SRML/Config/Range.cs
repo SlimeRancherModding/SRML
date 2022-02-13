@@ -50,33 +50,33 @@ namespace SRML.Config
             Max = max;
             Value = initialValue;
         }
+    }
 
-        public class RangeParser<T> : IStringParser
+    public class RangeParser<T> : IStringParser
+    {
+        public Type ParsedType => typeof(Range<T>);
+        Range<T> range;
+
+        public RangeParser(Range<T> range)
         {
-            public Type ParsedType => typeof(Range<T>);
-            Range<T> range;
+            this.range = range;
+        }
 
-            public RangeParser(Range<T> range)
-            {
-                this.range = range;
-            }
+        public string EncodeObject(object obj)
+        {
+            Range<T> range = (Range<T>)obj;
+            return ParserRegistry.GetParser(typeof(T)).EncodeObject(range.Value);
+        }
 
-            public string EncodeObject(object obj)
-            {
-                Range<T> range = (Range<T>)obj;
-                return ParserRegistry.GetParser(typeof(T)).EncodeObject(range.Value);
-            }
+        public string GetUsageString()
+        {
+            return typeof(T) + " in range of " + range.Min.ToString() + " to " + range.Max.ToString();
+        }
 
-            public string GetUsageString()
-            {
-                return typeof(T) + " in range of " + range.Min.ToString() + " to " + range.Max.ToString();
-            }
-
-            public object ParseObject(string str)
-            {
-                range.Value = (T)ParserRegistry.GetParser(typeof(T)).ParseObject(str);
-                return range;
-            }
+        public object ParseObject(string str)
+        {
+            range.Value = (T)ParserRegistry.GetParser(typeof(T)).ParseObject(str);
+            return range;
         }
     }
 }
