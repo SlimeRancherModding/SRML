@@ -173,7 +173,10 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\ChromaPackRegistry.cs" />
     <Compile Include="SR\FoodGroupRegistry.cs" />
+    <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
+    <Compile Include="SR\Patches\SnareAttachPatch.cs" />
+    <Compile Include="SR\Patches\SnareTriggerPatch.cs" />
     <Compile Include="SR\Patches\RanchPaletteSelectPatch.cs" />
     <Compile Include="SR\Patches\RanchAwakePatch.cs" />
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
