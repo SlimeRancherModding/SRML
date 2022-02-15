@@ -6,6 +6,8 @@ namespace SRML.SR
 {
 	public static class FoodGroupRegistry
 	{
+		internal static Dictionary<SlimeEat.FoodGroup, HashSet<Identifiable.Id>> FOOD_GROUPS = new Dictionary<SlimeEat.FoodGroup, HashSet<Identifiable.Id>>();
+
 		public static void Register(Identifiable.Id id)
 		{
 			if (Identifiable.IsSlime(id) && !Identifiable.IsTarr(id))
@@ -26,13 +28,13 @@ namespace SRML.SR
 
 		public static void Register(Identifiable.Id id, SlimeEat.FoodGroup group)
 		{
-			if (SlimeEat.foodGroupIds.ContainsKey(group))
+			if (FOOD_GROUPS.ContainsKey(group))
 			{
-				if (!SlimeEat.foodGroupIds[group].Contains(id))
-					SlimeEat.foodGroupIds[group] = SlimeEat.foodGroupIds[group].AddToArray(id);
+				if (!FOOD_GROUPS[group].Contains(id))
+					FOOD_GROUPS[group].Add(id);
 			}
 			else
-				SlimeEat.foodGroupIds.Add(group, new Identifiable.Id[] { id });
+				FOOD_GROUPS.Add(group, new HashSet<Identifiable.Id>(Identifiable.idComparer) { id });
 		}
 
 		public static void RegisterRange(Identifiable.Id[] ids, SlimeEat.FoodGroup group)
