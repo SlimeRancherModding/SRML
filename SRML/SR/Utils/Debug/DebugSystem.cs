@@ -69,6 +69,7 @@ namespace SRML.SR.Utils.Debug
             {
                 // Vars
                 ZoneDirector.Zone zone = SceneContext.Instance.PlayerZoneTracker.GetCurrentZone();
+                bool mainHitNull = mainHit == null;
 
                 // Player Info
                 GUILayout.Label($"<size=20><b>Player Info:</b></size>");
@@ -78,16 +79,18 @@ namespace SRML.SR.Utils.Debug
                 GUILayout.Label($"<b>Map Unlocked: </b>{SceneContext.Instance.PlayerState.HasUnlockedMap(zone)}");
                 GUILayout.Label($"<b>EndGame Time: </b>{SceneContext.Instance.PlayerState.GetEndGameTime()}");
                 GUILayout.Label($"<b>Ammo Mode: </b>{SceneContext.Instance.PlayerState.GetAmmoMode()}");
-                GUILayout.Label($"<b>Look At: </b>{mainHit.point}");
+                GUILayout.Label($"<b>Look At: </b>" + mainHitNull? "None" : "{mainHit.point}");
                 GUILayout.Space(20);
-
-                // Object Panel
-                GUILayout.Label($"<size=20><b>Object Inspector:</b></size>");
-                GUILayout.Space(3);
-                GUILayout.Label($"<b>Path: </b>{GetPath(mainHit.collider?.transform)}");
-                GUILayout.Label($"<b>Position: </b>{mainHit.collider?.transform.position.ToString() ?? "null"}");
-                GUILayout.Label($"<b>Rotation: </b>{mainHit.collider?.transform.rotation.ToString() ?? "null"}");
-                GUILayout.Label($"<b>Scale: </b>{mainHit.collider?.transform.localScale.ToString() ?? "null"}");
+                if (!mainHitNull)
+                {
+                    // Object Panel
+                    GUILayout.Label($"<size=20><b>Object Inspector:</b></size>");
+                    GUILayout.Space(3);
+                    GUILayout.Label($"<b>Path: </b>{GetPath(mainHit.collider?.transform)}");
+                    GUILayout.Label($"<b>Position: </b>{mainHit.collider?.transform.position.ToString() ?? "null"}");
+                    GUILayout.Label($"<b>Rotation: </b>{mainHit.collider?.transform.rotation.ToString() ?? "null"}");
+                    GUILayout.Label($"<b>Scale: </b>{mainHit.collider?.transform.localScale.ToString() ?? "null"}");
+                }
             }
 
             GUILayout.EndArea();
