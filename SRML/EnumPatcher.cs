@@ -81,6 +81,31 @@ namespace SRML
             if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
             else AddEnumValue(enumType,value,name);
         }
+
+        internal static bool TryAsNumber(this object value, Type type, out object result)
+        {
+            if (type.IsSubclassOf(typeof(IConvertible)))
+                throw new ArgumentException("The type must inherit the IConvertible interface", "type");
+            result = null;
+            if (type.IsInstanceOfType(value))
+            {
+                result = value;
+                return true;
+            }
+            if (value is IConvertible)
+            {
+                if (type.IsEnum)
+                {
+                    result = Enum.ToObject(type, value);
+                    return true;
+                }
+                var format = System.Globalization.NumberFormatInfo.CurrentInfo;
+                result = (value as IConvertible).ToType(type, format);
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
@@ -88,16 +113,31 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
-            var allValues = Enum.GetValues(enumType);
-            for (int i = 0; i < allValues.Length - 1; i++)
+            if (enumType == null)
+                throw new ArgumentNullException("enumType");
+            var vals = Enum.GetValues(enumType);
+            long l = 0;
+            for (ulong i = 0; i <= ulong.MaxValue; i++)
             {
-                if ((int)allValues.GetValue(i + 1) - (int)allValues.GetValue(i)>1)
-                {
-                    return Enum.ToObject(enumType, (int) allValues.GetValue(i) + 1);
-                }
+                if (!i.TryAsNumber(enumType, out var v))
+                    break;
+                for (; l < vals.Length; l++)
+                    if (vals.GetValue(l).Equals(v))
+                        goto skip;
+                return v;
+                skip:;
             }
-
-            return Enum.ToObject(enumType,(int)allValues.GetValue(allValues.Length - 1) + 1);
+            for (long i = -1; i >= long.MinValue; i--)
+            {
+                if (!i.TryAsNumber(enumType, out var v))
+                    break;
+                for (; l < vals.Length; l++)
+                    if (vals.GetValue(l).Equals(v))
+                        goto skip;
+                return v;
+                skip:;
+            }
+            throw new Exception("No unused values in enum " + enumType.FullName);
         }
 
         public static void ClearEnumCache(Type enumType)

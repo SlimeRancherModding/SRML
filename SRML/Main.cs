@@ -13,15 +13,14 @@ using SRML.Editor;
 using SRML.SR;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
-using SRML.Utils.Prefab.Patches;
 using UnityEngine;
 
 namespace SRML
 {
     internal static class Main
     {
-
         private static bool isPreInitialized;
+        internal static Transform prefabParent;
 
         /// <summary>
         /// Called before GameContext.Awake()
@@ -32,15 +31,18 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
 
-            foreach(var v in Assembly.GetExecutingAssembly().GetTypes())
+            prefabParent = new GameObject("PrefabParent").transform;
+            prefabParent.gameObject.SetActive(false);
+            GameObject.DontDestroyOnLoad(prefabParent.gameObject);
+            foreach (var v in Assembly.GetExecutingAssembly().GetTypes())
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
             }
+
             HarmonyPatcher.PatchAll();
 
             try
             {
-                
                 SRModLoader.InitializeMods();
             }
             catch (Exception e)
@@ -62,9 +64,8 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.Message}");
                 return;
             }
+            IdentifiableRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
-
-
 
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));

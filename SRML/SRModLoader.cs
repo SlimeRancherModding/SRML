@@ -12,6 +12,7 @@ using Exception = System.Exception;
 using SRML.Utils.Enum;
 using System.Collections.ObjectModel;
 using SRML.Config;
+using SRML.SR;
 
 namespace SRML
 {
@@ -19,7 +20,7 @@ namespace SRML
     {
         internal const string ModJson = "modinfo.json";
 
-        static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
+        internal static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
 
         public static IEnumerable<SRModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
 
@@ -169,7 +170,6 @@ namespace SRML
 
         internal static void PreLoadMods()
         {
-
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];

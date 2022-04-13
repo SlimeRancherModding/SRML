@@ -133,6 +133,10 @@ namespace SRML.SR.SaveSystem
         
         internal static void Push(ModdedSaveData data)
         {
+            foreach (var p in SRModLoader.Mods)
+                if (SaveRegistry.GetSaveInfo(p.Value).OnWorldSave != null && !ExtendedData.worldSaveData.ContainsKey(p.Value))
+                    ExtendedData.worldSaveData.Add(p.Value, new CompoundDataPiece(p.Key));
+
             foreach (var actorData in GetAllData(SceneContext.Instance.GameModel))
             {
                 foreach (CompoundDataPiece modPiece in actorData.Value.DataList)

@@ -4,6 +4,7 @@ using SRML;
 using SRML.SR.Templates.Components;
 using SRML.SR.Utils.BaseObjects;
 using SRML.SR.Utils.Debug;
+using SRML.Utils;
 using UnityEngine;
 
 public static class GameObjectExtensions
@@ -153,18 +154,7 @@ public static class GameObjectExtensions
 	}
 
 	// OBTAIN CHILD
-	public static GameObject GetChildCopy(this GameObject obj, string name)
-	{
-		GameObject copy = obj.CreatePrefabCopy();
-		GameObject child = copy.FindChild(name);
-		child.SetActive(false);
-		child.transform.parent = null;
-
-		SRML.Utils.GameObjectUtils.Prefabitize(child);
-		Object.Destroy(copy);
-
-		return child;
-	}
+	public static GameObject GetChildCopy(this GameObject obj, string name) => PrefabUtils.CopyPrefab(obj.FindChild(name));
 
 	// COPY STUFF
 	public static GameObject CreatePrefabCopy(this GameObject obj)

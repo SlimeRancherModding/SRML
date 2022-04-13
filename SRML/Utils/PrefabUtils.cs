@@ -70,9 +70,7 @@ namespace SRML.Utils
 
         public static GameObject CopyPrefab(GameObject prefab)
         {
-            var newG = GameObjectUtils.InstantiateInactive(prefab);
-            GameObjectUtils.Prefabitize(newG);
-            return newG;
+            return GameObject.Instantiate(prefab, Main.prefabParent, false);
         }
 
         public static UnityEngine.Object DeepCopyObject(UnityEngine.Object ob)

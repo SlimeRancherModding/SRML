@@ -108,7 +108,11 @@ namespace SRML.SR
         /// <param name="icon">Icon that will be used for the item in inventory</param>
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)
         {
-            RegisterVacEntry(new VacItemDefinition(){id=id,color=color,icon=icon});
+            var v = ScriptableObject.CreateInstance<VacItemDefinition>();
+            v.id = id;
+            v.color = color;
+            v.icon = icon;
+            RegisterVacEntry(v);
         }
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
@@ -137,12 +141,11 @@ namespace SRML.SR
         /// <param name="cost">The cost of the upgrade</param>
         public static void RegisterUpgradeEntry(PlayerState.Upgrade upgrade, Sprite icon, int cost)
         {
-            RegisterUpgradeEntry(new UpgradeDefinition()
-            {
-                cost = cost,
-                icon = icon,
-                upgrade = upgrade
-            });
+            var v = ScriptableObject.CreateInstance<UpgradeDefinition>();
+            v.upgrade = upgrade;
+            v.icon = icon;
+            v.cost = cost;
+            RegisterUpgradeEntry(v);
         }
 
 
@@ -235,9 +238,14 @@ namespace SRML.SR
         /// <param name="icon">Icon for the toy in the toy store</param>
         /// <param name="cost">How much the toy costs in the toy store</param>
         /// <param name="nameKey"></param>
-        public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
+        public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost, string nameKey)
         {
-            RegisterToy(new ToyDefinition() { toyId = id, icon = icon, cost = cost, nameKey = nameKey });
+            var v = ScriptableObject.CreateInstance<ToyDefinition>();
+            v.toyId = id;
+            v.icon = icon;
+            v.cost = cost;
+            v.nameKey = nameKey;
+            RegisterToy(v);
         }
     }
 }

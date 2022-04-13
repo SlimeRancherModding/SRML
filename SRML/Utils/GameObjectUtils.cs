@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using SRML.Utils.Prefab;
 using UnityEngine;
 namespace SRML.Utils
 {
@@ -75,29 +74,14 @@ namespace SRML.Utils
 
         public static void Prefabitize(GameObject obj)
         {
-            obj.SetActive(false);
-            GameObject.DontDestroyOnLoad(obj);
-            obj.AddComponent<RuntimePrefab>();
+            obj.transform.SetParent(Main.prefabParent, false);
         }
 
         public static GameObject InstantiateInactive(GameObject original)
         {
-            var state = original.activeSelf;
-            original.SetActive(false);
-            bool originalRuntimeValue = false;
-            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
-            if (comp)
-            {
-                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
-                comp.ShouldEnableOnInstantiate = false;
-            }
-            var newObj = GameObject.Instantiate(original);
-            if (comp)
-            {
-                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
-                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
-            }
-            original.SetActive(state);
+            GameObject newObj = GameObject.Instantiate(original, Main.prefabParent, true);
+            newObj.SetActive(false);
+            newObj.transform.SetParent(null, false);
             return newObj;
         }
     }

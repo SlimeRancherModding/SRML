@@ -33,6 +33,7 @@ namespace SRML.SR
             
         public static event OnSaveGameLoadedDelegate OnSaveGameLoaded;
         public static event OnSaveGameLoadedDelegate PreSaveGameLoaded;
+        public static event OnSaveGameLoadedDelegate PreSaveGameLoad;
         public static event OnMainMenuLoadedDelegate OnMainMenuLoaded;
         public static event OnActorSpawnDelegate OnActorSpawn;
         internal static event OnGameContextReadyDelegate OnGameContextReady;
@@ -61,6 +62,7 @@ namespace SRML.SR
         internal static void PreSceneLoad(SceneContext t)
         {
             if (Levels.isMainMenu()) return;
+            PreSaveGameLoad?.Invoke(t);
             PreSaveGameLoaded?.Invoke(t);
         }
 

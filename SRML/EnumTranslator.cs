@@ -195,8 +195,6 @@ namespace SRML
         public delegate bool MissingTranslationGenericDelegate<T>(ref string value);
         static List<MissingTranslationDelegate> missingDelegates = new List<MissingTranslationDelegate>();
 
-        public static bool DoDefaultTranslationFallbacks = true;
-
         private static List<MissingTranslationDelegate> defaultFallbacks = new List<MissingTranslationDelegate>()
         {
             ConvertGenericFallback<Identifiable.Id>((ref string x) =>
@@ -249,12 +247,12 @@ namespace SRML
             }
 
 
-            if (DoDefaultTranslationFallbacks)
+            if (!success)
             {
-                if (!success) foreach (var v in defaultFallbacks)
-                    {
-                        success |= v(enumType, ref value);
-                    }
+                foreach (var v in defaultFallbacks)
+                {
+                    success |= v(enumType, ref value);
+                }
             }
             return success;
         }
@@ -286,7 +284,6 @@ namespace SRML
             {
                 v.Value(translator, mode, toFix);
             }
-            DoDefaultTranslationFallbacks = true;
         }
 
         /// <summary>
@@ -330,7 +327,6 @@ namespace SRML
             // basic enum fixer for lists
             RegisterEnumFixer((EnumTranslator translator, TranslationMode mode, IList list) =>
             {
-                DoDefaultTranslationFallbacks = false;
                 for (int i = list.Count-1;i>=0;i--)
                 {
                     var temp = list[i];
@@ -344,13 +340,11 @@ namespace SRML
                         list.RemoveAt(i);
                     }
                 }
-                DoDefaultTranslationFallbacks = true;
             });
 
             // basic enum fixer for dictionaries
             RegisterEnumFixer((EnumTranslator translator, TranslationMode mode, IDictionary dict) =>
             {
-                DoDefaultTranslationFallbacks = false;
                 var keyArray = new object[dict.Count];
                 var valueArray = new object[dict.Count];
                 int counter = 0;
@@ -364,6 +358,7 @@ namespace SRML
                     }
                     catch (MissingTranslationException)
                     {
+                        Debug.LogError("Key invalid " + temp);
                         keyArray[counter++] = null;
                     }
 
@@ -385,7 +380,6 @@ namespace SRML
                     if (keyArray[i] == null) continue;
                     dict[keyArray[i]] = valueArray[i]; 
                 }
-                DoDefaultTranslationFallbacks = true;
             });
         }
     }

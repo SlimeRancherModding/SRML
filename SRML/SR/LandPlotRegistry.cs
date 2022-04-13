@@ -29,10 +29,17 @@ namespace SRML.SR
 
         public static void RegisterPurchasableLandPlot(LandPlotShopEntry entry)
         {
-            PurchasableUIRegistry.RegisterPurchasable<EmptyPlotUI>((x) =>
+            PurchasableUIRegistry.RegisterPurchasable<EmptyPlotUI>(x => new PurchaseUI.Purchasable(entry.NameKey, entry.icon, entry.mainImg, entry.DescKey, entry.cost, entry.pediaId, () =>
             {
-                return new PurchaseUI.Purchasable(entry.NameKey, entry.icon, entry.mainImg, entry.DescKey, entry.cost, entry.pediaId, () => x.BuyPlot(new LandPlotUI.PlotPurchaseItem() { icon = entry.icon, img = entry.mainImg, cost = entry.cost, plotPrefab = GameContext.Instance.LookupDirector.GetPlotPrefab(entry.plot) }), entry.isUnlocked??(() => true), () => true);
-            });
+                EmptyPlotUI emptyPlotUi = x;
+                emptyPlotUi.BuyPlot(new LandPlotUI.PlotPurchaseItem()
+                {
+                    icon = entry.icon,
+                    img = entry.mainImg,
+                    cost = entry.cost,
+                    plotPrefab = SRSingleton<GameContext>.Instance.LookupDirector.GetPlotPrefab(entry.plot)
+                });
+            }, entry.isUnlocked ?? (() => true), (() => true), null, null, null, null));
         }
 
         public struct LandPlotShopEntry

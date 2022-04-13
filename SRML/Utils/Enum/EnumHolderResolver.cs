@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SRML.SR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -29,8 +30,13 @@ namespace SRML.Utils.Enum
                         }
                         else
                         EnumPatcher.AddEnumValueWithAlternatives(field.FieldType,field.GetValue(null),field.Name);
-                        
-                        
+
+                        if (field.FieldType == typeof(Identifiable.Id))
+                        {
+                            foreach (var att in field.GetCustomAttributes())
+                                if (att is IdentifiableCategorization)
+                                    ((Identifiable.Id)field.GetValue(null)).Categorize(((IdentifiableCategorization)att).rules);
+                        }
                     }
                 }
             }
