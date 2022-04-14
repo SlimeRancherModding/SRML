@@ -385,6 +385,7 @@
     <Compile Include="SR\DataModelRegistry.cs" />
     <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
+    <Compile Include="SR\Patches\ChromaPackMissingPatch.cs" />
     <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
     <Compile Include="SR\Patches\WeaponVacuumExpelEmotionsPatch.cs" />

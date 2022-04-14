@@ -15,7 +15,8 @@ namespace SRML
     /// </summary>
     public partial class EnumTranslator
     {
-        public Dictionary<Type,Dictionary<int,string>> MappedValues = new Dictionary<Type, Dictionary<int, string>>();
+        public Dictionary<Type, Dictionary<int,string>> MappedValues = new Dictionary<Type, Dictionary<int, string>>();
+        internal static Dictionary<Type, int> EnumMinCache = new Dictionary<Type, int>();
 
         /// <summary>
         /// Get the next free value for the given enumType
@@ -43,7 +44,6 @@ namespace SRML
             {
                 newDict[i] = Enum.GetName(type, enumValues[-i+startValue]);
             }
-
         }
 
 
@@ -99,9 +99,10 @@ namespace SRML
         {
             var type = val.GetType();
             if (!MappedValues.ContainsKey(type)) return ((int) val);
-            
+            if (!EnumMinCache.ContainsKey(type)) EnumMinCache[type] = ((int[])Enum.GetValues(type)).Min();
+
             var potential = MappedValues[type].FirstOrDefault((x) => Enum.GetName(type, val) == x.Value);
-            return potential.Key<0?potential.Key : ((int)val);
+            return potential.Key < EnumMinCache[type] ? potential.Key : ((int)val);
         }
 
         public T TranslateFrom<T>(int val)
@@ -111,9 +112,10 @@ namespace SRML
 
         public object TranslateFrom(Type enumType, int val)
         {
-            if (val < 0)
+            if (!EnumMinCache.ContainsKey(enumType)) EnumMinCache[enumType] = ((int[])Enum.GetValues(enumType)).Min();
+            if (val < EnumMinCache[enumType])
             {
-                if(!MappedValues.ContainsKey(enumType)||!MappedValues[enumType].ContainsKey(val)||!Enum.IsDefined(enumType,MappedValues[enumType][val])) throw new MissingTranslationException(val,TranslationMode.FROMTRANSLATED);
+                if(!MappedValues.ContainsKey(enumType) || !MappedValues[enumType].ContainsKey(val)||!Enum.IsDefined(enumType,MappedValues[enumType][val])) throw new MissingTranslationException(val,TranslationMode.FROMTRANSLATED);
                 return Enum.ToObject(enumType, Enum.Parse(enumType, MappedValues[enumType][val]));
             }
             else
@@ -168,8 +170,6 @@ namespace SRML
         {
             FixEnumValues(this,mode,toFix);
         }
-
-        
     }
 
     public class MissingTranslationException : Exception
