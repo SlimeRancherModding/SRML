@@ -126,8 +126,8 @@ namespace SRML.SR.Templates.Identifiables
                     img.fillOrigin = 0;
 
                     img.material = BaseObjects.originMaterial["Digital Icon Medium"];
-                    img.SetPrivateProperty("preferredWidth", 1024);
-                    img.SetPrivateProperty("preferredHeight", 1024);
+                    img.SetProperty("preferredWidth", 1024);
+                    img.SetProperty("preferredHeight", 1024);
                 })
             );
 
@@ -155,8 +155,8 @@ namespace SRML.SR.Templates.Identifiables
                     img.fillOrigin = 0;
 
                     img.material = BaseObjects.originMaterial["Digital Icon Medium"];
-                    img.SetPrivateProperty("preferredWidth", 1024);
-                    img.SetPrivateProperty("preferredHeight", 1024);
+                    img.SetProperty("preferredWidth", 1024);
+                    img.SetProperty("preferredHeight", 1024);
                 })
             );
 

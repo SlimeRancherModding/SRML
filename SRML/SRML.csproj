@@ -36,10 +36,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
+    <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\publicized_assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="InControl">
@@ -382,13 +383,37 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
+    <Compile Include="SR\ChromaRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\FoodGroupRegistry.cs" />
+    <Compile Include="SR\GadgetCategorization.cs" />
     <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
-    <Compile Include="SR\Patches\ChromaPackMissingPatch.cs" />
+    <Compile Include="SR\Patches\EnterZonePatch.cs" />
+    <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
+    <Compile Include="SR\Patches\GordoSnareOnTriggerPatch.cs" />
+    <Compile Include="SR\Patches\GordoSnarePatch.cs" />
     <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
+    <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
+    <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
+    <Compile Include="SR\Patches\TargetingUIGetTargetPatch.cs" />
+    <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\Patches\WeaponVacuumExpelEmotionsPatch.cs" />
+    <Compile Include="SR\SnareRegistry.cs" />
+    <Compile Include="SR\StyleRegistry.cs" />
+    <Compile Include="SR\TargetingRegistry.cs" />
+    <Compile Include="SR\Utils\CollectionExtensions.cs" />
+    <Compile Include="SR\Utils\ColorExtensions.cs" />
+    <Compile Include="SR\Utils\MathExtensions.cs" />
+    <Compile Include="SR\Utils\ObjectExtensions.cs" />
+    <Compile Include="SR\Utils\StringExtensions.cs" />
+    <Compile Include="SR\Utils\TextureExtensions.cs" />
+    <Compile Include="SR\Utils\TransformExtensions.cs" />
+    <Compile Include="SR\Utils\TypeExtensions.cs" />
+    <Compile Include="SR\Utils\VectorExtensions.cs" />
+    <Compile Include="Utils\EnumUtils.cs" />
+    <Compile Include="Utils\ScriptableObjectUtils.cs" />
     <Compile Include="SR\UI\Utils\UIUtils.cs" />
     <Compile Include="SR\Utils\Debug\AddDebugMarker.cs" />
     <Compile Include="SR\Utils\Debug\DebugCommand.cs" />

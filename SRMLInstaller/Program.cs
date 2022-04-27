@@ -37,9 +37,8 @@ namespace SRMLInstaller
 
 
                 bool uninstalling = false;
-                bool alreadypatched=false;
-
-
+                bool alreadypatched = false;
+                bool didSrmlExist = File.Exists(srmlPath);
                 try_to_patch:
                 if (File.Exists(srmlPath))
                 {
@@ -76,17 +75,13 @@ namespace SRMLInstaller
                     }
 
                     patcher.Dispose();
-                    SendFilesOver();
+                    SendFilesOver(didSrmlExist);
                 }
                 else
                 {
                     SendFilesOver();
                     goto try_to_patch;
                 }
-
-                
-
-                
 
                 string GetAlternateRoot()
                 {
@@ -99,7 +94,7 @@ namespace SRMLInstaller
                     return alternateRoot;
                 }
 
-                void SendFilesOver()
+                void SendFilesOver(bool canLog = true)
                 {
                     foreach(var file in Directory.GetFiles(GetAlternateRoot()))
                     {
@@ -115,8 +110,9 @@ namespace SRMLInstaller
                         //var libPath = Path.Combine(libFolder, file);
                         if (File.Exists(combine))
                         {
-                            if (!uninstalling) Console.WriteLine($"Found old {file}! Replacing...");
-                            else Console.WriteLine($"Deleting {file}...");
+                            if (canLog)
+                                if (!uninstalling) Console.WriteLine($"Found old {file}! Replacing...");
+                                else Console.WriteLine($"Deleting {file}...");
                             File.Delete(combine);
                         }
                         if (uninstalling) continue;
@@ -128,9 +124,6 @@ namespace SRMLInstaller
                         str.Close();
                     }
                 }
-                
-
-
 
                 Console.WriteLine();
                 

@@ -37,6 +37,12 @@ namespace SRML.Utils.Enum
                                 if (att is IdentifiableCategorization)
                                     ((Identifiable.Id)field.GetValue(null)).Categorize(((IdentifiableCategorization)att).rules);
                         }
+                        if (field.FieldType == typeof(Gadget.Id))
+                        {
+                            foreach (var att in field.GetCustomAttributes())
+                                if (att is GadgetCategorization)
+                                    ((Gadget.Id)field.GetValue(null)).Categorize(((GadgetCategorization)att).rules);
+                        }
                     }
                 }
             }

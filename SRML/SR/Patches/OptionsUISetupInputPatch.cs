@@ -37,8 +37,6 @@ namespace SRML.SR.Patches
                         yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(OptionsUISetupInputPatch), "Alternate"));
                     }
                     else yield return cur;
-                    
-
                 }
             }
         }
@@ -47,7 +45,6 @@ namespace SRML.SR.Patches
             foreach(var v in SRInput.Actions.Actions.Where(x=>BindingRegistry.IsModdedAction(x)&&!BindingRegistry.ephemeralActions.Contains(x)))
             {
                 ui.CreateKeyBindingLine("key." + v.Name.ToLowerInvariant(), v);
-                
             }
         }
     }

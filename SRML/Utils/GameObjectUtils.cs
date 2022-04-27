@@ -56,10 +56,6 @@ namespace SRML.Utils
                     var indent3 = indent2 + "    ";
                     builder.AppendLine(indent3 + "Material: " + rend2.material.name);
                 }
-
-
-
-
             }
 
             builder.AppendLine(indent + "children: ");
@@ -68,8 +64,6 @@ namespace SRML.Utils
             {
                 PrintObjectTreeInternal(obj.transform.GetChild(i).gameObject, indent2, builder);
             }
-
-            
         }
 
         public static void Prefabitize(GameObject obj)
@@ -82,6 +76,48 @@ namespace SRML.Utils
             GameObject newObj = GameObject.Instantiate(original, Main.prefabParent, true);
             newObj.SetActive(false);
             newObj.transform.SetParent(null, false);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original);
+            if (keepOriginalName) newObj.name = original.name;
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Transform parent, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, keepOriginalName);
+            newObj.transform.SetParent(parent);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Transform parent, bool worldPositionStays, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, keepOriginalName);
+            newObj.transform.SetParent(parent, worldPositionStays);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, keepOriginalName);
+            newObj.transform.SetPositionAndRotation(position, rotation);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, Transform parent, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, parent, keepOriginalName);
+            newObj.transform.SetPositionAndRotation(position, rotation);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, Transform parent, bool worldPositionStays, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, parent, worldPositionStays, keepOriginalName);
+            newObj.transform.SetPositionAndRotation(position, rotation);
             return newObj;
         }
     }

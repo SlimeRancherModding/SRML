@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonomiPark.SlimeRancher.DataModel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -218,8 +219,24 @@ namespace SRML
             {
                 x = SpawnResource.Id.NONE.ToString();
                 return true;
+            }),
+            ConvertGenericFallback<RanchDirector.Palette>((ref string x) =>
+            {
+                x = RanchDirector.Palette.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<RanchDirector.PaletteType>((ref string x) =>
+            {
+                x = RanchDirector.Palette.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<InstrumentModel.Instrument>((ref string x) =>
+            {
+                x = InstrumentModel.Instrument.NONE.ToString();
+                return true;
             })
         };
+
         /// <summary>
         /// Register an EnumFixer that allows for objects of type <typeparamref name="T"/> to have their enum values processed by an enumtranslator 
         /// </summary>

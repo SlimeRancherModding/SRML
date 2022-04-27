@@ -15,7 +15,7 @@ namespace SRML
     /// </summary>
     public class SRModInfo
     {
-        public SRModInfo(string modid,string name, string author, ModVersion version,string description)
+        public SRModInfo(string modid, string name, string author, ModVersion version,string description)
         {
             Id = modid;
             Name = name;
@@ -40,9 +40,9 @@ namespace SRML
         /// </summary>
         public struct ModVersion : IComparable<ModVersion>
         {
-            public int Major;
-            public int Minor;
-            public int Revision;
+            public readonly int Major;
+            public readonly int Minor;
+            public readonly int Revision;
             public static readonly ModVersion DEFAULT = new ModVersion(1, 0);
             public ModVersion(int major, int minor, int revision = 0)
             {
@@ -102,8 +102,7 @@ namespace SRML
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
 
-        private IModEntryPoint entryPoint;
-
+        private ModEntryPoint entryPoint;
        
         private static SRMod forcedContext;
 
@@ -157,32 +156,33 @@ namespace SRML
             return $"net.{(ModInfo.Author==null||ModInfo.Author.Length==0?"srml":Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
 
-        public SRMod(SRModInfo info,IModEntryPoint entryPoint)
+        public SRMod(SRModInfo info, IModEntryPoint entryPoint)
         {
             this.ModInfo = info;
             this.EntryType = entryPoint.GetType();
-            this.entryPoint = entryPoint;
+            this.entryPoint = (ModEntryPoint)entryPoint;
         }
 
-        public SRMod(SRModInfo info, IModEntryPoint entryPoint, String path) : this(info, entryPoint)
+        public SRMod(SRModInfo info, IModEntryPoint entryPoint, string path) : this(info, entryPoint)
         {
             this.Path = path;
         }
 
-        public void PreLoad()
-        {
-            entryPoint.PreLoad();
-        }
+        public void PreLoad() => entryPoint.PreLoad();
 
-        public void Load()
-        {
-            entryPoint.Load();
-        }
+        public void Load() => entryPoint.Load();
 
-        public void PostLoad()
-        {
-            entryPoint.PostLoad();
-        }
+        public void PostLoad() => entryPoint.PostLoad();
+
+        public void Reload() => entryPoint.Reload();
+
+        public void Unload() => entryPoint.Unload();
+
+        public void Update() => entryPoint.Update();
+
+        public void FixedUpdate() => entryPoint.FixedUpdate();
+        
+        public void LateUpdate() => entryPoint.LateUpdate();
     }
     
 }

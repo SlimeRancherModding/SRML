@@ -44,9 +44,6 @@ namespace SRML
                 {
                     throw new Exception("Found mod with duplicate id '"+mod.id+"' in "+jsonFile+"!");
                 }
-
-
-
             }
             // process mods with embedded modinfo.jsons
             foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
@@ -170,6 +167,8 @@ namespace SRML
 
         internal static void PreLoadMods()
         {
+            CurrentLoadingStep = LoadingStep.PRELOAD;
+            Console.Console.Reload += Main.Reload;
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
@@ -178,22 +177,14 @@ namespace SRML
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
                     ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
-                    Console.Console.Reload += () =>
-                    {
-                        SRMod.ForceModContext(mod);
-                        foreach(var v in mod.Configs)
-                        {
-                            v.TryLoadFromFile();
-                        }
-                        SRMod.ClearModContext();
-                    };
                 }
                 catch (Exception e)
                 {
                     throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
-               
             }
+            IdentifiableRegistry.CategorizeAllIds();
+            GadgetRegistry.CategorizeAllIds();
         }
         
         internal static void LoadMods()
@@ -232,6 +223,99 @@ namespace SRML
 
             CurrentLoadingStep = LoadingStep.FINISHED;
         }
+
+        internal static void ReloadMods()
+        {
+            CurrentLoadingStep = LoadingStep.RELOAD;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    SRMod.ForceModContext(mod);
+                    foreach (var v in mod.Configs)
+                    {
+                        v.TryLoadFromFile();
+                    }
+                    SRMod.ClearModContext();
+                    mod.Reload();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error reloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+            CurrentLoadingStep = LoadingStep.FINISHED;
+        }
+
+        internal static void UnloadMods()
+        {
+            CurrentLoadingStep = LoadingStep.UNLOAD;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.Unload();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error unloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
+        internal static void UpdateMods()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.Update();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
+        internal static void UpdateModsFixed()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.FixedUpdate();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error fixed-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
+        internal static void UpdateModsLate()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.LateUpdate();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error late-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
         /// <summary>
         /// Utility class to help with the discovery and loading of mod assemblies
         /// </summary>
@@ -259,13 +343,16 @@ namespace SRML
             }
         }
 
-        internal enum LoadingStep
+        public enum LoadingStep
         {
             PRELOAD,
             LOAD,
             POSTLOAD,
+            RELOAD,
+            UNLOAD,
             FINISHED
         }
+
         /// <summary>
         /// Class that represents a mod before it has been loaded or fully processed
         /// </summary>
@@ -280,8 +367,6 @@ namespace SRML
             public string[] dependencies;
             public string[] load_after;
             public string[] load_before;
-
-
 
             public bool isFromJSON = true;
             public string entryFile;

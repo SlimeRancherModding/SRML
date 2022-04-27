@@ -29,53 +29,22 @@ public static class ComponentExtensions
 	}
 
 	// PRIVATE FIELDS STUFF
+	[System.Obsolete("Use ObjectExtensions.SetField instead.")]
 	public static T SetPrivateField<T>(this T comp, string name, object value) where T : Component
 	{
-		try
-		{
-			FieldInfo field = comp.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			field.SetValue(comp, value);
-		}
-		catch { }
-
+		comp.SetField(name, value);
 		return comp;
 	}
 
 	public static T SetPrivateProperty<T>(this T comp, string name, object value) where T : Component
 	{
-		try
-		{
-			PropertyInfo field = comp.GetType().GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			field.SetValue(comp, value, null);
-		}
-		catch { }
-
+		comp.SetProperty(name, value);
 		return comp;
 	}
 
-	public static E GetPrivateField<E>(this Component comp, string name)
-	{
-		try
-		{
-			FieldInfo field = comp.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			return (E)field.GetValue(comp);
-		}
-		catch { }
+	public static E GetPrivateField<E>(this Component comp, string name) => comp.GetField<E>(name);
 
-		return default;
-	}
-
-	public static E GetPrivateProperty<E>(this Component comp, string name)
-	{
-		try
-		{
-			PropertyInfo field = comp.GetType().GetProperty(name, BindingFlags.NonPublic | BindingFlags.Instance);
-			return (E)field.GetValue(comp, null);
-		}
-		catch { }
-
-		return default;
-	}
+	public static E GetPrivateProperty<E>(this Component comp, string name) => comp.GetProperty<E>(name);
 
 	public static void CopyAllTo<T>(this T comp, T otherComp) where T : Component
 	{

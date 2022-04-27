@@ -65,6 +65,7 @@ namespace SRML
                 return;
             }
             IdentifiableRegistry.CategorizeAllIds();
+            GadgetRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
 
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
@@ -86,6 +87,7 @@ namespace SRML
             SRCallbacks.OnLoad();
             PrefabUtils.ProcessReplacements();
             KeyBindManager.ReadBinds();
+            GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
             try
             {
@@ -119,8 +121,77 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
-
         }
 
+        internal static void Reload()
+        {
+            try
+            {
+                SRModLoader.ReloadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void Unload()
+        {
+            try
+            {
+                SRModLoader.UnloadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void Update()
+        {
+            try
+            {
+                SRModLoader.UpdateMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void FixedUpdate()
+        {
+            try
+            {
+                SRModLoader.UpdateModsFixed();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void LateUpdate()
+        {
+            try
+            {
+                SRModLoader.UpdateModsLate();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+    }
+
+    internal class ModManager : MonoBehaviour
+    {
+        void Update() => Main.Update();
+
+        void FixedUpdate() => Main.FixedUpdate();
+
+        void LateUpdate() => Main.LateUpdate();
+
+        void OnApplicationQuit() => Main.Unload();
     }
 }

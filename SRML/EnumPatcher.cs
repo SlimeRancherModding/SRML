@@ -16,18 +16,23 @@ namespace SRML
     /// </summary>
     public static class EnumPatcher
     {
-        internal delegate object AlternateEnumRegister(object value, string name);
+        public delegate object AlternateEnumRegister(object value, string name);
         private static readonly Dictionary<Type, AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type, AlternateEnumRegister>()
         {
-            { typeof(Identifiable.Id),(x,y)=>IdentifiableRegistry.CreateIdentifiableId(x,y)},
-            { typeof(Gadget.Id),(x,y)=>(object)GadgetRegistry.CreateGadgetId(x,y)},
-            { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)},
-            {typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) },
-            {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) }
+            { typeof(Identifiable.Id), (x,y) => IdentifiableRegistry.CreateIdentifiableId(x,y) },
+            { typeof(Gadget.Id), (x,y) => GadgetRegistry.CreateGadgetId(x,y) },
+            { typeof(PlayerState.Upgrade), (x,y) => PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y) },
+            { typeof(PediaDirector.Id), (x,y) => PediaRegistry.CreatePediaId(x,y) },
+            { typeof(LandPlot.Id), (x,y) => LandPlotRegistry.CreateLandPlotId(x,y) },
+            { typeof(RanchDirector.Palette), (x,y) => ChromaRegistry.CreatePalette(x,y) },
+            { typeof(RanchDirector.PaletteType), (x,y) => ChromaRegistry.CreatePaletteType(x,y) }
         };
 
-        internal static void RegisterAlternate(Type type, AlternateEnumRegister del)
+        public static void RegisterAlternate<T>(AlternateEnumRegister del) => RegisterAlternate(typeof(T), del);
+
+        public static void RegisterAlternate(Type type, AlternateEnumRegister del)
         {
+            if (!type.IsEnum) throw new Exception($"The given type {type} isn't an enum");
             BANNED_ENUMS.Add(type, del);
         }
 
@@ -40,7 +45,15 @@ namespace SRML
             var t = AccessTools.TypeByName("System.RuntimeType");
             cache = AccessTools.Field(t, "GenericCache");
         }
-        
+
+        /// <summary>
+        /// Add a new enum value to the given <paramref name="T"/> with the first free value
+        /// </summary>
+        /// <param name="T">Type of enum to add the value to</param>
+        /// <param name="name">Name of the new enum value</param>
+        /// <returns>The new enum value</returns>
+        public static T AddEnumValue<T>(string name) => (T)AddEnumValue(typeof(T), name);
+
         /// <summary>
         /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
         /// </summary>
@@ -53,6 +66,15 @@ namespace SRML
             AddEnumValue(enumType, newVal, name);
             return newVal;
         }
+
+        /// <summary>
+        /// Add a new value to the given <paramref name="T"/> 
+        /// </summary>
+        /// <param name="T">Enum to add the new value to</param>
+        /// <param name="value">Value to add to the enum</param>
+        /// <param name="name">The name of the new value</param>
+        public static void AddEnumValue<T>(object value, string name) => AddEnumValue(typeof(T), value, name);
+
         /// <summary>
         /// Add a new value to the given <paramref name="enumType"/> 
         /// </summary>
@@ -75,11 +97,13 @@ namespace SRML
 
             patch.AddValue((ulong)value, name);
         }
-        
-        internal static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
+
+        public static void AddEnumValueWithAlternatives<T>(object value, string name) => AddEnumValueWithAlternatives(typeof(T), value, name);
+
+        public static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
         {
             if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
-            else AddEnumValue(enumType,value,name);
+            else AddEnumValue(enumType, value, name);
         }
 
         internal static bool TryAsNumber(this object value, Type type, out object result)
@@ -99,7 +123,7 @@ namespace SRML
                     result = Enum.ToObject(type, value);
                     return true;
                 }
-                var format = System.Globalization.NumberFormatInfo.CurrentInfo;
+                var format = NumberFormatInfo.CurrentInfo;
                 result = (value as IConvertible).ToType(type, format);
                 return true;
             }
@@ -109,12 +133,19 @@ namespace SRML
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
+        /// <param name="T"></param>
+        /// <returns>The first undefined enum value</returns>
+        public static object GetFirstFreeValue<T>() => GetFirstFreeValue(typeof(T));
+
+        /// <summary>
+        /// Get first undefined value in an enum
+        /// </summary>
         /// <param name="enumType"></param>
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
-            if (enumType == null)
-                throw new ArgumentNullException("enumType");
+            if (!enumType.IsEnum) throw new ArgumentException("enumType");
+            if (enumType == null) throw new ArgumentNullException("enumType");
             var vals = Enum.GetValues(enumType);
             long l = 0;
             for (ulong i = 0; i <= ulong.MaxValue; i++)
@@ -152,7 +183,7 @@ namespace SRML
 
         public class EnumPatch 
         {
-            private Dictionary<ulong, String> values = new Dictionary<ulong, String>();
+            private Dictionary<ulong, string> values = new Dictionary<ulong, string>();
             public void AddValue(ulong enumValue, string name)
             {
                 if (values.ContainsKey(enumValue)) return;
@@ -166,7 +197,5 @@ namespace SRML
             }
         }
     }
-
-
 }
     

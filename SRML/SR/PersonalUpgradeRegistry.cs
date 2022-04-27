@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using UnityEngine;
 
 namespace SRML.SR
 {
@@ -52,8 +53,6 @@ namespace SRML.SR
             }
         }
 
-
-
         public static void RegisterUpgradeLock(PlayerState.Upgrade upgrade, CreateUpgradeLockerDelegate del)
         {
             moddedLockers.Add(upgrade,del);
@@ -63,7 +62,5 @@ namespace SRML.SR
         {
             RegisterUpgradeLock(upgrade,null);
         }
-
-        
     }
 }

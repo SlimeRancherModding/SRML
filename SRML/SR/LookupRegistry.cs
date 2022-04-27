@@ -61,7 +61,7 @@ namespace SRML.SR
                     vacEntriesToPatch.Add(entry);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.vacItemDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
+                    GameContext.Instance.LookupDirector.vacItemDefinitions.AddAndRemoveWhere(entry, (x,y) => x.id == y.id);
                     GameContext.Instance.LookupDirector.vacItemDict[entry.id] = entry;
                     break;
             }
@@ -114,6 +114,7 @@ namespace SRML.SR
             v.icon = icon;
             RegisterVacEntry(v);
         }
+
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
@@ -147,7 +148,6 @@ namespace SRML.SR
             v.cost = cost;
             RegisterUpgradeEntry(v);
         }
-
 
         /// <summary>
         /// Register a <see cref="SpawnResource"/> into the <see cref="LookupDirector"/>

@@ -108,7 +108,5 @@ namespace SRML.SR
         {
             return keyToMod.TryGetValue(pair, out var value) ? value : null;
         }
-
-        
     }
 }

@@ -78,7 +78,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static bool IsModdedIdentifiable(Identifiable.Id id)
+        public static bool IsModdedIdentifiable(this Identifiable.Id id)
         {
             return moddedIdentifiables.ContainsKey(id);
         }
@@ -94,14 +94,10 @@ namespace SRML.SR
         {
             foreach (Identifiable.Id id in moddedIdentifiables.Keys)
             {
-                if (rules.ContainsKey(id))
-                {
-                    CategorizeId(id, rules[id]);
-                    continue;
-                }
+                if (rules.ContainsKey(id)) continue;
                 CategorizeId(id);
             }
-            foreach (Identifiable.Id id in rules.Keys.Where(x => !moddedIdentifiables.ContainsKey(x)))
+            foreach (Identifiable.Id id in rules.Keys)
                 CategorizeId(id, rules[id]);
         }
 
