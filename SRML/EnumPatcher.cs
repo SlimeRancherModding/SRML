@@ -23,13 +23,13 @@ namespace SRML
             { typeof(Identifiable.Id),(x,y)=>IdentifiableRegistry.CreateIdentifiableId(x,y)},
             { typeof(Gadget.Id),(x,y)=>(object)GadgetRegistry.CreateGadgetId(x,y)},
             { typeof(PlayerState.Upgrade),(x,y)=>(object)PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y)},
-            {typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) },
-            {typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) },
+            { typeof(PediaDirector.Id),(x,y)=>(object)PediaRegistry.CreatePediaId(x,y) },
+            { typeof(LandPlot.Id),(x,y)=>(object)LandPlotRegistry.CreateLandPlotId(x,y) },
             { typeof(RanchDirector.Palette),(x,y)=>ChromaPackRegistry.CreatePalette(x,y)},
             { typeof(RanchDirector.PaletteType),(x,y)=>ChromaPackRegistry.CreatePaletteType(x,y)}
         };
 
-        public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) => RegisterAlternate(typeof(TEnum), del);
+        public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) where TEnum : Enum => RegisterAlternate(typeof(TEnum), del);
 
         public static void RegisterAlternate(Type type, AlternateEnumRegister del)
         {
@@ -53,7 +53,7 @@ namespace SRML
         /// <typeparam name="TEnum">Type of enum to add the value to</typeparam>
         /// <param name="name">Name of the new enum value</param>
         /// <returns>The new enum value</returns>
-        public static TEnum AddEnumValue<TEnum>(string name) => (TEnum)AddEnumValue(typeof(TEnum), name);
+        public static TEnum AddEnumValue<TEnum>(string name) where TEnum : Enum => (TEnum)AddEnumValue(typeof(TEnum), name);
 
         /// <summary>
         /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
@@ -74,7 +74,7 @@ namespace SRML
         /// <typeparam name="TEnum">Enum to add the new value to</typeparam>
         /// <param name="value">Value to add to the enum</param>
         /// <param name="name">The name of the new value</param>
-        public static void AddEnumValue<TEnum>(object value, string name) => AddEnumValue(typeof(TEnum), value, name);
+        public static void AddEnumValue<TEnum>(object value, string name) where TEnum : Enum => AddEnumValue(typeof(TEnum), value, name);
 
         /// <summary>
         /// Add a new value to the given <paramref name="enumType"/> 
@@ -99,7 +99,7 @@ namespace SRML
             patch.AddValue((ulong)value, name);
         }
         
-        public static void AddEnumValueWithAlternatives<TEnum>(object value, string name) => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
+        public static void AddEnumValueWithAlternatives<TEnum>(object value, string name) where TEnum : Enum => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
 
         public static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
         {
@@ -112,7 +112,7 @@ namespace SRML
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
         /// <returns>The first undefined enum value</returns>
-        public static TEnum GetFirstFreeValue<TEnum>() => (TEnum)GetFirstFreeValue(typeof(TEnum));
+        public static TEnum GetFirstFreeValue<TEnum>() where TEnum : Enum => (TEnum)GetFirstFreeValue(typeof(TEnum));
 
         /// <summary>
         /// Get first undefined value in an enum
