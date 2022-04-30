@@ -124,7 +124,11 @@ namespace SRML
             if (!enumType.IsEnum)
                 throw new Exception($"The given type isn't an enum ({enumType.FullName} isn't an Enum)");
 
-            var allValues = EnumUtils.GetAll(enumType).Cast<int>();
+            var enumValues = EnumUtils.GetAll(enumType);
+            if (enumValues == null || enumValues.Length == 0)
+                return Enum.ToObject(enumType, 0);
+
+            var allValues = enumValues.Cast<int>();
             var min = allValues.Min();
             var max = allValues.Max();
             for (int i = (min + 1); i < max; i++)
