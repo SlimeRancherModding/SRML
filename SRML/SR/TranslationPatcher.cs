@@ -16,14 +16,13 @@ namespace SRML.SR
 
         internal static Dictionary<string, Dictionary<string, string>> doneDictionaries = new Dictionary<string, Dictionary<string, string>>();
 
-        internal static Dictionary<string,Dictionary<string,string>> patches = new Dictionary<string, Dictionary<string, string>>();
+        internal static Dictionary<string, Dictionary<string,string>> patches = new Dictionary<string, Dictionary<string, string>>();
+
+        internal static Dictionary<MessageDirector.Lang, KeyValuePair<string, string>> srmlErrorMessages = new Dictionary<MessageDirector.Lang, KeyValuePair<string, string>>();
 
         internal static Dictionary<KeyValuePair<string,string>,SRMod> keyToMod = new Dictionary<KeyValuePair<String,String>,SRMod>();
 
-        internal static void SetModForTranslationKey(string bundlename, string key, SRMod mod)
-        {
-            keyToMod[new KeyValuePair<string, string>(bundlename, key)] = mod;
-        }
+        internal static void SetModForTranslationKey(string bundlename, string key, SRMod mod) => keyToMod[new KeyValuePair<string, string>(bundlename, key)] = mod;
 
         internal static void AddTranslationKey(string bundlename, string key, string value, SRMod mod)
         {
@@ -38,44 +37,33 @@ namespace SRML.SR
         /// <param name="bundlename">Key bundle the localization key is located in</param>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddTranslationKey(string bundlename, string key, string value)
-        {
-            AddTranslationKey(bundlename, key, value, SRMod.GetCurrentMod());
-        }
+        public static void AddTranslationKey(string bundlename, string key, string value) => AddTranslationKey(bundlename, key, value, SRMod.GetCurrentMod());
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'pedia' bundle
         /// </summary>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddPediaTranslation(string key, string value)
-        {
-            AddTranslationKey("pedia",key,value);
-        }
+        public static void AddPediaTranslation(string key, string value) => AddTranslationKey("pedia", key,value);
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'actor' bundle
         /// </summary>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddActorTranslation(string key, string value)
-        {
-            AddTranslationKey("actor",key,value);
-        }
+        public static void AddActorTranslation(string key, string value) => AddTranslationKey("actor",key,value);
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'ui' bundle
         /// </summary>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddUITranslation(string key, string value)
-        {
-            AddTranslationKey("ui",key,value);
-        }
-        
+        public static void AddUITranslation(string key, string value) => AddTranslationKey("ui",key,value);
+
+        public static void AddSRMLErrorUITranslation(MessageDirector.Lang language, string errorText, string abortText) => srmlErrorMessages.Add(language, new KeyValuePair<string, string>(errorText, abortText));
+
         private static Dictionary<string, string> GetPatchesFor(string bundleName)
         {
-
             if (doneDictionaries.TryGetValue(bundleName, out var test)) return test;
 
             if (!patches.ContainsKey(bundleName))
@@ -99,14 +87,8 @@ namespace SRML.SR
             return output;
         }
 
-        static internal SRMod GetModForKey(string bundlename, string key)
-        {
-            return GetModForKey(new KeyValuePair<string, string>(bundlename, key));
-        }
+        static internal SRMod GetModForKey(string bundlename, string key) => GetModForKey(new KeyValuePair<string, string>(bundlename, key));
 
-        static internal SRMod GetModForKey(KeyValuePair<string,string> pair)
-        {
-            return keyToMod.TryGetValue(pair, out var value) ? value : null;
-        }
+        static internal SRMod GetModForKey(KeyValuePair<string,string> pair) => keyToMod.TryGetValue(pair, out var value) ? value : null;
     }
 }

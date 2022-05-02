@@ -102,8 +102,10 @@ namespace SRML
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
 
-        private ModEntryPoint entryPoint;
-       
+        private IModEntryPoint entryPoint;
+        private ModEntryPoint entryPoint2;
+        private bool useNewEntry = false;
+
         private static SRMod forcedContext;
 
         /// <summary>
@@ -153,14 +155,19 @@ namespace SRML
 
         public String GetDefaultHarmonyName()
         {
-            return $"net.{(ModInfo.Author==null||ModInfo.Author.Length==0?"srml":Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
+            return $"net.{(ModInfo.Author == null || ModInfo.Author.Length == 0 ? "srml" : Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
 
         public SRMod(SRModInfo info, IModEntryPoint entryPoint)
         {
             this.ModInfo = info;
             this.EntryType = entryPoint.GetType();
-            this.entryPoint = (ModEntryPoint)entryPoint;
+            if (entryPoint is ModEntryPoint)
+            {
+                entryPoint2 = (ModEntryPoint)entryPoint;
+                useNewEntry = true;
+            }
+            this.entryPoint = entryPoint;
         }
 
         public SRMod(SRModInfo info, IModEntryPoint entryPoint, string path) : this(info, entryPoint)
@@ -174,15 +181,34 @@ namespace SRML
 
         public void PostLoad() => entryPoint.PostLoad();
 
-        public void Reload() => entryPoint.Reload();
+        public void Reload()
+        {
+            if (useNewEntry)
+                entryPoint2.Reload();
+        }
 
-        public void Unload() => entryPoint.Unload();
+        public void Unload()
+        {
+            if (useNewEntry)
+                entryPoint2.Unload();
+        }
 
-        public void Update() => entryPoint.Update();
+        public void Update()
+        {
+            if (useNewEntry)
+                entryPoint2.Update();
+        }
 
-        public void FixedUpdate() => entryPoint.FixedUpdate();
+        public void FixedUpdate()
+        {
+            if (useNewEntry)
+                entryPoint2.FixedUpdate();
+        }
         
-        public void LateUpdate() => entryPoint.LateUpdate();
+        public void LateUpdate() {
+            if (useNewEntry)
+                entryPoint2.LateUpdate();
+        }
     }
     
 }
