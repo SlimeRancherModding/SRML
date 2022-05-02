@@ -205,7 +205,8 @@ namespace SRML
                 entryPoint2.FixedUpdate();
         }
         
-        public void LateUpdate() {
+        public void LateUpdate()
+        {
             if (useNewEntry)
                 entryPoint2.LateUpdate();
         }
