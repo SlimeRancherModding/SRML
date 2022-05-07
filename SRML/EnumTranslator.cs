@@ -286,7 +286,7 @@ namespace SRML
             }),
             ConvertGenericFallback<RancherChatMetadata.Entry.RancherName>((ref string x) =>
             {
-                x = RancherChatMetadata.Entry.RancherName.DEFAULT.ToString();
+                x = RancherChatMetadata.Entry.RancherName.UNKNOWN.ToString();
                 return true;
             }),
             ConvertGenericFallback<SiloCatcher.Type>((ref string x) =>
