@@ -203,6 +203,7 @@
     <Compile Include="SR\Patches\ApplyUpgradePatch.cs" />
     <Compile Include="SR\Patches\BuildActorDataPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerAwakePatch.cs" />
+    <Compile Include="SR\Patches\CorporatePartnerBuyPatch.cs" />
     <Compile Include="SR\Patches\DirectedActorSpawnerStartPatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\GadgetDirectorPatch.cs" />
