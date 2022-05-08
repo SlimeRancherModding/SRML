@@ -23,16 +23,21 @@ namespace SRML.Patches
             var enumType = type as Type;
             if (EnumPatcher.TryGetRawPatch(enumType, out var patch))
             {
+                var pairs = patch.GetPairs();
 
-                patch.GetArrays(out string[] toBePatchedNames,out ulong[] toBePatchedValues);
-                Array.Resize(ref toBePatchedNames, toBePatchedNames.Length + oldNames.Length);
-                Array.Resize(ref toBePatchedValues, toBePatchedValues.Length + oldValues.Length);
-                Array.Copy(oldNames, 0, toBePatchedNames, toBePatchedNames.Length - oldNames.Length, oldNames.Length);
-                Array.Copy(oldValues, 0, toBePatchedValues, toBePatchedValues.Length - oldValues.Length, oldValues.Length);
-                oldValues = toBePatchedValues;
-                oldNames = toBePatchedNames;
+                List<ulong> newValues = new List<ulong>(oldValues);
+                List<string> newNames = new List<string>(oldNames);
 
-                Array.Sort<ulong, string>(oldValues, oldNames, Comparer<ulong>.Default);
+                foreach (var pair in pairs)
+                {
+                    newValues.Add(pair.Key);
+                    newNames.Add(pair.Value);
+                }
+
+                oldValues = newValues.ToArray();
+                oldNames = newNames.ToArray();
+
+                Array.Sort(oldValues, oldNames, Comparer<ulong>.Default);
             }
         }
         

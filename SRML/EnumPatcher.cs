@@ -33,6 +33,7 @@ namespace SRML
 
         public static void RegisterAlternate(Type type, AlternateEnumRegister del)
         {
+            if (type == null) throw new ArgumentNullException("type");
             if (!type.IsEnum) throw new Exception($"The given type isn't an enum ({type.FullName} isn't an Enum)");
             BANNED_ENUMS.Add(type, del);
         }
@@ -84,8 +85,10 @@ namespace SRML
         /// <param name="name">The name of the new value</param>
         public static void AddEnumValue(Type enumType, object value, string name)
         {
-            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
+            if (enumType == null) throw new ArgumentNullException("enumType");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
+            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
+            if (AlreadyHasName(enumType, name) || EnumUtils.HasEnumValue(enumType, name)) throw new Exception($"The enum ({enumType.FullName}) already has a value with the name \"{name}\"");
 
             value = (ulong)Convert.ToInt64(value, CultureInfo.InvariantCulture);
             if (!patches.TryGetValue(enumType, out var patch))
@@ -121,8 +124,8 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
-            if (!enumType.IsEnum)
-                throw new Exception($"The given type isn't an enum ({enumType.FullName} isn't an Enum)");
+            if (enumType == null) throw new ArgumentNullException("enumType");
+            if (!enumType.IsEnum) throw new Exception($"The given type isn't an enum ({enumType.FullName} isn't an Enum)");
 
             var enumValues = EnumUtils.GetAll(enumType);
             if (enumValues == null || enumValues.Length == 0)
@@ -148,20 +151,44 @@ namespace SRML
             return patches.TryGetValue(enumType, out patch);
         }
 
-        public class EnumPatch 
+        internal static bool AlreadyHasName(Type enumType, string name)
         {
-            private Dictionary<ulong, string> values = new Dictionary<ulong, string>();
+            if (TryGetRawPatch(enumType, out EnumPatch patch))
+                return patch.HasName(name);
+            return false;
+        }
+
+        public class EnumPatch
+        {
+            private Dictionary<ulong, List<string>> values = new Dictionary<ulong, List<string>>();
 
             public void AddValue(ulong enumValue, string name)
             {
-                if (values.ContainsKey(enumValue)) return;
-                values.Add(enumValue, name);
+                if (values.ContainsKey(enumValue))
+                    values[enumValue].Add(name);
+                else
+                    values.Add(enumValue, new List<string> { name });
             }
 
-            public void GetArrays(out string[] names, out ulong[] values)
+            public List<KeyValuePair<ulong, string>> GetPairs()
             {
-                names = this.values.Values.ToArray();
-                values = this.values.Keys.ToArray();
+                List<KeyValuePair<ulong, string>> pairs = new List<KeyValuePair<ulong, string>>();
+                foreach (KeyValuePair<ulong, List<string>> pair in values)
+                {
+                    foreach (string value in pair.Value)
+                        pairs.Add(new KeyValuePair<ulong, string>(pair.Key, value));
+                }
+                return pairs;
+            }
+
+            public bool HasName(string name)
+            {
+                foreach (string enumName in this.values.Values.SelectMany(l => l))
+                {
+                    if (name.Equals(enumName))
+                        return true;
+                }
+                return false;
             }
         }
     }
