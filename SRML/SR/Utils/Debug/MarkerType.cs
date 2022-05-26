@@ -4,6 +4,10 @@
     {
         None,
         SpawnPoint,
+        CrateSpawnPoint,
+        AnimalSpawnPoint,
+        SlimeSpawnPoint,
+        ResourceSpawnPoint,
         Plot,
         GadgetLocation,
         DroneNode

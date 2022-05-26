@@ -28,7 +28,7 @@ namespace SRML.Console.Commands
             }
             else
             {
-                Console.Log("Current Value: "+element.Options.Parser.EncodeObject(element.GetValue<object>()));
+                Console.Instance.Log("Current Value: " + element.Options.Parser.EncodeObject(element.GetValue<object>()));
             }
             SRMod.ForceModContext(mod);
             config.SaveToFile();
@@ -36,28 +36,23 @@ namespace SRML.Console.Commands
             return true;
         }
 
-        public override List<string> GetAutoComplete(int argIndex, string argText)
+        public override List<string> GetAutoComplete(int argIndex, string[] args)
         {
             if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).ToList();
-            
-            var strs = ConsoleWindow.cmdText.Split(' ');
 
-            var mod = SRModLoader.GetMod(strs[1]);
+            var mod = SRModLoader.GetMod(args[0]);
 
             if (argIndex == 1) return mod?.Configs.Select(x => x.FileName).ToList();
 
-            var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLower() == strs[2].ToLower());
+            var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLower() == args[1].ToLower());
 
             if (argIndex == 2) return config?.Sections.Select(x => x.Name).ToList();
 
-            var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == strs[3].ToLower());
+            var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == args[2].ToLower());
 
             if (argIndex == 3) return section?.Elements.Select(x => x.Options.Name).ToList();
 
-            
-
-
-            return base.GetAutoComplete(argIndex, argText);
+            return base.GetAutoComplete(argIndex, args[argIndex]);
         }
     }
 }

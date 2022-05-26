@@ -19,7 +19,7 @@ namespace SRML.Console.Commands
 		{
 			if (args == null)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes 1 argument");
+				Console.Instance.LogError($"The '<color=white>{ID}</color>' command takes 1 argument");
 				return false;
 			}
 
@@ -28,7 +28,7 @@ namespace SRML.Console.Commands
 
 			if (args[0].Contains(" "))
 			{
-				Console.LogError($"The '<color=white><id></color>' argument cannot contain any spaces");
+				Console.Instance.LogError($"The '<color=white><id></color>' argument cannot contain any spaces");
 				return false;
 			}
 
@@ -36,18 +36,18 @@ namespace SRML.Console.Commands
 			{
 				if (ConsoleBinder.RemoveBind(args[0]))
 				{
-					Console.LogSuccess($"Removed user defined button '<color=white>{args[0]}</color>'");
+					Console.Instance.LogSuccess($"Removed user defined button '<color=white>{args[0]}</color>'");
 					return true;
 				}
 			}
 			else
 			{
 				ConsoleBinder.RemoveAll();
-				Console.LogSuccess($"Removed all user defined buttons");
+				Console.Instance.LogSuccess($"Removed all user defined buttons");
 				return true;
 			}
 
-			Console.LogError($"The user defined button '<color=white>{args[0]}</color>' was not found");
+			Console.Instance.LogError($"The user defined button '<color=white>{args[0]}</color>' was not found");
 			return false;
 		}
 

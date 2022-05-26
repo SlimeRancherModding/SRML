@@ -49,6 +49,9 @@
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -385,28 +388,42 @@
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\ChromaRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
+    <Compile Include="SR\FashionRegistry.cs" />
     <Compile Include="SR\FoodGroupRegistry.cs" />
     <Compile Include="SR\GadgetCategorization.cs" />
     <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
+    <Compile Include="SR\Patches\AttachFashionsGetOffsetPatch.cs" />
+    <Compile Include="SR\Patches\AttachFashionsGetParentBonePatch.cs" />
+    <Compile Include="SR\Patches\BugReportUIDestroyPatch.cs" />
+    <Compile Include="SR\Patches\CorporatePartnerBuyPatch.cs" />
+    <Compile Include="SR\Patches\CorporatePartnerUIAwakePatch.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
     <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\GordoSnareOnTriggerPatch.cs" />
     <Compile Include="SR\Patches\GordoSnarePatch.cs" />
     <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
+    <Compile Include="SR\Patches\GamepadPanelSetupBindingsPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
     <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
+    <Compile Include="SR\Patches\SlimeAppearanceApplicatorBoneSlotPatch.cs" />
+    <Compile Include="SR\Patches\GameContextInitializeDefinitionsPatch.cs" />
+    <Compile Include="SR\Patches\SlimeDietRefreshEatmapPatch.cs" />
     <Compile Include="SR\Patches\TargetingUIGetTargetPatch.cs" />
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\Patches\WeaponVacuumExpelEmotionsPatch.cs" />
+    <Compile Include="SR\CorporatePartnerRegistry.cs" />
+    <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />
     <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
     <Compile Include="SR\Utils\CollectionExtensions.cs" />
     <Compile Include="SR\Utils\ColorExtensions.cs" />
+    <Compile Include="SR\Utils\EnumExtensions.cs" />
     <Compile Include="SR\Utils\MathExtensions.cs" />
     <Compile Include="SR\Utils\ObjectExtensions.cs" />
+    <Compile Include="SR\Utils\SlimeExtensions.cs" />
     <Compile Include="SR\Utils\StringExtensions.cs" />
     <Compile Include="SR\Utils\TextureExtensions.cs" />
     <Compile Include="SR\Utils\TransformExtensions.cs" />

@@ -108,16 +108,16 @@ namespace SRML.Console
             DontDestroyOnLoad(window);
 
             SceneManager.activeSceneChanged -= AttachWindow;
-            Console.Log("Attached Console Window successfully!");
+            Console.Instance.Log("Attached Console Window successfully!");
         }
 
         // TO ENSURE IT GOT CREATED
         private void Start()
         {
-            Console.Log("Console Window running.");
-            Console.Log("Use command '<color=#77DDFF>help</color>' for a list of all commands");
-            Console.Log("Use command '<color=#77DDFF>mods</color>' for a list of all mods loaded");
-            Console.Log("You can also check the menu on the right");
+            Console.Instance.Log("Console Window running.");
+            Console.Instance.Log("Use command '<color=#77DDFF>help</color>' for a list of all commands");
+            Console.Instance.Log("Use command '<color=#77DDFF>mods</color>' for a list of all mods loaded");
+            Console.Instance.Log("You can also check the menu on the right");
 
             foreach (SRModInfo info in SRModLoader.LoadedMods)
             {
@@ -433,11 +433,11 @@ namespace SRML.Console
             {
                 if (autoAC)
                 {
-                    Console.LogSuccess("Auto complete will now open automatically.");
+                    Console.Instance.LogSuccess("Auto complete will now open automatically.");
                 }
                 else
                 {
-                    Console.LogSuccess("Auto complete will only open by pressing CTRL+Space or CMD+Space");
+                    Console.Instance.LogSuccess("Auto complete will only open by pressing CTRL+Space or CMD+Space");
                 }
 
                 oldAutoAC = autoAC;
@@ -571,55 +571,59 @@ namespace SRML.Console
                 string[] args = Console.StripArgs(cmdText, true);
 
                 int count = args.Length;
-                string lastArg = args[count - 1];
-
-                if (Console.commands.ContainsKey(command))
+                if (count > 0)
                 {
-                    List<string> autoC = Console.commands[command].GetAutoComplete(count - 1, lastArg);
-                    autoC?.RemoveAll(s => s.Contains(" "));
+                    string lastArg = args[count - 1];
 
-                    if (autoC == null || autoC.Count == 0 || Regex.Matches(cmdText, "\"").Count % 2 != 0)
-                        autoComplete = false;
-
-                    if (autoComplete)
+                    if (Console.commands.ContainsKey(command))
                     {
-                        if (!cmdText.Equals(oldCmdText))
+                        List<string> autoC = Console.commands[command].GetAutoComplete(count - 1, lastArg);
+                        if (autoC == null) autoC = Console.commands[command].GetAutoComplete(count - 1, args);
+                        autoC?.RemoveAll(s => s.Contains(" "));
+
+                        if (autoC == null || autoC.Count == 0 || Regex.Matches(cmdText, "\"").Count % 2 != 0)
+                            autoComplete = false;
+
+                        if (autoComplete)
                         {
-                            cachedAC.RemoveAll(s => true); // .Clear() gets broken sometimes when you dynamically load an Assembly, so do the same another way
-                            foreach (string cmd in autoC)
+                            if (!cmdText.Equals(oldCmdText))
                             {
-                                if (cmd.ToLowerInvariant().StartsWith(lastArg.ToLowerInvariant()))
-                                    cachedAC.Add(cmd);
-                            }
-
-                            oldCmdText = cmdText;
-                        }
-
-                        if (cachedAC.Count > 0)
-                        {
-                            if (completeIndex >= cachedAC.Count)
-                                completeIndex = 0;
-
-                            selectComplete = cmdText.Substring(0, cmdText.Length - lastArg.Length) + cachedAC[completeIndex];
-
-                            int y = 5;
-                            for (int i = 0; i < cachedAC.Count; i++)
-                            {
-                                GUI.backgroundColor = Color.white;
-                                if (completeIndex == i)
-                                    GUI.backgroundColor = Color.yellow;
-
-                                cBtnRect.y = y;
-                                if (GUI.Button(cBtnRect, $"{(completeIndex == i ? "►" : string.Empty)}<b><color=#77DDFF>{cachedAC[i].Substring(0, lastArg.Length)}</color></b>{cachedAC[i].Substring(lastArg.Length)}", GUI.skin.textField))
+                                cachedAC.RemoveAll(s => true); // .Clear() gets broken sometimes when you dynamically load an Assembly, so do the same another way
+                                foreach (string cmd in autoC)
                                 {
-                                    cmdText = cmdText.Substring(0, cmdText.Length - lastArg.Length) + cachedAC[i];
-                                    GUI.FocusControl(cmdName);
-                                    moveCursor = true;
-
-                                    autoComplete = false;
+                                    if (cmd.ToLowerInvariant().StartsWith(lastArg.ToLowerInvariant()))
+                                        cachedAC.Add(cmd);
                                 }
 
-                                y += 25;
+                                oldCmdText = cmdText;
+                            }
+
+                            if (cachedAC.Count > 0)
+                            {
+                                if (completeIndex >= cachedAC.Count)
+                                    completeIndex = 0;
+
+                                selectComplete = cmdText.Substring(0, cmdText.Length - lastArg.Length) + cachedAC[completeIndex];
+
+                                int y = 5;
+                                for (int i = 0; i < cachedAC.Count; i++)
+                                {
+                                    GUI.backgroundColor = Color.white;
+                                    if (completeIndex == i)
+                                        GUI.backgroundColor = Color.yellow;
+
+                                    cBtnRect.y = y;
+                                    if (GUI.Button(cBtnRect, $"{(completeIndex == i ? "►" : string.Empty)}<b><color=#77DDFF>{cachedAC[i].Substring(0, lastArg.Length)}</color></b>{cachedAC[i].Substring(lastArg.Length)}", GUI.skin.textField))
+                                    {
+                                        cmdText = cmdText.Substring(0, cmdText.Length - lastArg.Length) + cachedAC[i];
+                                        GUI.FocusControl(cmdName);
+                                        moveCursor = true;
+
+                                        autoComplete = false;
+                                    }
+
+                                    y += 25;
+                                }
                             }
                         }
                     }

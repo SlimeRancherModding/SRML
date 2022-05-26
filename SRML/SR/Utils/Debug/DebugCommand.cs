@@ -17,7 +17,7 @@ namespace SRML.SR.Utils.Debug
                 return false;
 
             DebugMode = bool.Parse(args[0]);
-            Console.Console.LogSuccess($"Changed the debug mode to <color=white>{DebugMode}</color>");
+            Console.Console.Instance.LogSuccess($"Changed the debug mode to <color=white>{DebugMode}</color>");
 
             return true;
         }

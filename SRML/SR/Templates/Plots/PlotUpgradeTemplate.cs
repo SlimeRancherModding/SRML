@@ -39,6 +39,7 @@ namespace SRML.SR.Templates.Plots
             this.setupComponent = setupComponent;
         }
 
+#pragma warning disable 0809
         /// <summary>
         /// Creates the object of the template (To get the prefab version use .ToPrefab() after calling this)
         /// </summary>
@@ -47,6 +48,7 @@ namespace SRML.SR.Templates.Plots
         {
             return null;
         }
+#pragma warning restore 0809
 
         /// <summary>
         /// Creates the object of the template (To get the prefab version use .ToPrefab() after calling this)

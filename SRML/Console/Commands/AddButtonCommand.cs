@@ -22,7 +22,7 @@ namespace SRML.Console.Commands
 		{
 			if (args == null)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes 3 arguments");
+				Console.Instance.LogError($"The '<color=white>{ID}</color>' command takes 3 arguments");
 				return false;
 			}
 
@@ -31,24 +31,24 @@ namespace SRML.Console.Commands
 
 			if (args[0].Contains(" "))
 			{
-				Console.LogError($"The '<color=white><id></color>' argument cannot contain any spaces");
+				Console.Instance.LogError($"The '<color=white><id></color>' argument cannot contain any spaces");
 				return false;
 			}
 
 			if (args[0].Equals("all"))
 			{
-				Console.LogWarning($"Trying to register user defined button with id '<color=white>all</color>' but '<color=white>all</color>' is not a valid id!");
+				Console.Instance.LogWarning($"Trying to register user defined button with id '<color=white>all</color>' but '<color=white>all</color>' is not a valid id!");
 				return false;
 			}
 
 			if (Console.cmdButtons.ContainsKey("user." + args[0]))
 			{
-				Console.LogWarning($"Trying to register user defined button with id '<color=white>{args[0]}</color>' but the ID is already registered!");
+				Console.Instance.LogWarning($"Trying to register user defined button with id '<color=white>{args[0]}</color>' but the ID is already registered!");
 				return false;
 			}
 
 			ConsoleBinder.RegisterBind(args[0], args[1], args[2]);
-			Console.LogSuccess($"Added new user defined button '<color=white>{args[0]}</color>' with command '<color=white>{args[2]}</color>'");
+			Console.Instance.LogSuccess($"Added new user defined button '<color=white>{args[0]}</color>' with command '<color=white>{args[2]}</color>'");
 
 			return true;
 		}

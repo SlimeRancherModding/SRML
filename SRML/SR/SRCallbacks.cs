@@ -30,6 +30,7 @@ namespace SRML.SR
         public delegate void OnBlueprintUnlockedDelegate(Gadget.Id blueprint);
         public delegate void OnBlueprintPurchasedDelegate(Gadget.Id blueprint);
         public delegate void OnZoneEnteredDelegate(ZoneDirector.Zone zone, PlayerState playerState);
+        public delegate void OnCorporateLevelBoughtDelegate(int level);
         internal delegate void OnGameContextReadyDelegate();
             
         public static event OnSaveGameLoadedDelegate OnSaveGameLoaded;
@@ -38,6 +39,7 @@ namespace SRML.SR
         public static event OnMainMenuLoadedDelegate OnMainMenuLoaded;
         public static event OnActorSpawnDelegate OnActorSpawn;
         public static event OnZoneEnteredDelegate OnZoneEntered;
+        public static event OnCorporateLevelBoughtDelegate OnCorporateLevelBought;
         internal static event OnGameContextReadyDelegate OnGameContextReady;
 
         internal static void OnLoad()
@@ -48,6 +50,8 @@ namespace SRML.SR
         internal static void OnMainMenuLoad(MainMenuUI mainmenu) => OnMainMenuLoaded?.Invoke(mainmenu);
 
         internal static void OnZoneEnterCallback(ZoneDirector.Zone zone, PlayerState playerState) => OnZoneEntered?.Invoke(zone, playerState);
+
+        internal static void OnCorporateLevelBoughtCallback(ProgressDirector dir) => OnCorporateLevelBought?.Invoke(dir.GetProgress(ProgressDirector.ProgressType.CORPORATE_PARTNER));
 
         internal static void OnSceneLoaded(SceneContext t)
         {

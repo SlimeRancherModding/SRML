@@ -11,7 +11,7 @@ namespace SRML.Console
 	public static class ConsoleBinder
 	{
 		// BINDING FILE
-		internal static string bindFile = Path.Combine(Application.persistentDataPath, "SRML/userbinds.bindings");
+		internal static string bindFile = Path.Combine(Main.StorageProvider.SavePath(), "SRML/userbinds.bindings");
 
 		/// <summary>
 		/// Reads all bindings
@@ -41,7 +41,7 @@ namespace SRML.Console
 		{
 			if (id.Equals("all"))
 			{
-				Console.LogWarning($"Trying to register user defined button with id 'all' but 'all' is not a valid id!");
+				Console.Instance.LogWarning($"Trying to register user defined button with id 'all' but 'all' is not a valid id!");
 				return;
 			}
 

@@ -106,7 +106,7 @@ namespace SRMLInstaller
                         x.Substring(0, embeddedResourceProject.Length) == embeddedResourceProject))
                     {
                         var file = v.Substring(embeddedResourcePath.Length);
-                        var combine = Path.Combine(file.Contains("SRML")?root:GetAlternateRoot(), file);
+                        var combine = Path.Combine(file.Contains("SRML") ? root:GetAlternateRoot(), file);
                         //var libPath = Path.Combine(libFolder, file);
                         if (File.Exists(combine))
                         {

@@ -20,7 +20,7 @@ namespace SRML.SR
 
         internal static Dictionary<MessageDirector.Lang, KeyValuePair<string, string>> srmlErrorMessages = new Dictionary<MessageDirector.Lang, KeyValuePair<string, string>>();
 
-        internal static Dictionary<KeyValuePair<string,string>,SRMod> keyToMod = new Dictionary<KeyValuePair<String,String>,SRMod>();
+        internal static Dictionary<KeyValuePair<string,string>,SRMod> keyToMod = new Dictionary<KeyValuePair<string, string>,SRMod>();
 
         internal static void SetModForTranslationKey(string bundlename, string key, SRMod mod) => keyToMod[new KeyValuePair<string, string>(bundlename, key)] = mod;
 

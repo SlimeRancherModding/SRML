@@ -8,6 +8,7 @@ using UnityEngine;
 using System.Reflection;
 using HarmonyLib;
 using SRML.SR;
+using SRML.Utils;
 
 namespace SRML
 {
@@ -28,10 +29,11 @@ namespace SRML
             { typeof(RanchDirector.PaletteType), (x,y) => ChromaRegistry.CreatePaletteType(x,y) }
         };
 
-        public static void RegisterAlternate<T>(AlternateEnumRegister del) => RegisterAlternate(typeof(T), del);
+        public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) where TEnum : Enum => RegisterAlternate(typeof(TEnum), del);
 
         public static void RegisterAlternate(Type type, AlternateEnumRegister del)
         {
+            if (type == null) throw new ArgumentNullException("type");
             if (!type.IsEnum) throw new Exception($"The given type {type} isn't an enum");
             BANNED_ENUMS.Add(type, del);
         }
@@ -52,7 +54,7 @@ namespace SRML
         /// <param name="T">Type of enum to add the value to</param>
         /// <param name="name">Name of the new enum value</param>
         /// <returns>The new enum value</returns>
-        public static T AddEnumValue<T>(string name) => (T)AddEnumValue(typeof(T), name);
+        public static TEnum AddEnumValue<TEnum>(string name) where TEnum : Enum => (TEnum)AddEnumValue(typeof(TEnum), name);
 
         /// <summary>
         /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
@@ -83,8 +85,10 @@ namespace SRML
         /// <param name="name">The name of the new value</param>
         public static void AddEnumValue(Type enumType, object value, string name)
         {
-            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly())!=null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
+            if (enumType == null) throw new ArgumentNullException("enumType");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
+            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly()) != null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
+            if (AlreadyHasName(enumType, name) || EnumUtils.HasEnumValue(enumType, name)) throw new Exception($"The enum ({enumType.FullName}) already has a value with the name \"{name}\"");
 
             value = (ulong)Convert.ToInt64(value, CultureInfo.InvariantCulture);
             if (!patches.TryGetValue(enumType, out var patch))
@@ -98,7 +102,7 @@ namespace SRML
             patch.AddValue((ulong)value, name);
         }
 
-        public static void AddEnumValueWithAlternatives<T>(object value, string name) => AddEnumValueWithAlternatives(typeof(T), value, name);
+        public static void AddEnumValueWithAlternatives<TEnum>(object value, string name) where TEnum : Enum => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
 
         public static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
         {
@@ -135,7 +139,7 @@ namespace SRML
         /// </summary>
         /// <param name="T"></param>
         /// <returns>The first undefined enum value</returns>
-        public static object GetFirstFreeValue<T>() => GetFirstFreeValue(typeof(T));
+        public static TEnum GetFirstFreeValue<TEnum>() => (TEnum)GetFirstFreeValue(typeof(TEnum));
 
         /// <summary>
         /// Get first undefined value in an enum
@@ -146,6 +150,8 @@ namespace SRML
         {
             if (!enumType.IsEnum) throw new ArgumentException("enumType");
             if (enumType == null) throw new ArgumentNullException("enumType");
+            if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
+
             var vals = Enum.GetValues(enumType);
             long l = 0;
             for (ulong i = 0; i <= ulong.MaxValue; i++)
@@ -181,19 +187,44 @@ namespace SRML
             return patches.TryGetValue(enumType, out patch);
         }
 
+        internal static bool AlreadyHasName(Type enumType, string name)
+        {
+            if (TryGetRawPatch(enumType, out EnumPatch patch))
+                return patch.HasName(name);
+            return false;
+        }
+
         public class EnumPatch 
         {
-            private Dictionary<ulong, string> values = new Dictionary<ulong, string>();
+            private Dictionary<ulong, List<string>> values = new Dictionary<ulong, List<string>>();
+
             public void AddValue(ulong enumValue, string name)
             {
-                if (values.ContainsKey(enumValue)) return;
-                values.Add(enumValue, name);
+                if (values.ContainsKey(enumValue))
+                    values[enumValue].Add(name);
+                else
+                    values.Add(enumValue, new List<string> { name });
             }
 
-            public void GetArrays(out string[] names, out ulong[] values)
+            public List<KeyValuePair<ulong, string>> GetPairs()
             {
-                names = this.values.Values.ToArray();
-                values = this.values.Keys.ToArray();
+                List<KeyValuePair<ulong, string>> pairs = new List<KeyValuePair<ulong, string>>();
+                foreach (KeyValuePair<ulong, List<string>> pair in values)
+                {
+                    foreach (string value in pair.Value)
+                        pairs.Add(new KeyValuePair<ulong, string>(pair.Key, value));
+                }
+                return pairs;
+            }
+
+            public bool HasName(string name)
+            {
+                foreach (string enumName in this.values.Values.SelectMany(l => l))
+                {
+                    if (name.Equals(enumName))
+                        return true;
+                }
+                return false;
             }
         }
     }

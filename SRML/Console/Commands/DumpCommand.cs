@@ -20,7 +20,7 @@ namespace SRML.Console.Commands
 		{
 			if (args == null)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes 1 argument");
+				Console.Instance.LogError($"The '<color=white>{ID}</color>' command takes 1 argument");
 				return false;
 			}
 
@@ -45,7 +45,7 @@ namespace SRML.Console.Commands
 			}
 			catch { }
 
-			Console.LogError($"Couldn't find or create file '<color=white>{args[0]}</color>'");
+			Console.Instance.LogError($"Couldn't find or create file '<color=white>{args[0]}</color>'");
 			return false;
 		}
 
@@ -53,7 +53,7 @@ namespace SRML.Console.Commands
 		{
 			if (!Console.dumpActions.ContainsKey(name))
 			{
-				Console.LogError($"No dump action found for '<color=white>{name}</color>'");
+				Console.Instance.LogError($"No dump action found for '<color=white>{name}</color>'");
 				return false;
 			}
 
@@ -67,7 +67,7 @@ namespace SRML.Console.Commands
 				Console.dumpActions[name].Invoke(writer);
 			}
 
-			Console.LogSuccess($"File '<color=white>{name}</color>' dumped succesfully");
+			Console.Instance.LogSuccess($"File '<color=white>{name}</color>' dumped succesfully");
 			return true;
 		}
 

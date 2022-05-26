@@ -100,17 +100,7 @@ namespace SRML.SR.SaveSystem.Format
                         }
                         else Debug.LogError("No partial data for data identifier type "+id.Type);
                     }
-                    if (version >= 3)
-                    {
-                        try
-                        {
-                            appearancesData.Read(reader);
-                        }
-                        catch(Exception e)
-                        {
-                            throw;
-                        }
-                    }
+                    if (version >= 3) appearancesData.Read(reader);
                 }
             }
           

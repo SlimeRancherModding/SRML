@@ -201,7 +201,7 @@ namespace SRML.SR.Templates.Plantables
         {
             if (spawnJoints.Count < 20 && !isDeluxe || spawnJoints.Count < 34 && isDeluxe)
             {
-                Console.Console.LogError($"Tried to register spawn joints for '<color=white>{mainObject.Name}</color>' but they are of an invalid size (20 for normal; 34 for deluxe)");
+                Console.Console.Instance.LogError($"Tried to register spawn joints for '<color=white>{mainObject.Name}</color>' but they are of an invalid size (20 for normal; 34 for deluxe)");
             }
 
             customSpawnJoints = spawnJoints;

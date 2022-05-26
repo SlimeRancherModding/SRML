@@ -201,23 +201,83 @@ namespace SRML
         private static List<MissingTranslationDelegate> defaultFallbacks = new List<MissingTranslationDelegate>()
         {
             ConvertGenericFallback<Identifiable.Id>((ref string x) =>
-                {
-                    x = Identifiable.Id.NONE.ToString();
-                    return true;
-                }),
+            {
+                x = Identifiable.Id.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<GordoIdentifiable.Id>((ref string x) =>
+            {
+                x = GordoIdentifiable.Id.NONE.ToString();
+                return true;
+            }),
             ConvertGenericFallback<Gadget.Id>((ref string x) =>
             {
-            x = Gadget.Id.NONE.ToString();
-            return true;
+                x = Gadget.Id.NONE.ToString();
+                return true;
             }),
             ConvertGenericFallback<LandPlot.Id>((ref string x) =>
             {
                 x = LandPlot.Id.NONE.ToString();
                 return true;
             }),
+            ConvertGenericFallback<LandPlot.Upgrade>((ref string x) =>
+            {
+                x = LandPlot.Upgrade.NONE.ToString();
+                return true;
+            }),
             ConvertGenericFallback<SpawnResource.Id>((ref string x) =>
             {
                 x = SpawnResource.Id.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<ProgressDirector.ProgressType>((ref string x) =>
+            {
+                x = ProgressDirector.ProgressType.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<Fashion.Slot>((ref string x) =>
+            {
+                x = Fashion.Slot.FRONT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MusicDirector.Priority>((ref string x) =>
+            {
+                x = MusicDirector.Priority.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MailDirector.Type>((ref string x) =>
+            {
+                x = MailDirector.Type.PERSONAL.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<SlimeAppearance.AppearanceSaveSet>((ref string x) =>
+            {
+                x = SlimeAppearance.AppearanceSaveSet.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<SlimeFace.SlimeExpression>((ref string x) =>
+            {
+                x = SlimeFace.SlimeExpression.None.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<AmbianceDirector.Weather>((ref string x) =>
+            {
+                x = AmbianceDirector.Weather.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<AmbianceDirector.Zone>((ref string x) =>
+            {
+                x = AmbianceDirector.Zone.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<ZoneDirector.Zone>((ref string x) =>
+            {
+                x = ZoneDirector.Zone.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId>((ref string x) =>
+            {
+                x = MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId.UNSET.ToString();
                 return true;
             }),
             ConvertGenericFallback<RanchDirector.Palette>((ref string x) =>
@@ -228,6 +288,16 @@ namespace SRML
             ConvertGenericFallback<RanchDirector.PaletteType>((ref string x) =>
             {
                 x = RanchDirector.Palette.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<RancherChatMetadata.Entry.RancherName>((ref string x) =>
+            {
+                x = RancherChatMetadata.Entry.RancherName.UNKNOWN.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<SiloCatcher.Type>((ref string x) =>
+            {
+                x = SiloCatcher.Type.SILO_DEFAULT.ToString();
                 return true;
             }),
             ConvertGenericFallback<InstrumentModel.Instrument>((ref string x) =>

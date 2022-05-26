@@ -64,11 +64,5 @@ namespace SRML.SR.Translation
             TranslationPatcher.AddPediaTranslation(IntroKey, intro);
             return this;
         }
-
-        public new SlimePediaEntryTranslation SetDescriptionTranslation(string description)
-        {
-            TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
-            return this;
-        }
     }
 }

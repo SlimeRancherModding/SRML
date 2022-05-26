@@ -47,11 +47,6 @@ namespace SRML.SR.Utils.Debug
             Physics.Raycast(ray, out mainHit, 3000f);
         }
 
-        public void FixedUpdate()
-        {
-
-        }
-
         public void OnGUI()
         {
             if (!DebugCommand.DebugMode)

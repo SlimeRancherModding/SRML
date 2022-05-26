@@ -15,19 +15,21 @@ namespace SRML
     /// </summary>
     public class SRModInfo
     {
-        public SRModInfo(string modid, string name, string author, ModVersion version,string description)
+        public SRModInfo(string modid, string name, string author, ModVersion version, string description, Dictionary<string, ModVersion> dependencies)
         {
             Id = modid;
             Name = name;
             Author = author;
             Version = version;
             Description = description;
+            Dependencies = dependencies;
         }
-        public String Id { get; private set; }
-        public String Name { get; private set; }
-        public String Author { get; private set; }
-        public String Description { get; private set; }
+        public string Id { get; private set; }
+        public string Name { get; private set; }
+        public string Author { get; private set; }
+        public string Description { get; private set; }
         public ModVersion Version { get; private set; }
+        public Dictionary<string, ModVersion> Dependencies { get; private set; }
 
         public static SRModInfo GetCurrentInfo()
         {
@@ -70,8 +72,6 @@ namespace SRML
                 throw new Exception($"Invalid Version String: {s}");
             }
 
-
-
             public int CompareTo(ModVersion other)
             {
                 if (Major > other.Major) return -1;
@@ -97,7 +97,7 @@ namespace SRML
         /// <summary>
         /// Path of the mod (usually the directory where the core modinfo.json is located)
         /// </summary>
-        public String Path { get; private set; }
+        public string Path { get; private set; }
         public List<ConfigFile> Configs { get; private set; } = new List<ConfigFile>();
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
@@ -148,12 +148,12 @@ namespace SRML
             private set { _harmonyInstance = value; }
         }
 
-        public void CreateHarmonyInstance(String name)
+        public void CreateHarmonyInstance(string name)
         {
             HarmonyInstance = new Harmony(name);
         }
 
-        public String GetDefaultHarmonyName()
+        public string GetDefaultHarmonyName()
         {
             return $"net.{(ModInfo.Author == null || ModInfo.Author.Length == 0 ? "srml" : Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
@@ -211,5 +211,4 @@ namespace SRML
                 entryPoint2.LateUpdate();
         }
     }
-    
 }

@@ -18,8 +18,7 @@ namespace SRML.SR.UI
             MainMenuUtils.AddMainMenuButtonWithTranslation(ui, "ModsButton", "b.mods", () =>
             {
                 var g = MainMenuUtils.DisplayBlankPanel<BaseUI>(ui, "Mods");
-                GameObject.Instantiate(mainMenuUIPrefab)
-                .transform.SetParent(g.transform.GetChild(0),false);
+                GameObject.Instantiate(mainMenuUIPrefab).transform.SetParent(g.transform.GetChild(0), false);
                 
             }).transform.SetSiblingIndex(5);
 
@@ -29,8 +28,6 @@ namespace SRML.SR.UI
                 .GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
             var h = bundle.LoadAsset<GameObject>("ModPanel");
             h.AddComponent<ModMenuUI>().infoButtonPrefab = bundle.LoadAsset<GameObject>("ModInfoButton");
-            UIUtils.FixStyles(h);
-            h.GetComponent<Image>().color = Color.green;
             mainMenuUIPrefab = h;
         }
 

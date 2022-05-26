@@ -71,7 +71,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Libs\*" />
+    <EmbeddedResource Include="Libs\0Harmony.dll" />
+    <EmbeddedResource Include="Libs\INIFileParser.dll" />
+    <EmbeddedResource Include="Libs\Newtonsoft.Json.dll" />
+    <EmbeddedResource Include="Libs\SRML.dll" />
+    <EmbeddedResource Include="Libs\SRML.Editor.dll" />
+    <EmbeddedResource Include="Libs\System.Runtime.Serialization.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.4.2.1\build\Fody.targets" Condition="Exists('..\packages\Fody.4.2.1\build\Fody.targets')" />

@@ -21,6 +21,7 @@ namespace SRML
     {
         private static bool isPreInitialized;
         internal static Transform prefabParent;
+        internal static FileStorageProvider StorageProvider = new FileStorageProvider();
 
         /// <summary>
         /// Called before GameContext.Awake()
@@ -31,6 +32,19 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
 
+            SentrySdk sentrySdk = UnityEngine.Object.FindObjectOfType<SentrySdk>();
+            if (sentrySdk != null)
+            {
+                sentrySdk.Dsn = string.Empty;
+                FieldInfo field = sentrySdk.GetType().GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic);
+                if (field != null) field.SetValue(null, null);
+                sentrySdk.StopAllCoroutines();
+                Application.logMessageReceived -= sentrySdk.OnLogMessageReceived;
+                UnityEngine.Object.Destroy(sentrySdk, 1f);
+                Debug.Log("Disabling Sentry SDK");
+            }
+
+            StorageProvider.Initialize();
             prefabParent = new GameObject("PrefabParent").transform;
             prefabParent.gameObject.SetActive(false);
             GameObject.DontDestroyOnLoad(prefabParent.gameObject);
@@ -38,7 +52,6 @@ namespace SRML
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
             }
-
             HarmonyPatcher.PatchAll();
 
             try
@@ -87,8 +100,10 @@ namespace SRML
             SRCallbacks.OnLoad();
             PrefabUtils.ProcessReplacements();
             KeyBindManager.ReadBinds();
+            SlimeRegistry.Initialize(GameContext.Instance.SlimeDefinitions);
             GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
+
             try
             {
                 SRModLoader.LoadMods();
@@ -110,7 +125,7 @@ namespace SRML
         static void PostLoad()
         {
             if (isPostInitialized) return;
-            isPostInitialized = true;   
+            isPostInitialized = true;
             try
             {
                 SRModLoader.PostLoadMods();

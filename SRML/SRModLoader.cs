@@ -13,6 +13,7 @@ using SRML.Utils.Enum;
 using System.Collections.ObjectModel;
 using SRML.Config;
 using SRML.SR;
+using Newtonsoft.Json.Linq;
 
 namespace SRML
 {
@@ -364,9 +365,13 @@ namespace SRML
             public string version;
             public string description;
             public string path;
-            public string[] dependencies;
             public string[] load_after;
             public string[] load_before;
+
+            [JsonExtensionData]
+            public IDictionary<string, JToken> dependencies;
+            [JsonIgnore]
+            public DependencyChecker.Dependency[] parsedDependencies;
 
             public bool isFromJSON = true;
             public string entryFile;
@@ -380,32 +385,24 @@ namespace SRML
             {
                 get
                 {
-                    return dependencies != null && dependencies.Length > 0;
+                    return parsedDependencies != null && parsedDependencies.Length > 0;
                 }
             }
+
             /// <summary>
             /// Create a protomod from json info
             /// </summary>
             /// <param name="jsonFile">Path of the json file</param>
             /// <returns>The parsed <see cref="ProtoMod"/></returns>
-            public static ProtoMod ParseFromJson(String jsonFile)
+            public static ProtoMod ParseFromJson(string jsonFile) => ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
+
+            public static ProtoMod ParseFromJson(string jsonData,string path)
             {
-
-
-                return ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
-
-            }
-
-            public static ProtoMod ParseFromJson(String jsonData,string path)
-            {
-
-                var proto =
-                    JsonConvert.DeserializeObject<ProtoMod>(jsonData);
+                var proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData);
                 proto.path = Path.GetDirectoryName(path);
                 proto.entryFile = path;
                 proto.ValidateFields();
                 return proto;
-
             }
             /// <summary>
             /// Try to create a protomod from an embedded modinfo json in a DLL
@@ -415,9 +412,7 @@ namespace SRML
             /// <returns>Whether the parsing was successful</returns>
             public static bool TryParseFromDLL(String dllFile,out ProtoMod mod)
             {
-                
                 var assembly = Assembly.LoadFile(dllFile);
-                
                 mod = new ProtoMod();
                 mod.isFromJSON = false;
                 mod.path = Path.GetDirectoryName(dllFile);
@@ -433,16 +428,15 @@ namespace SRML
                 }
                 else return false;
 
-
                 return true;
             }
 
-            public override String ToString()
+            public override string ToString()
             {
                 return $"{id} {version}";
             }
             /// <summary>
-            /// Make sure no fields are null and in the correct form
+            /// Make sure fields are in the correct form and not null
             /// </summary>
             void ValidateFields()
             {
@@ -451,15 +445,21 @@ namespace SRML
                 if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
+                if (dependencies == null || dependencies.Count == 0) return;
+                List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
+                foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
+                parsedDependencies = depends.ToArray();
             }
+
             /// <summary>
             /// Turn the protomod into a proper <see cref="SRModInfo"/> instance
             /// </summary>
             /// <returns>Converted <see cref="SRModInfo"/></returns>
             public SRModInfo ToModInfo()
             {
-                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version),description);
+                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version), description, parsedDependencies == null ? new Dictionary<string, SRModInfo.ModVersion>() : parsedDependencies.ToDependencyDictionary());
             }
+
             public override int GetHashCode()
             {
                 return 1877310944 + EqualityComparer<string>.Default.GetHashCode(id);

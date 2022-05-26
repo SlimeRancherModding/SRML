@@ -24,17 +24,16 @@ namespace SRML.Console.Commands
                     DeathHandler.Kill(gameobject, DeathHandler.Source.UNDEFINED, SceneContext.Instance.Player, "RemoveCommand.Execute");
                     
                 }
-                else if (gameobject.GetComponent<Gadget>())
+                else if (gameobject.GetComponentInParent<Gadget>())
                 {
-                    gameobject.GetComponent<Gadget>().DestroyGadget();
+                    gameobject.GetComponentInParent<Gadget>().DestroyGadget();
                 }
                 else if (gameobject.GetComponentInParent<LandPlot>())
                 {
                     gameobject.GetComponentInParent<LandPlotLocation>().Replace(gameobject.GetComponentInParent<LandPlot>(), GameContext.Instance.LookupDirector.GetPlotPrefab(LandPlot.Id.EMPTY));
                 }
             }
-            failure:
-            Console.LogError("Not looking at a valid object!");
+            Console.Instance.LogError("Not looking at a valid object!");
             return false;
         }
     }

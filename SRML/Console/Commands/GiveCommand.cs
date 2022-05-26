@@ -18,7 +18,7 @@ namespace SRML.Console.Commands
         {
             if (args.Length < 1 || args.Length > 2)
             {
-                Console.LogError("Incorrect number of arguments!");
+                Console.Instance.LogError("Incorrect number of arguments!");
                 return false;
             }
 
@@ -29,7 +29,7 @@ namespace SRML.Console.Commands
             }
             catch
             {
-                Console.LogError("Invalid ID!");
+                Console.Instance.LogError("Invalid ID!");
                 return false;
             }
 

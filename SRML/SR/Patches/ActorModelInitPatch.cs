@@ -19,7 +19,7 @@ namespace SRML.SR.Patches
                 }
                 catch (Exception e)
                 {
-                    SRML.Console.Console.LogError("Failed to initialize model participant, removing component\n" + e);
+                    SRML.Console.Console.Instance.LogError("Failed to initialize model participant, removing component\n" + e);
                     UnityEngine.Object.DestroyImmediate(componentsInChildren[i] as Component);
                 }
             }

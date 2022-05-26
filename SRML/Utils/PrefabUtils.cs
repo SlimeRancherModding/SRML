@@ -90,9 +90,7 @@ namespace SRML.Utils
                     
                     if (typeof(Component).IsAssignableFrom(theObj.GetType()) || typeof(GameObject).IsAssignableFrom(theObj.GetType()))
                     {
-                        return theObj;  
-                        var newPref = CopyPrefab((typeof(Component).IsAssignableFrom(theObj.GetType())) ? (theObj as Component).gameObject : theObj as GameObject);
-                        return (typeof(Component).IsAssignableFrom(theObj.GetType())) ? (System.Object)newPref.GetComponent(theObj.GetType()) : newPref;
+                        return theObj;
                     }
                     else
                     if (typeof(UnityEngine.Object).IsAssignableFrom(theObj.GetType()))

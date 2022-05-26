@@ -52,11 +52,7 @@ namespace SRML.SR
         /// Registers a <see cref="RanchDirector.PaletteEntry"/>
         /// </summary>
         /// <param name="entry"></param>
-        public static void RegisterPaletteEntry(RanchDirector.PaletteEntry entry)
-        {
-            customPalettes.Add(entry);
-            Console.Console.Log(entry.palette.ToString());
-        }
+        public static void RegisterPaletteEntry(RanchDirector.PaletteEntry entry) => customPalettes.Add(entry);
 
         /// <summary>
         /// See if a <see cref="RanchDirector.Palette"/> is modded

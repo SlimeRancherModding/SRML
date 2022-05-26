@@ -119,7 +119,7 @@ namespace SRML.SR.UI.Utils
             button.onClick = new Button.ButtonClickedEvent();
             button.onClick.AddListener(new UnityAction(onClicked));
 
-            g.GetComponentInChildren<XlateText>().key = key;
+            g.GetComponentInChildren<XlateText>().SetKey(key);
             return g;
         }
     }
