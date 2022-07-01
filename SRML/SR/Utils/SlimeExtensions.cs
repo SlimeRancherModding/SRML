@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace SRML.SR.Utils
@@ -39,6 +40,20 @@ namespace SRML.SR.Utils
             def.Diet = diet;
             diet.RefreshEatMap(GameContext.Instance.SlimeDefinitions, def);
             return diet;
+        }
+
+        internal static Dictionary<Identifiable.Id, List<SlimeDiet.EatMapEntry>> extraEatEntries = new Dictionary<Identifiable.Id, List<SlimeDiet.EatMapEntry>>();
+
+        public static void AddExtraEatMapEntry(this SlimeDefinition def, SlimeDiet.EatMapEntry entry)
+        {
+            def.Diet.EatMap.Add(entry);
+            if (!extraEatEntries.ContainsKey(def.IdentifiableId)) extraEatEntries[def.IdentifiableId] = new List<SlimeDiet.EatMapEntry>();
+            extraEatEntries[def.IdentifiableId].Add(entry);
+        }
+
+        public static void RefreshEatmaps(this SlimeDefinitions defs)
+        {
+            foreach (SlimeDefinition def in defs.Slimes) def.Diet?.RefreshEatMap(defs, def);
         }
     }
 }

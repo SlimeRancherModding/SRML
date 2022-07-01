@@ -75,7 +75,7 @@ namespace SRML.Console
             RegisterCommand(new Commands.BindCommand());
             RegisterCommand(new Commands.ConfigCommand());
             RegisterCommand(new Commands.KillAllCommand());
-            RegisterCommand(new Commands.RemoveCommand());
+            RegisterCommand(new Commands.KillCommand());
             RegisterCommand(new Commands.NoclipCommand());
             RegisterCommand(new Commands.UnbindCommand());
             RegisterCommand(new Commands.FastForwardCommand());

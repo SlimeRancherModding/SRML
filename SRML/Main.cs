@@ -11,6 +11,7 @@ using SRML.Config;
 using SRML.Console;
 using SRML.Editor;
 using SRML.SR;
+using SRML.SR.Utils;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace SRML
         private static bool isPreInitialized;
         internal static Transform prefabParent;
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
+        internal static ConfigFile config;
 
         /// <summary>
         /// Called before GameContext.Awake()
@@ -54,6 +56,15 @@ namespace SRML
             }
             HarmonyPatcher.PatchAll();
 
+            Type sm = typeof(GameContext).Assembly.GetType("SteamManager", false, true);
+            if (sm != null)
+            {
+                HarmonyPatcher.Instance.Patch(sm.GetMethod("AddAchievement"),
+                    prefix: new HarmonyMethod(typeof(AchievementRegistry).GetMethod("ModdedAchievementPatch", BindingFlags.NonPublic | BindingFlags.Static)));
+            }
+            config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
+            config.TryLoadFromFile();
+
             try
             {
                 SRModLoader.InitializeMods();
@@ -83,7 +94,6 @@ namespace SRML
 
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
-
         }
 
         private static bool isInitialized;
@@ -98,7 +108,6 @@ namespace SRML
 
             BaseObjects.Populate();
             SRCallbacks.OnLoad();
-            PrefabUtils.ProcessReplacements();
             KeyBindManager.ReadBinds();
             SlimeRegistry.Initialize(GameContext.Instance.SlimeDefinitions);
             GameContext.Instance.gameObject.AddComponent<ModManager>();
@@ -114,6 +123,8 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
+            GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
+
             PostLoad();
         }
         

@@ -46,7 +46,5 @@ namespace SRML.SR.SaveSystem.Patches
         {
             SaveHandler.SaveModdedSave(director, nextfilename);
         }
-
-
     }
 }

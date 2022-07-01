@@ -28,7 +28,7 @@ namespace SRML.SR
         {
             if (GetPatchesFor(bundlename).ContainsKey(key)) Debug.LogWarning($"Translation key '{key}' for bundle '{bundlename}' is already taken by {keyToMod[new KeyValuePair<string, string>(bundlename, key)]}! Overwriting...");
             GetPatchesFor(bundlename)[key] = value;
-            SetModForTranslationKey(bundlename,key,mod);
+            SetModForTranslationKey(bundlename, key, mod);
         }
 
         /// <summary>
@@ -44,22 +44,63 @@ namespace SRML.SR
         /// </summary>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddPediaTranslation(string key, string value) => AddTranslationKey("pedia", key,value);
+        public static void AddPediaTranslation(string key, string value) => AddTranslationKey("pedia", key, value);
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'actor' bundle
         /// </summary>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddActorTranslation(string key, string value) => AddTranslationKey("actor",key,value);
+        public static void AddActorTranslation(string key, string value) => AddTranslationKey("actor", key, value);
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'ui' bundle
         /// </summary>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddUITranslation(string key, string value) => AddTranslationKey("ui",key,value);
+        public static void AddUITranslation(string key, string value) => AddTranslationKey("ui", key, value);
 
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'achieve' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
+        public static void AddAchievementTranslation(string key, string value) => AddTranslationKey("achieve", key, value);
+
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'exchange' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
+        public static void AddExchangeTranslation(string key, string value) => AddTranslationKey("exchange", key, value);
+
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'global' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
+        public static void AddGlobalTranslation(string key, string value) => AddTranslationKey("global", key, value);
+
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'mail' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
+        public static void AddMailTranslation(string key, string value) => AddTranslationKey("mail", key, value);
+
+        /// <summary>
+        /// Add a plaintext translation for a localization key in the 'tutorial' bundle
+        /// </summary>
+        /// <param name="key">The localization key</param>
+        /// <param name="value">The plain text translation</param>
+        public static void AddTutorialTranslation(string key, string value) => AddTranslationKey("tutorial", key, value);
+
+        /// <summary>
+        /// Add a plaintext translation for localization for SRML error messages
+        /// </summary>
+        /// <param name="language">The language to be translated to</param>
+        /// <param name="errorText">The plain text translation for the text saying it's an error</param>
+        /// <param name="abortText">The plain text translation for the text saying mod-loading is aborting</param>
         public static void AddSRMLErrorUITranslation(MessageDirector.Lang language, string errorText, string abortText) => srmlErrorMessages.Add(language, new KeyValuePair<string, string>(errorText, abortText));
 
         private static Dictionary<string, string> GetPatchesFor(string bundleName)

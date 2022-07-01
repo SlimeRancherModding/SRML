@@ -13,6 +13,7 @@ namespace SRML.SR.Options
     internal static class OptionsHandler
     {
         const string KEYBIND_FILE_NAME = "keybinds";
+
         public static void Push(OptionsV11 options)
         {
             foreach(var mod in new HashSet<SRMod>(BindingRegistry.moddedActions.Values))

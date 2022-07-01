@@ -146,6 +146,8 @@ public static class GameObjectExtensions
 		return result.ToArray();
 	}
 
+	public static GameObject GetChild(this GameObject obj, int index) => obj.transform.GetChild(index).gameObject;
+
 	// PARENT STUFF
 	public static T FindComponentInParent<T>(this GameObject obj) where T : Component
 	{

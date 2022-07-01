@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SRML.SR
 {
@@ -11,10 +7,7 @@ namespace SRML.SR
     {
         public Rule rules;
 
-        public IdentifiableCategorization(Rule rules)
-        {
-            this.rules = rules;
-        }
+        public IdentifiableCategorization(Rule rules) => this.rules = rules;
 
         [Flags]
         public enum Rule

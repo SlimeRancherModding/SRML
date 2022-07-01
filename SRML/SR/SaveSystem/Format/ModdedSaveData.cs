@@ -38,8 +38,6 @@ namespace SRML.SR.SaveSystem.Format
         public void WriteHeader(BinaryWriter writer)
         {
             writer.Write(DATA_VERSION);
-
-
         }
 
         public void Clear()
@@ -93,7 +91,7 @@ namespace SRML.SR.SaveSystem.Format
                     {
                         var id = DataIdentifier.Read(reader);
                         var dataType = DataIdentifier.IdentifierTypeToData[id.Type];
-                        if(PartialData.TryGetPartialData(dataType,out var data))
+                        if (PartialData.TryGetPartialData(dataType,out var data))
                         {
                             data.Read(reader);
                             partialData[id] = data;

@@ -112,6 +112,5 @@ namespace SRML.Config
             WriteIniData(data);
             parser.WriteFile(filePath, data);
         }
-        
     }
 }

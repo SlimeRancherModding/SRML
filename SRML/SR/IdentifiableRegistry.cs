@@ -17,6 +17,8 @@ namespace SRML.SR
             ModdedIDRegistry.RegisterIDRegistry(moddedIdentifiables);
         }
 
+        public static Identifiable.Id CreateIdentifiableId(object value, string name) => CreateIdentifiableId(value, name, true);
+
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
@@ -78,27 +80,19 @@ namespace SRML.SR
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static bool IsModdedIdentifiable(this Identifiable.Id id)
-        {
-            return moddedIdentifiables.ContainsKey(id);
-        }
+        public static bool IsModdedIdentifiable(this Identifiable.Id id) => moddedIdentifiables.ContainsKey(id);
 
-        public static HashSet<Identifiable.Id> GetIdentifiablesForMod(string id)
-        {
-            HashSet<Identifiable.Id> ids = new HashSet<Identifiable.Id>();
-            foreach (KeyValuePair<Identifiable.Id, SRMod> kvp in moddedIdentifiables) if (kvp.Value.ModInfo.Id == id) ids.Add(kvp.Key);
-            return ids;
-        }
+        public static HashSet<Identifiable.Id> GetIdentifiablesForMod(string id) => moddedIdentifiables.Where(x => x.Value.ModInfo.Id == id).Select(x => x.Key).ToHashSet();
 
         internal static void CategorizeAllIds()
         {
             foreach (Identifiable.Id id in moddedIdentifiables.Keys)
             {
-                if (rules.ContainsKey(id)) continue;
-                CategorizeId(id);
+                if (rules.ContainsKey(id)) return;
+                else CategorizeId(id);
+                if (!FoodGroupRegistry.alreadyRegistered.Contains(id)) FoodGroupRegistry.RegisterToFoodGroup(id);
             }
-            foreach (Identifiable.Id id in rules.Keys)
-                CategorizeId(id, rules[id]);
+            foreach (Identifiable.Id id in rules.Keys) id.Categorize(rules[id]);
         }
 
         /// <summary>

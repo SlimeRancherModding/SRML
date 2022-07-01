@@ -357,7 +357,7 @@
     <Compile Include="Console\Commands\NoclipCommand.cs" />
     <Compile Include="Console\Commands\ReloadCommand.cs" />
     <Compile Include="Console\Commands\RemoveButtonCommand.cs" />
-    <Compile Include="Console\Commands\RemoveCommand.cs" />
+    <Compile Include="Console\Commands\KillCommand.cs" />
     <Compile Include="Console\Commands\SpawnCommand.cs" />
     <Compile Include="Console\Commands\UnbindCommand.cs" />
     <Compile Include="Console\Console.cs" />
@@ -384,6 +384,8 @@
     <Compile Include="IModEntryPoint.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SRMLConfig.cs" />
+    <Compile Include="SR\AchievementRegistry.cs" />
     <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\ChromaRegistry.cs" />
@@ -392,6 +394,7 @@
     <Compile Include="SR\FoodGroupRegistry.cs" />
     <Compile Include="SR\GadgetCategorization.cs" />
     <Compile Include="SR\IdentifiableCategorization.cs" />
+    <Compile Include="SR\Patches\AchievementDirectorModdedAchievementsPatch.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
     <Compile Include="SR\Patches\AttachFashionsGetOffsetPatch.cs" />
     <Compile Include="SR\Patches\AttachFashionsGetParentBonePatch.cs" />
@@ -408,7 +411,7 @@
     <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
     <Compile Include="SR\Patches\SlimeAppearanceApplicatorBoneSlotPatch.cs" />
-    <Compile Include="SR\Patches\GameContextInitializeDefinitionsPatch.cs" />
+    <Compile Include="SR\Patches\SlimeDietRefreshEatMapAddExtrasPatch.cs" />
     <Compile Include="SR\Patches\SlimeDietRefreshEatmapPatch.cs" />
     <Compile Include="SR\Patches\TargetingUIGetTargetPatch.cs" />
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
@@ -418,6 +421,7 @@
     <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
+    <Compile Include="SR\UI\ExtendedMarketUI.cs" />
     <Compile Include="SR\Utils\CollectionExtensions.cs" />
     <Compile Include="SR\Utils\ColorExtensions.cs" />
     <Compile Include="SR\Utils\EnumExtensions.cs" />
