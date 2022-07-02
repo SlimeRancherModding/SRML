@@ -26,7 +26,7 @@ namespace SRML.SR
 
         internal static void AddTranslationKey(string bundlename, string key, string value, SRMod mod)
         {
-            if (GetPatchesFor(bundlename).ContainsKey(key)) Debug.LogWarning($"Translation key '{key}' for bundle '{bundlename}' is already taken by {keyToMod[new KeyValuePair<string, string>(bundlename, key)]}! Overwriting...");
+            if (GetPatchesFor(bundlename).ContainsKey(key)) Debug.LogWarning($"Translation key '{key}' for bundle '{bundlename}' is already taken by {keyToMod[new KeyValuePair<string, string>(bundlename, key)].ModInfo.Name}! Overwriting...");
             GetPatchesFor(bundlename)[key] = value;
             SetModForTranslationKey(bundlename, key, mod);
         }

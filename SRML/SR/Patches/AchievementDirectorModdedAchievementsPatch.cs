@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SRML.SR.Patches
 {
@@ -21,8 +22,25 @@ namespace SRML.SR.Patches
                     case AchievementRegistry.Tier.TIER3:
                         __instance.TIER_3.Add(ach.Key);
                         break;
+                    default:
+                        AchievementRegistry.achievementCustomTiers[ach.Key] = ach.Value.Item2;
+                        break;
                 }
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(AchievementsDirector), "GetAchievementImage")]
+    internal static class AchievementsDirectorGetSpritePatch
+    {
+        public static bool Prefix(AchievementsDirector.Achievement achieve, ref Sprite __result)
+        {
+            if (AchievementRegistry.achievementCustomTiers.ContainsKey(achieve))
+            {
+                __result = AchievementRegistry.moddedTiers[AchievementRegistry.achievementCustomTiers[achieve]];
+                return false;
+            }
+            return true;
         }
     }
 

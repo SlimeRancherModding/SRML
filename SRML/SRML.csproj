@@ -410,6 +410,7 @@
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
     <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
+    <Compile Include="SR\Patches\RegionRegistryCustomRegionsPatch.cs" />
     <Compile Include="SR\Patches\SlimeAppearanceApplicatorBoneSlotPatch.cs" />
     <Compile Include="SR\Patches\SlimeDietRefreshEatMapAddExtrasPatch.cs" />
     <Compile Include="SR\Patches\SlimeDietRefreshEatmapPatch.cs" />
@@ -417,6 +418,7 @@
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\Patches\WeaponVacuumExpelEmotionsPatch.cs" />
     <Compile Include="SR\CorporatePartnerRegistry.cs" />
+    <Compile Include="SR\RegionSetRegistry.cs" />
     <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />
     <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
