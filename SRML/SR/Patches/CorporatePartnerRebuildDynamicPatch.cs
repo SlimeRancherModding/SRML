@@ -42,7 +42,7 @@ namespace SRML.SR.Patches
         public static void RefreshRewardsFancily(CorporatePartnerUI instance, int rank)
         {
             for (int i = 0; i < EnhancedCorporatePartnerHandler.content.childCount; i++)
-                if (i != 0) EnhancedCorporatePartnerHandler.content.GetChild(i).gameObject.Destroy();
+                EnhancedCorporatePartnerHandler.content.GetChild(i).gameObject.Destroy();
             for (int j = 0; j < instance.ranks[rank - 1].rewardIcons.Length; j++)
                 EnhancedCorporatePartnerHandler.CreateRewardEntry(instance, rank, j);
             if (!CorporatePartnerRegistry.rewardsForLevel.ContainsKey(rank)) return;
