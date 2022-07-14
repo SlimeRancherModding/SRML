@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using SRML.SR.UI;
 using SRML.Utils;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,22 +27,19 @@ namespace SRML.SR.Patches
                 {
                     cost = entry.Value.cost,
                     rewardIcons = entry.Value.rewardIcons,
-                    rewardBanner = genericEntry.rewardBanner
+                    rewardBanner = entry.Value.rewardBanner ?? genericEntry.rewardBanner
                 });
             }
 
-            foreach (KeyValuePair<Sprite, int> entry in CorporatePartnerRegistry.customRewards)
-            {
-                if (__instance.ranks.Length < entry.Value)
-                {
-                    Console.Console.Instance.LogWarning("Attempting to add reward to non-existent corporate level! Skipping ...");
-                    continue;
-                }
-                else
-                {
-                    __instance.ranks[entry.Value - 1].rewardIcons.AddToArray(entry.Key);
-                }
-            }
+            EnhancedCorporatePartnerHandler.rewardEntry = PrefabUtils.CopyPrefab(__instance.rewardObjects[0]);
+            GameObject newUI = GameObject.Instantiate(EnhancedCorporatePartnerHandler.assetBundle.LoadAsset<GameObject>("RewardsPanel"), __instance.rewardObjects[0].transform.parent.parent, false);
+            EnhancedCorporatePartnerHandler.content = newUI.transform.GetChild(0).GetChild(0);
+            Transform text = __instance.rewardObjects[0].transform.parent.GetChild(0);
+            text.SetParent(newUI.transform.parent);
+            text.SetAsFirstSibling();
+            __instance.rewardObjects[0].transform.parent.gameObject.DestroyImmediate();
+            newUI.transform.SetSiblingIndex(1);
+            newUI.name = "RewardsPanel";
         }
     }
 }

@@ -400,6 +400,7 @@
     <Compile Include="SR\Patches\AttachFashionsGetParentBonePatch.cs" />
     <Compile Include="SR\Patches\BugReportUIDestroyPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerBuyPatch.cs" />
+    <Compile Include="SR\Patches\CorporatePartnerRebuildDynamicPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerUIAwakePatch.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
     <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
@@ -423,6 +424,7 @@
     <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
+    <Compile Include="SR\UI\EnhancedCorporatePartnerHandler.cs" />
     <Compile Include="SR\UI\ExtendedMarketUI.cs" />
     <Compile Include="SR\Utils\CollectionExtensions.cs" />
     <Compile Include="SR\Utils\ColorExtensions.cs" />

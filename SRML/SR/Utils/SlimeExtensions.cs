@@ -36,6 +36,7 @@ namespace SRML.SR.Utils
                 if (baseDiet.MajorFoodGroups != null) diet.MajorFoodGroups = diet.MajorFoodGroups.Union(baseDiet.MajorFoodGroups).ToArray();
                 if (baseDiet.Produces != null) diet.Produces = diet.Produces.Concat(baseDiet.Produces).ToArray();
             }
+            diet.FavoriteProductionCount = 2;
 
             def.Diet = diet;
             diet.RefreshEatMap(GameContext.Instance.SlimeDefinitions, def);
