@@ -123,6 +123,16 @@ namespace SRMLInstaller
                         otherStream.Close();
                         str.Close();
                     }
+
+                    if (!uninstalling)
+                    {
+                        string umfPath = Path.Combine(Directory.GetParent(root).Parent.FullName, "uModFramework", "Lib", "net462");
+                        if (File.Exists(Path.Combine(umfPath, "0Harmony.dll")))
+                        {
+                            Console.WriteLine("Found existing UMF installation! Patching...");
+                            File.Copy(Path.Combine(GetAlternateRoot(), "0Harmony.dll"), Path.Combine(umfPath, "0Harmony.dll"), true);
+                        }
+                    }
                 }
 
                 Console.WriteLine();
