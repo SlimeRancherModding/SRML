@@ -24,10 +24,8 @@ namespace SRML.SR.UI
 
             if (mainMenuUIPrefab) return;
 
-            var bundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
-            var h = bundle.LoadAsset<GameObject>("ModPanel");
-            h.AddComponent<ModMenuUI>().infoButtonPrefab = bundle.LoadAsset<GameObject>("ModInfoButton");
+            var h = Main.uiBundle.LoadAsset<GameObject>("ModPanel");
+            h.AddComponent<ModMenuUI>().infoButtonPrefab = Main.uiBundle.LoadAsset<GameObject>("ModInfoButton");
             mainMenuUIPrefab = h;
         }
 

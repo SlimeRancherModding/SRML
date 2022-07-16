@@ -9,7 +9,6 @@ namespace SRML.SR.UI
     {
         public static GameObject rewardEntry;
         public static Transform content;
-        public static AssetBundle assetBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(EnhancedCorporatePartnerHandler), "srml"));
 
         public static GameObject CreateRewardEntry(CorporatePartnerUI ui, CorporatePartnerRegistry.RewardEntry entry)
         {

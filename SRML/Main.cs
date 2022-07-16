@@ -11,6 +11,7 @@ using SRML.Config;
 using SRML.Console;
 using SRML.Editor;
 using SRML.SR;
+using SRML.SR.UI;
 using SRML.SR.Utils;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
@@ -24,6 +25,7 @@ namespace SRML
         internal static Transform prefabParent;
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
         internal static ConfigFile config;
+        internal static AssetBundle uiBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
 
         /// <summary>
         /// Called before GameContext.Awake()
