@@ -31,6 +31,8 @@ namespace SRML
     {
         public Harmony HarmonyInstance => HarmonyPatcher.GetInstance();
 
+        public Console.Console.ConsoleInstance ConsoleInstance { get; internal set; }
+
         public virtual void PreLoad()
         {
         }
