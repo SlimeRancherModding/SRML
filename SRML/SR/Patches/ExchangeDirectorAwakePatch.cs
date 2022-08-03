@@ -11,7 +11,11 @@ namespace SRML.SR.Patches
         public static void Prefix(ExchangeDirector __instance)
         {
             foreach (ExchangeDirector.Rancher rancher in ExchangeOfferRegistry.customRanchers.Keys)
-                __instance.ranchers = __instance.ranchers.AddToArray(rancher);
+            {
+                ExchangeDirector.Rancher modified = rancher;
+                modified.chatBackground = modified.chatBackground ?? __instance.ranchers[0].chatBackground;
+                __instance.ranchers = __instance.ranchers.AddToArray(modified);
+            }
             foreach ((ExchangeDirector.Category, Identifiable.Id[]) cat in ExchangeOfferRegistry.customCategories.Keys)
                 __instance.catDict.Add(cat.Item1, cat.Item2);
             foreach (ExchangeDirector.UnlockList list in ExchangeOfferRegistry.customUnlocks.Values)

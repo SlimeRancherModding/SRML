@@ -69,6 +69,7 @@ namespace SRML.SR.Utils.Debug
                 GUILayout.Label($"<size=20><b>Player Info:</b></size>");
                 GUILayout.Space(3);
                 GUILayout.Label($"<b>Position: </b>{SceneContext.Instance.Player.transform.position}");
+                GUILayout.Label($"<b>Camera Rotation: </b>{Camera.main.transform.eulerAngles}");
                 GUILayout.Label($"<b>Zone: </b>{zone}");
                 GUILayout.Label($"<b>Map Unlocked: </b>{SceneContext.Instance.PlayerState.HasUnlockedMap(zone)}");
                 GUILayout.Label($"<b>EndGame Time: </b>{SceneContext.Instance.PlayerState.GetEndGameTime()}");

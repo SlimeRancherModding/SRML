@@ -185,8 +185,6 @@ namespace SRML
                     throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
             }
-            IdentifiableRegistry.CategorizeAllIds();
-            GadgetRegistry.CategorizeAllIds();
         }
         
         internal static void LoadMods()
@@ -447,9 +445,16 @@ namespace SRML
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
                 if (dependencies == null || dependencies.Count == 0) return;
-                List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
-                foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
-                parsedDependencies = depends.ToArray();
+                try
+                {
+                    List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
+                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
+                    parsedDependencies = depends.ToArray();
+                }
+                catch
+                {
+                    throw new Exception($"Error parsing mod dependencies for mod {id}");
+                }
             }
 
             /// <summary>

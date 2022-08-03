@@ -45,7 +45,7 @@ namespace SRML.SR.Utils
 
         internal static Dictionary<Identifiable.Id, List<SlimeDiet.EatMapEntry>> extraEatEntries = new Dictionary<Identifiable.Id, List<SlimeDiet.EatMapEntry>>();
 
-        public static void AddExtraEatMapEntry(this SlimeDefinition def, SlimeDiet.EatMapEntry entry)
+        public static void AddEatMapEntry(this SlimeDefinition def, SlimeDiet.EatMapEntry entry)
         {
             def.Diet.EatMap.Add(entry);
             if (!extraEatEntries.ContainsKey(def.IdentifiableId)) extraEatEntries[def.IdentifiableId] = new List<SlimeDiet.EatMapEntry>();

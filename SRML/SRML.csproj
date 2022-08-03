@@ -419,6 +419,7 @@
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\Patches\WeaponVacuumExpelEmotionsPatch.cs" />
     <Compile Include="SR\CorporatePartnerRegistry.cs" />
+    <Compile Include="SR\Patches\ZoneDirectorCustomRegionForZonePatch.cs" />
     <Compile Include="SR\RegionSetRegistry.cs" />
     <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />
     <Compile Include="SR\SnareRegistry.cs" />

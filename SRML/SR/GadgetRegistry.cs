@@ -16,6 +16,19 @@ namespace SRML.SR
         internal static List<Gadget.Id> defaultBlueprints = new List<Gadget.Id>();
         internal static List<Gadget.Id> defaultAvailBlueprints = new List<Gadget.Id>();
 
+        internal static Dictionary<string, GadgetCategorization.Rule> categorizationSuffixRules = new Dictionary<string, GadgetCategorization.Rule>();
+        internal static Dictionary<string, GadgetCategorization.Rule> categorizationPrefixRules = new Dictionary<string, GadgetCategorization.Rule>()
+        {
+            { "EXTRACTOR_", GadgetCategorization.Rule.EXTRACTOR },
+            { "TELEPORTER_", GadgetCategorization.Rule.TELEPORTER },
+            { "WARP_DEPOT_", GadgetCategorization.Rule.WARP_DEPOT },
+            { "ECHO_NET", GadgetCategorization.Rule.ECHO_NET },
+            { "LAMP_", GadgetCategorization.Rule.LAMP },
+            { "FASHION_POD_", GadgetCategorization.Rule.FASHION_POD },
+            { "GORDO_SNARE_", GadgetCategorization.Rule.SNARE },
+            { "DRONE", GadgetCategorization.Rule.DRONE }
+        };
+
         static GadgetRegistry() => ModdedIDRegistry.RegisterIDRegistry(moddedGadgets);
 
         public static Gadget.Id CreateGadgetId(object value, string name)
@@ -74,11 +87,11 @@ namespace SRML.SR
         {
             foreach (Gadget.Id id in moddedGadgets.Keys)
             {
-                if (rules.ContainsKey(id)) continue;
-                CategorizeId(id);
+                if (rules.ContainsKey(id))
+                    CategorizeId(id, rules[id]);
+                else
+                    CategorizeId(id);
             }
-            foreach (Gadget.Id id in rules.Keys)
-                CategorizeId(id, rules[id]);
         }
 
         /// <summary>
@@ -89,24 +102,20 @@ namespace SRML.SR
         public static void CategorizeId(Gadget.Id id)
         {
             string name = Enum.GetName(typeof(Gadget.Id), id);
-            if (name.StartsWith("EXTRACTOR_"))
-                CategorizeId(id, GadgetCategorization.Rule.EXTRACTOR);
-            else if (name.StartsWith("TELEPORTER_"))
-                CategorizeId(id, GadgetCategorization.Rule.TELEPORTER);
-            else if (name.StartsWith("WARP_DEPOT_"))
-                CategorizeId(id, GadgetCategorization.Rule.WARP_DEPOT);
-            else if (name.StartsWith("ECHO_NET"))
-                CategorizeId(id, GadgetCategorization.Rule.ECHO_NET);
-            else if (name.StartsWith("LAMP_"))
-                CategorizeId(id, GadgetCategorization.Rule.LAMP);
-            else if (name.StartsWith("FASHION_POD_"))
-                CategorizeId(id, GadgetCategorization.Rule.FASHION_POD);
-            else if (name.StartsWith("GORDO_SNARE_"))
-                CategorizeId(id, GadgetCategorization.Rule.SNARE);
-            else if (name.StartsWith("DRONE"))
-                CategorizeId(id, GadgetCategorization.Rule.DRONE);
-            else
-                CategorizeId(id, GadgetCategorization.Rule.MISC);
+
+            if (categorizationSuffixRules.TryGetValue(x => name.EndsWith(x.Key), out var suffixRule))
+            {
+                CategorizeId(id, suffixRule.Value);
+                return;
+            }
+
+            if (categorizationPrefixRules.TryGetValue(x => name.StartsWith(x.Key), out var prefixRule))
+            {
+                CategorizeId(id, prefixRule.Value);
+                return;
+            }
+
+            CategorizeId(id, GadgetCategorization.Rule.MISC);
         }
 
         /// <summary>

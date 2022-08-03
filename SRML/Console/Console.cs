@@ -381,19 +381,19 @@ namespace SRML.Console
         {
             public readonly string Name;
 
-            public void Log(string message, bool logToFile = true) => console.LogEntry(LogType.Log, message, logToFile, Name);
+            public void Log(object message, bool logToFile = true) => console.LogEntry(LogType.Log, message.ToString(), logToFile, Name);
 
-            public void LogWarning(string message, bool logToFile = true) => console.LogEntry(LogType.Warning, message, logToFile, Name);
+            public void LogWarning(object message, bool logToFile = true) => console.LogEntry(LogType.Warning, message.ToString(), logToFile, Name);
 
-            public void LogError(string message, bool logToFile = true) => console.LogEntry(LogType.Error, message, logToFile, Name);
+            public void LogError(object message, bool logToFile = true) => console.LogEntry(LogType.Error, message.ToString(), logToFile, Name);
 
-            public void LogSuccess(string message, bool logToFile = true) => console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, Name);
+            public void LogSuccess(object message, bool logToFile = true) => console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, Name);
 
-            public void LogToFile(string message) => FileLogger.LogEntry(LogType.Log, message, Name);
+            public void LogToFile(object message) => FileLogger.LogEntry(LogType.Log, message.ToString(), Name);
 
-            public void LogWarningToFile(string message) => FileLogger.LogEntry(LogType.Warning, message, Name);
+            public void LogWarningToFile(object message) => FileLogger.LogEntry(LogType.Warning, message.ToString(), Name);
 
-            public void LogErrorToFile(string message) => FileLogger.LogEntry(LogType.Error, message, Name);
+            public void LogErrorToFile(object message) => FileLogger.LogEntry(LogType.Error, message.ToString(), Name);
 
             public ConsoleInstance(string name)
             {

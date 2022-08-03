@@ -21,6 +21,7 @@ namespace SRML.SR
         internal static List<PediaDirector.Id> initialEntries = new List<PediaDirector.Id>();
         internal static Dictionary<PediaDirector.Id, PediaCategory> pediaMappings = new Dictionary<PediaDirector.Id, PediaCategory>();
         internal static Dictionary<PediaDirector.Id, IPediaRenderer> customPediaRenderers = new Dictionary<PediaDirector.Id, IPediaRenderer>();
+        internal static Dictionary<PediaCategory, List<IComparer<PediaDirector.Id>>> pediaSorters = new Dictionary<PediaCategory, List<IComparer<PediaDirector.Id>>>();
         internal static Dictionary<PediaTab, SRMod> customTabs = new Dictionary<PediaTab, SRMod>();
         
 
@@ -51,30 +52,18 @@ namespace SRML.SR
             return moddedIds.RegisterValueWithEnum((PediaDirector.Id)value, name);
         }
 
-        public static void RegisterPediaTab(PediaTab tab)
-        {
-            customTabs.Add(tab, SRMod.GetCurrentMod());
-        }
+        public static void RegisterPediaTab(PediaTab tab) => customTabs.Add(tab, SRMod.GetCurrentMod());
 
-        public static void RegisterIdEntry(PediaDirector.IdEntry entry)
-        {
-            customEntries.Add(entry);
-        }
+        public static void RegisterIdEntry(PediaDirector.IdEntry entry) => customEntries.Add(entry);
         
-        public static void RegisterIdEntry(PediaDirector.Id id, Sprite icon)
-        {
-            RegisterIdEntry(new PediaDirector.IdEntry() { id = id, icon = icon });
-        }
+        public static void RegisterIdEntry(PediaDirector.Id id, Sprite icon) => RegisterIdEntry(new PediaDirector.IdEntry() { id = id, icon = icon });
         
-        public static void RegisterRenderer(PediaDirector.Id id, IPediaRenderer renderer)
-        {
-            customPediaRenderers.Add(id, renderer);
-        }
+        public static void RegisterRenderer(PediaDirector.Id id, IPediaRenderer renderer) => customPediaRenderers.Add(id, renderer);
 
 
         internal static IPediaRenderer GetRenderer(PediaDirector.Id id)
         {
-                if(!customPediaRenderers.TryGetValue(id, out var renderer))
+            if(!customPediaRenderers.TryGetValue(id, out var renderer))
             {
                 var tab = GetCustomPediaTab(id);
                 if (tab != null)
@@ -95,20 +84,15 @@ namespace SRML.SR
             return null;
         }
 
-        public static void RegisterInitialPediaEntry(PediaDirector.Id id)
-        {
-            initialEntries.Add(id);
-        }
+        public static void RegisterInitialPediaEntry(PediaDirector.Id id) => initialEntries.Add(id);
         
         public static void RegisterIdentifiableMapping(PediaDirector.IdentMapEntry entry)
         {
             customIdentifiableLinks.Add(entry);
         }
 
-        public static void RegisterIdentifiableMapping(PediaDirector.Id pedia, Identifiable.Id ident)
-        {
+        public static void RegisterIdentifiableMapping(PediaDirector.Id pedia, Identifiable.Id ident) => 
             RegisterIdentifiableMapping(new PediaDirector.IdentMapEntry() { identId = ident, pediaId = pedia });
-        }
 
         static ref PediaDirector.Id[] GetCategory(PediaCategory cat)
         {
@@ -129,7 +113,6 @@ namespace SRML.SR
             }
             throw new Exception();
         }
-
         public static void SortPediaCategory(PediaCategory category, IComparer<PediaDirector.Id> comparer)
         {
             var cat = GetCategory(category).ToList();
@@ -137,13 +120,9 @@ namespace SRML.SR
             GetCategory(category) = cat.ToArray();
         }
 
-        public static void SetPediaCategory(PediaDirector.Id id, PediaCategory category)
-        {
-            var cat = GetCategory(category).ToList();
-            cat.Add(id);
-            GetCategory(category) = cat.ToArray();
-        }
- 
+        public static void SetPediaCategory(PediaDirector.Id id, PediaCategory category) => GetCategory(category) = GetCategory(category).AddToArray(id);
+
+
         public enum PediaCategory
         {
             TUTORIALS,
@@ -194,7 +173,6 @@ namespace SRML.SR
 
             public void OnListingDeselected(GameObject panelObj)
             {
-
             }
         }
 

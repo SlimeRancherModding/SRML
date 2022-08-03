@@ -33,4 +33,5 @@ public static class EnumExtensions
     public static ToyDefinition GetToyDefinition(this Identifiable.Id id) => GetContextForStep().LookupDirector.GetToyDefinition(id);
     public static UpgradeDefinition GetUpgradeDefinition(this PlayerState.Upgrade id) => GetContextForStep().LookupDirector.GetUpgradeDefinition(id);
     public static SlimeDefinition GetSlimeDefinition(this Identifiable.Id id) => GetContextForStep().SlimeDefinitions.GetSlimeByIdentifiableId(id);
+    public static GadgetDefinition GetGadgetDefinition(this Gadget.Id id) => GetContextForStep().LookupDirector.GetGadgetDefinition(id);
 }

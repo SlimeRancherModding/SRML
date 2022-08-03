@@ -25,7 +25,7 @@ namespace SRML.SR.Translation
 
         public SlimePediaEntryTranslation SetDietTranslation(string dietString)
         {
-            TranslationPatcher.AddPediaTranslation(DietKey,dietString);
+            TranslationPatcher.AddPediaTranslation(DietKey, dietString);
             return this;
         }
 
@@ -62,6 +62,13 @@ namespace SRML.SR.Translation
         public new SlimePediaEntryTranslation SetIntroTranslation(string intro)
         {
             TranslationPatcher.AddPediaTranslation(IntroKey, intro);
+            return this;
+        }
+
+        [Obsolete]
+        public new SlimePediaEntryTranslation SetDescriptionTranslation(string description)
+        {
+            TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
             return this;
         }
     }

@@ -94,6 +94,22 @@ public static class CollectionExtensions
         return itemsList;
     }
 
+    /// <summary>
+    /// Attempts to get a value from a collection.
+    /// </summary>
+    /// <returns>True if an element in the collection matches the specified condition, otherwise false.</returns>
+    public static bool TryGetValue<T>(this ICollection<T> collection, Func<T, bool> predicate, out T result)
+    {
+        T tryGet = collection.FirstOrDefault(predicate);
+        if (!tryGet.Equals(default(T)))
+        {
+            result = tryGet;
+            return true;
+        }
+        result = default;
+        return false;
+    }
+
     public static void Sort<T>(this T[] array) => Array.Sort(array);
     public static void Sort<T>(this T[] array, IComparer comparer) => Array.Sort(array, comparer);
     public static void Sort<T>(this T[] array, int index, int length) => Array.Sort(array, index, length);

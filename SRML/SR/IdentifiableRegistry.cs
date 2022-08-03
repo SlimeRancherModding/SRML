@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using SRML.SR.Utils;
 using SRML.SR.SaveSystem;
 using UnityEngine;
 
@@ -11,6 +11,29 @@ namespace SRML.SR
     {
         internal static IDRegistry<Identifiable.Id> moddedIdentifiables = new IDRegistry<Identifiable.Id>();
         internal static Dictionary<Identifiable.Id, IdentifiableCategorization.Rule> rules = new Dictionary<Identifiable.Id, IdentifiableCategorization.Rule>();
+        internal static Dictionary<string, IdentifiableCategorization.Rule> categorizationSuffixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
+        {
+            { "_VEGGIE", IdentifiableCategorization.Rule.VEGGIE },
+            { "_FRUIT", IdentifiableCategorization.Rule.FRUIT },
+            { "_TOFU", IdentifiableCategorization.Rule.TOFU },
+            { "_SLIME", IdentifiableCategorization.Rule.SLIME },
+            { "_LARGO", IdentifiableCategorization.Rule.LARGO },
+            { "_GORDO", IdentifiableCategorization.Rule.GORDO },
+            { "_PLORT", IdentifiableCategorization.Rule.PLORT },
+            { "HEN", IdentifiableCategorization.Rule.MEAT },
+            { "ROOSTER", IdentifiableCategorization.Rule.MEAT },
+            { "CHICK", IdentifiableCategorization.Rule.CHICK },
+            { "_LIQUID", IdentifiableCategorization.Rule.LIQUID },
+            { "_CRAFT", IdentifiableCategorization.Rule.CRAFT },
+            { "_FASHION", IdentifiableCategorization.Rule.FASHION },
+            { "_ECHO", IdentifiableCategorization.Rule.ECHO },
+            { "_ORNAMENT", IdentifiableCategorization.Rule.ORNAMENT },
+            { "_TOY", IdentifiableCategorization.Rule.TOY }
+        };
+        internal static Dictionary<string, IdentifiableCategorization.Rule> categorizationPrefixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
+        {
+            { "ECHO_NOTE_", IdentifiableCategorization.Rule.ECHO_NOTE }
+        };
 
         static IdentifiableRegistry()
         {
@@ -40,7 +63,7 @@ namespace SRML.SR
                 CategorizeId(id, rule);
                 return;
             }
-            rules.Add(id, rule);
+            rules[id] = rule;
         }
 
         /// <summary>
@@ -88,53 +111,51 @@ namespace SRML.SR
         {
             foreach (Identifiable.Id id in moddedIdentifiables.Keys)
             {
-                if (rules.ContainsKey(id)) return;
-                else CategorizeId(id);
-                if (!FoodGroupRegistry.alreadyRegistered.Contains(id)) FoodGroupRegistry.RegisterToFoodGroup(id);
+                if (rules.TryGetValue(id, out IdentifiableCategorization.Rule rule))
+                    CategorizeId(id, rule);
+                else
+                    CategorizeId(id);
+
+                if (!FoodGroupRegistry.alreadyRegistered.Contains(id)) 
+                    FoodGroupRegistry.RegisterToFoodGroup(id);
             }
-            foreach (Identifiable.Id id in rules.Keys) id.Categorize(rules[id]);
         }
 
         /// <summary>
-        /// Puts an <see cref="Identifiable.Id"/> into one of the vanilla categories based on its name postfix (see <see cref="LookupDirector"/>)
+        /// Registers a rule for an id prefix to link to
+        /// </summary>
+        /// <param name="prefix">The prefix for the id to check for.</param>
+        /// <param name="rule">The rule that the specified prefix links to.</param>
+        public static void RegisterPrefixRule(string prefix, IdentifiableCategorization.Rule rule) => categorizationPrefixRules[prefix] = rule;
+
+        /// <summary>
+        /// Registers a rule for an id suffix to link to
+        /// </summary>
+        /// <param name="suffix">The suffix for the id to check for.</param>
+        /// <param name="rule">The rule that the specified prefix links to.</param>
+        public static void RegisterSuffixRule(string suffix, IdentifiableCategorization.Rule rule) => categorizationSuffixRules[suffix] = rule;
+
+        /// <summary>
+        /// Puts an <see cref="Identifiable.Id"/> into one of the vanilla categories based on its name (see <see cref="LookupDirector"/>)
         /// </summary>
         /// <param name="id"></param>
         public static void CategorizeId(Identifiable.Id id)
         {
             string name = Enum.GetName(typeof(Identifiable.Id), id);
-            if (name.EndsWith("_VEGGIE"))
-                CategorizeId(id, IdentifiableCategorization.Rule.VEGGIE);
-            else if (name.EndsWith("_FRUIT"))
-                CategorizeId(id, IdentifiableCategorization.Rule.FRUIT);
-            else if (name.EndsWith("_TOFU"))
-                CategorizeId(id, IdentifiableCategorization.Rule.TOFU);
-            else if (name.EndsWith("_SLIME"))
-                CategorizeId(id, IdentifiableCategorization.Rule.SLIME);
-            else if (name.EndsWith("_LARGO"))
-                CategorizeId(id, IdentifiableCategorization.Rule.LARGO);
-            else if (name.EndsWith("_GORDO"))
-                CategorizeId(id, IdentifiableCategorization.Rule.GORDO);
-            else if (name.EndsWith("_PLORT"))
-                CategorizeId(id, IdentifiableCategorization.Rule.PLORT);
-            else if (name.EndsWith("HEN") || name.EndsWith("ROOSTER"))
-                CategorizeId(id, IdentifiableCategorization.Rule.MEAT);
-            else if (name.EndsWith("CHICK"))
-                CategorizeId(id, IdentifiableCategorization.Rule.CHICK);
-            else if (name.EndsWith("_LIQUID"))
-                CategorizeId(id, IdentifiableCategorization.Rule.LIQUID);
-            else if (name.EndsWith("_CRAFT"))
-                CategorizeId(id, IdentifiableCategorization.Rule.CRAFT);
-            else if (name.EndsWith("_FASHION"))
-                CategorizeId(id, IdentifiableCategorization.Rule.FASHION);
-            else if (name.EndsWith("_ECHO"))
-                CategorizeId(id, IdentifiableCategorization.Rule.ECHO);
-            else if (name.StartsWith("ECHO_NOTE_"))
-                CategorizeId(id, IdentifiableCategorization.Rule.ECHO_NOTE);
-            else if (name.EndsWith("_ORNAMENT"))
-                CategorizeId(id, IdentifiableCategorization.Rule.ORNAMENT);
-            else if (name.EndsWith("_TOY") || id == Identifiable.Id.KOOKADOBA_BALL)
-                CategorizeId(id, IdentifiableCategorization.Rule.TOY);
+
+            if (categorizationSuffixRules.TryGetValue(x => name.EndsWith(x.Key), out var suffixRule))
+            {
+                CategorizeId(id, suffixRule.Value);
+                return;
+            }
+
+            if (categorizationPrefixRules.TryGetValue(x => name.StartsWith(x.Key), out var prefixRule))
+            {
+                CategorizeId(id, prefixRule.Value);
+                return;
+            }
         }
+
         /// <summary>
         /// Put an <see cref="Identifiable.Id"/> into one of the vanilla categories
         /// </summary>

@@ -16,13 +16,13 @@ namespace SRML.SR.Patches
                 return false;
             }
 
-            foreach ((Predicate<Identifiable.Id>, (Func<Identifiable.Id, MessageBundle, string>, Func<Identifiable.Id, MessageBundle, string>)) kvp in TargetingRegistry.customTargetingInfo)
+            foreach ((Predicate<Identifiable.Id>, (Func<Identifiable.Id, MessageBundle, MessageBundle, string>, Func<Identifiable.Id, MessageBundle, MessageBundle, string>)) kvp in TargetingRegistry.customTargetingInfo)
             {
                 if (kvp.Item1.Invoke(id))
                 {
                     __result = true;
-                    __instance.nameText.text = kvp.Item2.Item1 == null ? Identifiable.GetName(id) : kvp.Item2.Item1.Invoke(id, __instance.uiBundle);
-                    __instance.infoText.text = kvp.Item2.Item2 == null ? __instance.GetIdentifiableInfoText(id) : kvp.Item2.Item2.Invoke(id, __instance.uiBundle);
+                    __instance.nameText.text = kvp.Item2.Item1 == null ? Identifiable.GetName(id) : kvp.Item2.Item1.Invoke(id, __instance.uiBundle, __instance.pediaBundle);
+                    __instance.infoText.text = kvp.Item2.Item2 == null ? __instance.GetIdentifiableInfoText(id) : kvp.Item2.Item2.Invoke(id, __instance.uiBundle, __instance.pediaBundle);
                     return false;
                 }
             }
