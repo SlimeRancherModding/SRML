@@ -25,6 +25,8 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Debug\SRML.xml</DocumentationFile>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -411,6 +413,7 @@
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
     <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
+    <Compile Include="SR\Patches\ActorModelResetRegionSetIdPatch.cs" />
     <Compile Include="SR\Patches\RegionRegistryCustomRegionsPatch.cs" />
     <Compile Include="SR\Patches\SlimeAppearanceApplicatorBoneSlotPatch.cs" />
     <Compile Include="SR\Patches\SlimeDietRefreshEatMapAddExtrasPatch.cs" />

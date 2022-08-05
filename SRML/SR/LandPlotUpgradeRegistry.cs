@@ -35,6 +35,13 @@ namespace SRML.SR
             });
         }
 
+        /// <summary>
+        /// Creates a <see cref="LandPlot.Upgrade"/>.
+        /// </summary>
+        /// <param name="value">What value is assigned to the <see cref="LandPlot.Upgrade"/>.</param>
+        /// <param name="name">The name of the <see cref="LandPlot.Upgrade"/>.</param>
+        /// <returns>The created <see cref="LandPlot.Upgrade"/>.</returns>
+        /// <exception cref="Exception">Throws if ran outside of PreLoad</exception>
         public static LandPlot.Upgrade CreateLandPlotUpgrade(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
@@ -42,8 +49,24 @@ namespace SRML.SR
             return moddedUpgrades.RegisterValueWithEnum((LandPlot.Upgrade)value, name);
         }
 
-        public static void RegisterPurchasableUpgrade<T>(UpgradeShopEntry entry) where T : LandPlotUI => PurchasableUIRegistry.RegisterPurchasable((PurchasableUIRegistry.PurchasableCreatorDelegateGeneric<T>)(x => new PurchaseUI.Purchasable(entry.NameKey, entry.icon, entry.mainImg, entry.DescKey, entry.cost, entry.landplotPediaId, () => x.Upgrade(entry.upgrade, entry.cost), entry.isUnlocked != null ? () => entry.isUnlocked(x.activator) : (System.Func<bool>)(() => true), entry.isAvailable != null ? () => entry.isAvailable(x.activator) : (System.Func<bool>)(() => !x.activator.HasUpgrade(entry.upgrade)), warning: (entry.warning ?? null), requireHoldToPurchase: entry.holdtopurchase)));
+        /// <summary>
+        /// Registers an land plot upgrade.
+        /// </summary>
+        /// <typeparam name="T">The type of land plot to register it to.</typeparam>
+        /// <param name="entry">The upgrade to register.</param>
+        public static void RegisterPurchasableUpgrade<T>(UpgradeShopEntry entry) where T : LandPlotUI => 
+            PurchasableUIRegistry.RegisterPurchasable((PurchasableUIRegistry.PurchasableCreatorDelegateGeneric<T>)(x => 
+            new PurchaseUI.Purchasable(entry.NameKey, entry.icon, entry.mainImg, entry.DescKey, entry.cost, entry.landplotPediaId, 
+                () => x.Upgrade(entry.upgrade, entry.cost), entry.isUnlocked != null ? () => entry.isUnlocked(x.activator) : (Func<bool>)(() => true), 
+                entry.isAvailable != null ? () => entry.isAvailable(x.activator) : (System.Func<bool>)(() => !x.activator.HasUpgrade(entry.upgrade)), 
+                warning: (entry.warning ?? null), requireHoldToPurchase: entry.holdtopurchase)));
 
+        /// <summary>
+        /// Registers a <see cref="PlotUpgrader"/> to a land plot.
+        /// </summary>
+        /// <typeparam name="T">The <see cref="PlotUpgrader"/> to register.</typeparam>
+        /// <param name="plot">The <see cref="LandPlot.Id"/> to register the <see cref="PlotUpgrader"/> to</param>
+        /// <exception cref="ArgumentException">Throws if the <see cref="PlotUpgrader"/> is already registered.</exception>
         public static void RegisterPlotUpgrader<T>(LandPlot.Id plot) where T : PlotUpgrader
         {
             if (moddedUpgraders.Exists((x) => x.Item1 == typeof(T) && x.Item2 == plot))

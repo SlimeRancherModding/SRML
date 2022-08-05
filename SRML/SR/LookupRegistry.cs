@@ -28,7 +28,7 @@ namespace SRML.SR
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
         /// </summary>
-        /// <param name="b"></param>
+        /// <param name="b">The prefab to register.</param>
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -43,6 +43,10 @@ namespace SRML.SR
             }
         }
 
+        /// <summary>
+        /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="b">The <see cref="Identifiable"/> belonging to the prefab to register.</param>
         public static void RegisterIdentifiablePrefab(Identifiable b)
         {   
             RegisterIdentifiablePrefab(b.gameObject);
@@ -69,7 +73,7 @@ namespace SRML.SR
         /// <summary>
         /// Register a landplot prefab into the <see cref="LookupDirector"/>
         /// </summary>
-        /// <param name="prefab"></param>
+        /// <param name="prefab">The prefab to register</param>
         public static void RegisterLandPlot(GameObject prefab)
         {
             switch (CurrentLoadingStep)

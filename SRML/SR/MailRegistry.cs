@@ -38,24 +38,42 @@ namespace SRML.SR
                 return TranslationPatcher.GetModForKey(MAIL_BUNDLE, FromKey) ?? TranslationPatcher.GetModForKey(MAIL_BUNDLE, SubjectKey) ?? TranslationPatcher.GetModForKey(MAIL_BUNDLE, BodyKey);
             }
 
+            /// <summary>
+            /// Sets the callback of the <see cref="MailEntry"/>.
+            /// </summary>
+            /// <param name="onReadCallback">The callback</param>
+            /// <returns></returns>
             public MailEntry SetReadCallback(Action<MailDirector,MailDirector.Mail> onReadCallback)
             {
                 this.onReadCallback = onReadCallback;
                 return this;
             }
 
+            /// <summary>
+            /// Sets the from translation.
+            /// </summary>
+            /// <param name="text">The translated text.</param>
+            /// <returns></returns>
             public MailEntry SetFromTranslation(string text)
             {
                 TranslationPatcher.AddTranslationKey(MAIL_BUNDLE, FromKey, text);
                 return this;
             }
 
+            /// <summary>
+            /// Sets the body translation.
+            /// </summary>
+            /// <param name="text">The translated text.</param>
             public MailEntry SetBodyTranslation(string text)
             {
                 TranslationPatcher.AddTranslationKey(MAIL_BUNDLE, BodyKey, text);
                 return this;
             }
 
+            /// <summary>
+            /// Sets the subject translation.
+            /// </summary>
+            /// <param name="text">The translated text.</param>
             public MailEntry SetSubjectTranslation(string text)
             {
                 TranslationPatcher.AddTranslationKey(MAIL_BUNDLE, SubjectKey, text);
@@ -73,24 +91,24 @@ namespace SRML.SR
             }
         }
 
-
+        /// <summary>
+        /// Registers a <see cref="MailEntry"/>.
+        /// </summary>
+        /// <param name="entry">The <see cref="MailEntry"/> to register.</param>
+        /// <returns>The registered <see cref="MailEntry"/></returns>
         public static MailEntry RegisterMailEntry(MailEntry entry)
         {
             ModdedMails.Add(entry);
             return entry;
         }
 
-        public static MailEntry RegisterMailEntry(string key)
-        {
-            return RegisterMailEntry(new MailEntry(key));
-        }
+        /// <summary>
+        /// Registers a <see cref="MailEntry"/>.
+        /// </summary>
+        /// <param name="key">The key of the <see cref="MailEntry"/> to register.</param>
+        /// <returns>The registered <see cref="MailEntry"/></returns>
+        public static MailEntry RegisterMailEntry(string key) => RegisterMailEntry(new MailEntry(key));
 
-
-        internal static SRMod GetModForMail(string mailKey)
-        {
-            return ModdedMails.FirstOrDefault((x) => x.MailKey == mailKey)?.GetMod();
-        }
-
-        
+        internal static SRMod GetModForMail(string mailKey) => ModdedMails.FirstOrDefault((x) => x.MailKey == mailKey)?.GetMod();
     }
 }

@@ -31,6 +31,13 @@ namespace SRML.SR
 
         static GadgetRegistry() => ModdedIDRegistry.RegisterIDRegistry(moddedGadgets);
 
+        /// <summary>
+        /// Creates a <see cref="Gadget.Id"/>.
+        /// </summary>
+        /// <param name="value">What value is assigned to the <see cref="Gadget.Id"/>.</param>
+        /// <param name="name">The name of the <see cref="Gadget.Id"/>.</param>
+        /// <returns>The created <see cref="Gadget.Id"/>.</returns>
+        /// <exception cref="Exception">Throws if ran outside of PreLoad</exception>
         public static Gadget.Id CreateGadgetId(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
@@ -38,14 +45,37 @@ namespace SRML.SR
             return moddedGadgets.RegisterValueWithEnum((Gadget.Id) value, name);
         }
 
+        /// <summary>
+        /// Check if a <see cref="Gadget.Id"/> belongs to a modded gadget.
+        /// </summary>
+        /// <param name="id">The <see cref="Gadget.Id"/> to check.</param>
+        /// <returns>True if <see cref="Gadget.Id"/> belongs to a modded gadget, otherwise false.</returns>
         public static bool IsModdedGadget(this Gadget.Id id) => moddedGadgets.ContainsKey(id);
 
+        /// <summary>
+        /// Associates an <see cref="Gadget.Id"/> with a <see cref="Identifiable.Id"/>
+        /// </summary>
+        /// <param name="id">The <see cref="Gadget.Id"/> to associate.</param>
+        /// <param name="id2">The <see cref="Identifiable.Id"/> to associate</param>
         public static void RegisterIdentifiableMapping(Gadget.Id id, Identifiable.Id id2) => Identifiable.GADGET_NAME_DICT.Add(id2, id);
 
+        /// <summary>
+        /// Registers a locker for a blueprint.
+        /// </summary>
+        /// <param name="id">The <see cref="Gadget.Id"/> of the blueprint.</param>
+        /// <param name="creator">The locker for the blueprint.</param>
         public static void RegisterBlueprintLock(Gadget.Id id, BlueprintLockCreateDelegate creator) => customBlueprintLocks.Add(id, creator);
 
+        /// <summary>
+        /// Register a blueprint.
+        /// </summary>
+        /// <param name="id">The <see cref="Gadget.Id"/> of the blueprint.</param>
         public static void RegisterDefaultBlueprint(Gadget.Id id) => defaultBlueprints.Add(id);
 
+        /// <summary>
+        /// Register a blueprint that's automatically available.
+        /// </summary>
+        /// <param name="id">The <see cref="Gadget.Id"/> of the blueprint.</param>
         public static void RegisterDefaultAvailableBlueprint(Gadget.Id id) => defaultAvailBlueprints.Add(id);
 
 

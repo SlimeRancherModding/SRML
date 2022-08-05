@@ -223,42 +223,46 @@ namespace SRML.Console
             {
                 Instance.Log("<color=cyan>Command: </color>" + command);
 
-                bool spaces = command.Contains(" ");
-                string cmd = spaces ? command.Substring(0, command.IndexOf(' ')) : command;
-
-                if (commands.ContainsKey(cmd))
+                string[] cmds = command.Split(';');
+                foreach (string c in cmds)
                 {
-                    bool executed = false;
-                    bool keepExecution = true;
-                    string[] args = spaces ? StripArgs(command) : null;
+                    bool spaces = c.Contains(" ");
+                    string cmd = spaces ? c.Substring(0, c.IndexOf(' ')) : c;
 
-                    foreach (CommandCatcher catcher in catchers)
+                    if (commands.ContainsKey(cmd))
                     {
-                        keepExecution = catcher.Invoke(cmd, args);
+                        bool executed = false;
+                        bool keepExecution = true;
+                        string[] args = spaces ? StripArgs(c) : null;
 
-                        if (!keepExecution)
-                            break;
+                        foreach (CommandCatcher catcher in catchers)
+                        {
+                            keepExecution = catcher.Invoke(cmd, args);
+
+                            if (!keepExecution)
+                                break;
+                        }
+
+                        if (keepExecution)
+                        {
+                            SRMod.ForceModContext(commands[cmd].belongingMod);
+                            try
+                            {
+                                executed = commands[cmd].Execute(args);
+                            }
+                            finally
+                            {
+                                SRMod.ClearModContext();
+                            }
+                        }
+
+                        if (!executed && keepExecution)
+                            Instance.Log($"<color=cyan>Usage:</color> <color=#77DDFF>{ColorUsage(commands[cmd].Usage)}</color>");
                     }
-
-                    if (keepExecution)
+                    else
                     {
-                        SRMod.ForceModContext(commands[cmd].belongingMod);
-                        try
-                        {
-                            executed = commands[cmd].Execute(args);
-                        }
-                        finally
-                        {
-                            SRMod.ClearModContext();
-                        }
+                        Instance.LogError("Unknown command. Please use '<color=white>help</color>' for available commands or check the menu on the right");
                     }
-
-                    if (!executed && keepExecution)
-                        Instance.Log($"<color=cyan>Usage:</color> <color=#77DDFF>{ColorUsage(commands[cmd].Usage)}</color>");
-                }
-                else
-                {
-                    Instance.LogError("Unknown command. Please use '<color=white>help</color>' for available commands or check the menu on the right");
                 }
             }
             catch (Exception e)

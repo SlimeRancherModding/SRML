@@ -40,13 +40,28 @@ namespace SRML.SR
             ModdedIDRegistry.RegisterIDRegistry(moddedIdentifiables);
         }
 
+        /// <summary>
+        /// Creates an <see cref="Identifiable.Id"/>.
+        /// </summary>
+        /// <param name="value">What value is assigned to the <see cref="Identifiable.Id"/>.</param>
+        /// <param name="name">The name of the <see cref="Identifiable.Id"/>.</param>
+        /// <returns>The created <see cref="Identifiable.Id"/>.</returns>
+        /// <exception cref="Exception">Throws if ran outside of PreLoad</exception>
         public static Identifiable.Id CreateIdentifiableId(object value, string name) => CreateIdentifiableId(value, name, true);
 
+        /// <summary>
+        /// Creates an <see cref="Identifiable.Id"/>.
+        /// </summary>
+        /// <param name="value">What value is assigned to the <see cref="Identifiable.Id"/>.</param>
+        /// <param name="name">The name of the <see cref="Identifiable.Id"/>.</param>
+        /// <param name="shouldCategorize">If the <see cref="Identifiable.Id"/> should automatically be categorized into <see cref="Identifiable"/>'s classes.</param>
+        /// <returns>The created <see cref="Identifiable.Id"/>.</returns>
+        /// <exception cref="Exception">Throws if ran outside of PreLoad</exception>
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
                 throw new Exception("Can't register identifiables outside of the PreLoad step");
-            var id = moddedIdentifiables.RegisterValueWithEnum((Identifiable.Id)value,name);
+            var id = moddedIdentifiables.RegisterValueWithEnum((Identifiable.Id)value, name);
             if (!shouldCategorize) id.Categorize(IdentifiableCategorization.Rule.NONE);
             return id;
         }
@@ -102,9 +117,14 @@ namespace SRML.SR
         /// Check if an <see cref="Identifiable.Id"/> was registered by a mod
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>True if the <see cref="Identifiable.Id"/> was registered by a mod, otherwise false.</returns>
         public static bool IsModdedIdentifiable(this Identifiable.Id id) => moddedIdentifiables.ContainsKey(id);
 
+        /// <summary>
+        /// Gets every <see cref="Identifiable.Id"/> registered by a mod.
+        /// </summary>
+        /// <param name="id">The ID of the mod to check.</param>
+        /// <returns>All <see cref="Identifiable.Id"/>s reigstered by a mod.</returns>
         public static HashSet<Identifiable.Id> GetIdentifiablesForMod(string id) => moddedIdentifiables.Where(x => x.Value.ModInfo.Id == id).Select(x => x.Key).ToHashSet();
 
         internal static void CategorizeAllIds()

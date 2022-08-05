@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 
@@ -9,8 +10,8 @@ namespace SRML.SR.Patches
     {
         public static void Postfix(AttachFashions __instance, Identifiable.Id id, ref Vector3 __result)
         {
-            if (FashionRegistry.offsetsForFashions.ContainsKey(id))
-                __result = FashionRegistry.offsetsForFashions[id].Item1.Invoke(__instance) ? FashionRegistry.offsetsForFashions[id].Item2 : __result;
+            if (FashionRegistry.offsetsForFashions.TryGetValue(x => x.Item1 == id, out var customOffset))
+                __result = customOffset.Item2.Item1.Invoke(__instance) ? customOffset.Item2.Item2 : __result;
         }
     }
 }
