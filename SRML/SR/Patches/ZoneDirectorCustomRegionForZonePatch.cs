@@ -3,7 +3,7 @@ using MonomiPark.SlimeRancher.Regions;
 
 namespace SRML.SR.Patches
 {
-    //[HarmonyPatch(typeof(ZoneDirector), "GetRegionSetId")]
+    [HarmonyPatch(typeof(ZoneDirector), "GetRegionSetId")]
     internal static class ZoneDirectorCustomRegionForZonePatch
     {
         public static bool Prefix(ZoneDirector.Zone zone, ref RegionRegistry.RegionSetId __result)
