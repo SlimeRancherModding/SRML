@@ -160,11 +160,18 @@ namespace SRML
 
         static SRMod AddMod(ProtoMod modInfo, Type entryType)
         {
-            IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
-            if (entryPoint is ModEntryPoint) ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
-            var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
-            Mods.Add(modInfo.id, newmod);
-            return newmod;
+            try
+            {
+                IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
+                if (entryPoint is ModEntryPoint) ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
+                var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
+                Mods.Add(modInfo.id, newmod);
+                return newmod;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error adding mod '{modInfo.id}'!\n{e.GetType().Name}: {e}");
+            }
         }
 
         internal static void PreLoadMods()
@@ -201,7 +208,6 @@ namespace SRML
                 {
                     throw new Exception($"Error loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
-
             }
         }
 
