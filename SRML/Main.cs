@@ -122,7 +122,7 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                ErrorGUI.CreateError($"{e.Message}");
                 return;
             }
             GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
@@ -146,7 +146,7 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                ErrorGUI.CreateError($"{e.Message}");
                 return;
             }
         }
