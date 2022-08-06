@@ -74,7 +74,10 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                if (e.GetType() == typeof(Exception))
+                    ErrorGUI.CreateError(e.Message);
+                else
+                    ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
             FileLogger.Init();
