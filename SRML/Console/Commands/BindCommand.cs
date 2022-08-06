@@ -18,7 +18,7 @@ namespace SRML.Console.Commands
         {
             if (args.Length != 2)
             {
-                Console.LogError("Wrong number of arguments (try putting the command you're binding in quotes)!");
+                Console.Instance.LogError("Wrong number of arguments (try putting the command you're binding in quotes)!");
                 return false;
             }
 
@@ -31,7 +31,7 @@ namespace SRML.Console.Commands
             catch
             {
 
-                Console.LogError("Invalid key!");
+                Console.Instance.LogError("Invalid key!");
                 return false ;
             }
 

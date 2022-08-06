@@ -15,40 +15,23 @@ namespace SRML.SR.Patches
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr)
         {
-            CodeInstruction latestBinding=null;
-            List<CodeInstruction> allInstructions = new List<CodeInstruction>();
-            foreach(var v in instr)
-            {
-                allInstructions.Add(v);
-                if (v.opcode == OpCodes.Call && (v.operand as MethodInfo).Name == "CreateKeyBindingLine") latestBinding = v;
-            }
+            List<CodeInstruction> allInstructions = new List<CodeInstruction>(instr);
+            CodeInstruction latestBinding = instr.Last(x => x.opcode == OpCodes.Call && ((MethodInfo)x.operand).Name == "CreateKeyBindingLine");
+            int index = instr.IndexOfItem(latestBinding) + 1;
 
-            using(var codes = allInstructions.GetEnumerator())
+            List<CodeInstruction> newInstructions = new List<CodeInstruction>()
             {
-                while (codes.MoveNext())
-                {
-                    var cur = codes.Current;
-                    if (cur == latestBinding)
-                    {
-                        yield return cur;
-                        codes.MoveNext();
-                        yield return codes.Current;
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(OptionsUISetupInputPatch), "Alternate"));
-                    }
-                    else yield return cur;
-                    
-
-                }
-            }
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(OptionsUISetupInputPatch), "Alternate"))
+            };
+            allInstructions.InsertRange(index, newInstructions);
+            return allInstructions;
         }
+
         public static void Alternate(OptionsUI ui)
         {
-            foreach(var v in SRInput.Actions.Actions.Where(x=>BindingRegistry.IsModdedAction(x)&&!BindingRegistry.ephemeralActions.Contains(x)))
-            {
+            foreach (var v in SRInput.Actions.Actions.Where(x => BindingRegistry.moddedBindings.Contains(x)))
                 ui.CreateKeyBindingLine("key." + v.Name.ToLowerInvariant(), v);
-                
-            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace SRML.Console.Commands
         {
             if((args?.Length ?? 0) == 0)
             {
-                Console.LogError("Please supply a key!");
+                Console.Instance.LogError("Please supply a key!");
                 return false;
             }
             Key key;
@@ -28,7 +28,7 @@ namespace SRML.Console.Commands
             }
             catch
             {
-                Console.LogError("Please supply valid key!");
+                Console.Instance.LogError("Please supply valid key!");
                 return false;
             }
 

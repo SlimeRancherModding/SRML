@@ -55,7 +55,7 @@ namespace SRML.Console.Commands
                     DeathHandler.Kill(v, DeathHandler.Source.UNDEFINED, SceneContext.Instance.Player, "KillAllCommand.Execute");
                 }
             }
-            Console.LogSuccess($"Destroyed {deletedCount} actors!");
+            Console.Instance.LogSuccess($"Destroyed {deletedCount} actors!");
             return true;
         }
 

@@ -20,30 +20,24 @@ namespace SRML.SR.Utils.BaseObjects
 		public readonly static Dictionary<string, int> layers = new Dictionary<string, int>();
 
 		// Markers
-		public readonly static Material fadeMat = new Material(Shader.Find("Standard")).Initialize((mat) =>
-		{
-			mat.SetFloat("_Mode", 2);
-			mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-			mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-			mat.SetInt("_ZWrite", 0);
-			mat.DisableKeyword("_ALPHATEST_ON");
-			mat.EnableKeyword("_ALPHABLEND_ON");
-			mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-			mat.renderQueue = 3000;
-		});
+		public readonly static Material fadeMat = new Material(Shader.Find("SR/Particles/Additive"));
 
 		public readonly static Dictionary<MarkerType, Material> markerMaterials = new Dictionary<MarkerType, Material>()
 		{
-			{MarkerType.SpawnPoint, new Material(fadeMat).SetInfo(new Color(1, 0, 0, 0.75f), "Spawn Point Marker")},
-			{MarkerType.Plot, new Material(fadeMat).SetInfo(new Color(0, 1, 1, 0.75f), "Plot Marker")},
-			{MarkerType.GadgetLocation, new Material(fadeMat).SetInfo(new Color(1, 0.5f, 0, 0.75f), "Gadget Location Marker")},
-			{MarkerType.DroneNode, new Material(fadeMat).SetInfo(new Color(1, 0, 0.5f, 0.75f), "Drone Node Marker")}
+			{MarkerType.SpawnPoint, new Material(fadeMat).SetTintInfo(new Color(1, 0, 0, 1f), "Spawn Point Marker")},
+			{MarkerType.SlimeSpawnPoint, new Material(fadeMat).SetTintInfo(new Color(1, 0.25f, 0.25f, 1f), "Slime Spawn Point Marker")},
+			{MarkerType.AnimalSpawnPoint, new Material(fadeMat).SetTintInfo(new Color(0.5f, 0, 0.5f, 1f), "Animal Spawn Point Marker")},
+			{MarkerType.CrateSpawnPoint, new Material(fadeMat).SetTintInfo(new Color(0.5f, 0.25f, 0, 1f), "Crate Spawn Point Marker")},
+			{MarkerType.ResourceSpawnPoint, new Material(fadeMat).SetTintInfo(new Color(1, 0, 0, 1f), "Resource Spawn Point Marker")},
+			{MarkerType.Plot, new Material(fadeMat).SetTintInfo(new Color(0, 1, 1, 1f), "Plot Marker")},
+			{MarkerType.GadgetLocation, new Material(fadeMat).SetTintInfo(new Color(0, 1f, 0, 1f), "Gadget Location Marker")},
+			{MarkerType.DroneNode, new Material(fadeMat).SetTintInfo(new Color(1, 0, 0.5f, 1f), "Drone Node Marker")}
 		};
 
 		public readonly static Dictionary<MarkerType, Material> markerAreaMaterials = new Dictionary<MarkerType, Material>()
 		{
-			{MarkerType.Plot, new Material(fadeMat).SetInfo(new Color(0, 1, 1, 0.2f), "Plot Area")},
-			{MarkerType.GadgetLocation, new Material(fadeMat).SetInfo(new Color(1, 0.5f, 0, 0.2f), "Gadget Location Area")},
+			{MarkerType.Plot, new Material(fadeMat).SetTintInfo(new Color(0, 1, 1, 0.1f), "Plot Area")},
+			{MarkerType.GadgetLocation, new Material(fadeMat).SetTintInfo(new Color(0.5f, 1f, 0.5f, 0.5f), "Gadget Location Area")},
 		};
 
 		public static Mesh cubeMesh;
@@ -69,6 +63,10 @@ namespace SRML.SR.Utils.BaseObjects
 		private readonly static List<string> materialBlacklist = new List<string>()
 		{
 			"Spawn Point Marker",
+			"Slime Spawn Point Marker",
+			"Animal Spawn Point Marker",
+			"Crate Spawn Point Marker",
+			"Resource Spawn Point Marker",
 			"Plot Marker",
 			"Gadget Location Marker",
 			"Drone Node Marker",
@@ -82,6 +80,16 @@ namespace SRML.SR.Utils.BaseObjects
 
 		// Populate blocker
 		private static bool populated = false;
+
+		private static Material SetTintInfo(this Material mat, Color color, string name)
+		{
+			Texture2D tex = new Texture2D(1, 1);
+			tex.SetPixel(0, 0, color);
+			tex.Apply();
+			mat.mainTexture = tex;
+			mat.name = name;
+			return mat;
+		}
 
 		// Populates required values
 		internal static void Populate()
@@ -307,6 +315,27 @@ namespace SRML.SR.Utils.BaseObjects
 				{
 					foreach (GameObject child in node.gameObject.FindChildrenWithPartialName("SpawnJoint"))
 						child.GetReadyForMarker(MarkerType.SpawnPoint);
+				}
+
+				foreach (DirectedAnimalSpawnerModel spawner in GameModel.AllAnimalSpawners())
+                {
+					((DirectedAnimalSpawner)spawner.part).gameObject.GetReadyForMarker(MarkerType.AnimalSpawnPoint);
+                }
+
+				foreach (DirectedSlimeSpawner spawner in Object.FindObjectsOfType<DirectedSlimeSpawner>())
+                {
+					spawner.gameObject.GetReadyForMarker(MarkerType.SlimeSpawnPoint);
+                }
+
+				foreach (DirectedCrateSpawner spawner in Object.FindObjectsOfType<DirectedCrateSpawner>())
+                {
+					spawner.gameObject.GetReadyForMarker(MarkerType.CrateSpawnPoint);
+                }
+
+				foreach (SpawnResourceModel spawner in GameModel.AllResourceSpawners())
+                {
+					foreach (Joint joint in ((SpawnResource)spawner.part).SpawnJoints)
+						joint.gameObject.GetReadyForMarker(MarkerType.ResourceSpawnPoint);
 				}
 
 				GardenObjects.LatePopulate();

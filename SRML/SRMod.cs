@@ -15,19 +15,21 @@ namespace SRML
     /// </summary>
     public class SRModInfo
     {
-        public SRModInfo(string modid,string name, string author, ModVersion version,string description)
+        public SRModInfo(string modid, string name, string author, ModVersion version, string description, Dictionary<string, ModVersion> dependencies)
         {
             Id = modid;
             Name = name;
             Author = author;
             Version = version;
             Description = description;
+            Dependencies = dependencies;
         }
-        public String Id { get; private set; }
-        public String Name { get; private set; }
-        public String Author { get; private set; }
-        public String Description { get; private set; }
+        public string Id { get; private set; }
+        public string Name { get; private set; }
+        public string Author { get; private set; }
+        public string Description { get; private set; }
         public ModVersion Version { get; private set; }
+        public Dictionary<string, ModVersion> Dependencies { get; private set; }
 
         public static SRModInfo GetCurrentInfo()
         {
@@ -40,9 +42,9 @@ namespace SRML
         /// </summary>
         public struct ModVersion : IComparable<ModVersion>
         {
-            public int Major;
-            public int Minor;
-            public int Revision;
+            public readonly int Major;
+            public readonly int Minor;
+            public readonly int Revision;
             public static readonly ModVersion DEFAULT = new ModVersion(1, 0);
             public ModVersion(int major, int minor, int revision = 0)
             {
@@ -70,8 +72,6 @@ namespace SRML
                 throw new Exception($"Invalid Version String: {s}");
             }
 
-
-
             public int CompareTo(ModVersion other)
             {
                 if (Major > other.Major) return -1;
@@ -97,14 +97,15 @@ namespace SRML
         /// <summary>
         /// Path of the mod (usually the directory where the core modinfo.json is located)
         /// </summary>
-        public String Path { get; private set; }
+        public string Path { get; private set; }
         public List<ConfigFile> Configs { get; private set; } = new List<ConfigFile>();
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
 
         private IModEntryPoint entryPoint;
+        private ModEntryPoint entryPoint2;
+        private bool useNewEntry = false;
 
-       
         private static SRMod forcedContext;
 
         /// <summary>
@@ -147,42 +148,67 @@ namespace SRML
             private set { _harmonyInstance = value; }
         }
 
-        public void CreateHarmonyInstance(String name)
+        public void CreateHarmonyInstance(string name)
         {
             HarmonyInstance = new Harmony(name);
         }
 
-        public String GetDefaultHarmonyName()
+        public string GetDefaultHarmonyName()
         {
-            return $"net.{(ModInfo.Author==null||ModInfo.Author.Length==0?"srml":Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
+            return $"net.{(ModInfo.Author == null || ModInfo.Author.Length == 0 ? "srml" : Regex.Replace(ModInfo.Author, @"\s+", ""))}.{ModInfo.Id}";
         }
 
-        public SRMod(SRModInfo info,IModEntryPoint entryPoint)
+        public SRMod(SRModInfo info, IModEntryPoint entryPoint)
         {
             this.ModInfo = info;
             this.EntryType = entryPoint.GetType();
+            if (entryPoint is ModEntryPoint)
+            {
+                entryPoint2 = (ModEntryPoint)entryPoint;
+                useNewEntry = true;
+            }
             this.entryPoint = entryPoint;
         }
 
-        public SRMod(SRModInfo info, IModEntryPoint entryPoint, String path) : this(info, entryPoint)
+        public SRMod(SRModInfo info, IModEntryPoint entryPoint, string path) : this(info, entryPoint)
         {
             this.Path = path;
         }
 
-        public void PreLoad()
+        public void PreLoad() => entryPoint.PreLoad();
+
+        public void Load() => entryPoint.Load();
+
+        public void PostLoad() => entryPoint.PostLoad();
+
+        public void Reload()
         {
-            entryPoint.PreLoad();
+            if (useNewEntry)
+                entryPoint2.Reload();
         }
 
-        public void Load()
+        public void Unload()
         {
-            entryPoint.Load();
+            if (useNewEntry)
+                entryPoint2.Unload();
         }
 
-        public void PostLoad()
+        public void Update()
         {
-            entryPoint.PostLoad();
+            if (useNewEntry)
+                entryPoint2.Update();
+        }
+
+        public void FixedUpdate()
+        {
+            if (useNewEntry)
+                entryPoint2.FixedUpdate();
+        }
+        
+        public void LateUpdate()
+        {
+            if (useNewEntry)
+                entryPoint2.LateUpdate();
         }
     }
-    
 }

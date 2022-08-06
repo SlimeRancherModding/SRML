@@ -10,7 +10,6 @@ namespace SRML.SR.Patches
     [HarmonyPatch("Awake")]
     internal static class PediaUIAwakePatch
     {
-        
         public static void Postfix(PediaUI __instance)
         {
             PediaRegistry.activeRenderer = null; 

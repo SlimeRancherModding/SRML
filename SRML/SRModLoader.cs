@@ -12,6 +12,8 @@ using Exception = System.Exception;
 using SRML.Utils.Enum;
 using System.Collections.ObjectModel;
 using SRML.Config;
+using SRML.SR;
+using Newtonsoft.Json.Linq;
 
 namespace SRML
 {
@@ -19,13 +21,13 @@ namespace SRML
     {
         internal const string ModJson = "modinfo.json";
 
-        static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
+        internal static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
 
         public static IEnumerable<SRModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
 
         private static readonly List<string> loadOrder = new List<string>();
         
-        internal static LoadingStep CurrentLoadingStep { get; private set; }
+        public static LoadingStep CurrentLoadingStep { get; private set; }
 
         /// <summary>
         /// Searches for valid mods and their assemblies, and decides the load order based on their settings
@@ -43,9 +45,6 @@ namespace SRML
                 {
                     throw new Exception("Found mod with duplicate id '"+mod.id+"' in "+jsonFile+"!");
                 }
-
-
-
             }
             // process mods with embedded modinfo.jsons
             foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
@@ -161,15 +160,17 @@ namespace SRML
 
         static SRMod AddMod(ProtoMod modInfo, Type entryType)
         {
-            IModEntryPoint entryPoint = (IModEntryPoint) Activator.CreateInstance(entryType);
-            var newmod = new SRMod(modInfo.ToModInfo(), entryPoint,modInfo.path);
-            Mods.Add(modInfo.id,newmod);
+            IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
+            if (entryPoint is ModEntryPoint) ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
+            var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
+            Mods.Add(modInfo.id, newmod);
             return newmod;
         }
 
         internal static void PreLoadMods()
         {
-
+            CurrentLoadingStep = LoadingStep.PRELOAD;
+            Console.Console.Reload += Main.Reload;
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
@@ -178,21 +179,11 @@ namespace SRML
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
                     ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
-                    Console.Console.Reload += () =>
-                    {
-                        SRMod.ForceModContext(mod);
-                        foreach(var v in mod.Configs)
-                        {
-                            v.TryLoadFromFile();
-                        }
-                        SRMod.ClearModContext();
-                    };
                 }
                 catch (Exception e)
                 {
                     throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
                 }
-               
             }
         }
         
@@ -232,6 +223,99 @@ namespace SRML
 
             CurrentLoadingStep = LoadingStep.FINISHED;
         }
+
+        internal static void ReloadMods()
+        {
+            CurrentLoadingStep = LoadingStep.RELOAD;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    SRMod.ForceModContext(mod);
+                    foreach (var v in mod.Configs)
+                    {
+                        v.TryLoadFromFile();
+                    }
+                    SRMod.ClearModContext();
+                    mod.Reload();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error reloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+            CurrentLoadingStep = LoadingStep.FINISHED;
+        }
+
+        internal static void UnloadMods()
+        {
+            CurrentLoadingStep = LoadingStep.UNLOAD;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.Unload();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error unloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
+        internal static void UpdateMods()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.Update();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
+        internal static void UpdateModsFixed()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.FixedUpdate();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error fixed-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
+        internal static void UpdateModsLate()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (var modid in loadOrder)
+            {
+                var mod = Mods[modid];
+                try
+                {
+                    mod.LateUpdate();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error late-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                }
+            }
+        }
+
         /// <summary>
         /// Utility class to help with the discovery and loading of mod assemblies
         /// </summary>
@@ -259,13 +343,16 @@ namespace SRML
             }
         }
 
-        internal enum LoadingStep
+        public enum LoadingStep
         {
             PRELOAD,
             LOAD,
             POSTLOAD,
+            RELOAD,
+            UNLOAD,
             FINISHED
         }
+
         /// <summary>
         /// Class that represents a mod before it has been loaded or fully processed
         /// </summary>
@@ -277,11 +364,13 @@ namespace SRML
             public string version;
             public string description;
             public string path;
-            public string[] dependencies;
             public string[] load_after;
             public string[] load_before;
 
-
+            [JsonExtensionData]
+            public IDictionary<string, JToken> dependencies;
+            [JsonIgnore]
+            public DependencyChecker.Dependency[] parsedDependencies;
 
             public bool isFromJSON = true;
             public string entryFile;
@@ -295,32 +384,24 @@ namespace SRML
             {
                 get
                 {
-                    return dependencies != null && dependencies.Length > 0;
+                    return parsedDependencies != null && parsedDependencies.Length > 0;
                 }
             }
+
             /// <summary>
             /// Create a protomod from json info
             /// </summary>
             /// <param name="jsonFile">Path of the json file</param>
             /// <returns>The parsed <see cref="ProtoMod"/></returns>
-            public static ProtoMod ParseFromJson(String jsonFile)
+            public static ProtoMod ParseFromJson(string jsonFile) => ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
+
+            public static ProtoMod ParseFromJson(string jsonData,string path)
             {
-
-
-                return ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
-
-            }
-
-            public static ProtoMod ParseFromJson(String jsonData,string path)
-            {
-
-                var proto =
-                    JsonConvert.DeserializeObject<ProtoMod>(jsonData);
+                var proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData);
                 proto.path = Path.GetDirectoryName(path);
                 proto.entryFile = path;
                 proto.ValidateFields();
                 return proto;
-
             }
             /// <summary>
             /// Try to create a protomod from an embedded modinfo json in a DLL
@@ -330,9 +411,7 @@ namespace SRML
             /// <returns>Whether the parsing was successful</returns>
             public static bool TryParseFromDLL(String dllFile,out ProtoMod mod)
             {
-                
                 var assembly = Assembly.LoadFile(dllFile);
-                
                 mod = new ProtoMod();
                 mod.isFromJSON = false;
                 mod.path = Path.GetDirectoryName(dllFile);
@@ -348,16 +427,15 @@ namespace SRML
                 }
                 else return false;
 
-
                 return true;
             }
 
-            public override String ToString()
+            public override string ToString()
             {
                 return $"{id} {version}";
             }
             /// <summary>
-            /// Make sure no fields are null and in the correct form
+            /// Make sure fields are in the correct form and not null
             /// </summary>
             void ValidateFields()
             {
@@ -366,15 +444,28 @@ namespace SRML
                 if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
+                if (dependencies == null || dependencies.Count == 0) return;
+                try
+                {
+                    List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
+                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
+                    parsedDependencies = depends.ToArray();
+                }
+                catch
+                {
+                    throw new Exception($"Error parsing mod dependencies for mod {id}");
+                }
             }
+
             /// <summary>
             /// Turn the protomod into a proper <see cref="SRModInfo"/> instance
             /// </summary>
             /// <returns>Converted <see cref="SRModInfo"/></returns>
             public SRModInfo ToModInfo()
             {
-                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version),description);
+                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version), description, parsedDependencies == null ? new Dictionary<string, SRModInfo.ModVersion>() : parsedDependencies.ToDependencyDictionary());
             }
+
             public override int GetHashCode()
             {
                 return 1877310944 + EqualityComparer<string>.Default.GetHashCode(id);

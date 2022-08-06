@@ -18,19 +18,33 @@ namespace SRML.SR.Utils.Debug
 
         private static GameObject hoverObj;
 
+        public static GameObject HoverObj { get => hoverObj; }
+
         public void Start()
         {
             if (mesh == null)
                 mesh = GetComponent<MeshRenderer>();
 
             if (type == MarkerType.SpawnPoint)
-                objName = GetComponentInParent<SpawnResource>().name.Replace("(Clone)", "") + "." + transform.parent.name;
+            {
+                if (GetComponentInParent<SpawnResource>() != null)
+                    objName = GetComponentInParent<SpawnResource>().name.Replace("(Clone)", "") + "." + transform.parent.name;
+            }
             else if (type == MarkerType.Plot)
-                objName = GetComponentInParent<LandPlot>().name.Replace("(Clone)", "");
+            {
+                if (GetComponentInParent<LandPlot>() != null)
+                    objName = GetComponentInParent<LandPlot>().name.Replace("(Clone)", "");
+            }
             else if (type == MarkerType.DroneNode)
-                objName = GetComponentInParent<PathingNetwork>().transform.parent.name.Replace("(Clone)", "") + "." + transform.parent.name;
+            {
+                if (GetComponentInParent<PathingNetwork>() != null)
+                    objName = GetComponentInParent<PathingNetwork>().transform.parent.name.Replace("(Clone)", "") + "." + transform.parent.name;
+            }
             else
-                objName = transform.parent.name;
+            {
+                if (transform.parent != null)
+                    objName = transform.parent.name;
+            }
 
             transform.localScale = Vector3.one;
 

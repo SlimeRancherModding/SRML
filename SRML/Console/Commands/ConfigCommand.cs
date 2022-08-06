@@ -16,48 +16,59 @@ namespace SRML.Console.Commands
 
         public override bool Execute(string[] args)
         {
+            var srmlConfig = args[0] == "SRML";
             var mod = SRModLoader.GetMod(args[0]);
-            var config = mod.Configs.First(x => x.FileName.ToLower() == args[1].ToLower());
-            var section = config.Sections.First(x => x.Name.ToLower() == args[2].ToLower());
-            var element = section.Elements.First(x => x.Options.Name.ToLower() == args[3].ToLower());
+            var config = srmlConfig ? Main.config : mod.Configs.First(x => x.FileName.ToLower() == args[1].ToLower());
+            var section = config.Sections.First(x => x.Name.ToLower() == args[srmlConfig ? 1 : 2].ToLower());
+            var element = section.Elements.First(x => x.Options.Name.ToLower() == args[srmlConfig ? 2 : 3].ToLower());
 
-            if (args.Length >= 5)
+            if (args.Length >= (srmlConfig ? 4 : 5))
             {
-                element.SetValue(element.Options.Parser.ParseObject(args[4]));
+                element.SetValue(element.Options.Parser.ParseObject(args[srmlConfig ? 3 : 4]));
                 //Debug.Log(element.GetValue<object>()+" "+element.GetType()+"!");
             }
             else
             {
-                Console.Log("Current Value: "+element.Options.Parser.EncodeObject(element.GetValue<object>()));
+                Console.Instance.Log("Current Value: " + element.Options.Parser.EncodeObject(element.GetValue<object>()));
             }
-            SRMod.ForceModContext(mod);
-            config.SaveToFile();
-            SRMod.ClearModContext();
+            if (!srmlConfig)
+            {
+                SRMod.ForceModContext(mod);
+                config.SaveToFile();
+                SRMod.ClearModContext();
+            }
+            else config.SaveToFile();
             return true;
         }
 
-        public override List<string> GetAutoComplete(int argIndex, string argText)
+        public override List<string> GetAutoComplete(int argIndex, string[] args)
         {
-            if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).ToList();
-            
-            var strs = ConsoleWindow.cmdText.Split(' ');
+            if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).Union(new[] { "SRML" }).ToList();
 
-            var mod = SRModLoader.GetMod(strs[1]);
+            if (args[0] == "SRML")
+            {
+                if (argIndex == 1) return Main.config.Sections.Select(x => x.Name).ToList();
 
-            if (argIndex == 1) return mod?.Configs.Select(x => x.FileName).ToList();
+                var section = Main.config.Sections.FirstOrDefault(x => x.Name.ToLower() == args[1].ToLower());
 
-            var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLower() == strs[2].ToLower());
+                if (argIndex == 2) return section?.Elements.Select(x => x.Options.Name).ToList();
+            }
+            else
+            {
+                var mod = SRModLoader.GetMod(args[0]);
 
-            if (argIndex == 2) return config?.Sections.Select(x => x.Name).ToList();
+                if (argIndex == 1) return mod?.Configs.Select(x => x.FileName).ToList();
 
-            var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == strs[3].ToLower());
+                var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLower() == args[1].ToLower());
 
-            if (argIndex == 3) return section?.Elements.Select(x => x.Options.Name).ToList();
+                if (argIndex == 2) return config?.Sections.Select(x => x.Name).ToList();
 
-            
+                var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == args[2].ToLower());
 
+                if (argIndex == 3) return section?.Elements.Select(x => x.Options.Name).ToList();
+            }
 
-            return base.GetAutoComplete(argIndex, argText);
+            return base.GetAutoComplete(argIndex, args[argIndex]);
         }
     }
 }

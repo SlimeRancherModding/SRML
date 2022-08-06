@@ -16,7 +16,7 @@ namespace SRML.Console.Commands
 		{
 			if (args != null)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
+				Console.Instance.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
 				return false;
 			}
 
@@ -25,14 +25,14 @@ namespace SRML.Console.Commands
 			try
 			{
 				Console.ReloadMods();
-				Console.LogSuccess($"Reloaded Successfully! (Took {(DateTime.Now - now).TotalMilliseconds} ms)");
+				Console.Instance.LogSuccess($"Reloaded Successfully! (Took {(DateTime.Now - now).TotalMilliseconds} ms)");
 
 				return true;
 			}
 			catch (Exception e)
 			{
-				Console.LogError("Reload Failed! Reason displayed below:");
-				Console.LogError(e.Message + "\n" + e.StackTrace);
+				Console.Instance.LogError("Reload Failed! Reason displayed below:");
+				Console.Instance.LogError(e.Message + "\n" + e.StackTrace);
 				return false;
 			}
 		}

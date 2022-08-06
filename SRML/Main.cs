@@ -11,17 +11,21 @@ using SRML.Config;
 using SRML.Console;
 using SRML.Editor;
 using SRML.SR;
+using SRML.SR.UI;
+using SRML.SR.Utils;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
-using SRML.Utils.Prefab.Patches;
 using UnityEngine;
 
 namespace SRML
 {
     internal static class Main
     {
-
         private static bool isPreInitialized;
+        internal static Transform prefabParent;
+        internal static FileStorageProvider StorageProvider = new FileStorageProvider();
+        internal static ConfigFile config;
+        internal static AssetBundle uiBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
 
         /// <summary>
         /// Called before GameContext.Awake()
@@ -32,15 +36,39 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
 
-            foreach(var v in Assembly.GetExecutingAssembly().GetTypes())
+            SentrySdk sentrySdk = UnityEngine.Object.FindObjectOfType<SentrySdk>();
+            if (sentrySdk != null)
+            {
+                sentrySdk.Dsn = string.Empty;
+                FieldInfo field = sentrySdk.GetType().GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic);
+                if (field != null) field.SetValue(null, null);
+                sentrySdk.StopAllCoroutines();
+                Application.logMessageReceived -= sentrySdk.OnLogMessageReceived;
+                UnityEngine.Object.Destroy(sentrySdk, 1f);
+                Debug.Log("Disabling Sentry SDK");
+            }
+
+            StorageProvider.Initialize();
+            prefabParent = new GameObject("PrefabParent").transform;
+            prefabParent.gameObject.SetActive(false);
+            GameObject.DontDestroyOnLoad(prefabParent.gameObject);
+            foreach (var v in Assembly.GetExecutingAssembly().GetTypes())
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
             }
             HarmonyPatcher.PatchAll();
 
+            Type sm = typeof(GameContext).Assembly.GetType("SteamManager", false, true);
+            if (sm != null)
+            {
+                HarmonyPatcher.Instance.Patch(sm.GetMethod("AddAchievement"),
+                    prefix: new HarmonyMethod(typeof(AchievementRegistry).GetMethod("ModdedAchievementPatch", BindingFlags.NonPublic | BindingFlags.Static)));
+            }
+            config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
+            config.TryLoadFromFile();
+
             try
             {
-                
                 SRModLoader.InitializeMods();
             }
             catch (Exception e)
@@ -62,13 +90,12 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.Message}");
                 return;
             }
+            IdentifiableRegistry.CategorizeAllIds();
+            GadgetRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
-
-
 
             HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
                 prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
-
         }
 
         private static bool isInitialized;
@@ -83,9 +110,11 @@ namespace SRML
 
             BaseObjects.Populate();
             SRCallbacks.OnLoad();
-            PrefabUtils.ProcessReplacements();
             KeyBindManager.ReadBinds();
+            SlimeRegistry.Initialize(GameContext.Instance.SlimeDefinitions);
+            GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
+
             try
             {
                 SRModLoader.LoadMods();
@@ -96,6 +125,8 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
+            GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
+
             PostLoad();
         }
         
@@ -107,7 +138,7 @@ namespace SRML
         static void PostLoad()
         {
             if (isPostInitialized) return;
-            isPostInitialized = true;   
+            isPostInitialized = true;
             try
             {
                 SRModLoader.PostLoadMods();
@@ -118,8 +149,77 @@ namespace SRML
                 ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
-
         }
 
+        internal static void Reload()
+        {
+            try
+            {
+                SRModLoader.ReloadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void Unload()
+        {
+            try
+            {
+                SRModLoader.UnloadMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void Update()
+        {
+            try
+            {
+                SRModLoader.UpdateMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void FixedUpdate()
+        {
+            try
+            {
+                SRModLoader.UpdateModsFixed();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void LateUpdate()
+        {
+            try
+            {
+                SRModLoader.UpdateModsLate();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+    }
+
+    internal class ModManager : MonoBehaviour
+    {
+        void Update() => Main.Update();
+
+        void FixedUpdate() => Main.FixedUpdate();
+
+        void LateUpdate() => Main.LateUpdate();
+
+        void OnApplicationQuit() => Main.Unload();
     }
 }

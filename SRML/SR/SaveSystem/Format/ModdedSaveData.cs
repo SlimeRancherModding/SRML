@@ -38,8 +38,6 @@ namespace SRML.SR.SaveSystem.Format
         public void WriteHeader(BinaryWriter writer)
         {
             writer.Write(DATA_VERSION);
-
-
         }
 
         public void Clear()
@@ -93,24 +91,14 @@ namespace SRML.SR.SaveSystem.Format
                     {
                         var id = DataIdentifier.Read(reader);
                         var dataType = DataIdentifier.IdentifierTypeToData[id.Type];
-                        if(PartialData.TryGetPartialData(dataType,out var data))
+                        if (PartialData.TryGetPartialData(dataType,out var data))
                         {
                             data.Read(reader);
                             partialData[id] = data;
                         }
                         else Debug.LogError("No partial data for data identifier type "+id.Type);
                     }
-                    if (version >= 3)
-                    {
-                        try
-                        {
-                            appearancesData.Read(reader);
-                        }
-                        catch(Exception e)
-                        {
-                            throw;
-                        }
-                    }
+                    if (version >= 3) appearancesData.Read(reader);
                 }
             }
           

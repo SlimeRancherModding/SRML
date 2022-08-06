@@ -28,11 +28,10 @@ namespace SRML.SR.SaveSystem
         {
             data.Clear();
 
-
-            PullFullData(data,game);
-            PullTertiaryData(data,game);
-            PullAmmoData(data,game);
-            PullPartialData(data,game);
+            PullFullData(data, game);
+            PullTertiaryData(data, game);
+            PullAmmoData(data, game);
+            PullPartialData(data, game);
 
             ExtendedData.Push(data);
             PersistentAmmoManager.SyncAll();
@@ -334,7 +333,6 @@ namespace SRML.SR.SaveSystem
             data.enumTranslator?.FixMissingEnumValues();
             data.FixAllEnumValues(EnumTranslator.TranslationMode.FROMTRANSLATED);
             PushAllModdedData(data,director.SavedGame.gameState);
-
         }
 
         public static void SaveModdedSave(AutoSaveDirector director, string nextfilename)

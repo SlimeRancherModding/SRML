@@ -15,30 +15,25 @@ namespace SRMLInstaller
         public const String embeddedResourceProject = "SRMLInstaller.";
         static void Main(string[] args)
         {
+            bool vortexMode = args.Length > 0 && args[0].StartsWith("-v");
+            bool vortexUninstall = vortexMode && args[0] == "-vu";
+
             try
             {
                 string filename = "";
-                if (args.Length == 0)
-                {
+                if (!vortexMode && args.Length == 0)
                     filename = GameFinder.FindGame();
-                    
-                }
                 else
-                {
-                    filename = args[0];
-                }
+                    filename = (vortexMode ? args[1] : args[0]) + "/SlimeRancher_Data/Managed/Assembly-CSharp.dll";
 
                 string root = Path.GetDirectoryName(filename);
-
                 var srmlPath = Path.Combine(root, SRML);
 
                 Console.WriteLine();
 
-
-
                 bool uninstalling = false;
-                bool alreadypatched=false;
-
+                bool alreadypatched = false;
+                bool didSrmlExist = File.Exists(srmlPath);
 
                 try_to_patch:
                 if (File.Exists(srmlPath))
@@ -46,29 +41,36 @@ namespace SRMLInstaller
                     var patcher = new Patcher(filename, GetOnLoad(srmlPath));
                     if (patcher.IsPatched())
                     {
-
-                        Console.Write($"Game is already patched! Would you like to uninstall? (selecting n will instead trigger an update) (y/n): ");
                         alreadypatched = true;
-                        poll_user:
-                        var response = Console.ReadLine();
-                        if (response == "yes" || response == "y")
+                        if (!vortexMode)
+                        {
+                            Console.Write($"Game is already patched! Would you like to uninstall? (selecting n will instead trigger an update) (y/n): ");
+
+                            poll_user:
+                            var response = Console.ReadLine();
+                            if (response == "yes" || response == "y")
+                            {
+                                uninstalling = true;
+                                patcher.Uninstall();
+                            }
+                            else if (response == "n" || response == "no")
+                            {
+                            }
+                            else
+                            {
+                                Console.Write("Please enter a valid option! (y/n): ");
+                                goto poll_user;
+                            }
+                        }
+
+                        if (vortexUninstall)
                         {
                             uninstalling = true;
                             patcher.Uninstall();
                         }
-                        else if (response == "n" || response == "no")
-                        {
-
-                        }
-                        else
-                        {
-                            Console.Write("Please enter a valid option! (y/n): ");
-                            goto poll_user;
-                        }
                     }
                     else
                     {
-
                         Console.WriteLine("Patching...");
                         patcher.Patch();
                         Console.WriteLine("Patching Successful!");
@@ -76,17 +78,13 @@ namespace SRMLInstaller
                     }
 
                     patcher.Dispose();
-                    SendFilesOver();
+                    SendFilesOver(didSrmlExist);
                 }
                 else
                 {
                     SendFilesOver();
                     goto try_to_patch;
                 }
-
-                
-
-                
 
                 string GetAlternateRoot()
                 {
@@ -99,7 +97,7 @@ namespace SRMLInstaller
                     return alternateRoot;
                 }
 
-                void SendFilesOver()
+                void SendFilesOver(bool canLog = true)
                 {
                     foreach(var file in Directory.GetFiles(GetAlternateRoot()))
                     {
@@ -111,12 +109,13 @@ namespace SRMLInstaller
                         x.Substring(0, embeddedResourceProject.Length) == embeddedResourceProject))
                     {
                         var file = v.Substring(embeddedResourcePath.Length);
-                        var combine = Path.Combine(file.Contains("SRML")?root:GetAlternateRoot(), file);
+                        var combine = Path.Combine(file.Contains("SRML") ? root:GetAlternateRoot(), file);
                         //var libPath = Path.Combine(libFolder, file);
                         if (File.Exists(combine))
                         {
-                            if (!uninstalling) Console.WriteLine($"Found old {file}! Replacing...");
-                            else Console.WriteLine($"Deleting {file}...");
+                            if (canLog)
+                                if (!uninstalling) Console.WriteLine($"Found old {file}! Replacing...");
+                                else Console.WriteLine($"Deleting {file}...");
                             File.Delete(combine);
                         }
                         if (uninstalling) continue;
@@ -127,30 +126,32 @@ namespace SRMLInstaller
                         otherStream.Close();
                         str.Close();
                     }
+
+                    if (!uninstalling)
+                    {
+                        string umfPath = Path.Combine(Directory.GetParent(root).Parent.FullName, "uModFramework", "Lib", "net462");
+                        if (File.Exists(Path.Combine(umfPath, "0Harmony.dll")))
+                        {
+                            Console.WriteLine("Found existing UMF installation! Patching...");
+                            File.Copy(Path.Combine(GetAlternateRoot(), "0Harmony.dll"), Path.Combine(umfPath, "0Harmony.dll"), true);
+                        }
+                    }
                 }
-                
-
-
 
                 Console.WriteLine();
                 
                 string type = alreadypatched ? "Update" : "Installation";
-
                 string ending = alreadypatched? "" : $"(old assembly stored as { Path.GetFileNameWithoutExtension(filename)}_old.dll)";
 
                 if (!uninstalling)
                 {
-
                     Console.WriteLine(
                         $"{type} complete! "+ending);
                     var modpath = Path.Combine(Directory.GetParent(root).Parent.FullName, "SRML", "Mods");
                     if (!Directory.Exists(modpath)) Directory.CreateDirectory(modpath);
                     Console.WriteLine($"Mods can be installed at {modpath}");
-
                 }
                 else Console.WriteLine($"Uninstallation complete!");
-
-                
             }
             catch (UnauthorizedAccessException e)
             {
@@ -161,10 +162,12 @@ namespace SRMLInstaller
             {
                 Console.WriteLine(e);
             }
+
+            if (vortexMode) return;
+
             Console.Write("Press any key to continue...");
             Console.ReadKey();
             return;
-
         }
 
         static MethodReference GetOnLoad(string path)

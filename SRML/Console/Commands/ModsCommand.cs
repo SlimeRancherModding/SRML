@@ -16,14 +16,14 @@ namespace SRML.Console.Commands
 		{
 			if (args != null)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
+				Console.Instance.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
 				return false;
 			}
 
-			Console.Log("<color=cyan>List of Mods Loaded:</color>");
+			Console.Instance.Log("<color=cyan>List of Mods Loaded:</color>");
 
 			foreach (string line in ConsoleWindow.modsText.Split('\n'))
-				Console.Log(line);
+				Console.Instance.Log(line);
 
 			return true;
 		}

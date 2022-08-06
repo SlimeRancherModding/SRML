@@ -21,6 +21,7 @@ namespace SRML.SR
         internal static List<PediaDirector.Id> initialEntries = new List<PediaDirector.Id>();
         internal static Dictionary<PediaDirector.Id, PediaCategory> pediaMappings = new Dictionary<PediaDirector.Id, PediaCategory>();
         internal static Dictionary<PediaDirector.Id, IPediaRenderer> customPediaRenderers = new Dictionary<PediaDirector.Id, IPediaRenderer>();
+        internal static Dictionary<PediaCategory, List<IComparer<PediaDirector.Id>>> pediaSorters = new Dictionary<PediaCategory, List<IComparer<PediaDirector.Id>>>();
         internal static Dictionary<PediaTab, SRMod> customTabs = new Dictionary<PediaTab, SRMod>();
         
 
@@ -34,6 +35,11 @@ namespace SRML.SR
             ModdedIDRegistry.RegisterIDRegistry(moddedIds);
         }
 
+        /// <summary>
+        /// Gets the default renderer for a Slimepedia entry.
+        /// </summary>
+        /// <param name="setting">The setting to get the renderer from.</param>
+        /// <returns>The default renderer for the specified setting.</returns>
         public static IPediaRenderer GetDefaultRenderer(DisplaySetting setting)
         {
             if(!defaultRenderers.TryGetValue(setting, out var renderer))
@@ -44,6 +50,14 @@ namespace SRML.SR
             }
             return renderer;
         }
+
+        /// <summary>
+        /// Creates a <see cref="PediaDirector.Id"/>.
+        /// </summary>
+        /// <param name="value">What value is assigned to the <see cref="PediaDirector.Id"/>.</param>
+        /// <param name="name">The name of the <see cref="PediaDirector.Id"/>.</param>
+        /// <returns>The created <see cref="PediaDirector.Id"/>.</returns>
+        /// <exception cref="Exception">Throws if ran outside of PreLoad</exception>
         public static PediaDirector.Id CreatePediaId(object value, string name)
         {
             if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
@@ -51,30 +65,35 @@ namespace SRML.SR
             return moddedIds.RegisterValueWithEnum((PediaDirector.Id)value, name);
         }
 
-        public static void RegisterPediaTab(PediaTab tab)
-        {
-            customTabs.Add(tab, SRMod.GetCurrentMod());
-        }
+        /// <summary>
+        /// Registers a tab for the Slimepedia.
+        /// </summary>
+        /// <param name="tab">The tab to register</param>
+        public static void RegisterPediaTab(PediaTab tab) => customTabs.Add(tab, SRMod.GetCurrentMod());
 
-        public static void RegisterIdEntry(PediaDirector.IdEntry entry)
-        {
-            customEntries.Add(entry);
-        }
+        /// <summary>
+        /// Registers a <see cref="PediaDirector.IdEntry"/> into the Slimepedia.
+        /// </summary>
+        /// <param name="entry">The <see cref="PediaDirector.IdEntry"/> to register.</param>
+        public static void RegisterIdEntry(PediaDirector.IdEntry entry) => customEntries.Add(entry);
         
-        public static void RegisterIdEntry(PediaDirector.Id id, Sprite icon)
-        {
-            RegisterIdEntry(new PediaDirector.IdEntry() { id = id, icon = icon });
-        }
+        /// <summary>
+        /// Creates and registers a <see cref="PediaDirector.IdEntry"/>.
+        /// </summary>
+        /// <param name="id">The <see cref="PediaDirector.Id"/> belonging to the entry.</param>
+        /// <param name="icon">The icon belonging to the entry.</param>
+        public static void RegisterIdEntry(PediaDirector.Id id, Sprite icon) => RegisterIdEntry(new PediaDirector.IdEntry() { id = id, icon = icon });
         
-        public static void RegisterRenderer(PediaDirector.Id id, IPediaRenderer renderer)
-        {
-            customPediaRenderers.Add(id, renderer);
-        }
-
+        /// <summary>
+        /// Registers an entry renderer for the Slimepedia.
+        /// </summary>
+        /// <param name="id">The <see cref="PediaDirector.Id"/> assigned to the entry.</param>
+        /// <param name="renderer">The renderer the Slimepedia entry should use.</param>
+        public static void RegisterRenderer(PediaDirector.Id id, IPediaRenderer renderer) => customPediaRenderers.Add(id, renderer);
 
         internal static IPediaRenderer GetRenderer(PediaDirector.Id id)
         {
-                if(!customPediaRenderers.TryGetValue(id, out var renderer))
+            if (!customPediaRenderers.TryGetValue(id, out var renderer))
             {
                 var tab = GetCustomPediaTab(id);
                 if (tab != null)
@@ -95,20 +114,25 @@ namespace SRML.SR
             return null;
         }
 
-        public static void RegisterInitialPediaEntry(PediaDirector.Id id)
-        {
-            initialEntries.Add(id);
-        }
+        /// <summary>
+        /// Registers an entry to already be unlocked in a new game
+        /// </summary>
+        /// <param name="id">The <see cref="PediaDirector.Id"/> that belongs to the entry.</param>
+        public static void RegisterInitialPediaEntry(PediaDirector.Id id) => initialEntries.Add(id);
         
-        public static void RegisterIdentifiableMapping(PediaDirector.IdentMapEntry entry)
-        {
-            customIdentifiableLinks.Add(entry);
-        }
+        /// <summary>
+        /// Creates a link between an <see cref="Identifiable.Id"/> and a <see cref="PediaDirector.Id"/>.
+        /// </summary>
+        /// <param name="entry">The entry mapping both values.</param>
+        public static void RegisterIdentifiableMapping(PediaDirector.IdentMapEntry entry) => customIdentifiableLinks.Add(entry);
 
-        public static void RegisterIdentifiableMapping(PediaDirector.Id pedia, Identifiable.Id ident)
-        {
+        /// <summary>
+        /// Creates a link between an <see cref="Identifiable.Id"/> and a <see cref="PediaDirector.Id"/>.
+        /// </summary>
+        /// <param name="pedia">The <see cref="PediaDirector.Id"/> to link.</param>
+        /// <param name="ident">The <see cref="Identifiable.Id"/> to link.</param>
+        public static void RegisterIdentifiableMapping(PediaDirector.Id pedia, Identifiable.Id ident) => 
             RegisterIdentifiableMapping(new PediaDirector.IdentMapEntry() { identId = ident, pediaId = pedia });
-        }
 
         static ref PediaDirector.Id[] GetCategory(PediaCategory cat)
         {
@@ -130,6 +154,11 @@ namespace SRML.SR
             throw new Exception();
         }
 
+        /// <summary>
+        /// Sorts a Slimepedia category based on a rule.
+        /// </summary>
+        /// <param name="category">The Slimepedia category to sort.</param>
+        /// <param name="comparer">The rules to sort it.</param>
         public static void SortPediaCategory(PediaCategory category, IComparer<PediaDirector.Id> comparer)
         {
             var cat = GetCategory(category).ToList();
@@ -137,13 +166,13 @@ namespace SRML.SR
             GetCategory(category) = cat.ToArray();
         }
 
-        public static void SetPediaCategory(PediaDirector.Id id, PediaCategory category)
-        {
-            var cat = GetCategory(category).ToList();
-            cat.Add(id);
-            GetCategory(category) = cat.ToArray();
-        }
- 
+        /// <summary>
+        /// Assigns a <see cref="PediaDirector.Id"/> to a Slimepedia category.
+        /// </summary>
+        /// <param name="id">The <see cref="PediaDirector.Id"/> to assign.</param>
+        /// <param name="category">The Slimepedia category to assign the <see cref="PediaDirector.Id"/> to.</param>
+        public static void SetPediaCategory(PediaDirector.Id id, PediaCategory category) => GetCategory(category) = GetCategory(category).AddToArray(id);
+
         public enum PediaCategory
         {
             TUTORIALS,
@@ -164,10 +193,7 @@ namespace SRML.SR
                 
             }
 
-            public virtual string GetLowerName()
-            {
-                return CurrentID.ToString().ToLower();
-            }
+            public virtual string GetLowerName() => CurrentID.ToString().ToLower();
             
             public void OnListingSelected(GameObject panelObj)
             {
@@ -194,7 +220,6 @@ namespace SRML.SR
 
             public void OnListingDeselected(GameObject panelObj)
             {
-
             }
         }
 

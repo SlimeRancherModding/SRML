@@ -17,11 +17,11 @@ namespace SRML
             foreach (var mod in mods)
             {
                 if (!mod.HasDependencies) continue;
-                foreach (var dep in mod.dependencies.Select((x) => Dependency.ParseFromString(x)))
+                foreach (var dep in mod.parsedDependencies)
                 {
                     if (!mods.Any((x) => dep.SatisfiedBy(x)))
                         throw new Exception(
-                            $"Unresolved dependency for '{mod.id}'! Cannot find '{dep.mod_id} {dep.mod_version}'");
+                            $"Unresolved dependency for '{mod.id}'! Cannot find '{dep.mod_id} {dep.version}'");
                 }
             }
 
@@ -79,33 +79,36 @@ namespace SRML
                 LoadMod(v);
             }
 
-            
-
             loadOrder.AddRange(modList.Select((x)=>x.id));
-
         }
 
+        public static Dictionary<string, SRModInfo.ModVersion> ToDependencyDictionary(this Dependency[] dependencies)
+        {
+            Dictionary<string, SRModInfo.ModVersion> result = new Dictionary<string, SRModInfo.ModVersion>();
+            foreach (Dependency dependency in dependencies) result.Add(dependency.mod_id, dependency.version);
+            return result;
+        }
 
         internal class Dependency
         {
             public string mod_id;
-            public SRModInfo.ModVersion mod_version;
+            public SRModInfo.ModVersion version { get; private set; }
 
-            public static Dependency ParseFromString(String s)
+            public Dependency(string id, string version)
+            {
+                mod_id = id;
+                this.version = SRModInfo.ModVersion.Parse(version);
+            }
+
+            [Obsolete]
+            public static Dependency ParseFromString(string s)
             {
                 var strings = s.Split(' ');
-                var dep = new Dependency
-                {
-                    mod_id = strings[0],
-                    mod_version = SRModInfo.ModVersion.Parse(strings[1])
-                };
+                var dep = new Dependency(strings[0], strings[1]);
                 return dep;
             }
 
-            public bool SatisfiedBy(SRModLoader.ProtoMod mod)
-            {
-                return mod.id == mod_id && SRModInfo.ModVersion.Parse(mod.version).CompareTo(mod_version)<=0;
-            }
+            public bool SatisfiedBy(SRModLoader.ProtoMod mod) => mod.id == mod_id && SRModInfo.ModVersion.Parse(mod.version).CompareTo(version) <= 0;
         }
     }
 }

@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using SRML;
+﻿using System;
+using System.Collections.Generic;
 using SRML.SR.Templates.Components;
 using SRML.SR.Utils.BaseObjects;
 using SRML.SR.Utils.Debug;
+using SRML.Utils;
 using UnityEngine;
 
 public static class GameObjectExtensions
 {
 	// INITIALIZE STUFF
-	public static T Initialize<T>(this T obj, System.Action<T> action) where T : Object
+	public static T Initialize<T>(this T obj, Action<T> action) where T : UnityEngine.Object
 	{
 		action(obj);
 		return obj;
@@ -146,6 +146,8 @@ public static class GameObjectExtensions
 		return result.ToArray();
 	}
 
+	public static GameObject GetChild(this GameObject obj, int index) => obj.transform.GetChild(index).gameObject;
+
 	// PARENT STUFF
 	public static T FindComponentInParent<T>(this GameObject obj) where T : Component
 	{
@@ -153,18 +155,7 @@ public static class GameObjectExtensions
 	}
 
 	// OBTAIN CHILD
-	public static GameObject GetChildCopy(this GameObject obj, string name)
-	{
-		GameObject copy = obj.CreatePrefabCopy();
-		GameObject child = copy.FindChild(name);
-		child.SetActive(false);
-		child.transform.parent = null;
-
-		SRML.Utils.GameObjectUtils.Prefabitize(child);
-		Object.Destroy(copy);
-
-		return child;
-	}
+	public static GameObject GetChildCopy(this GameObject obj, string name) => PrefabUtils.CopyPrefab(obj.FindChild(name));
 
 	// COPY STUFF
 	public static GameObject CreatePrefabCopy(this GameObject obj)
@@ -172,5 +163,30 @@ public static class GameObjectExtensions
 		return SRML.Utils.PrefabUtils.CopyPrefab(obj);
 	}
 
+	public static void RemoveComponent<T>(this GameObject go) where T : Component => GameObject.Destroy(go.GetComponent<T>());
+	public static void RemoveComponent(this GameObject go, Type type) => GameObject.Destroy(go.GetComponent(type));
+	public static void RemoveComponent(this GameObject go, string name) => GameObject.Destroy(go.GetComponent(name));
 
+	public static void RemoveComponentImmediate<T>(this GameObject go) where T : Component => GameObject.DestroyImmediate(go.GetComponent<T>());
+	public static void RemoveComponentImmediate(this GameObject go, Type type) => GameObject.DestroyImmediate(go.GetComponent(type));
+	public static void RemoveComponentImmediate(this GameObject go, string name) => GameObject.DestroyImmediate(go.GetComponent(name));
+
+	public static T GetOrAddComponent<T>(this GameObject go) where T : Component => go.GetComponent<T>() == null ? go.AddComponent<T>() : go.GetComponent<T>();
+	public static Component GetOrAddComponent(this GameObject go, Type type) => go.GetComponent(type) == null ? go.AddComponent(type) : go.GetComponent(type);
+	public static Component GetOrAddComponent(this GameObject go, string name) => go.GetComponent(name) == null ? go.AddComponent(Type.GetType(name)) : go.GetComponent(name);
+
+	public static bool HasComponent<T>(this GameObject go) where T : Component => go.GetComponent<T>() != null;
+	public static bool HasComponent(this GameObject go, Type type) => go.GetComponent(type) != null;
+	public static bool HasComponent(this GameObject go, string name) => go.GetComponent(name) != null;
+
+	public static GameObject InstantiateInactive(this GameObject go, bool keepOriginalName = false) => GameObjectUtils.InstantiateInactive(go, keepOriginalName);
+	public static GameObject InstantiateInactive(this GameObject go, Transform parent, bool keepOriginalName = false) => GameObjectUtils.InstantiateInactive(go, parent, keepOriginalName);
+	public static GameObject InstantiateInactive(this GameObject go, Transform parent, bool worldPositionStays, bool keepOriginalName = false) => GameObjectUtils.InstantiateInactive(go, parent, worldPositionStays, keepOriginalName);
+	public static GameObject InstantiateInactive(this GameObject go, Vector3 position, Quaternion rotation, bool keepOriginalName = false) => GameObjectUtils.InstantiateInactive(go, position, rotation, keepOriginalName);
+	public static GameObject InstantiateInactive(this GameObject go, Vector3 position, Quaternion rotation, Transform parent, bool keepOriginalName = false) => GameObjectUtils.InstantiateInactive(go, position, rotation, parent, keepOriginalName);
+	public static GameObject InstantiateInactive(this GameObject go, Vector3 position, Quaternion rotation, Transform parent, bool worldPositionStays, bool keepOriginalName = false) => GameObjectUtils.InstantiateInactive(go, position, rotation, parent, worldPositionStays, keepOriginalName);
+
+	public static void Prefabitize(this GameObject go) => GameObjectUtils.Prefabitize(go);
+	public static void Activate(this GameObject go) => go.SetActive(true);
+	public static void Deactivate(this GameObject go) => go.SetActive(false);
 }

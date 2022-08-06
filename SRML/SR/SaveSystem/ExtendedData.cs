@@ -10,9 +10,8 @@ using UnityEngine;
 
 namespace SRML.SR.SaveSystem
 {
-
     /// <summary>
-    /// Class allowing for the addition of arbitrary data to Actors, similar to minecrafts nbt system
+    /// Class allowing for the addition of arbitrary data to Actors, similar to Minecraft's NBT system
     /// </summary>
     public static class ExtendedData
     {
@@ -123,16 +122,16 @@ namespace SRML.SR.SaveSystem
                 ApplyDataToGameObject(gameObject, data);
                 preparedData.Remove(actorIdentifier);
             }
-
-
-
-
         }
 
-        public static bool HasExtendedData(GameObject obj) => obj.GetComponents<ExtendedData.Participant>().Length > 0;
+        public static bool HasExtendedData(GameObject obj) => obj.GetComponents<ExtendedData.Participant>().Length > 0 || obj.GetComponents<ExtendedData.TransformableParticipant>().Length > 0;
         
         internal static void Push(ModdedSaveData data)
         {
+            foreach (var p in SRModLoader.Mods)
+                if (SaveRegistry.GetSaveInfo(p.Value).OnWorldSave != null && !ExtendedData.worldSaveData.ContainsKey(p.Value))
+                    ExtendedData.worldSaveData.Add(p.Value, new CompoundDataPiece(p.Key));
+
             foreach (var actorData in GetAllData(SceneContext.Instance.GameModel))
             {
                 foreach (CompoundDataPiece modPiece in actorData.Value.DataList)
@@ -196,27 +195,31 @@ namespace SRML.SR.SaveSystem
             var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
             return piece.HasPiece(modid) && piece.GetCompoundPiece(modid).HasPiece(ExtendedDataUtils.GetParticipantName(p));
         }
+
+        static bool HasValidDataForParticipant(TransformableParticipant p, CompoundDataPiece piece)
+        {
+            var modid = ExtendedDataUtils.GetModForParticipant(p)?.ModInfo.Id ?? "srml";
+            return piece.HasPiece(modid) && piece.GetCompoundPiece(modid).HasPiece(ExtendedDataUtils.GetParticipantName(p));
+        }
             
         public static void ApplyDataToGameObject(GameObject obj, CompoundDataPiece piece)
         {
             foreach(var participant in obj.GetComponents<Participant>())
-            {
                 if (HasValidDataForParticipant(participant, piece)) participant.ReadData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant, piece));
-            }
+            foreach(var participant in obj.GetComponents<TransformableParticipant>())
+                if (HasValidDataForParticipant(participant, piece)) participant.ReadData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant, piece));
         }
 
         public static CompoundDataPiece ReadDataFromGameObject(GameObject obj)
         {
             var newCompound = new CompoundDataPiece("root");
             foreach(var participant in obj.GetComponents<Participant>())
-            {
-                participant.WriteData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant,newCompound));
-            }
+                participant.WriteData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant, newCompound));
+            foreach(var participant in obj.GetComponents<TransformableParticipant>())
+                participant.WriteData(ExtendedDataUtils.GetPieceForParticipantFromRoot(participant, newCompound));
 
             return newCompound;
         }
-
-
 
         static IEnumerable<KeyValuePair<DataIdentifier,CompoundDataPiece>> GetAllData(GameModel model)
         {
@@ -226,6 +229,7 @@ namespace SRML.SR.SaveSystem
                 yield return new KeyValuePair<DataIdentifier, CompoundDataPiece>(DataIdentifier.GetActorIdentifier(v.Key), ReadDataFromGameObject(v.Value.transform.gameObject));
             }
         }
+
         /// <summary>
         /// A participant of the data system
         /// </summary>
@@ -233,6 +237,16 @@ namespace SRML.SR.SaveSystem
         {
             void ReadData(CompoundDataPiece piece);
             void WriteData(CompoundDataPiece piece);
+        }
+
+        /// <summary>
+        /// A participant of the data system. When on a slime, if the slime transforms, it will copy to the resulting object.
+        /// </summary>
+        public interface TransformableParticipant
+        {
+            void ReadData(CompoundDataPiece piece);
+            void WriteData(CompoundDataPiece piece);
+            bool CopyCondition();
         }
 
         internal struct PreparedData
@@ -246,7 +260,6 @@ namespace SRML.SR.SaveSystem
                 AMMO,
                 SPAWN
             }
-
         }
     }
 }

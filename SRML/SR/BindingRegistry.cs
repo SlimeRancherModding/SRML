@@ -10,21 +10,47 @@ namespace SRML.SR
     public static class BindingRegistry
     {
         internal static Dictionary<PlayerAction, SRMod> moddedActions = new Dictionary<PlayerAction, SRMod>();
-
-        internal delegate void PlayerActionCreateDelegate(PlayerActionSet set);
-        internal static List<PlayerActionCreateDelegate> precreators = new List<PlayerActionCreateDelegate>();
-
+        internal static List<PlayerAction> moddedBindings = new List<PlayerAction>();
         internal static List<PlayerAction> ephemeralActions = new List<PlayerAction>();
 
-        
-        internal static void RegisterAction(PlayerAction action, SRMod mod)
+        /// <summary>
+        /// Register a keybind into the options UI.
+        /// </summary>
+        /// <param name="action">The action associated with the keybind.</param>
+        public static void RegisterBind(PlayerAction action) => moddedBindings.Add(action);
+
+        internal static void RegisterAction(PlayerAction action, SRMod mod) => moddedActions.Add(action, mod);
+
+        /// <summary>
+        /// Creates and registers a <see cref="PlayerAction"/>.
+        /// </summary>
+        /// <param name="name">The name of the action.</param>
+        /// <returns>The created action</returns>
+        public static PlayerAction RegisterAction(string name)
         {
-            moddedActions.Add(action, mod);
+            PlayerAction act = new PlayerAction(name, SRInput.Actions);
+            RegisterAction(act, SRMod.GetCurrentMod());
+            return act;
         }
-        public static bool IsModdedAction(PlayerAction action)
+
+        /// <summary>
+        /// Creates and registers a <see cref="PlayerAction"/>, then registers it into the options UI.
+        /// </summary>
+        /// <param name="name">The name of the action.</param>
+        /// <returns>The created action</returns>
+        public static PlayerAction RegisterBindedAction(string name)
         {
-            return moddedActions.ContainsKey(action) || ephemeralActions.Contains(action);
+            PlayerAction act = RegisterAction(name);
+            RegisterBind(act);
+            return act;
         }
+
+        /// <summary>
+        /// Check if an action is modded.
+        /// </summary>
+        /// <param name="action">The action to check.</param>
+        /// <returns>True if action belongs to a mod, otherwise false.</returns>
+        public static bool IsModdedAction(PlayerAction action) => moddedActions.ContainsKey(action) || ephemeralActions.Contains(action);
 
         /// <summary>
         /// Register all <see cref="PlayerAction"/>'s in a Type
@@ -33,24 +59,11 @@ namespace SRML.SR
         public static void RegisterActions(Type type)
         {
             var mod = SRMod.GetCurrentMod();
-            foreach (var field in type.GetFields().Where(x => x.IsStatic&&typeof(PlayerAction).IsAssignableFrom(x.FieldType)))
+            foreach (var field in type.GetFields().Where(x => x.IsStatic && typeof(PlayerAction).IsAssignableFrom(x.FieldType)))
             {
-                PlayerActionCreateDelegate del = (set) =>
-                {
-                    var action = new PlayerAction(field.Name, set);
-                    RegisterAction(action, mod);
-                    field.SetValue(null, action);
-                };
-
-                switch (SRModLoader.CurrentLoadingStep)
-                {
-                    case SRModLoader.LoadingStep.PRELOAD:
-                        precreators.Add(del);
-                        break;
-                    default:
-                        del(SRInput.Actions);
-                        break;
-                }
+                PlayerAction action = new PlayerAction(field.Name, SRInput.Actions);
+                RegisterAction(action, mod);
+                RegisterBind(action);
             }
         }
     }

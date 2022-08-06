@@ -29,12 +29,17 @@ namespace SRML.SR
         public delegate void OnLandPlotDemolishedDelegate(LandPlot.Id id, GameObject obj, LandPlotModel model);
         public delegate void OnBlueprintUnlockedDelegate(Gadget.Id blueprint);
         public delegate void OnBlueprintPurchasedDelegate(Gadget.Id blueprint);
+        public delegate void OnZoneEnteredDelegate(ZoneDirector.Zone zone, PlayerState playerState);
+        public delegate void OnCorporateLevelBoughtDelegate(int level);
         internal delegate void OnGameContextReadyDelegate();
             
         public static event OnSaveGameLoadedDelegate OnSaveGameLoaded;
         public static event OnSaveGameLoadedDelegate PreSaveGameLoaded;
+        public static event OnSaveGameLoadedDelegate PreSaveGameLoad;
         public static event OnMainMenuLoadedDelegate OnMainMenuLoaded;
         public static event OnActorSpawnDelegate OnActorSpawn;
+        public static event OnZoneEnteredDelegate OnZoneEntered;
+        public static event OnCorporateLevelBoughtDelegate OnCorporateLevelBought;
         internal static event OnGameContextReadyDelegate OnGameContextReady;
 
         internal static void OnLoad()
@@ -42,10 +47,11 @@ namespace SRML.SR
             OnGameContextReady?.Invoke();
         }
 
-        internal static void OnMainMenuLoad(MainMenuUI mainmenu)
-        {
-            OnMainMenuLoaded?.Invoke(mainmenu);
-        }
+        internal static void OnMainMenuLoad(MainMenuUI mainmenu) => OnMainMenuLoaded?.Invoke(mainmenu);
+
+        internal static void OnZoneEnterCallback(ZoneDirector.Zone zone, PlayerState playerState) => OnZoneEntered?.Invoke(zone, playerState);
+
+        internal static void OnCorporateLevelBoughtCallback(ProgressDirector dir) => OnCorporateLevelBought?.Invoke(dir.GetProgress(ProgressDirector.ProgressType.CORPORATE_PARTNER));
 
         internal static void OnSceneLoaded(SceneContext t)
         {
@@ -53,16 +59,13 @@ namespace SRML.SR
             OnSaveGameLoaded?.Invoke(t);
         }
 
-        internal static void OnActorSpawnCallback(Identifiable.Id id,GameObject obj, ActorModel model)
-        {
-            OnActorSpawn?.Invoke(id, obj, model);
-        }
+        internal static void OnActorSpawnCallback(Identifiable.Id id,GameObject obj, ActorModel model) => OnActorSpawn?.Invoke(id, obj, model);
 
         internal static void PreSceneLoad(SceneContext t)
         {
             if (Levels.isMainMenu()) return;
+            PreSaveGameLoad?.Invoke(t);
             PreSaveGameLoaded?.Invoke(t);
         }
-
     }
 }

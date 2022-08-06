@@ -22,7 +22,7 @@ namespace SRML.Console.Commands
 		{
 			if (args == null)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes 2 arguments");
+				Console.Instance.LogError($"The '<color=white>{ID}</color>' command takes 2 arguments");
 				return false;
 			}
 
@@ -31,13 +31,13 @@ namespace SRML.Console.Commands
 
 			if (args[0].Contains(" "))
 			{
-				Console.LogError($"The '<color=white><id></color>' argument cannot contain any spaces");
+				Console.Instance.LogError($"The '<color=white><id></color>' argument cannot contain any spaces");
 				return false;
 			}
 
 			ConsoleBinder.RemoveBind(args[0]);
 			ConsoleBinder.RegisterBind(args[0], args[1].Equals(".") ? Console.cmdButtons["user." + args[0]].Text : args[1], args[2].Equals(".") ? Console.cmdButtons["user." + args[0]].Command : args[2]);
-			Console.LogSuccess($"Edited user defined button '<color=white>{args[0]}</color>'. Text changed to '<color=white>{args[1]}</color>' and command changed to '<color=#8ab7ff>{args[2]}</color>'");
+			Console.Instance.LogSuccess($"Edited user defined button '<color=white>{args[0]}</color>'. Text changed to '<color=white>{args[1]}</color>' and command changed to '<color=#8ab7ff>{args[2]}</color>'");
 
 			return true;
 		}

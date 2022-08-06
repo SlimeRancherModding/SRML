@@ -24,11 +24,11 @@ namespace SRML.Console.Commands
 
 			if (args == null)
 			{
-				Console.Log("<color=cyan>List of Commands Available:</color>");
-				Console.Log("<i><> is a required argument; [] is an optional argument</i>");
+				Console.Instance.Log("<color=cyan>List of Commands Available:</color>");
+				Console.Instance.Log("<i><> is a required argument; [] is an optional argument</i>");
 
 				foreach (string line in ConsoleWindow.cmdsText.Split('\n'))
-					Console.LogSuccess(line);
+					Console.Instance.LogSuccess(line);
 			}
 			else
 			{
@@ -38,19 +38,19 @@ namespace SRML.Console.Commands
 
 					if (cmd.ExtendedDescription != null)
 					{
-						Console.Log($"<color=#77DDFF>{cmd.Usage}</color> - {cmd.Description}");
+						Console.Instance.Log($"<color=#77DDFF>{cmd.Usage}</color> - {cmd.Description}");
 						foreach (string line in cmd.ExtendedDescription.Split('\n'))
-							Console.LogSuccess(line);
+							Console.Instance.LogSuccess(line);
 					}
 					else
 					{
-						Console.LogWarning($"No extended description was found for command '<color=#77DDFF>{cmd.ID}</color>'. Showing default description");
-						Console.LogSuccess($"<color=#77DDFF>{Console.ColorUsage(cmd.Usage)}</color> - {cmd.Description}");
+						Console.Instance.LogWarning($"No extended description was found for command '<color=#77DDFF>{cmd.ID}</color>'. Showing default description");
+						Console.Instance.LogSuccess($"<color=#77DDFF>{Console.ColorUsage(cmd.Usage)}</color> - {cmd.Description}");
 					}
 				}
 				else
 				{
-					Console.LogError($"Command '<color=white>{args[0]}</color>' not found");
+					Console.Instance.LogError($"Command '<color=white>{args[0]}</color>' not found");
 				}
 			}
 

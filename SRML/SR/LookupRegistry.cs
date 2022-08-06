@@ -28,7 +28,7 @@ namespace SRML.SR
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
         /// </summary>
-        /// <param name="b"></param>
+        /// <param name="b">The prefab to register.</param>
         public static void RegisterIdentifiablePrefab(GameObject b)
         {
             switch (CurrentLoadingStep)
@@ -43,6 +43,10 @@ namespace SRML.SR
             }
         }
 
+        /// <summary>
+        /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
+        /// </summary>
+        /// <param name="b">The <see cref="Identifiable"/> belonging to the prefab to register.</param>
         public static void RegisterIdentifiablePrefab(Identifiable b)
         {   
             RegisterIdentifiablePrefab(b.gameObject);
@@ -61,7 +65,7 @@ namespace SRML.SR
                     vacEntriesToPatch.Add(entry);
                     break;
                 default:
-                    GameContext.Instance.LookupDirector.vacItemDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
+                    GameContext.Instance.LookupDirector.vacItemDefinitions.AddAndRemoveWhere(entry, (x,y) => x.id == y.id);
                     GameContext.Instance.LookupDirector.vacItemDict[entry.id] = entry;
                     break;
             }
@@ -69,7 +73,7 @@ namespace SRML.SR
         /// <summary>
         /// Register a landplot prefab into the <see cref="LookupDirector"/>
         /// </summary>
-        /// <param name="prefab"></param>
+        /// <param name="prefab">The prefab to register</param>
         public static void RegisterLandPlot(GameObject prefab)
         {
             switch (CurrentLoadingStep)
@@ -108,8 +112,13 @@ namespace SRML.SR
         /// <param name="icon">Icon that will be used for the item in inventory</param>
         public static void RegisterVacEntry(Identifiable.Id id, Color color, Sprite icon)
         {
-            RegisterVacEntry(new VacItemDefinition(){id=id,color=color,icon=icon});
+            var v = ScriptableObject.CreateInstance<VacItemDefinition>();
+            v.id = id;
+            v.color = color;
+            v.icon = icon;
+            RegisterVacEntry(v);
         }
+
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
@@ -137,14 +146,12 @@ namespace SRML.SR
         /// <param name="cost">The cost of the upgrade</param>
         public static void RegisterUpgradeEntry(PlayerState.Upgrade upgrade, Sprite icon, int cost)
         {
-            RegisterUpgradeEntry(new UpgradeDefinition()
-            {
-                cost = cost,
-                icon = icon,
-                upgrade = upgrade
-            });
+            var v = ScriptableObject.CreateInstance<UpgradeDefinition>();
+            v.upgrade = upgrade;
+            v.icon = icon;
+            v.cost = cost;
+            RegisterUpgradeEntry(v);
         }
-
 
         /// <summary>
         /// Register a <see cref="SpawnResource"/> into the <see cref="LookupDirector"/>
@@ -235,9 +242,14 @@ namespace SRML.SR
         /// <param name="icon">Icon for the toy in the toy store</param>
         /// <param name="cost">How much the toy costs in the toy store</param>
         /// <param name="nameKey"></param>
-        public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost,string nameKey)
+        public static void RegisterToy(Identifiable.Id id, Sprite icon, int cost, string nameKey)
         {
-            RegisterToy(new ToyDefinition() { toyId = id, icon = icon, cost = cost, nameKey = nameKey });
+            var v = ScriptableObject.CreateInstance<ToyDefinition>();
+            v.toyId = id;
+            v.icon = icon;
+            v.cost = cost;
+            v.nameKey = nameKey;
+            RegisterToy(v);
         }
     }
 }

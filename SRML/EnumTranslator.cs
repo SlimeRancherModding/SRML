@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonomiPark.SlimeRancher.DataModel;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,8 @@ namespace SRML
     /// </summary>
     public partial class EnumTranslator
     {
-        public Dictionary<Type,Dictionary<int,string>> MappedValues = new Dictionary<Type, Dictionary<int, string>>();
+        public Dictionary<Type, Dictionary<int,string>> MappedValues = new Dictionary<Type, Dictionary<int, string>>();
+        internal static Dictionary<Type, int> EnumMinCache = new Dictionary<Type, int>();
 
         /// <summary>
         /// Get the next free value for the given enumType
@@ -43,7 +45,6 @@ namespace SRML
             {
                 newDict[i] = Enum.GetName(type, enumValues[-i+startValue]);
             }
-
         }
 
 
@@ -99,9 +100,10 @@ namespace SRML
         {
             var type = val.GetType();
             if (!MappedValues.ContainsKey(type)) return ((int) val);
-            
+            if (!EnumMinCache.ContainsKey(type)) EnumMinCache[type] = ((int[])Enum.GetValues(type)).Min();
+
             var potential = MappedValues[type].FirstOrDefault((x) => Enum.GetName(type, val) == x.Value);
-            return potential.Key<0?potential.Key : ((int)val);
+            return potential.Key < EnumMinCache[type] ? potential.Key : ((int)val);
         }
 
         public T TranslateFrom<T>(int val)
@@ -111,9 +113,10 @@ namespace SRML
 
         public object TranslateFrom(Type enumType, int val)
         {
-            if (val < 0)
+            if (!EnumMinCache.ContainsKey(enumType)) EnumMinCache[enumType] = ((int[])Enum.GetValues(enumType)).Min();
+            if (val < EnumMinCache[enumType])
             {
-                if(!MappedValues.ContainsKey(enumType)||!MappedValues[enumType].ContainsKey(val)||!Enum.IsDefined(enumType,MappedValues[enumType][val])) throw new MissingTranslationException(val,TranslationMode.FROMTRANSLATED);
+                if(!MappedValues.ContainsKey(enumType) || !MappedValues[enumType].ContainsKey(val)||!Enum.IsDefined(enumType,MappedValues[enumType][val])) throw new MissingTranslationException(val,TranslationMode.FROMTRANSLATED);
                 return Enum.ToObject(enumType, Enum.Parse(enumType, MappedValues[enumType][val]));
             }
             else
@@ -168,8 +171,6 @@ namespace SRML
         {
             FixEnumValues(this,mode,toFix);
         }
-
-        
     }
 
     public class MissingTranslationException : Exception
@@ -200,26 +201,112 @@ namespace SRML
         private static List<MissingTranslationDelegate> defaultFallbacks = new List<MissingTranslationDelegate>()
         {
             ConvertGenericFallback<Identifiable.Id>((ref string x) =>
-                {
-                    x = Identifiable.Id.NONE.ToString();
-                    return true;
-                }),
+            {
+                x = Identifiable.Id.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<GordoIdentifiable.Id>((ref string x) =>
+            {
+                x = GordoIdentifiable.Id.NONE.ToString();
+                return true;
+            }),
             ConvertGenericFallback<Gadget.Id>((ref string x) =>
             {
-            x = Gadget.Id.NONE.ToString();
-            return true;
+                x = Gadget.Id.NONE.ToString();
+                return true;
             }),
             ConvertGenericFallback<LandPlot.Id>((ref string x) =>
             {
                 x = LandPlot.Id.NONE.ToString();
                 return true;
             }),
+            ConvertGenericFallback<LandPlot.Upgrade>((ref string x) =>
+            {
+                x = LandPlot.Upgrade.NONE.ToString();
+                return true;
+            }),
             ConvertGenericFallback<SpawnResource.Id>((ref string x) =>
             {
                 x = SpawnResource.Id.NONE.ToString();
                 return true;
+            }),
+            ConvertGenericFallback<ProgressDirector.ProgressType>((ref string x) =>
+            {
+                x = ProgressDirector.ProgressType.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<Fashion.Slot>((ref string x) =>
+            {
+                x = Fashion.Slot.FRONT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MusicDirector.Priority>((ref string x) =>
+            {
+                x = MusicDirector.Priority.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MailDirector.Type>((ref string x) =>
+            {
+                x = MailDirector.Type.PERSONAL.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<SlimeAppearance.AppearanceSaveSet>((ref string x) =>
+            {
+                x = SlimeAppearance.AppearanceSaveSet.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<SlimeFace.SlimeExpression>((ref string x) =>
+            {
+                x = SlimeFace.SlimeExpression.None.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<AmbianceDirector.Weather>((ref string x) =>
+            {
+                x = AmbianceDirector.Weather.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<AmbianceDirector.Zone>((ref string x) =>
+            {
+                x = AmbianceDirector.Zone.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<ZoneDirector.Zone>((ref string x) =>
+            {
+                x = ZoneDirector.Zone.NONE.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId>((ref string x) =>
+            {
+                x = MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId.UNSET.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<RanchDirector.Palette>((ref string x) =>
+            {
+                x = RanchDirector.Palette.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<RanchDirector.PaletteType>((ref string x) =>
+            {
+                x = RanchDirector.Palette.DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<RancherChatMetadata.Entry.RancherName>((ref string x) =>
+            {
+                x = RancherChatMetadata.Entry.RancherName.UNKNOWN.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<SiloCatcher.Type>((ref string x) =>
+            {
+                x = SiloCatcher.Type.SILO_DEFAULT.ToString();
+                return true;
+            }),
+            ConvertGenericFallback<InstrumentModel.Instrument>((ref string x) =>
+            {
+                x = InstrumentModel.Instrument.NONE.ToString();
+                return true;
             })
         };
+
         /// <summary>
         /// Register an EnumFixer that allows for objects of type <typeparamref name="T"/> to have their enum values processed by an enumtranslator 
         /// </summary>
