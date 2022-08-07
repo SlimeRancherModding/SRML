@@ -37,4 +37,13 @@ namespace SRML.SR.Patches
                 __instance.ClearOffer(ExchangeDirector.OfferType.GENERAL);
         }
     }
+
+    [HarmonyPatch(typeof(ProgressDirector), "GetRancherProgressType")]
+    internal static class RancherProgressPatch
+    {
+        public static bool Prefix(ProgressDirector __instance, ref ProgressDirector.ProgressType __result, string rancherName)
+        {
+            return !ExchangeOfferRegistry.customRancherProgress.TryGetValue(rancherName, out __result);
+        }
+    }
 }
