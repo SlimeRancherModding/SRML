@@ -98,7 +98,6 @@ namespace SRML.SR
         /// Remove all instances of an <see cref="Gadget.Id"/> from every class in <see cref="Gadget"/>
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="rule"></param>
         public static void Uncategorize(this Gadget.Id id)
         {
             Gadget.DECO_CLASS.Remove(id);
@@ -119,7 +118,7 @@ namespace SRML.SR
             {
                 if (rules.ContainsKey(id))
                     CategorizeId(id, rules[id]);
-                else
+                else if (!GadgetCategorization.doNotAutoCategorize.Contains(id))
                     CategorizeId(id);
             }
         }

@@ -1,27 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SRML.SR
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class GadgetCategorization : Attribute
     {
-        public Rule rules;
+        public static List<Gadget.Id> doNotAutoCategorize = new List<Gadget.Id>();
 
         public GadgetCategorization(Rule rules) => this.rules = rules;
+
+        public Rule rules;
 
         [Flags]
         public enum Rule
         {
-            MISC = 0,
-            EXTRACTOR = 1,
-            TELEPORTER = 2,
-            WARP_DEPOT = 4,
-            ECHO_NET = 8,
-            LAMP = 16,
-            FASHION_POD = 32,
-            SNARE = 64,
-            DECO = 128,
-            DRONE = 256
+            NONE = 0,
+            MISC = 1,
+            EXTRACTOR = 2,
+            TELEPORTER = 4,
+            WARP_DEPOT = 8,
+            ECHO_NET = 16,
+            LAMP = 32,
+            FASHION_POD = 64,
+            SNARE = 128,
+            DECO = 256,
+            DRONE = 512
         }
     }
 }

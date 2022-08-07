@@ -133,7 +133,7 @@ namespace SRML.SR
             {
                 if (rules.TryGetValue(id, out IdentifiableCategorization.Rule rule))
                     CategorizeId(id, rule);
-                else
+                else if (!IdentifiableCategorization.doNotAutoCategorize.Contains(id))
                     CategorizeId(id);
 
                 if (!FoodGroupRegistry.alreadyRegistered.Contains(id)) 
