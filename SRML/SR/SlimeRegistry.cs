@@ -53,7 +53,7 @@ namespace SRML.SR
                     break;
             }
 
-            if (definition.IsLargo && definition.BaseSlimes != null)
+            if (definition.IsLargo && definition.BaseSlimes != null && definition.BaseSlimes.Length > 1)
             {
                 if (definition.BaseSlimes[0].Diet.ProducePlorts() && definition.BaseSlimes[1].Diet.ProducePlorts())
                     definitions.largoDefinitionByBasePlorts.AddOrChange(new SlimeDefinitions.PlortPair(definition.BaseSlimes[0].Diet.Produces[0], definition.BaseSlimes[1].Diet.Produces[0]), definition);
@@ -210,7 +210,12 @@ namespace SRML.SR
             slimeDefinition.Sounds = ((props & (LargoProps.SWAP_SOUNDS)) != 0) ? slime2.Sounds : slime1.Sounds;
 
             slimeDefinition.LoadLargoDiet();
-            slimeDefinition.LoadFavoriteToysFromBaseSlimes();
+
+            slimeDefinition.FavoriteToys = new Identifiable.Id[0];
+            if (slime1.FavoriteToys != null)
+                slimeDefinition.FavoriteToys = slimeDefinition.FavoriteToys.Union(slime1.FavoriteToys).ToArray();
+            if (slime2.FavoriteToys != null)
+                slimeDefinition.FavoriteToys = slimeDefinition.FavoriteToys.Union(slime2.FavoriteToys).ToArray();
 
             if ((props & (LargoProps.PREVENT_SLIME1_EATMAP_TRANSFORM)) != 0)
                 preventLargoTransforms.Add(new KeyValuePair<Identifiable.Id, Identifiable.Id>(slime1.IdentifiableId, id));
@@ -277,7 +282,26 @@ namespace SRML.SR
         /// <param name="slime1SSProps">The properties controlling the base Secret Style and the addon normal <see cref="SlimeAppearance"/>s are combined.</param>
         /// <param name="slime2SSProps">The properties controlling the base normal and the addon Secret Style <see cref="SlimeAppearance"/>s are combined.</param>
         /// <param name="slime12SSProps">The properties controlling the base Secret Style and the addon Secret Style <see cref="SlimeAppearance"/>s are combined.</param>
-        public static void CraftLargo(Identifiable.Id largoId, Identifiable.Id slime1, Identifiable.Id slime2, LargoProps props, LargoProps slime1SSProps = LargoProps.NONE, LargoProps slime2SSProps = LargoProps.NONE, LargoProps slime12SSProps = LargoProps.NONE)
+        public static void CraftLargo(Identifiable.Id largoId, Identifiable.Id slime1, Identifiable.Id slime2,
+            LargoProps props, LargoProps slime1SSProps = LargoProps.NONE, LargoProps slime2SSProps = LargoProps.NONE, LargoProps slime12SSProps = LargoProps.NONE) =>
+            CraftLargo(largoId, slime1, slime2, props, out var largoDefinition, out var largoAppearance, out var largoObject, slime1SSProps, slime2SSProps, slime12SSProps);
+
+        /// <summary>
+        /// Combines two slimes into a largo.
+        /// </summary>
+        /// <param name="largoId">The <see cref="Identifiable.Id"/> belonging to the resulting largo.</param>
+        /// <param name="slime1">The <see cref="Identifiable.Id"/> belonging to the base slime.</param>
+        /// <param name="slime2">The <see cref="Identifiable.Id"/> belonging to the addon slime.</param>
+        /// <param name="props">The properties controlling the way the slimes are combined.</param>
+        /// <param name="slime1SSProps">The properties controlling the base Secret Style and the addon normal <see cref="SlimeAppearance"/>s are combined.</param>
+        /// <param name="slime2SSProps">The properties controlling the base normal and the addon Secret Style <see cref="SlimeAppearance"/>s are combined.</param>
+        /// <param name="slime12SSProps">The properties controlling the base Secret Style and the addon Secret Style <see cref="SlimeAppearance"/>s are combined.</param>
+        /// <param name="largoDefinition">The <see cref="SlimeDefinition"/> of the created largo.</param>
+        /// <param name="largoAppearance">The <see cref="SlimeAppearance"/> of the created largo.</param>
+        /// <param name="largoObject">The <see cref="GameObject"/> of the created largo.</param>
+        public static void CraftLargo(Identifiable.Id largoId, Identifiable.Id slime1, Identifiable.Id slime2, LargoProps props,
+            out SlimeDefinition largoDefinition, out SlimeAppearance largoAppearance, out GameObject largoObject,
+            LargoProps slime1SSProps = LargoProps.NONE, LargoProps slime2SSProps = LargoProps.NONE, LargoProps slime12SSProps = LargoProps.NONE)
         {
             SlimeDefinition slime1Def = slime1.GetSlimeDefinition();
             SlimeDefinition slime2Def = slime2.GetSlimeDefinition();
@@ -316,6 +340,10 @@ namespace SRML.SR
             LookupRegistry.RegisterIdentifiablePrefab(largoOb);
             RegisterAppearance(def, app);
             RegisterSlimeDefinition(def);
+
+            largoDefinition = def;
+            largoAppearance = app;
+            largoObject = largoOb;
         }
 
         internal static void InheritStripe(this Material mat, Material inherited, Shader shader = null)

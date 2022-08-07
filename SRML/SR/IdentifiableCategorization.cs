@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SRML.SR
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class IdentifiableCategorization : Attribute
     {
-        public Rule rules;
+        public static List<Identifiable.Id> doNotAutoCategorize = new List<Identifiable.Id>();
 
         public IdentifiableCategorization(Rule rules) => this.rules = rules;
+        public Rule rules;
 
         [Flags]
         public enum Rule

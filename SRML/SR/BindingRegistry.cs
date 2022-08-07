@@ -46,6 +46,19 @@ namespace SRML.SR
         }
 
         /// <summary>
+        /// Creates and registers a <see cref="PlayerAction"/>, adds it into the options UI, and adds a translation.
+        /// </summary>
+        /// <param name="name">The name of the action.</param>
+        /// <param name="translation">The translated name of the action.</param>
+        /// <returns>The created action</returns>
+        public static PlayerAction RegisterBindedTranslatedAction(string name, string translation)
+        {
+            PlayerAction act = RegisterBindedAction(name);
+            TranslationPatcher.AddUITranslation("key." + name.ToLower(), translation);
+            return act;
+        }
+
+        /// <summary>
         /// Check if an action is modded.
         /// </summary>
         /// <param name="action">The action to check.</param>
