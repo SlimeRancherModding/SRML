@@ -49,9 +49,9 @@ namespace SRML
         }
 
         /// <summary>
-        /// Add a new enum value to the given <paramref name="T"/> with the first free value
+        /// Add a new enum value to the given <typeparamref name="TEnum"/> with the first free value
         /// </summary>
-        /// <param name="T">Type of enum to add the value to</param>
+        /// <typeparam name="TEnum">Type of enum to add the value to</typeparam>
         /// <param name="name">Name of the new enum value</param>
         /// <returns>The new enum value</returns>
         public static TEnum AddEnumValue<TEnum>(string name) where TEnum : Enum => (TEnum)AddEnumValue(typeof(TEnum), name);
@@ -70,9 +70,9 @@ namespace SRML
         }
 
         /// <summary>
-        /// Add a new value to the given <paramref name="T"/> 
+        /// Add a new value to the given <typeparamref name="T"/>
         /// </summary>
-        /// <param name="T">Enum to add the new value to</param>
+        /// <typeparam name="T">Enum to add the new value to</typeparam>
         /// <param name="value">Value to add to the enum</param>
         /// <param name="name">The name of the new value</param>
         public static void AddEnumValue<T>(object value, string name) => AddEnumValue(typeof(T), value, name);
@@ -137,18 +137,17 @@ namespace SRML
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
-        /// <param name="T"></param>
+        /// <typeparam name="TEnum">The enum type to get the first undefined value from</typeparam>
         /// <returns>The first undefined enum value</returns>
         public static TEnum GetFirstFreeValue<TEnum>() => (TEnum)GetFirstFreeValue(typeof(TEnum));
 
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
-        /// <param name="enumType"></param>
+        /// <param name="enumType">The enum type to get the first undefined value from</param>
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
-            if (!enumType.IsEnum) throw new ArgumentException("enumType");
             if (enumType == null) throw new ArgumentNullException("enumType");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
 

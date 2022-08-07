@@ -41,7 +41,7 @@ namespace SRML.SR
         /// Composes a diet description translation.
         /// </summary>
         /// <param name="bundle">The bundle containing the diet key.</param>
-        /// <param name="typeKey">The key belonging to the diet's translation.</param>
+        /// <param name="dietKey">The key belonging to the diet's translation.</param>
         public static string ComposeDietDescription(MessageBundle bundle, string dietKey) =>
             ComposeDescription(bundle, "m.hudinfo_diet", dietKey);
     }

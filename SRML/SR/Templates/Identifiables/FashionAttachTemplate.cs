@@ -32,7 +32,6 @@ namespace SRML.SR.Templates.Identifiables
         /// Template to create new fashion attachments
         /// </summary>
         /// <param name="name">The name of the object (prefixes are recommend, but not needed)</param>
-        /// <param name="ID">The Identifiable ID for this fashion attachment</param>
         /// <param name="mesh">The model's mesh for this fashion attachment</param>
         /// <param name="materials">The materials that compose this fashion attachment's model</param>
         public FashionAttachTemplate(string name, Mesh mesh, Material[] materials) : base(name)

@@ -42,7 +42,7 @@ namespace SRML.SR
         /// <summary>
         /// Check if a <see cref="PlayerState.Upgrade"/> belongs to a modded upgrade.
         /// </summary>
-        /// <param name="id">The <see cref="PlayerState.Upgrade"/> to check.</param>
+        /// <param name="upgrade">The <see cref="PlayerState.Upgrade"/> to check.</param>
         /// <returns>True if <see cref="PlayerState.Upgrade"/> belongs to a modded upgrade, otherwise false.</returns>
         public static bool IsModdedUpgrade(PlayerState.Upgrade upgrade) => moddedUpgrades.ContainsKey(upgrade);
 

@@ -85,7 +85,6 @@ namespace SRML.SR
         /// Remove all instances of an <see cref="Identifiable.Id"/> from every class in <see cref="Identifiable"/>
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="rule"></param>
         public static void Uncategorize(this Identifiable.Id id)
         {
             Identifiable.ALLERGY_FREE_CLASS.Remove(id);

@@ -105,7 +105,7 @@ namespace SRML.SR
             }
         }
         /// <summary>
-        /// Register a vacuumable item into the <see cref=""/>
+        /// Register a vacuumable item into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="id">Id of the vacuumable item</param>
         /// <param name="color">Color of the background of the inventory slot</param>

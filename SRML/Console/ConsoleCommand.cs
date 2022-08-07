@@ -56,7 +56,7 @@ namespace SRML.Console
 		/// <summary>
 		/// The arguments are out of bounds (either too many or too little)
 		/// </summary>
-		/// <param name="min">Amount of arguments</param>
+		/// <param name="argCount">Amount of arguments</param>
 		/// <param name="min">Minimun amount</param>
 		/// <param name="max">Maximun amount</param>
 		/// <returns>True if arguments are out of bounds, false otherwise</returns>

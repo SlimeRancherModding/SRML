@@ -76,7 +76,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="id">The <see cref="Identifiable.Id"/> belonging to the plort.</param>
         /// <param name="value">The base value of the plort.</param>
-        /// <param name="fullSaturation">How many plorts needed to saturate the market (cut the price in half).</param>
+        /// <param name="fullSaturationValue">How many plorts needed to saturate the market (cut the price in half).</param>
         public static void RegisterPlort(Identifiable.Id id, float value, float fullSaturationValue)
         {
             AddPlortEntry(id);

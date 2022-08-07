@@ -134,6 +134,7 @@ public static class StringExtensions
     /// <summary>
     /// Removes anything after the <paramref name="value"/> parameter
     /// </summary>
+    /// <param name="str">The string to remove everything afters</param>
     /// <param name="value">The string to seek</param>
     /// <param name="include">Whether to remove the <paramref name="value"/></param>
     public static string RemoveEverythingAfter(this string str, string value, bool include = false)
@@ -147,6 +148,7 @@ public static class StringExtensions
     /// <summary>
     /// Removes anything after the <paramref name="value"/> parameter
     /// </summary>
+    /// <param name="str">The string to remove everything before</param>
     /// <param name="value">The string to seek</param>
     /// <param name="include">Whether to remove the <paramref name="value"/></param>
     public static string RemoveEverythingBefore(this string str, string value, bool include = false)
