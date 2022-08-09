@@ -21,6 +21,8 @@ namespace SRML
 {
     internal static class Main
     {
+        public const string VERSION_STRING = "0.2.1b";
+
         private static bool isPreInitialized;
         internal static Transform prefabParent;
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();

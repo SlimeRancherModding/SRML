@@ -384,6 +384,7 @@ namespace SRML
 
             public bool isFromJSON = true;
             public string entryFile;
+
             public override bool Equals(object o)
             {
                 if (!(o is ProtoMod obj)) return base.Equals(o);
@@ -405,14 +406,15 @@ namespace SRML
             /// <returns>The parsed <see cref="ProtoMod"/></returns>
             public static ProtoMod ParseFromJson(string jsonFile) => ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
 
-            public static ProtoMod ParseFromJson(string jsonData,string path)
+            public static ProtoMod ParseFromJson(string jsonData, string path)
             {
-                var proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData);
+                var proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData, new ProtoModConverter());
                 proto.path = Path.GetDirectoryName(path);
                 proto.entryFile = path;
                 proto.ValidateFields();
                 return proto;
             }
+
             /// <summary>
             /// Try to create a protomod from an embedded modinfo json in a DLL
             /// </summary>
@@ -440,10 +442,8 @@ namespace SRML
                 return true;
             }
 
-            public override string ToString()
-            {
-                return $"{id} {version}";
-            }
+            public override string ToString() => $"{id} {version}";
+
             /// <summary>
             /// Make sure fields are in the correct form and not null
             /// </summary>
@@ -454,17 +454,18 @@ namespace SRML
                 if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
-                if (dependencies == null || dependencies.Count == 0) return;
+                /*if (dependencies == null || dependencies.Count == 0) return;
                 try
                 {
                     List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
-                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
+                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) 
+                        depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
                     parsedDependencies = depends.ToArray();
                 }
                 catch
                 {
                     throw new Exception($"Error parsing mod dependencies for mod {id}");
-                }
+                }*/
             }
 
             /// <summary>
@@ -494,6 +495,51 @@ namespace SRML
                 }
             }
 
+            public class ProtoModConverter : JsonConverter
+            {
+                public override bool CanConvert(Type objectType) => objectType == typeof(ProtoMod);
+
+                public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+                {
+                    ProtoMod pm = new ProtoMod();
+                    JToken token = JToken.ReadFrom(reader);
+
+                    pm.id = token["id"].ToObject<string>();
+                    pm.name = token["name"].ToObject<string>();
+                    pm.author = token["author"].ToObject<string>();
+                    pm.version = token["version"].ToObject<string>();
+                    pm.description = token["description"].ToObject<string>();
+
+                    if (token.Children<JProperty>().Any(x => x.Name == "load_after"))
+                        pm.load_after = token["load_after"].ToObject<string[]>();
+                    if (token.Children<JProperty>().Any(x => x.Name == "load_before"))
+                        pm.load_after = token["load_after"].ToObject<string[]>();
+
+                    if (token.Children<JProperty>().Any(x => x.Name == "dependencies"))
+                    {
+                        if (token["dependencies"].Type == JTokenType.Array)
+                        {
+                            pm.parsedDependencies = token["dependencies"].ToObject<string[]>().Select(x =>
+                                new DependencyChecker.Dependency(x.Split(' ')[0], x.Split(' ')[1])).ToArray();
+                        }
+                        else if (token["dependencies"].Type == JTokenType.Object)
+                        {
+                            pm.parsedDependencies = ((JObject)token["dependencies"]).Properties().Select(x =>
+                                new DependencyChecker.Dependency(x.Name, x.Value.ToObject<string>())).ToArray();
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Malformed dependencies in {pm.id}");
+                        }
+                    }
+
+                    return pm;
+                }
+
+                public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+                {
+                }
+            }
         }
     }
 }
