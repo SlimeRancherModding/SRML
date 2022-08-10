@@ -502,35 +502,62 @@ namespace SRML
                 public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
                 {
                     ProtoMod pm = new ProtoMod();
-                    JToken token = JToken.ReadFrom(reader);
+                    JObject token = (JObject)JToken.ReadFrom(reader);
 
-                    pm.id = token["id"].ToObject<string>();
-                    pm.name = token["name"].ToObject<string>();
-                    pm.author = token["author"].ToObject<string>();
-                    pm.version = token["version"].ToObject<string>();
-                    pm.description = token["description"].ToObject<string>();
-
-                    if (token.Children<JProperty>().Any(x => x.Name == "load_after"))
-                        pm.load_after = token["load_after"].ToObject<string[]>();
-                    if (token.Children<JProperty>().Any(x => x.Name == "load_before"))
-                        pm.load_after = token["load_after"].ToObject<string[]>();
-
-                    if (token.Children<JProperty>().Any(x => x.Name == "dependencies"))
+                    try
                     {
-                        if (token["dependencies"].Type == JTokenType.Array)
-                        {
-                            pm.parsedDependencies = token["dependencies"].ToObject<string[]>().Select(x =>
-                                new DependencyChecker.Dependency(x.Split(' ')[0], x.Split(' ')[1])).ToArray();
-                        }
-                        else if (token["dependencies"].Type == JTokenType.Object)
-                        {
-                            pm.parsedDependencies = ((JObject)token["dependencies"]).Properties().Select(x =>
-                                new DependencyChecker.Dependency(x.Name, x.Value.ToObject<string>())).ToArray();
-                        }
+                        pm.id = token["id"].ToObject<string>();
+                        pm.version = token["version"].ToObject<string>();
+                        pm.name = token["name"].ToObject<string>();
+
+                        if (token.ContainsKey("author"))
+                            pm.author = token["author"].ToObject<string>();
+                        if (token.ContainsKey("description"))
+                            pm.description = token["description"].ToObject<string>();
+                    }
+                    catch (Exception e)
+                    {
+                        if (pm.id == null || pm.id == string.Empty)
+                            throw new Exception($"Error parsing unknown basic mod information! {e}");
                         else
+                            throw new Exception($"Error parsing basic mod information for {pm.id}! {e}");
+                    }
+
+                    try
+                    {
+                        if (token.ContainsKey("load_after"))
+                            pm.load_after = token["load_after"].ToObject<string[]>();
+                        if (token.ContainsKey("load_after"))
+                            pm.load_after = token["load_after"].ToObject<string[]>();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Error parsing mod loading order for {pm.id}! {e}");
+                    }
+
+                    try
+                    {
+                        if (token.ContainsKey("dependencies"))
                         {
-                            throw new InvalidOperationException($"Malformed dependencies in {pm.id}");
+                            if (token["dependencies"].Type == JTokenType.Array)
+                            {
+                                pm.parsedDependencies = token["dependencies"].ToObject<string[]>().Select(x =>
+                                    new DependencyChecker.Dependency(x.Split(' ')[0], x.Split(' ')[1])).ToArray();
+                            }
+                            else if (token["dependencies"].Type == JTokenType.Object)
+                            {
+                                pm.parsedDependencies = ((JObject)token["dependencies"]).Properties().Select(x =>
+                                    new DependencyChecker.Dependency(x.Name, x.Value.ToObject<string>())).ToArray();
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException($"Malformed dependencies in {pm.id}");
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception($"Error parsing dependencies in {pm.id}! {e}");
                     }
 
                     return pm;
