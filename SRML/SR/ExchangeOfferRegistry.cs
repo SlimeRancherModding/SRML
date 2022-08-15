@@ -19,6 +19,7 @@ namespace SRML.SR
         internal static Dictionary<Identifiable.Id, float> customUnlockValues = new Dictionary<Identifiable.Id, float>();
         internal static Dictionary<string, SRMod> customRancherIDs = new Dictionary<string, SRMod>();
         internal static Dictionary<string, SRMod> customOfferIDs = new Dictionary<string, SRMod>();
+        internal static Dictionary<string, ProgressDirector.ProgressType> customRancherProgress = new Dictionary<string, ProgressDirector.ProgressType>();
 
         static ExchangeOfferRegistry()
         {
@@ -31,6 +32,13 @@ namespace SRML.SR
         /// </summary>
         /// <param name="rancher"></param>
         public static void RegisterRancher(ExchangeDirector.Rancher rancher) => customRanchers.Add(rancher, SRMod.GetCurrentMod());
+
+        /// <summary>
+        /// Registers a progress type for a rancher.
+        /// </summary>
+        /// <param name="rancherName">Name of the rancher</param>
+        /// <param name="progressType">The progress that will be added to everytime their daily offer is selected</param>
+        public static void RegisterRancherProgress(string rancherName, ProgressDirector.ProgressType progressType) => customRancherProgress.Add(rancherName, progressType);
 
         /// <summary>
         /// Registers a rancher's id
