@@ -336,6 +336,7 @@
     <Compile Include="Config\Attributes\ConfigParserAttribute.cs" />
     <Compile Include="Config\Attributes\ConfigReloadAttribute.cs" />
     <Compile Include="Config\Attributes\ConfigSectionAttribute.cs" />
+    <Compile Include="Config\ConfigChecker.cs" />
     <Compile Include="Config\ConfigElement.cs" />
     <Compile Include="Config\ConfigFile.cs" />
     <Compile Include="Config\ConfigManager.cs" />
