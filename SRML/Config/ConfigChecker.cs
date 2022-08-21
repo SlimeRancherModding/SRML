@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 namespace SRML.Config
 {
-    internal class ConfigChecker : SRBehaviour
-    {
+	internal class ConfigChecker : SRBehaviour
+	{
 		public void Update()
 		{
 			foreach (KeyValuePair<ConfigFile, SRMod> kvp in ConfigManager.configToMod)

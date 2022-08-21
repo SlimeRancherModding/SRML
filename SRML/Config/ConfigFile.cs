@@ -19,8 +19,6 @@ namespace SRML.Config
 
         public IEnumerable<ConfigSection> Sections => sections.Values;
 
-        public DateTime checkTime = DateTime.Now;
-
         public void AddSection(ConfigSection section)
         {
             sections[section.Name] = section;
