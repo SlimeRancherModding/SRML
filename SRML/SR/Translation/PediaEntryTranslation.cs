@@ -22,7 +22,7 @@ namespace SRML.SR.Translation
 
         const string TITLE_PREFIX = "t.";
         const string INTRO_PREFIX = "m.intro.";
-        const string DESCRIPTION_PREFIX = "m.desc";
+        const string DESCRIPTION_PREFIX = "m.desc.";
 
         public PediaEntryTranslation SetTitleTranslation(string name)
         {
