@@ -154,7 +154,6 @@ namespace SRML.SR
         /// <param name="category"></param>
         public static void CategorizeId(Gadget.Id id, GadgetCategorization.Rule category)
         {
-            string name = Enum.GetName(typeof(Gadget.Id), id);
             if ((category & (GadgetCategorization.Rule.MISC)) != 0) Gadget.MISC_CLASS.Add(id);
             if ((category & (GadgetCategorization.Rule.EXTRACTOR)) != 0) Gadget.EXTRACTOR_CLASS.Add(id);
             if ((category & (GadgetCategorization.Rule.TELEPORTER)) != 0) Gadget.TELEPORTER_CLASS.Add(id);

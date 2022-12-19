@@ -56,7 +56,6 @@ namespace SRML
                 }
             }
 
-            
             // Make sure all dependencies are in order, otherwise throw an exception from checkdependencies
             DependencyChecker.CheckDependencies(foundMods);
             
@@ -98,7 +97,6 @@ namespace SRML
                 {
                     foundAssemblies.Add(new AssemblyInfo(AssemblyName.GetAssemblyName(Path.GetFullPath(file)),
                         Path.GetFullPath(file), mod));
-                   
                 }
 
             }
@@ -108,8 +106,6 @@ namespace SRML
                 var name = new AssemblyName(args.Name);
                 return foundAssemblies.FirstOrDefault((x) => x.DoesMatch(name))?.LoadAssembly();
             }
-
-            
 
             AppDomain.CurrentDomain.AssemblyResolve += FindAssembly;
             try
@@ -160,21 +156,15 @@ namespace SRML
 
         static SRMod AddMod(ProtoMod modInfo, Type entryType)
         {
-            try
-            {
-                IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
+            CurrentLoadingStep = LoadingStep.INITIALIZATION;
+            IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
 
-                if (entryPoint is ModEntryPoint)
-                    ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
+            if (entryPoint is ModEntryPoint)
+                ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
 
-                var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
-                Mods.Add(modInfo.id, newmod);
-                return newmod;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Error initializing '{modInfo.id}'!: {e}");
-            }
+            var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
+            Mods.Add(modInfo.id, newmod);
+            return newmod;
         }
 
         internal static void PreLoadMods()
@@ -184,6 +174,8 @@ namespace SRML
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
+                if (mod.encounteredError) continue;
+
                 try
                 {
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
@@ -192,7 +184,10 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    mod.encounteredError = true;
+                    ModLoadException ex = new ModLoadException(modid, CurrentLoadingStep, e);
+                    Debug.LogError(ex);
+                    ErrorGUI.errors.Add(ex);
                 }
             }
         }
@@ -203,15 +198,19 @@ namespace SRML
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
+                if (mod.encounteredError) continue;
+
                 try
                 {
                     mod.Load();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error loading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    mod.encounteredError = true;
+                    ModLoadException ex = new ModLoadException(modid, CurrentLoadingStep, e);
+                    Debug.LogError(ex);
+                    ErrorGUI.errors.Add(ex);
                 }
-
             }
         }
 
@@ -221,13 +220,18 @@ namespace SRML
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
+                if (mod.encounteredError) continue;
+
                 try
                 {
                     mod.PostLoad();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error post-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    mod.encounteredError = true;
+                    ModLoadException ex = new ModLoadException(modid, CurrentLoadingStep, e);
+                    Debug.LogError(ex);
+                    ErrorGUI.errors.Add(ex);
                 }
             }
 
@@ -252,7 +256,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error reloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    Debug.LogError(new ModLoadException(modid, CurrentLoadingStep, e));
                 }
             }
             CurrentLoadingStep = LoadingStep.FINISHED;
@@ -270,7 +274,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error unloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    Debug.LogError(new ModLoadException(modid, CurrentLoadingStep, e));
                 }
             }
         }
@@ -287,7 +291,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    Debug.LogError(new ModLoadException(modid, LoadingStep.UPDATE, e));
                 }
             }
         }
@@ -304,7 +308,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error fixed-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    Debug.LogError(new ModLoadException(modid, LoadingStep.FIXEDUPDATE, e));
                 }
             }
         }
@@ -321,7 +325,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error late-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    Debug.LogError(new ModLoadException(modid, LoadingStep.LATEUPDATE, e));
                 }
             }
         }
@@ -332,10 +336,10 @@ namespace SRML
         internal class AssemblyInfo
         {
             public AssemblyName AssemblyName;
-            public String Path;
+            public string Path;
             public ProtoMod mod;
             public bool IsModAssembly;
-            public AssemblyInfo(AssemblyName name, String path,ProtoMod mod)
+            public AssemblyInfo(AssemblyName name, string path, ProtoMod mod)
             {
                 AssemblyName = name;
                 Path = path;
@@ -355,11 +359,15 @@ namespace SRML
 
         public enum LoadingStep
         {
+            INITIALIZATION,
             PRELOAD,
             LOAD,
             POSTLOAD,
             RELOAD,
             UNLOAD,
+            UPDATE,
+            FIXEDUPDATE,
+            LATEUPDATE,
             FINISHED
         }
 

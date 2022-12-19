@@ -108,6 +108,8 @@ namespace SRML
 
         private static SRMod forcedContext;
 
+        internal bool encounteredError = false;
+
         /// <summary>
         /// Gets the current executing mod as an SRMod instance 
         /// </summary>

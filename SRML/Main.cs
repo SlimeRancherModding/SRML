@@ -15,13 +15,14 @@ using SRML.SR.UI;
 using SRML.SR.Utils;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
+using TMPro;
 using UnityEngine;
 
 namespace SRML
 {
     internal static class Main
     {
-        public const string VERSION_STRING = "0.2.1b";
+        public const string VERSION_STRING = "0.2.1d";
 
         private static bool isPreInitialized;
         internal static Transform prefabParent;
@@ -38,6 +39,7 @@ namespace SRML
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
 
+            SystemContext.IsModded = true;
             SentrySdk sentrySdk = UnityEngine.Object.FindObjectOfType<SentrySdk>();
             if (sentrySdk != null)
             {
@@ -69,6 +71,14 @@ namespace SRML
             config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
             config.TryLoadFromFile();
 
+            ErrorGUI.extendedUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI");
+            ErrorGUI.extendedError = uiBundle.LoadAsset<GameObject>("ErrorModInfo");
+
+            foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
+                text.alignment = TextAlignmentOptions.Midline;
+            foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
+                text.alignment = TextAlignmentOptions.TopLeft;
+
             try
             {
                 SRModLoader.InitializeMods();
@@ -76,22 +86,14 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                ErrorGUI.errors.Add(new ModLoadException("<unknown>", SRModLoader.LoadingStep.INITIALIZATION, e));
                 return;
             }
             FileLogger.Init();
             Console.Console.Init();
+            Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
             HarmonyOverrideHandler.PatchAll();
-            try
-            {
-                SRModLoader.PreLoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.Message}");
-                return;
-            }
+            SRModLoader.PreLoadMods();
             IdentifiableRegistry.CategorizeAllIds();
             GadgetRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
@@ -116,17 +118,8 @@ namespace SRML
             SlimeRegistry.Initialize(GameContext.Instance.SlimeDefinitions);
             GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
-
-            try
-            {
-                SRModLoader.LoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
-                return;
-            }
+            
+            SRModLoader.LoadMods();
             GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
 
             PostLoad();
@@ -141,16 +134,7 @@ namespace SRML
         {
             if (isPostInitialized) return;
             isPostInitialized = true;
-            try
-            {
-                SRModLoader.PostLoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
-                return;
-            }
+            SRModLoader.PostLoadMods();
         }
 
         internal static void Reload()

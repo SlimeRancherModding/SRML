@@ -13,39 +13,37 @@ namespace SRML.SR.SaveSystem.Format
     {
         public IdentifierType idType;
         public long longIdentifier;
-        public string stringIdentifier="";
+        public string stringIdentifier = string.Empty;
         public CompoundDataPiece dataPiece;
 
         public override int LatestVersion => 0;
 
-
-
         public override void ReadData(BinaryReader reader)
         {
-            bool isOld = ModdedSaveData.LATEST_READ_VERSION<4;
+            bool isOld = ModdedSaveData.LATEST_READ_VERSION < 4;
             int number =  reader.ReadInt32();
-            if (number >= 3) isOld = false;
+            if (number >= 1) 
+                isOld = false;
 
-            if (number >= 3) number -= 3;
             idType = (IdentifierType)number;
-            if (!isOld) Version = reader.ReadInt32();
+            Version = isOld ? 0 : reader.ReadInt32();
             longIdentifier = reader.ReadInt64();
-            stringIdentifier = isOld ? "" : reader.ReadString();
+            stringIdentifier = isOld ? string.Empty : reader.ReadString();
+
             dataPiece = DataPiece.Deserialize(reader) as CompoundDataPiece;
-            if (dataPiece == null) throw new Exception("Invalid top level datapiece!");
+            
+            if (dataPiece == null) 
+                throw new Exception("Invalid top level datapiece!");
         }
 
         public override void WriteData(BinaryWriter writer)
         {
-            
             writer.Write((int)idType);
             writer.Write(Version);
             writer.Write(longIdentifier);
             writer.Write(stringIdentifier);
             DataPiece.Serialize(writer, dataPiece);
         }
-
-        
 
         public override void Read(BinaryReader reader)
         {
@@ -61,7 +59,8 @@ namespace SRML.SR.SaveSystem.Format
         {
             EnumTranslator.RegisterEnumFixer<ExtendedDataTree>((translator, mode, piece) => 
             {
-                if(piece.dataPiece!=null) translator.FixEnumValues(mode, piece.dataPiece);
+                if (piece.dataPiece != null) 
+                    translator.FixEnumValues(mode, piece.dataPiece);
             });
         }
 
@@ -70,10 +69,7 @@ namespace SRML.SR.SaveSystem.Format
             ACTOR,
             GADGET,
             LANDPLOT,
+            GAMEDATA,
         }
     }
-
-    
-
-    
 }

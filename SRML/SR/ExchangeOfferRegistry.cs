@@ -20,6 +20,7 @@ namespace SRML.SR
         internal static Dictionary<string, SRMod> customRancherIDs = new Dictionary<string, SRMod>();
         internal static Dictionary<string, SRMod> customOfferIDs = new Dictionary<string, SRMod>();
         internal static Dictionary<string, ProgressDirector.ProgressType> customRancherProgress = new Dictionary<string, ProgressDirector.ProgressType>();
+        internal static Dictionary<string, ProgressDirector.ProgressType> customRancherNames = new Dictionary<string, ProgressDirector.ProgressType>();
 
         static ExchangeOfferRegistry()
         {
@@ -70,6 +71,24 @@ namespace SRML.SR
             if (!customUnlocks.ContainsKey(type)) customUnlocks[type] = new ExchangeDirector.UnlockList() { unlock = type, ids = new Identifiable.Id[0] };
             customUnlocks[type].ids = customUnlocks[type].ids.AddToArray(item);
             customUnlockValues.Add(item, countForValue);
+        }
+
+        /// <summary>
+        /// Generates the necessary objects for a rancher.
+        /// </summary>
+        /// <param name="name">The name of the rancher.</param>
+        /// <param name="progress">The generated progress.</param>
+        /// <param name="rancherName">The generated name.</param>
+        /// <param name="mail">The generated mail.</param>
+        /// <exception cref="Exception">Throws if </exception>
+        public static void RegisterNecessaryRancherIds
+            (string name, out ProgressDirector.ProgressType progress, out RancherChatMetadata.Entry.RancherName rancherName, out MailRegistry.MailEntry mail)
+        {
+            if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
+                throw new Exception("Can't register identifiables outside of the PreLoad step");
+            progress = moddedProgress.RegisterValueWithEnum((ProgressDirector.ProgressType)EnumPatcher.GetFirstFreeValue(typeof(ProgressDirector.ProgressType)), "EXCHANGE_" + name.ToUpper());
+            rancherName = moddedRancherNames.RegisterValueWithEnum((RancherChatMetadata.Entry.RancherName)EnumPatcher.GetFirstFreeValue(typeof(RancherChatMetadata.Entry.RancherName)), name.ToUpper());
+            mail = MailRegistry.RegisterMailEntry(new MailRegistry.MailEntry("exchange_" + name.ToLower()));
         }
 
         /// <summary>

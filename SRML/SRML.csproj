@@ -384,6 +384,7 @@
     <Compile Include="IntermodCommunication.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="IModEntryPoint.cs" />
+    <Compile Include="ModLoadException.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRMLConfig.cs" />
@@ -424,7 +425,18 @@
     <Compile Include="SR\CorporatePartnerRegistry.cs" />
     <Compile Include="SR\Patches\ZoneDirectorCustomRegionForZonePatch.cs" />
     <Compile Include="SR\RegionSetRegistry.cs" />
+    <Compile Include="SR\SaveSystem\ModdedGameData.cs" />
     <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\LoadSaveMethodPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\OnLandPlotDestroyPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\OnGadgetDestroyPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\OnIdHandlerGetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PlaceLandPlotPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PlaceGadgetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SavedGameIgnoreNullGadgetsPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SavedGameIgnoreNullActorsPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SkipMissingGadgetsPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SkipMissingActorsPatch.cs" />
     <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
@@ -651,6 +663,7 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="SR\UI\srml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>
