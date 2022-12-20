@@ -60,7 +60,6 @@ namespace SRML.SR.SaveSystem.Patches
 
             if (AmmoIdentifier.TryGetIdentifier(__instance, out var identifier))
             {
-
                 if (identifiable && ExtendedData.HasExtendedData(identifiable.gameObject))
                 {
                     var ammo = PersistentAmmoManager.GetPersistentAmmoForAmmo(__instance.ammoModel);

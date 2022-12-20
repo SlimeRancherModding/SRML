@@ -33,6 +33,24 @@ namespace SRML
 
         public Console.Console.ConsoleInstance ConsoleInstance { get; internal set; }
 
+        public static T Get<T>() where T : IModEntryPoint
+        {
+            SRMod selectedMod = SRModLoader.Mods.FirstOrDefault(x => x.Value.EntryType == typeof(T)).Value;
+            if (selectedMod == null)
+                throw new EntryPointNotFoundException();
+
+            return (T)(selectedMod.entryPoint2 ?? selectedMod.entryPoint);
+        }
+
+        public static IModEntryPoint Get(string modId)
+        {
+            SRMod selectedMod = SRModLoader.Mods[modId];
+            if (selectedMod == null)
+                throw new ArgumentException();
+
+            return selectedMod.entryPoint2 ?? selectedMod.entryPoint;
+        }
+
         public virtual void PreLoad()
         {
         }

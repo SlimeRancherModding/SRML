@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using SRML.Config;
 using SRML.SR;
 using Newtonsoft.Json.Linq;
+using SRML.Console;
 
 namespace SRML
 {
@@ -159,8 +160,23 @@ namespace SRML
             CurrentLoadingStep = LoadingStep.INITIALIZATION;
             IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
 
-            if (entryPoint is ModEntryPoint)
-                ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
+            if (entryPoint is ModEntryPoint entry)
+            {
+                Colors col = Colors.lime;
+                string name = null;
+
+                foreach (var att in entry.GetType().GetCustomAttributes())
+                {
+                    if (att.GetType() == typeof(ConsoleAppearance))
+                    {
+                        ConsoleAppearance app = (ConsoleAppearance)att;
+                        col = app.consoleCol;
+                        name = app.name;
+                    }
+                }
+
+                entry.ConsoleInstance = new Console.Console.ConsoleInstance(name ?? modInfo.name, col);
+            }
 
             var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
             Mods.Add(modInfo.id, newmod);
@@ -414,14 +430,7 @@ namespace SRML
             /// <returns>The parsed <see cref="ProtoMod"/></returns>
             public static ProtoMod ParseFromJson(string jsonFile) => ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
 
-            public static ProtoMod ParseFromJson(string jsonData, string path)
-            {
-                var proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData, new ProtoModConverter());
-                proto.path = Path.GetDirectoryName(path);
-                proto.entryFile = path;
-                proto.ValidateFields();
-                return proto;
-            }
+            public static ProtoMod ParseFromJson(string jsonData, string path) => JsonConvert.DeserializeObject<ProtoMod>(jsonData, new ProtoModConverter(path));
 
             /// <summary>
             /// Try to create a protomod from an embedded modinfo json in a DLL
@@ -453,30 +462,6 @@ namespace SRML
             public override string ToString() => $"{id} {version}";
 
             /// <summary>
-            /// Make sure fields are in the correct form and not null
-            /// </summary>
-            void ValidateFields()
-            {
-                if (id == null) throw new Exception($"{path} is missing an id field!");
-                id = id.ToLower();
-                if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
-                load_after = load_after ?? new string[0];
-                load_before = load_before ?? new string[0];
-                /*if (dependencies == null || dependencies.Count == 0) return;
-                try
-                {
-                    List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
-                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) 
-                        depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
-                    parsedDependencies = depends.ToArray();
-                }
-                catch
-                {
-                    throw new Exception($"Error parsing mod dependencies for mod {id}");
-                }*/
-            }
-
-            /// <summary>
             /// Turn the protomod into a proper <see cref="SRModInfo"/> instance
             /// </summary>
             /// <returns>Converted <see cref="SRModInfo"/></returns>
@@ -505,6 +490,8 @@ namespace SRML
 
             public class ProtoModConverter : JsonConverter
             {
+                private readonly string path;
+
                 public override bool CanConvert(Type objectType) => objectType == typeof(ProtoMod);
 
                 public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -568,12 +555,25 @@ namespace SRML
                         throw new Exception($"Error parsing dependencies in {pm.id}! {e}");
                     }
 
+                    if (pm.id == null) throw new Exception($"{path} is missing an id field!");
+                    pm.id = pm.id.ToLower();
+                    if (pm.id.Contains(" ")) 
+                        throw new Exception($"Invalid mod id: {pm.id}");
+
+                    pm.load_after = pm.load_after ?? new string[0];
+                    pm.load_before = pm.load_before ?? new string[0];
+
+                    pm.path = Path.GetDirectoryName(path);
+                    pm.entryFile = path;
+
                     return pm;
                 }
 
                 public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
                 {
                 }
+
+                public ProtoModConverter(string path) : base() => this.path = path;
             }
         }
     }

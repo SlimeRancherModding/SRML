@@ -102,8 +102,8 @@ namespace SRML
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
 
-        private IModEntryPoint entryPoint;
-        private ModEntryPoint entryPoint2;
+        internal IModEntryPoint entryPoint;
+        internal ModEntryPoint entryPoint2;
         private bool useNewEntry = false;
 
         private static SRMod forcedContext;

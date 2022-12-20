@@ -166,44 +166,29 @@ namespace SRML.Console
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.Log instead!")]
-        public static void Log(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Log, message, logToFile, GetLogName());
-        }
+        public static void Log(string message, bool logToFile = true) => srmlInstance.Log(message, logToFile);
 
         /// <summary>
         /// Logs a success message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.LogSuccess instead!")]
-        public static void LogSuccess(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, GetLogName());
-        }
+        public static void LogSuccess(string message, bool logToFile = true) => srmlInstance.LogSuccess(message, logToFile);
 
         /// <summary>
         /// Logs a warning message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.LogWarning instead!")]
-        public static void LogWarning(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Warning, message, logToFile, GetLogName());
-        }
+        public static void LogWarning(string message, bool logToFile = true) => srmlInstance.LogWarning(message, logToFile);
 
         /// <summary>
         /// Logs an error message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.LogError instead!")]
-        public static void LogError(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Error, message, logToFile, GetLogName());
-        }
+        public static void LogError(string message, bool logToFile = true) => srmlInstance.LogError(message, logToFile);
+
 
         // PROCESSES THE TEXT FROM THE CONSOLE INPUT
         internal static void ProcessInput(string command, bool forced = false)
@@ -302,7 +287,7 @@ namespace SRML.Console
         }
 
         // LOGS A NEW ENTRY
-        internal void LogEntry(LogType logType, string message, bool logToFile, string name)
+        internal void LogEntry(LogType logType, string message, bool logToFile, string name, Colors nameCol)
         {
             string type = TypeToText(logType);
             string color = "white";
@@ -312,7 +297,7 @@ namespace SRML.Console
             if (lines.Count >= MAX_ENTRIES)
                 lines.RemoveRange(0, 10);
             
-            lines.Add($"<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color> <color=lime>[{name}]</color> <color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>");
+            lines.Add($"<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color> <color={nameCol}>[{name}]</color> <color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>");
 
             if (logToFile)
                 FileLogger.LogEntry(logType, message, name);
@@ -384,14 +369,15 @@ namespace SRML.Console
         public class ConsoleInstance
         {
             public readonly string Name;
+            internal Colors col = Colors.lime;
 
-            public void Log(object message, bool logToFile = true) => console.LogEntry(LogType.Log, message.ToString(), logToFile, Name);
+            public void Log(object message, bool logToFile = true) => console.LogEntry(LogType.Log, message.ToString(), logToFile, Name, col);
 
-            public void LogWarning(object message, bool logToFile = true) => console.LogEntry(LogType.Warning, message.ToString(), logToFile, Name);
+            public void LogWarning(object message, bool logToFile = true) => console.LogEntry(LogType.Warning, message.ToString(), logToFile, Name, col);
 
-            public void LogError(object message, bool logToFile = true) => console.LogEntry(LogType.Error, message.ToString(), logToFile, Name);
+            public void LogError(object message, bool logToFile = true) => console.LogEntry(LogType.Error, message.ToString(), logToFile, Name, col);
 
-            public void LogSuccess(object message, bool logToFile = true) => console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, Name);
+            public void LogSuccess(object message, bool logToFile = true) => console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, Name, col);
 
             public void LogToFile(object message) => FileLogger.LogEntry(LogType.Log, message.ToString(), Name);
 
@@ -402,6 +388,12 @@ namespace SRML.Console
             public ConsoleInstance(string name)
             {
                 Name = name;
+            }
+
+            public ConsoleInstance(string name, Colors nameCol)
+            {
+                Name = name;
+                col = nameCol;
             }
         }
     }

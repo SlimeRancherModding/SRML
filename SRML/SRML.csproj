@@ -363,6 +363,7 @@
     <Compile Include="Console\Commands\SpawnCommand.cs" />
     <Compile Include="Console\Commands\UnbindCommand.cs" />
     <Compile Include="Console\Console.cs" />
+    <Compile Include="Console\ConsoleAppearance.cs" />
     <Compile Include="Console\ConsoleBinder.cs" />
     <Compile Include="Console\ConsoleButton.cs" />
     <Compile Include="Console\ConsoleCommand.cs" />
@@ -426,6 +427,7 @@
     <Compile Include="SR\Patches\ZoneDirectorCustomRegionForZonePatch.cs" />
     <Compile Include="SR\RegionSetRegistry.cs" />
     <Compile Include="SR\SaveSystem\ModdedGameData.cs" />
+    <Compile Include="SR\SaveSystem\Patches\DroneExtendedDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\LoadSaveMethodPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\OnLandPlotDestroyPatch.cs" />
