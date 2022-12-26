@@ -9,7 +9,7 @@ namespace SRML.SR.SaveSystem.Patches
     {
         public static void Postfix(IdHandler __instance)
         {
-            ExtendedData.handlersInSave.Add(__instance, string.Empty);
+            ExtendedData.handlersInSave.Add(__instance.gameObject, (__instance, string.Empty));
         }
     }
 }

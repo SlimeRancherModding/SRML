@@ -22,7 +22,7 @@ namespace SRML.SR.SaveSystem
 
         internal static Dictionary<SRMod, CompoundDataPiece> worldSaveData = new Dictionary<SRMod, CompoundDataPiece>();
 
-        internal static Dictionary<IdHandler, string> handlersInSave = new Dictionary<IdHandler, string>();
+        internal static Dictionary<GameObject, (IdHandler, string)> handlersInSave = new Dictionary<GameObject, (IdHandler, string)>();
         internal static Dictionary<GameObject, string> gadgetsInSave = new Dictionary<GameObject, string>();
         internal static Dictionary<GameObject, string> landplotsInSave = new Dictionary<GameObject, string>();
 
@@ -280,13 +280,13 @@ namespace SRML.SR.SaveSystem
                 }
                 for (int i = 0; i < handlersInSave.Count; i++)
                 {
-                    IdHandler handler = handlersInSave.ElementAt(i).Key;
+                    IdHandler handler = handlersInSave.ElementAt(i).Value.Item1;
                     IdDirector dir = handler.GetRequiredComponentInParent<IdDirector>();
                     string id = dir?.GetPersistenceIdentifier(handler);
                     if (id == null)
                         return;
 
-                    handlersInSave[handler] = id;
+                    handlersInSave[handler.gameObject] = (handler, id);
                     OnRegisterGameData(id, handler);
                 }
             };
@@ -333,10 +333,10 @@ namespace SRML.SR.SaveSystem
                 yield return new KeyValuePair<DataIdentifier, CompoundDataPiece>(DataIdentifier.GetActorIdentifier(v.Key), 
                     ReadDataFromGameObject(v.Value.transform.gameObject));
             }
-            foreach (KeyValuePair<IdHandler, string> handler in handlersInSave)
+            foreach (KeyValuePair<GameObject, (IdHandler, string)> handler in handlersInSave)
             {
                 yield return new KeyValuePair<DataIdentifier, CompoundDataPiece>(
-                    DataIdentifier.GetGameDataIdentifier(handler.Value), ReadDataFromGameObject(handler.Key.gameObject));
+                    DataIdentifier.GetGameDataIdentifier(handler.Value.Item2), ReadDataFromGameObject(handler.Key));
             }
             foreach (KeyValuePair<GameObject, string> gadget in gadgetsInSave)
             {

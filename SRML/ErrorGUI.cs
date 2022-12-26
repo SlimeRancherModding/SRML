@@ -108,16 +108,11 @@ namespace SRML
 
     internal class IndividualExceptionUI : MonoBehaviour
     {
-        [SerializeField]
-        private TMP_Text title;
-        [SerializeField]
-        private TMP_Text extended;
-        [SerializeField]
-        private UnityEngine.UI.Image arrow;
-        [SerializeField]
-        private Sprite down;
-        [SerializeField]
-        private Sprite right;
+        public TMP_Text title;
+        public TMP_Text extended;
+        public UnityEngine.UI.Image arrow;
+        public Sprite down;
+        public Sprite right;
 
         private bool isExtended = false;
         private string titleText;
