@@ -22,7 +22,7 @@ namespace SRML
 {
     internal static class Main
     {
-        public const string VERSION_STRING = "BETA-0.2.2-2022121901";
+        public const string VERSION_STRING = "BETA-0.2.2-2022121901-";
 
         private static bool isPreInitialized;
         internal static Transform prefabParent;
