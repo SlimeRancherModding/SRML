@@ -21,7 +21,7 @@ namespace SRML.SR.Patches
             {
                 if (ui is null)
                 {
-                    ui = PrefabUtils.CopyPrefab(Resources.FindObjectsOfTypeAll<GameObject>().First(x => x.name == "RefineryUI"));
+                    ui = PrefabUtils.CopyPrefab(Resources.FindObjectsOfTypeAll<RefineryUI>().First().gameObject);
                     ui.name = "ExtendedMarketUI";
                     ExtendedMarketUI marketUI = ui.AddComponent<ExtendedMarketUI>();
                     RefineryUI refineryUI = ui.GetComponent<RefineryUI>();

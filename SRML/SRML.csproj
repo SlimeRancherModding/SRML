@@ -345,23 +345,21 @@
     <Compile Include="Config\Parsing\StringParser.cs" />
     <Compile Include="Config\Parsing\StringUtils.cs" />
     <Compile Include="Config\Range.cs" />
-    <Compile Include="Console\Commands\AddButtonCommand.cs" />
     <Compile Include="Console\Commands\BindCommand.cs" />
+    <Compile Include="Console\Commands\ButtonCommand.cs" />
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
     <Compile Include="Console\Commands\DumpCommand.cs" />
-    <Compile Include="Console\Commands\EditButtonCommand.cs" />
     <Compile Include="Console\Commands\FastForwardCommand.cs" />
     <Compile Include="Console\Commands\GiveCommand.cs" />
     <Compile Include="Console\Commands\HelpCommand.cs" />
+    <Compile Include="Console\Commands\HideLogCommand.cs" />
     <Compile Include="Console\Commands\KillAllCommand.cs" />
     <Compile Include="Console\Commands\ModsCommand.cs" />
     <Compile Include="Console\Commands\NoclipCommand.cs" />
     <Compile Include="Console\Commands\ReloadCommand.cs" />
-    <Compile Include="Console\Commands\RemoveButtonCommand.cs" />
     <Compile Include="Console\Commands\KillCommand.cs" />
     <Compile Include="Console\Commands\SpawnCommand.cs" />
-    <Compile Include="Console\Commands\UnbindCommand.cs" />
     <Compile Include="Console\Console.cs" />
     <Compile Include="Console\ConsoleAppearance.cs" />
     <Compile Include="Console\ConsoleBinder.cs" />
@@ -668,6 +666,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"
+xcopy /Y "$(TargetDir)SRML.pdb" "$(GameDir)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -22,6 +22,13 @@ namespace SRML
     {
         internal const string ModJson = "modinfo.json";
 
+        internal static readonly string[] forbiddenIds = new string[]
+        {
+            "srml",
+            "unity",
+            "internal",
+        };
+
         internal static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
 
         public static IEnumerable<SRModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
@@ -165,7 +172,7 @@ namespace SRML
                 Colors col = Colors.lime;
                 string name = null;
 
-                foreach (var att in entry.GetType().GetCustomAttributes())
+                foreach (var att in entryType.GetCustomAttributes())
                 {
                     if (att.GetType() == typeof(ConsoleAppearance))
                     {
@@ -175,7 +182,7 @@ namespace SRML
                     }
                 }
 
-                entry.ConsoleInstance = new Console.Console.ConsoleInstance(name ?? modInfo.name, col);
+                entry.ConsoleInstance = new Console.Console.ConsoleInstance(name ?? modInfo.name, col, $"{modInfo.id}.main");
             }
 
             var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
@@ -505,14 +512,12 @@ namespace SRML
                         pm.version = token["version"].ToObject<string>();
                         pm.name = token["name"].ToObject<string>();
 
-                        if (token.ContainsKey("author"))
-                            pm.author = token["author"].ToObject<string>();
-                        if (token.ContainsKey("description"))
-                            pm.description = token["description"].ToObject<string>();
+                        pm.author = token["author"]?.ToObject<string>() ?? string.Empty;
+                        pm.description = token["description"]?.ToObject<string>() ?? string.Empty;
                     }
                     catch (Exception e)
                     {
-                        if (pm.id == null || pm.id == string.Empty)
+                        if (pm.id.IsNullOrEmpty())
                             throw new Exception($"Error parsing unknown basic mod information! {e}");
                         else
                             throw new Exception($"Error parsing basic mod information for {pm.id}! {e}");
@@ -520,10 +525,8 @@ namespace SRML
 
                     try
                     {
-                        if (token.ContainsKey("load_after"))
-                            pm.load_after = token["load_after"].ToObject<string[]>();
-                        if (token.ContainsKey("load_after"))
-                            pm.load_after = token["load_after"].ToObject<string[]>();
+                        pm.load_after = token["load_after"]?.ToObject<string[]>() ?? new string[0];
+                        pm.load_before = token["load_before"]?.ToObject<string[]>() ?? new string[0];
                     }
                     catch (Exception e)
                     {
@@ -557,11 +560,8 @@ namespace SRML
 
                     if (pm.id == null) throw new Exception($"{path} is missing an id field!");
                     pm.id = pm.id.ToLower();
-                    if (pm.id.Contains(" ")) 
+                    if (pm.id.IsNullOrEmpty() || forbiddenIds.Contains(pm.id) || pm.id.Contains(" ") || pm.id.Contains("."))
                         throw new Exception($"Invalid mod id: {pm.id}");
-
-                    pm.load_after = pm.load_after ?? new string[0];
-                    pm.load_before = pm.load_before ?? new string[0];
 
                     pm.path = Path.GetDirectoryName(path);
                     pm.entryFile = path;

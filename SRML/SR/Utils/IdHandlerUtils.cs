@@ -34,9 +34,7 @@ namespace SRML.SR.Utils
                 foreach (IdHandler handler in UnityEngine.Object.FindObjectsOfType<IdHandler>())
                 {
                     if (!idHandlerPrefabs.ContainsKey(handler.GetType()))
-                    {
                         idHandlerPrefabs[handler.GetType()] = PrefabUtils.CopyPrefab(handler.gameObject);
-                    }
                 }
             };
         }

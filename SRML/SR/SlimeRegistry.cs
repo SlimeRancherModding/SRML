@@ -18,15 +18,20 @@ namespace SRML.SR
         private static float defaultRadius;
         private static bool initialized;
         public static Dictionary<string, SlimeAppearanceElement> replaceElements = new Dictionary<string, SlimeAppearanceElement>();
-        public static List<string> dontReplaceMats = new List<string>();
+        public static List<Shader> dontReplaceShaders = new List<Shader>();
 
         internal static void Initialize(SlimeDefinitions defs)
         {
             if (initialized) return;
             quantumApp = defs.GetAppearanceById(Identifiable.Id.QUANTUM_SLIME).QubitAppearance;
             defaultRadius = GameContext.Instance.LookupDirector.GetPrefab(Identifiable.Id.PINK_SLIME).GetComponent<SphereCollider>().radius;
+            
             replaceElements.Add("Rad Aura", defs.GetAppearanceById(Identifiable.Id.PINK_RAD_LARGO).Structures[1].Element);
             replaceElements.Add("Rad Exotic Aura", (SlimeAppearanceElement)Resources.Load("dlc/secret_style/assets/actor/slime/element/RadAuraLargoExotic"));
+
+            dontReplaceShaders.Add(Shader.Find("SR/AMP/FX/RadAura"));
+            dontReplaceShaders.Add(Shader.Find("SR/Null Render"));
+
             initialized = true;
         }
 
@@ -276,10 +281,10 @@ namespace SRML.SR
             largoPrefab.GetComponent<Identifiable>().id = def.IdentifiableId;
             largoPrefab.GetComponent<Vacuumable>().size = Vacuumable.Size.LARGE;
             largoPrefab.GetComponent<Rigidbody>().mass += slime2Prefab.GetComponent<Rigidbody>().mass;
-            GameObject.Destroy(largoPrefab.GetComponent<AweTowardsLargos>());
+            largoPrefab.GetComponent<AweTowardsLargos>()?.Destroy();
 
-            if (largoPrefab.HasComponent<PlayWithToys>())
-                largoPrefab.GetComponent<PlayWithToys>().slimeDefinition = def;
+            if (largoPrefab.TryGetComponent(out PlayWithToys t))
+                t.slimeDefinition = def;
             if (largoPrefab.HasComponent<ReactToToyNearby>())
                 largoPrefab.GetComponent<ReactToToyNearby>().slimeDefinition = def;
 
@@ -355,6 +360,9 @@ namespace SRML.SR
                 {
                     if (x == DLCPackage.Id.SECRET_STYLE)
                     {
+                        if (def.GetAppearanceForSet(SlimeAppearance.AppearanceSaveSet.SECRET_STYLE) != null)
+                            return;
+
                         SlimeAppearance secretSlime1 = slime1Def.GetAppearanceForSet(SlimeAppearance.AppearanceSaveSet.SECRET_STYLE);
                         SlimeAppearance secretSlime2 = slime2Def.GetAppearanceForSet(SlimeAppearance.AppearanceSaveSet.SECRET_STYLE);
 
@@ -412,7 +420,7 @@ namespace SRML.SR
 
         internal static void ReplaceRecolorStructureMats(bool replace, bool recolor, SlimeAppearanceStructure structure, SlimeAppearanceStructure reference)
         {
-            if (replace && !structure.DefaultMaterials.Any(x => dontReplaceMats.Contains(x.name))) 
+            if (replace && !structure.DefaultMaterials.Any(x => dontReplaceShaders.Contains(x.shader))) 
                 structure.DefaultMaterials = structure.DefaultMaterials.DuplicateMats(reference.DefaultMaterials);
             else 
                 structure.DefaultMaterials = structure.DefaultMaterials.DuplicateMats();
@@ -423,14 +431,14 @@ namespace SRML.SR
                 int z = 0;
                 foreach (Material mat1 in structure.DefaultMaterials)
                 {
-                    Material cloned1 = GameObject.Instantiate(mat1);
-                    if (cloned1.HasProperty("_TopColor"))
+                    if (mat1.HasProperty("_TopColor"))
                     {
+                        Material cloned1 = GameObject.Instantiate(mat1);
                         cloned1.SetColor("_TopColor", mat.GetColor("_TopColor"));
                         cloned1.SetColor("_MiddleColor", mat.GetColor("_MiddleColor"));
                         cloned1.SetColor("_BottomColor", mat.GetColor("_BottomColor"));
+                        structure.DefaultMaterials[z] = cloned1;
                     }
-                    structure.DefaultMaterials[z] = cloned1;
                     z++;
                 }
             }
