@@ -1,5 +1,7 @@
-﻿using SRML.SR.SaveSystem.Data;
+﻿using SRML.Console;
+using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Ammo;
+using System.Linq;
 
 namespace SRML.SR.SaveSystem
 {
@@ -22,9 +24,8 @@ namespace SRML.SR.SaveSystem
             DataModel.UpdateFromExistingSlots(Identifier.ResolveModel().slots,log);
         }
 
-        public void OnDecrement(int slot, int count)
+        public void OnDecrement(int slot, int count, Identifiable.Id id)
         {
-
             if (DataModel.slots[slot].Count == 0)
             {
                 Sync();
@@ -32,11 +33,12 @@ namespace SRML.SR.SaveSystem
             }
             for (int i = 0; i < count; i++)
             {
-                DataModel.PopDataForSlot(slot);
+                CompoundDataPiece removed = DataModel.PopDataForSlot(slot);
+                if (removed != null && Identifier.AmmoType == AmmoType.DRONE)
+                    DronePersistentAmmoManager.OnDecrement(removed, id);
             }
             Sync();
             ClearSelected();
-
         }
 
         public void OnSelected(Identifiable.Id id, int slot)

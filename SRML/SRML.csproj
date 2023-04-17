@@ -424,6 +424,7 @@
     <Compile Include="SR\CorporatePartnerRegistry.cs" />
     <Compile Include="SR\Patches\ZoneDirectorCustomRegionForZonePatch.cs" />
     <Compile Include="SR\RegionSetRegistry.cs" />
+    <Compile Include="SR\SaveSystem\DronePersistentAmmoManager.cs" />
     <Compile Include="SR\SaveSystem\ModdedGameData.cs" />
     <Compile Include="SR\SaveSystem\Patches\DroneExtendedDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />

@@ -22,10 +22,13 @@ namespace SRML.SR.SaveSystem.Patches
         {
             var potentialTag = PersistentAmmoManager.GetPotentialDataTag(gameObj);
             if (potentialTag != null)
-            {
-                ExtendedData.preparedData[DataIdentifier.GetActorIdentifier(actorId)] = new ExtendedData.PreparedData() { SourceType = ExtendedData.PreparedData.PreparationSource.AMMO, Data = potentialTag };
-                
-            }
+                ExtendedData.preparedData[DataIdentifier.GetActorIdentifier(actorId)] = new ExtendedData.PreparedData() 
+                { 
+                    SourceType = ExtendedData.PreparedData.PreparationSource.AMMO, 
+                    Data = potentialTag 
+                };
+            else
+                DronePersistentAmmoManager.OnActorSpawned(gameObj, actorId);
         }
     }
 

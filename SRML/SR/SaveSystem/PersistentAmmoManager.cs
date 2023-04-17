@@ -33,9 +33,9 @@ namespace SRML.SR.SaveSystem
             AmmoIdentifier.ClearCache();
         }
 
-        internal static void OnAmmoDecrement(AmmoIdentifier id, int slot, int count)
+        internal static void OnAmmoDecrement(AmmoIdentifier id, int slot, int count, Identifiable.Id ident)
         {
-            PersistentAmmoData[id].OnDecrement(slot,count);
+            PersistentAmmoData[id].OnDecrement(slot, count, ident);
             if (PersistentAmmoData[id].DataModel.HasNoData()) PersistentAmmoData.Remove(id);
         }
 

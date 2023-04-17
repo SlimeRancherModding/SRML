@@ -427,7 +427,10 @@ namespace SRML.SR
 
             if (recolor)
             {
-                Material mat = reference.DefaultMaterials[0];
+                Material mat = reference.DefaultMaterials.FirstOrDefault(x => x.HasProperty("_TopColor"));
+                if (mat == null)
+                    return;
+
                 int z = 0;
                 foreach (Material mat1 in structure.DefaultMaterials)
                 {

@@ -93,16 +93,16 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 if (candidate.Value.attached is DroneModel drone)
                 {
                     if (drone.ammo == ammoModel)
-                        return potentialKey;
-
+                    {
+                        return new AmmoIdentifier(AmmoType.DRONE, candidate.Key);
+                    }
                 }
 
                 if (candidate.Value.attached is WarpDepotModel depot)
                 {
-                    if (depot.ammo == ammoModel) return potentialKey;
-
+                    if (depot.ammo == ammoModel) 
+                        return potentialKey;
                 }
-
             }
 
             foreach (var candidate in SceneContext.Instance.GameModel.landPlots)
@@ -133,6 +133,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
             switch (identifier.AmmoType)
             {
                 case AmmoType.GADGET:
+                case AmmoType.DRONE:
                     return ModdedStringRegistry.IsValidString(identifier.stringIdentifier);
                 case AmmoType.LANDPLOT:
                     return ModdedStringRegistry.IsValidString(identifier.stringIdentifier)&&Enum.IsDefined(typeof(SiloStorage.StorageType), (SiloStorage.StorageType)(int)identifier.longIdentifier);
@@ -155,6 +156,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                         [(PlayerState.AmmoMode)identifier.longIdentifier];
 
                 case AmmoType.GADGET:
+                case AmmoType.DRONE:
                     var gadget = SceneContext.Instance.GameModel.gadgetSites[identifier.stringIdentifier].attached;
                     if (gadget is DroneModel drone) return drone.ammo;
                     if (gadget is WarpDepotModel depot) return depot.ammo;
@@ -207,6 +209,7 @@ namespace SRML.SR.SaveSystem.Data.Ammo
                 case AmmoType.PLAYER:
                     return game.player.ammo[(PlayerState.AmmoMode)identifier.longIdentifier];
                 case AmmoType.GADGET:
+                case AmmoType.DRONE:
                     return ModdedStringRegistry.IsValidString(identifier.stringIdentifier) ? (game.world.placedGadgets[identifier.stringIdentifier].drone?.drone?.ammo is AmmoDataV02 amdat ? new AmmoDataV02[] { amdat }.ToList() : game.world.placedGadgets[identifier.stringIdentifier].ammo) :null;
                 case AmmoType.LANDPLOT:
                     return game.ranch.plots.FirstOrDefault((x) => x.id == identifier.stringIdentifier)?
@@ -218,6 +221,9 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
         public static AmmoIdentifier GetIdentifier(List<AmmoDataV02> ammo, Game game)
         {
+            if (ammo.Count == 0)
+                return new AmmoIdentifier(AmmoType.NONE, 0);
+
             foreach (var v in game.player.ammo)
             {
                 if (ammo == v.Value) return new AmmoIdentifier(AmmoType.PLAYER, (long)v.Key);
@@ -234,7 +240,8 @@ namespace SRML.SR.SaveSystem.Data.Ammo
 
             foreach (var v in game.world.placedGadgets)
             {
-                if (v.Value.ammo == ammo) return new AmmoIdentifier(AmmoType.GADGET, v.Key);
+                if (v.Value.ammo == ammo)
+                    return new AmmoIdentifier(v.Value.drone != null ? AmmoType.DRONE : AmmoType.GADGET, v.Key);
             }
             return new AmmoIdentifier(AmmoType.NONE, 0);
         }
@@ -313,8 +320,8 @@ namespace SRML.SR.SaveSystem.Data.Ammo
         PLAYER,
         LANDPLOT,
         GADGET,
+        DRONE,
         CUSTOM = -2147483648
-
     }
 
     internal static class AmmoTypeExtensions
