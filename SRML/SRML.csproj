@@ -38,7 +38,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <ProjectReference Include="..\SRML.Core\SRML.Core.csproj" />
+    <Reference Include="0Harmony">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">

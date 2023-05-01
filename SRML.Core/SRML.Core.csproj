@@ -283,11 +283,18 @@
   <ItemGroup>
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="ModLoader\Basic\EventEntryPoint.cs" />
+    <Compile Include="ModLoader\Basic\BasicLoadEntryPoint.cs" />
+    <Compile Include="ModLoader\IEntryPoint.cs" />
+    <Compile Include="ModLoader\IMod.cs" />
+    <Compile Include="ModLoader\IModInfo.cs" />
+    <Compile Include="ModLoader\IModLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
