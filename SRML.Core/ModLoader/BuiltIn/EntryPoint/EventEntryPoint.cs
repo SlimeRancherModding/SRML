@@ -2,7 +2,7 @@
 using System;
 using System.Reflection;
 
-namespace SRML.Core.ModLoader
+namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
 {
     public abstract class EventEntryPoint : IEntryPoint
     {

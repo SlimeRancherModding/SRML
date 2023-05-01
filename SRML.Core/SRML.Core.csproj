@@ -283,8 +283,9 @@
   <ItemGroup>
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="ModLoader\Basic\EventEntryPoint.cs" />
-    <Compile Include="ModLoader\Basic\BasicLoadEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\BasicMod.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
     <Compile Include="ModLoader\IEntryPoint.cs" />
     <Compile Include="ModLoader\IMod.cs" />
     <Compile Include="ModLoader\IModInfo.cs" />
@@ -295,6 +296,10 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ModLoader\BuiltIn\ModInfo\" />
+    <Folder Include="ModLoader\BuiltIn\ModLoader\" />
+    <Folder Include="ModLoader\BuiltIn\Mod\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

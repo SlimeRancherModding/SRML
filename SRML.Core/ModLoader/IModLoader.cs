@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace SRML.Core.ModLoader
 {
-    public interface IModLoader<M, E, I>
+    public interface IModLoader<M>
         where M : IMod
-        where E: IEntryPoint
-        where I: IModInfo
     {
         M DiscoverMod();
     }

@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace SRML.Core.ModLoader.Basic
+namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
 {
     public abstract class BasicLoadEntryPoint : EventEntryPoint
     {
