@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Semver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,14 +10,19 @@ namespace SRML.Core.ModLoader.DataTypes
     {
         public readonly string[] loadBeforeIds;
         public readonly string[] loadAfterIds;
+        public readonly Dictionary<string, SemVersion> dependencies;
         public readonly string id;
 
-        public Dependency(string id, string[] loadBeforeIds, string[] loadAfterIds)
+        public Dependency(string id, string[] loadBeforeIds, string[] loadAfterIds, Dictionary<string, SemVersion> dependencies)
         {
             this.id = id;
             this.loadBeforeIds = loadBeforeIds;
             this.loadAfterIds = loadAfterIds;
+            this.dependencies = dependencies;
         }
+
+        public bool Met() => dependencies.All(x => Main.loader.mods.Any(y => y.ModInfo.Id == x.Key &&
+            y.ModInfo.Version.ComparePrecedenceTo(x.Value) != -1));
 
         public static string[] CalculateLoadOrder(Dependency[] dependencies)
         {
@@ -26,7 +32,7 @@ namespace SRML.Core.ModLoader.DataTypes
             Dictionary<string, string[]> loadBefores = dependencies.ToDictionary(x => x.id, 
                 y => y.loadBeforeIds.Where(x => Main.loader.mods.Any(z => z.ModInfo.Id == x)).ToArray());
             Dictionary<string, string[]> loadAfters = dependencies.ToDictionary(x => x.id, 
-                y => y.loadAfterIds.Where(x => Main.loader.mods.Any(z => z.ModInfo.Id == x)).ToArray());
+                y => y.loadAfterIds.Where(x => Main.loader.mods.Any(z => z.ModInfo.Id == x)).Concat(y.dependencies.Keys).ToArray());
 
             if (loadBefores.Any(x => x.Value.Any(y => loadBefores[y].Contains(x.Key))) ||
                 loadAfters.Any(x => x.Value.Any(y => loadAfters[y].Contains(x.Key))))
