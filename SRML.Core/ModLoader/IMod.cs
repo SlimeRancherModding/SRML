@@ -1,9 +1,11 @@
 ﻿namespace SRML.Core.ModLoader
 {
-    public interface IMod
+    public interface IMod<E, I>
+        where E : IEntryPoint
+        where I : IModInfo
     {
-        IEntryPoint Entry { get; set; }
-        IModInfo ModInfo { get; set; }
+        E Entry { get; set; }
+        I ModInfo { get; set; }
 
         void Initialize();
     }

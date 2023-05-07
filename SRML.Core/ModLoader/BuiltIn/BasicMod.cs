@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SRML.Core.ModLoader.BuiltIn.EntryPoint;
+using SRML.Core.ModLoader.BuiltIn.ModInfo;
+using System;
 
 namespace SRML.Core.ModLoader.BuiltIn
 {
-    public class BasicMod : IMod
+    public class BasicMod : IMod<BasicLoadEntryPoint, BasicModInfo>
     {
-        public IEntryPoint Entry { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public IModInfo ModInfo { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public BasicLoadEntryPoint Entry { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public BasicModInfo ModInfo { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Initialize()
         {

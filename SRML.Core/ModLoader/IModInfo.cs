@@ -2,6 +2,8 @@
 {
     public interface IModInfo
     {
-        void Parse();
+        string Id { get; }
+
+        void Parse(string json);
     }
 }
