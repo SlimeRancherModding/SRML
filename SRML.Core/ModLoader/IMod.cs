@@ -1,12 +1,31 @@
-﻿namespace SRML.Core.ModLoader
+﻿using System;
+
+namespace SRML.Core.ModLoader
 {
-    public interface IMod<E, I>
+    public interface IMod
+    {
+        Type EntryType { get; }
+        Type InfoType { get; }
+
+        IEntryPoint Entry { get; }
+        IModInfo ModInfo { get; }
+
+        void Initialize();
+    }
+
+    public abstract class Mod<E, I> : IMod
         where E : IEntryPoint
         where I : IModInfo
     {
-        E Entry { get; set; }
-        I ModInfo { get; set; }
+        public Type EntryType => typeof(E);
+        public Type InfoType => typeof(I);
 
-        void Initialize();
+        public IEntryPoint Entry { get; set; }
+        public IModInfo ModInfo { get; set; }
+
+        public abstract E TypeEntry { get; set; }
+        public abstract I TypeInfo { get; set; }
+
+        public abstract void Initialize();
     }
 }

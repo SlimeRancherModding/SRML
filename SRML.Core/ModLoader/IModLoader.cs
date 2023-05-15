@@ -1,16 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SRML.Core.ModLoader
 {
-    public interface IModLoader<M, E, I>
-        where M : IMod<E, I>
+    public interface IModLoader
+    {
+        Type ModType { get; }
+        IMod[] LoadedMods { get; }
+
+        void Initialize();
+        void DiscoverMods();
+        IMod LoadMod(Type entryType);
+    }
+
+    public abstract class ModLoader<M, E, I> : IModLoader
+        where M : IMod
         where E : IEntryPoint
         where I : IModInfo
     {
-        M DiscoverMod();
+        public Type ModType => typeof(M);
+
+        public IMod[] LoadedMods => loadedMods.ToArray();
+        internal List<IMod> loadedMods = new List<IMod>();
+
+        public abstract void DiscoverMods();
+
+        public abstract void Initialize();
+
+        public abstract IMod LoadMod(Type entryType);
     }
 }

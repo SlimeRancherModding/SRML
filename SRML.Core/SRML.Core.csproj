@@ -289,12 +289,18 @@
   <ItemGroup>
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="ModLoader\BuiltIn\BasicMod.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModLoaderType.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModType.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterMod.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\BasicModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\FileModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\ModInfo\BasicModInfo.cs" />
     <Compile Include="ModLoader\CoreLoader.cs" />
-    <Compile Include="ModLoader\DataTypes\Dependency.cs" />
+    <Compile Include="ModLoader\DataTypes\DependencyMetadata.cs" />
+    <Compile Include="ModLoader\DataTypes\IPathProvider.cs" />
     <Compile Include="ModLoader\IEntryPoint.cs" />
     <Compile Include="ModLoader\IMod.cs" />
     <Compile Include="ModLoader\IModInfo.cs" />
@@ -305,9 +311,6 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ModLoader\BuiltIn\ModLoader\" />
-    <Folder Include="ModLoader\BuiltIn\Mod\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
