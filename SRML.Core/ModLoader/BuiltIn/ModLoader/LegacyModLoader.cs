@@ -1,4 +1,6 @@
-﻿using SRML.Core.ModLoader.BuiltIn.EntryPoint;
+﻿using HarmonyLib;
+using SRML.Console;
+using SRML.Core.ModLoader.BuiltIn.EntryPoint;
 using SRML.Core.ModLoader.BuiltIn.Mod;
 using SRML.Core.ModLoader.BuiltIn.ModInfo;
 using System;
@@ -9,9 +11,9 @@ using UnityEngine;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 {
-    public class BasicModLoader : BasicFileModLoader<BasicMod, BasicLoadEntryPoint, BasicModInfo>
+    public class LegacyModLoader : FileModLoader<BasicMod, LegacyEntryPoint, BasicModInfo>
     {
-        public override string Path => @"SRML\NewMods";
+        public override string Path => @"SRML\Mods";
 
         public override void Initialize()
         {
@@ -21,9 +23,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
         {
             BasicMod mod = new BasicMod();
             Assembly asm = entryType.Assembly;
-            
-            BasicLoadEntryPoint entryPoint = (BasicLoadEntryPoint)Activator.CreateInstance(entryType);
-            
+            LegacyEntryPoint entryPoint = new LegacyEntryPoint();
             mod.Entry = entryPoint;
             mod.Path = asm.Location;
 
@@ -37,11 +37,18 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
             loadedMods.Add(mod);
 
-            entryPoint.HarmonyInstance = HarmonyPatcher.SetInstance(info.GetDefaultHarmonyName());
-            entryPoint.ConsoleInstance = Console.Console.ConsoleInstance.PopulateConsoleInstanceFromType(entryType, info.Id);
+            entryPoint.legacyEntry = ModEntryPoint.CreateEntry(entryType, info.Id);
             entryPoint.Initialize();
-            
+
             return mod;
+        }
+
+        public override void DiscoverTypesFromAssembly(Assembly assembly)
+        {
+            Debug.Log($"attempting to load from {assembly.FullName}");
+            Type entryType = assembly.ManifestModule.GetTypes().FirstOrDefault(x => typeof(IModEntryPoint).IsAssignableFrom(x));
+            if (entryType != null)
+                LoadMod(entryType);
         }
     }
 }

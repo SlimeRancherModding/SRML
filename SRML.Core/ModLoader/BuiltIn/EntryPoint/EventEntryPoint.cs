@@ -4,11 +4,11 @@ using System.Reflection;
 
 namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
 {
-    public abstract class EventEntryPoint : IEntryPoint
+    public abstract class EventEntryPoint : SRML.Core.ModLoader.EntryPoint
     {
         public abstract EntryEvent[] Events();
 
-        public virtual void Initialize()
+        public override void Initialize()
         {
             foreach (EntryEvent toRegister in Events())
             {

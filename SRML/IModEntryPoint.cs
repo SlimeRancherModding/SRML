@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using HarmonyLib;
+using SRML.Console;
 
 namespace SRML
 {
@@ -29,9 +31,36 @@ namespace SRML
 
     public abstract class ModEntryPoint : IModEntryPoint
     {
-        public Harmony HarmonyInstance => HarmonyPatcher.GetInstance();
+        public Harmony HarmonyInstance => harmony;
+        internal Harmony harmony;
 
         public Console.Console.ConsoleInstance ConsoleInstance { get; internal set; }
+
+        public static IModEntryPoint CreateEntry(Type entryType, string id)
+        {
+            IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
+
+            if (entryPoint is ModEntryPoint entry)
+            {
+                Colors col = Colors.lime;
+                string name = null;
+
+                foreach (var att in entryType.GetCustomAttributes())
+                {
+                    if (att.GetType() == typeof(ConsoleAppearance))
+                    {
+                        ConsoleAppearance app = (ConsoleAppearance)att;
+                        col = app.consoleCol;
+                        name = app.name;
+                    }
+                }
+
+                entry.harmony = HarmonyPatcher.SetInstanceForType(entryType, $"net.srml.{id}");
+                entry.ConsoleInstance = new Console.Console.ConsoleInstance(name ?? id, col, $"{id}.main");
+            }
+
+            return entryPoint;
+        }
 
         public static T Get<T>() where T : IModEntryPoint
         {

@@ -5,6 +5,7 @@ using SRML.Core.ModLoader.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 {
@@ -18,6 +19,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
         private ProtoMod parsedInfo;
 
         public void Parse(string json) => parsedInfo = JsonConvert.DeserializeObject<ProtoMod>(json, new ProtoModConverter());
+        public string GetDefaultHarmonyName() => $"net.{(Author == null || Author.Length == 0 ? "srml" : Regex.Replace(Author, @"\s+", ""))}.{Id}";
 
         public class ProtoMod
         {

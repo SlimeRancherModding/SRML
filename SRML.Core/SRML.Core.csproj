@@ -73,6 +73,12 @@
     <Reference Include="Semver, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Semver.2.3.0\lib\net452\Semver.dll</HintPath>
     </Reference>
+    <Reference Include="SRML">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML.Editor">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -292,8 +298,11 @@
     <Compile Include="ModLoader\Attributes\RegisterModLoaderType.cs" />
     <Compile Include="ModLoader\Attributes\RegisterModType.cs" />
     <Compile Include="ModLoader\Attributes\RegisterMod.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\LegacyEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\BasicFileModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\BasicModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\FileModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\LegacyModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
@@ -313,4 +322,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -38,7 +38,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SRML.Core\SRML.Core.csproj" />
     <Reference Include="0Harmony">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\0Harmony.dll</HintPath>
     </Reference>
@@ -668,7 +667,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"
-xcopy /Y "$(TargetDir)SRML.pdb" "$(GameDir)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"
+xcopy /Y "$(TargetDir)SRML.pdb" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

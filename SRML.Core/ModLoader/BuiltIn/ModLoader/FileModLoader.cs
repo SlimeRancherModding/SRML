@@ -15,7 +15,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
     {
         public abstract string Path { get; }
 
-        public override void DiscoverMods()
+        public sealed override void DiscoverMods()
         {
             if (!Directory.Exists(Path))
             {
@@ -35,19 +35,12 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
             try
             {
-                CoreLoader loader = Main.loader;
-
                 foreach (Assembly dll in potentialDlls)
-                {
-                    foreach (RegisterModLoaderType att in dll.GetCustomAttributes<RegisterModLoaderType>())
-                        loader.RegisterModLoader(att.loaderType);
-                    foreach (RegisterModType att in dll.GetCustomAttributes<RegisterModType>())
-                        loader.RegisterModType(att.modType, att.entryType);
-                    foreach (RegisterMod att in dll.GetCustomAttributes<RegisterMod>())
-                        loader.LoadMod(att.entryType);
-                }
+                    DiscoverTypesFromAssembly(dll);
             }
             finally { AppDomain.CurrentDomain.AssemblyResolve -= FindAssembly; }
         }
+
+        public abstract void DiscoverTypesFromAssembly(Assembly assembly);
     }
 }

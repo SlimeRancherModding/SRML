@@ -1,5 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
+using SRML.Utils;
 
 namespace SRML
 {
@@ -9,6 +12,8 @@ namespace SRML
     public static class HarmonyPatcher
     {
         private static Harmony _instance;
+
+        internal static Dictionary<Assembly, Harmony> harmonyForAssembly = new Dictionary<Assembly, Harmony>();
 
         internal static Harmony Instance
         {
@@ -33,16 +38,10 @@ namespace SRML
             Instance.PatchAll(Assembly.GetExecutingAssembly());
         }
 
-        public static Harmony SetInstance(string name)
-        {
-            var currentMod = SRMod.GetCurrentMod();
-            currentMod.CreateHarmonyInstance(name);
-            return currentMod.HarmonyInstance;
-        }
+        public static Harmony SetInstance(string name) => harmonyForAssembly[ReflectionUtils.GetRelevantAssembly()] = new Harmony(name);
 
-        public static Harmony GetInstance()
-        {
-            return SRMod.GetCurrentMod().HarmonyInstance;
-        }
+        internal static Harmony SetInstanceForType(Type t, string name) => harmonyForAssembly[t.Assembly] = new Harmony(name);
+
+        public static Harmony GetInstance() => harmonyForAssembly[ReflectionUtils.GetRelevantAssembly()];
     }
 }

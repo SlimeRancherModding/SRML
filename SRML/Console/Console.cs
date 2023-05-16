@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Text.RegularExpressions;
 using SRML.SR.Utils.Debug;
 using System.Linq;
+using System.Reflection;
 
 namespace SRML.Console
 {
@@ -420,6 +421,23 @@ namespace SRML.Console
             internal Colors col = Colors.lime;
             internal string id;
             internal bool enabled = true;
+
+            public static ConsoleInstance PopulateConsoleInstanceFromType(Type entryType, string modId)
+            {
+                Colors nameCol = Colors.lime;
+                string text = null;
+                foreach (Attribute customAttribute in entryType.GetCustomAttributes())
+                {
+                    if (customAttribute.GetType() == typeof(ConsoleAppearance))
+                    {
+                        ConsoleAppearance consoleAppearance = (ConsoleAppearance)customAttribute;
+                        nameCol = consoleAppearance.consoleCol;
+                        text = consoleAppearance.name;
+                    }
+                }
+
+                return new ConsoleInstance(text ?? modId, nameCol, modId + ".main");
+            }
 
             public void Log(object message, bool logToFile = true)
             {
