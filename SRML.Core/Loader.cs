@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Doorstop
@@ -13,9 +13,9 @@ namespace Doorstop
     {
         public static Assembly[] resolve = Directory.GetFiles(Path.GetFullPath(@"SRML\Libs"), "*.dll").Select(x => Assembly.LoadFile(x)).ToArray();
 
-        public static void Main(string[] args) => new Thread(() =>
+        public static void Main(string[] args) => new Task(() =>
         {
-            Thread.Sleep(5000);
+            Task.Delay(5000);
             Debug.Log("Doorstop has succesfully hooked.");
 
             AppDomain.CurrentDomain.AssemblyResolve += (x, y) => resolve.FirstOrDefault(z => z.GetName() == new AssemblyName(y.Name));
