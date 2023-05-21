@@ -1,4 +1,5 @@
 ﻿using Semver;
+using SRML.Core.ModLoader.DataTypes;
 
 namespace SRML.Core.ModLoader
 {
@@ -6,6 +7,7 @@ namespace SRML.Core.ModLoader
     {
         string Id { get; }
         SemVersion Version { get; }
+        DependencyMetadata Dependencies { get; }
 
         void Parse(string json);
     }

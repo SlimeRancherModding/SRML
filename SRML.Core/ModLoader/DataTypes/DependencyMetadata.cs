@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace SRML.Core.ModLoader.DataTypes
 {
@@ -12,28 +13,59 @@ namespace SRML.Core.ModLoader.DataTypes
         public readonly string[] loadAfterIds;
         public readonly Dictionary<string, SemVersion> dependencies;
         public readonly string id;
+        public readonly SemVersion version;
 
-        public DependencyMetadata(string id, Dictionary<string, SemVersion> dependencies)
+        public DependencyMetadata(string id, SemVersion version, Dictionary<string, SemVersion> dependencies)
         {
             this.id = id;
+            this.version = version;
             this.dependencies = dependencies;
             loadBeforeIds = new string[0];
             loadAfterIds = new string[0];
         }
 
-        public DependencyMetadata(string id, string[] loadBeforeIds, string[] loadAfterIds, Dictionary<string, SemVersion> dependencies)
+        public DependencyMetadata(string id, SemVersion version, string[] loadBeforeIds, string[] loadAfterIds, Dictionary<string, SemVersion> dependencies)
         {
             this.id = id;
+            this.version = version;
             this.loadBeforeIds = loadBeforeIds;
             this.loadAfterIds = loadAfterIds;
             this.dependencies = dependencies;
         }
 
-        public bool Met() => dependencies.All(x => Main.loader.mods.Any(y => y.ModInfo.Id == x.Key &&
-            y.ModInfo.Version.ComparePrecedenceTo(x.Value) != -1));
+        public bool Met(DependencyMetadata[] others, out Dictionary<string, SemVersion> unmet)
+        {
+            unmet = dependencies.Where(x => !others.Any(y => y.id == x.Key && y.version.ComparePrecedenceTo(x.Value) != -1))
+                .ToDictionary(x => x.Key, y => y.Value);
+
+            return unmet.Count == 0;
+        }
+
+        public static bool AllDependenciesMet(DependencyMetadata[] dependencies, out Dictionary<string, Dictionary<string, SemVersion>> unmet)
+        {
+            bool allMet = true;
+            unmet = new Dictionary<string, Dictionary<string, SemVersion>>();
+
+            foreach (DependencyMetadata dependency in dependencies)
+            {
+                if (!dependency.Met(dependencies, out var unmetPerMod))
+                {
+                    unmet.Add(dependency.id, unmetPerMod);
+                    allMet = false;
+                }
+            }
+
+            return allMet;
+        }
 
         public static string[] CalculateLoadOrder(DependencyMetadata[] dependencies)
         {
+            if (!AllDependenciesMet(dependencies, out var unmet))
+            {
+                // TODO: when error throwing is readded, modify this to actually throw ALL dependency errors
+                throw new Exception($"Dependencies for {unmet.First().Key} unmet; requires {string.Join(", ", unmet.First().Value.Select(x => $"{x.Key} {x.Value}"))}");
+            }
+
             if (dependencies.Any(x => x.loadAfterIds.Any(y => x.loadBeforeIds.Contains(y))))
                 throw new InvalidOperationException("Dependency cannot be sorted before and after another dependency.");
 
@@ -42,10 +74,13 @@ namespace SRML.Core.ModLoader.DataTypes
             foreach (DependencyMetadata dependency in dependencies)
             {
                 foreach (string s in dependency.loadBeforeIds)
-                    loadAfters[s].Add(dependency.id);
+                {
+                    if (dependencies.Any(x => x.id == s))
+                        loadAfters[s].Add(dependency.id);
+                }
             }
 
-            if (loadAfters.Any(x => x.Value.Any(y => loadAfters[y].Contains(x.Key))))
+            if (loadAfters.Any(x => x.Value.Any(y => loadAfters.ContainsKey(y) && loadAfters[y].Contains(x.Key))))
                 throw new InvalidOperationException("Two dependencies cannot load before or after one another.");
 
             List<string> loadOrder = dependencies.Select(x => x.id).ToList();

@@ -19,7 +19,12 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
         {
         }
 
-        public override IMod LoadMod(Type entryType)
+        public override IModInfo LoadModInfo(Type entryType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IMod LoadMod(Type entryType, IModInfo modInfo)
         {
             BasicMod mod = new BasicMod();
             Assembly asm = entryType.Assembly;
@@ -47,8 +52,9 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
         {
             Debug.Log($"attempting to load from {assembly.FullName}");
             Type entryType = assembly.ManifestModule.GetTypes().FirstOrDefault(x => typeof(IModEntryPoint).IsAssignableFrom(x));
+            // TODO: actually get modinfo
             if (entryType != null)
-                LoadMod(entryType);
+                LoadMod(entryType, null);
         }
     }
 }

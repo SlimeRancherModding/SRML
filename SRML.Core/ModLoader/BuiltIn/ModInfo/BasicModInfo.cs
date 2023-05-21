@@ -16,6 +16,8 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
         public string Description { get => parsedInfo.description; }
         public string Author { get => parsedInfo.author; }
         public SemVersion Version { get => parsedInfo.version; }
+        public DependencyMetadata Dependencies { get => parsedInfo.dependencies; }
+        
         private ProtoMod parsedInfo;
 
         public void Parse(string json) => parsedInfo = JsonConvert.DeserializeObject<ProtoMod>(json, new ProtoModConverter());
@@ -87,6 +89,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
                 {
                     throw new Exception($"Error parsing dependencies in {pm.id}! {e}");
                 }
+                pm.dependencies = new DependencyMetadata(pm.id, pm.version, loadBefore, loadAfter, dependencies);
 
                 if (string.IsNullOrEmpty(pm.id) || Main.loader.FORBIDDEN_IDS.Contains(pm.id) || pm.id.Contains(" ") || pm.id.Contains("."))
                     throw new Exception($"Invalid or missing mod id: {pm.id}");

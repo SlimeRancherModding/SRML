@@ -10,7 +10,8 @@ namespace SRML.Core.ModLoader
 
         void Initialize();
         void DiscoverMods();
-        IMod LoadMod(Type entryType);
+        IModInfo LoadModInfo(Type entryType);
+        IMod LoadMod(Type entryType, IModInfo modInfo);
     }
 
     public abstract class ModLoader<M, E, I> : IModLoader
@@ -27,6 +28,8 @@ namespace SRML.Core.ModLoader
 
         public abstract void Initialize();
 
-        public abstract IMod LoadMod(Type entryType);
+        public abstract IModInfo LoadModInfo(Type entryType);
+
+        public abstract IMod LoadMod(Type entryType, IModInfo info);
     }
 }
