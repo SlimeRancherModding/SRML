@@ -21,6 +21,7 @@ namespace SRML.Core
         {
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyInstance = new Harmony("net.veesus.srml");
+            HarmonyInstance.PatchAll();
 
             AccessTools.Method(typeof(FileLogger), "Init").Invoke(null, null);
             AccessTools.Method(typeof(Console.Console), "Init").Invoke(null, null);

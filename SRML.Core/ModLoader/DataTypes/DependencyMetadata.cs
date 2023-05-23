@@ -33,6 +33,12 @@ namespace SRML.Core.ModLoader.DataTypes
             this.dependencies = dependencies;
         }
 
+        /// <summary>
+        /// Within a list of dependencies, whether all of the dependencies within <see cref="dependencies"/> are present.
+        /// </summary>
+        /// <param name="others">All dependencies to check.</param>
+        /// <param name="unmet">Any dependencies that are not present.</param>
+        /// <returns>True if all dependencies are present, otherwise false.</returns>
         public bool Met(DependencyMetadata[] others, out Dictionary<string, SemVersion> unmet)
         {
             unmet = dependencies.Where(x => !others.Any(y => y.id == x.Key && y.version.ComparePrecedenceTo(x.Value) != -1))
@@ -41,6 +47,12 @@ namespace SRML.Core.ModLoader.DataTypes
             return unmet.Count == 0;
         }
 
+        /// <summary>
+        /// If, for every dependency metadata in a list, all of them are met.
+        /// </summary>
+        /// <param name="dependencies">The dependency metadata to check.</param>
+        /// <param name="unmet">Any dependencies that are not present.</param>
+        /// <returns>True if all dependencies are present, otherwise false.</returns>
         public static bool AllDependenciesMet(DependencyMetadata[] dependencies, out Dictionary<string, Dictionary<string, SemVersion>> unmet)
         {
             bool allMet = true;
@@ -58,6 +70,11 @@ namespace SRML.Core.ModLoader.DataTypes
             return allMet;
         }
 
+        /// <summary>
+        /// Calculates the load order for mods based on their dependency metadata.
+        /// </summary>
+        /// <param name="dependencies">The dependencies to sort.</param>
+        /// <returns>A list of mod ids in load order</returns>
         public static string[] CalculateLoadOrder(DependencyMetadata[] dependencies)
         {
             if (!AllDependenciesMet(dependencies, out var unmet))

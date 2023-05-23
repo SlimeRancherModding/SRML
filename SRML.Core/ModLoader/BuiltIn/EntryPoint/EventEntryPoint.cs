@@ -1,11 +1,14 @@
 ﻿using HarmonyLib;
-using System;
 using System.Reflection;
 
 namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
 {
-    public abstract class EventEntryPoint : SRML.Core.ModLoader.EntryPoint
+    public abstract class EventEntryPoint : Core.ModLoader.EntryPoint
     {
+        protected EventEntryPoint(IModInfo info) : base(info)
+        {
+        }
+
         public abstract EntryEvent[] Events();
 
         public override void Initialize()
@@ -14,7 +17,7 @@ namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
             {
                 HarmonyMethod method = new HarmonyMethod(toRegister.toExecute.Method);
 
-                Main.HarmonyInstance.Patch(toRegister.executeOn,
+                HarmonyInstance.Patch(toRegister.executeOn,
                     toRegister.prefix ? method : null,
                     toRegister.prefix ? null : method, null);
             }

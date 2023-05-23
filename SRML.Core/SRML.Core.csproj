@@ -299,6 +299,7 @@
     <Compile Include="ModLoader\Attributes\RegisterModType.cs" />
     <Compile Include="ModLoader\Attributes\RegisterMod.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\LegacyEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\JSONModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\BasicFileModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\BasicModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\FileModLoader.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="ModLoader\IMod.cs" />
     <Compile Include="ModLoader\IModInfo.cs" />
     <Compile Include="ModLoader\IModLoader.cs" />
+    <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

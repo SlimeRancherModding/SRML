@@ -4,24 +4,39 @@ using Semver;
 using SRML.Core.ModLoader.DataTypes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 {
-    public class BasicModInfo : IModInfo
+    public class BasicModInfo : JSONModInfo
     {
-        public string Id { get => parsedInfo.id; }
+        public override string Id { get => parsedInfo.id; }
         public string Name { get => parsedInfo.name; }
         public string Description { get => parsedInfo.description; }
         public string Author { get => parsedInfo.author; }
-        public SemVersion Version { get => parsedInfo.version; }
-        public DependencyMetadata Dependencies { get => parsedInfo.dependencies; }
+        public override SemVersion Version { get => parsedInfo.version; }
+        public override DependencyMetadata Dependencies { get => parsedInfo.dependencies; }
         
         private ProtoMod parsedInfo;
 
-        public void Parse(string json) => parsedInfo = JsonConvert.DeserializeObject<ProtoMod>(json, new ProtoModConverter());
-        public string GetDefaultHarmonyName() => $"net.{(Author == null || Author.Length == 0 ? "srml" : Regex.Replace(Author, @"\s+", ""))}.{Id}";
+        public override void ParseFromJSON(string json) => parsedInfo = JsonConvert.DeserializeObject<ProtoMod>(json, new ProtoModConverter());
+        public override string GetJSON(Assembly modAssembly)
+        {
+            string json = null;
+
+            if (modAssembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string fileName)
+            {
+                using (StreamReader reader = new StreamReader(modAssembly.GetManifestResourceStream(fileName)))
+                    json = reader.ReadToEnd();
+            }
+
+            return json;
+        }
+        public override string GetDefaultHarmonyName() => $"net.{(Author == null || Author.Length == 0 ? "srml" : Regex.Replace(Author, @"\s+", ""))}.{Id}";
+        public override string GetDefaultConsoleName() => Name;
 
         public class ProtoMod
         {

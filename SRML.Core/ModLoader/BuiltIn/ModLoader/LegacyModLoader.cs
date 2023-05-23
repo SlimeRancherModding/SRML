@@ -28,16 +28,12 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
         {
             BasicMod mod = new BasicMod();
             Assembly asm = entryType.Assembly;
-            LegacyEntryPoint entryPoint = new LegacyEntryPoint();
+            LegacyEntryPoint entryPoint = new LegacyEntryPoint(modInfo);
             mod.Entry = entryPoint;
             mod.Path = asm.Location;
 
             BasicModInfo info = new BasicModInfo();
-            if (asm.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string fileName)
-            {
-                using (StreamReader reader = new StreamReader(asm.GetManifestResourceStream(fileName)))
-                    info.Parse(reader.ReadToEnd());
-            }
+            info.Parse(asm);
             mod.ModInfo = info;
 
             loadedMods.Add(mod);

@@ -20,14 +20,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
         public override IModInfo LoadModInfo(Type entryType)
         {
             BasicModInfo info = new BasicModInfo();
-            Assembly asm = entryType.Assembly;
-
-            if (asm.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string fileName)
-            {
-                using (StreamReader reader = new StreamReader(asm.GetManifestResourceStream(fileName)))
-                    info.Parse(reader.ReadToEnd());
-            }
-
+            info.Parse(entryType.Assembly);
             return info;
         }
 
@@ -36,7 +29,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
             BasicMod mod = new BasicMod();
             Assembly asm = entryType.Assembly;
             
-            BasicLoadEntryPoint entryPoint = (BasicLoadEntryPoint)Activator.CreateInstance(entryType);
+            BasicLoadEntryPoint entryPoint = (BasicLoadEntryPoint)Activator.CreateInstance(entryType, modInfo);
             
             mod.Entry = entryPoint;
             mod.Path = asm.Location;
@@ -45,9 +38,9 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
             loadedMods.Add(mod);
 
-            entryPoint.HarmonyInstance = HarmonyPatcher.SetInstance(((BasicModInfo)modInfo).GetDefaultHarmonyName());
-            entryPoint.ConsoleInstance = Console.Console.ConsoleInstance.PopulateConsoleInstanceFromType(entryType, modInfo.Id);
             entryPoint.Initialize();
+
+            mod.Initialize();
             
             return mod;
         }

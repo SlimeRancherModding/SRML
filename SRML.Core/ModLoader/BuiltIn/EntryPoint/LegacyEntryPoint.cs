@@ -7,6 +7,10 @@ namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
     {
         public IModEntryPoint legacyEntry;
 
+        public LegacyEntryPoint(IModInfo info) : base(info)
+        {
+        }
+
         public override void PreLoad() => legacyEntry.PreLoad();
 
         public override void Load() => legacyEntry.Load();
