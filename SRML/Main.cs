@@ -28,7 +28,7 @@ namespace SRML
         internal static Transform prefabParent;
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
         internal static ConfigFile config;
-        internal static AssetBundle uiBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
+        internal static AssetBundle uiBundle/* = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"))*/;
 
         /// <summary>
         /// Called before GameContext.Awake()
@@ -71,14 +71,6 @@ namespace SRML
             config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
             config.TryLoadFromFile();
 
-            ErrorGUI.extendedUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI");
-            ErrorGUI.extendedError = uiBundle.LoadAsset<GameObject>("ErrorModInfo");
-
-            foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
-                text.alignment = TextAlignmentOptions.Midline;
-            foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
-                text.alignment = TextAlignmentOptions.TopLeft;
-
             try
             {
                 SRModLoader.InitializeMods();
@@ -86,7 +78,7 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.errors.Add(new ModLoadException("<unknown>", SRModLoader.LoadingStep.INITIALIZATION, e));
+                //ErrorGUI.errors.Add(new ModLoadException("<unknown>", SRModLoader.LoadingStep.INITIALIZATION, e));
                 return;
             }
             FileLogger.Init();

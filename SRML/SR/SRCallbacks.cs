@@ -49,8 +49,6 @@ namespace SRML.SR
 
         internal static void OnMainMenuLoad(MainMenuUI mainmenu)
         {
-            if (ErrorGUI.errors.Count() > 0)
-                ErrorGUI.TryCreateExtendedError();
             OnMainMenuLoaded?.Invoke(mainmenu);
         }
 

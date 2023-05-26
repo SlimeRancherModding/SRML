@@ -210,7 +210,7 @@ namespace SRML
                     mod.encounteredError = true;
                     ModLoadException ex = new ModLoadException(modid, CurrentLoadingStep, e);
                     Debug.LogError(ex);
-                    ErrorGUI.errors.Add(ex);
+                    //ErrorGUI.errors.Add(ex);
                 }
             }
         }
@@ -232,7 +232,7 @@ namespace SRML
                     mod.encounteredError = true;
                     ModLoadException ex = new ModLoadException(modid, CurrentLoadingStep, e);
                     Debug.LogError(ex);
-                    ErrorGUI.errors.Add(ex);
+                    //ErrorGUI.errors.Add(ex);
                 }
             }
         }
@@ -254,7 +254,7 @@ namespace SRML
                     mod.encounteredError = true;
                     ModLoadException ex = new ModLoadException(modid, CurrentLoadingStep, e);
                     Debug.LogError(ex);
-                    ErrorGUI.errors.Add(ex);
+                    //ErrorGUI.errors.Add(ex);
                 }
             }
 

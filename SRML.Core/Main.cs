@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using System.Linq;
+using TMPro;
+using System.Reflection;
 
 namespace SRML.Core
 {
@@ -14,6 +16,9 @@ namespace SRML.Core
     {
         public static Harmony HarmonyInstance;
         public static CoreLoader loader;
+        public static AssetBundle uiBundle;
+
+        internal static FileStorageProvider StorageProvider = new FileStorageProvider();
 
         public const string VERSION_STRING = "BETA-0.3.0";
 
@@ -23,9 +28,19 @@ namespace SRML.Core
             HarmonyInstance = new Harmony("net.veesus.srml");
             HarmonyInstance.PatchAll();
 
-            AccessTools.Method(typeof(FileLogger), "Init").Invoke(null, null);
-            AccessTools.Method(typeof(Console.Console), "Init").Invoke(null, null);
+            FileLogger.Init();
+            Console.Console.Init();
             Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
+
+            uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srml"));
+            ErrorGUI.extendedUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI");
+            ErrorGUI.extendedError = uiBundle.LoadAsset<GameObject>("ErrorModInfo");
+
+            // TODO: find a way to prevent this issue in assetbundles so I don't have to do this garbage
+            foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
+                text.alignment = TextAlignmentOptions.Midline;
+            foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
+                text.alignment = TextAlignmentOptions.TopLeft;
 
             loader = new CoreLoader();
             loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));

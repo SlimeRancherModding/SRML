@@ -377,7 +377,6 @@
     <Compile Include="Editor\Runtime\InstanceInfo.cs" />
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="EnumTranslator.cs" />
-    <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="IntermodCommunication.cs" />
@@ -662,7 +661,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <EmbeddedResource Include="SR\UI\srml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

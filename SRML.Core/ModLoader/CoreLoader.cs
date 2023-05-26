@@ -24,6 +24,7 @@ namespace SRML.Core.ModLoader
 
         internal List<IModLoader> loaders = new List<IModLoader>();
         internal Dictionary<Type, IModLoader> loaderForEntryType = new Dictionary<Type, IModLoader>();
+        internal Dictionary<IEntryPoint, IModInfo> infoForEntry = new Dictionary<IEntryPoint, IModInfo>();
 
         internal Stack<(Type, IModInfo)> modStack = new Stack<(Type, IModInfo)>();
         internal bool loadedStack = false;
@@ -42,13 +43,22 @@ namespace SRML.Core.ModLoader
         /// <param name="entryType">The entry type of the mod</param>
         public void RegisterModType(Type modType, Type entryType)
         {
-            if (!typeof(IMod).IsAssignableFrom(modType))
-                throw new ArgumentException("Mod type must inherit from IMod");
-            if (!typeof(IEntryPoint).IsAssignableFrom(entryType))
-                throw new ArgumentException("Entry type must inherit from IEntryPoint");
+            try
+            {
+                if (!typeof(IMod).IsAssignableFrom(modType))
+                    throw new ArgumentException("Mod type must inherit from IMod");
+                if (!typeof(IEntryPoint).IsAssignableFrom(entryType))
+                    throw new ArgumentException("Entry type must inherit from IEntryPoint");
 
-            modTypeForEntryType.Add(entryType, modType);
-            registeredModTypes.Add(modType);
+                modTypeForEntryType.Add(entryType, modType);
+                registeredModTypes.Add(modType);
+            }
+            catch (Exception ex)
+            {
+                ErrorGUI.errors.Add(modType.Name, (ErrorGUI.ErrorType.RegisterModType, ex));
+                modTypeForEntryType.Remove(entryType);
+                registeredModTypes.Remove(modType);
+            }
         }
 
         /// <summary>
@@ -57,15 +67,24 @@ namespace SRML.Core.ModLoader
         /// <param name="loaderType">The type of the mod loader</param>
         public void RegisterModLoader(Type loaderType)
         {
-            if (!typeof(IModLoader).IsAssignableFrom(loaderType))
-                throw new ArgumentException("Loader type must inherit from IModLoader");
+            try
+            {
+                if (!typeof(IModLoader).IsAssignableFrom(loaderType))
+                    throw new ArgumentException("Loader type must inherit from IModLoader");
 
-            var loader = (IModLoader)Activator.CreateInstance(loaderType);
-            loaders.Add(loader);
-            registeredLoaderTypes.Add(loaderType);
+                var loader = (IModLoader)Activator.CreateInstance(loaderType);
+                loaders.Add(loader);
+                registeredLoaderTypes.Add(loaderType);
 
-            loader.Initialize();
-            loader.DiscoverMods();
+                loader.Initialize();
+                loader.DiscoverMods();
+            }
+            catch (Exception ex)
+            {
+                ErrorGUI.errors.Add(loaderType.Name, (ErrorGUI.ErrorType.RegisterModLoader, ex));
+                loaders.Remove(loaders.FirstOrDefault(x => x.GetType() == loaderType));
+                registeredLoaderTypes.Remove(loaderType);
+            }
         }
 
         internal void LoadModStack()
@@ -86,9 +105,21 @@ namespace SRML.Core.ModLoader
         internal IMod LoadModFromStack()
         {
             (Type, IModInfo) protoMod = modStack.Pop();
-            IMod mod = loaderForEntryType[protoMod.Item1].LoadMod(protoMod.Item1, protoMod.Item2);
-            mods.Add(mod);
-            return mod;
+            try
+            {
+                IMod mod = loaderForEntryType[protoMod.Item1].LoadMod(protoMod.Item1, protoMod.Item2);
+
+                if (mod.Entry != null)
+                    infoForEntry.Add(mod.Entry, protoMod.Item2);
+                mods.Add(mod);
+                
+                return mod;
+            }
+            catch (Exception ex)
+            {
+                ErrorGUI.errors.Add(protoMod.Item2.Id, (ErrorGUI.ErrorType.LoadMod, ex));
+            }
+            return null;
         }
 
         /// <summary>
@@ -97,16 +128,23 @@ namespace SRML.Core.ModLoader
         /// <param name="entryType">The type of the mod's entry point.</param>
         public void LoadMod(Type entryType)
         {
-            Type modType = modTypeForEntryType.FirstOrDefault(x => entryType.IsSubclassOf(x.Key)).Value;
-            var loader = loaders.FirstOrDefault(x => x.ModType == modType);
-            if (loader == null)
-                throw new ArgumentException($"Unable to load entry of type {entryType}; no registered loader loads mod type {entryType.BaseType}");
+            try
+            {
+                Type modType = modTypeForEntryType.FirstOrDefault(x => entryType.IsSubclassOf(x.Key)).Value;
+                var loader = loaders.FirstOrDefault(x => x.ModType == modType);
+                if (loader == null)
+                    throw new ArgumentException($"Unable to load entry of type {entryType}; no registered loader loads mod type {entryType.BaseType}");
 
-            loaderForEntryType[entryType] = loader;
-            modStack.Push((entryType, loader.LoadModInfo(entryType)));
+                loaderForEntryType[entryType] = loader;
+                modStack.Push((entryType, loader.LoadModInfo(entryType)));
 
-            if (loadedStack)
-                LoadModFromStack();
+                if (loadedStack)
+                    LoadModFromStack();
+            }
+            catch (Exception ex)
+            {
+                ErrorGUI.errors.Add(entryType.Assembly.GetName().Name, (ErrorGUI.ErrorType.LoadMod, ex));
+            }
         }
     }
 }
