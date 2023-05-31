@@ -9,11 +9,11 @@ using UnityEngine;
 
 namespace Doorstop
 {
-    internal class Loader
+    internal class Entrypoint
     {
         public static Assembly[] resolve = Directory.GetFiles(Path.GetFullPath(@"SRML\Libs"), "*.dll").Select(x => Assembly.LoadFile(x)).ToArray();
 
-        public static void Main(string[] args) => new Task(() =>
+        public static void Start() => new Task(() =>
         {
             Task.Delay(5000);
             Debug.Log("Doorstop has succesfully hooked.");

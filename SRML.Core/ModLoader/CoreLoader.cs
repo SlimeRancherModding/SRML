@@ -4,13 +4,17 @@ using SRML.Console;
 using SRML.Core.ModLoader.DataTypes;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace SRML.Core.ModLoader
 {
     public class CoreLoader
     {
+        public static CoreLoader Main { get; internal set; }
+
         /// <summary>
         /// All loaded mods
         /// </summary>
@@ -25,6 +29,7 @@ namespace SRML.Core.ModLoader
         internal List<IModLoader> loaders = new List<IModLoader>();
         internal Dictionary<Type, IModLoader> loaderForEntryType = new Dictionary<Type, IModLoader>();
         internal Dictionary<IEntryPoint, IModInfo> infoForEntry = new Dictionary<IEntryPoint, IModInfo>();
+        internal Dictionary<Assembly, IMod> modsForAssembly = new Dictionary<Assembly, IMod>();
 
         internal Stack<(Type, IModInfo)> modStack = new Stack<(Type, IModInfo)>();
         internal bool loadedStack = false;
@@ -112,6 +117,8 @@ namespace SRML.Core.ModLoader
                 if (mod.Entry != null)
                     infoForEntry.Add(mod.Entry, protoMod.Item2);
                 mods.Add(mod);
+
+                modsForAssembly.Add(protoMod.Item1.Assembly, mod);
                 
                 return mod;
             }
@@ -119,6 +126,17 @@ namespace SRML.Core.ModLoader
             {
                 ErrorGUI.errors.Add(protoMod.Item2.Id, (ErrorGUI.ErrorType.LoadMod, ex));
             }
+            return null;
+        }
+
+        public IMod GetExecutingMod()
+        {
+            foreach (StackFrame frame in new StackTrace().GetFrames())
+            {
+                if (modsForAssembly.TryGetValue(frame.GetMethod().DeclaringType.Assembly, out IMod mod))
+                    return mod;
+            }
+
             return null;
         }
 

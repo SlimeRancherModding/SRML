@@ -17,7 +17,7 @@ namespace SRML.Core.ModLoader.Patches
                 }
                 catch (Exception ex)
                 {
-                    if (Main.loader.infoForEntry.TryGetValue(del.Target as IEntryPoint, out IModInfo info))
+                    if (CoreLoader.Main.infoForEntry.TryGetValue(del.Target as IEntryPoint, out IModInfo info))
                         ErrorGUI.errors.Add(info.Id, (ErrorGUI.ErrorType.LoadMod, ex));
                     else
                         ErrorGUI.errors.Add(del.Target.GetType().Assembly.GetName().Name, (ErrorGUI.ErrorType.LoadMod, ex));
@@ -34,7 +34,7 @@ namespace SRML.Core.ModLoader.Patches
                 }
                 catch (Exception ex)
                 {
-                    if (Main.loader.infoForEntry.TryGetValue(del.Target as IEntryPoint, out IModInfo info))
+                    if (CoreLoader.Main.infoForEntry.TryGetValue(del.Target as IEntryPoint, out IModInfo info))
                         ErrorGUI.errors.Add(info.Id, (ErrorGUI.ErrorType.LoadMod, ex));
                     else
                         ErrorGUI.errors.Add(del.Target.GetType().Assembly.GetName().Name, (ErrorGUI.ErrorType.LoadMod, ex));

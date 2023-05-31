@@ -13,7 +13,7 @@ namespace SRML.Core.ModLoader.Attributes
         {
             if (!modType.IsInstanceOfType(typeof(Mod<,>)))
                 throw new ArgumentException($"Cannot register mod type {modType} that does not inherit from IMod");
-            if (Main.loader.registeredModTypes.Contains(modType))
+            if (CoreLoader.Main.registeredModTypes.Contains(modType))
                 throw new ArgumentException($"Cannot register mod type {modType} as it has already been registered.");
 
             this.modType = modType;

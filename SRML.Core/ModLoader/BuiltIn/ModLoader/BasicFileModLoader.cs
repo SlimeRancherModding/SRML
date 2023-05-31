@@ -17,7 +17,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
     {
         public sealed override void DiscoverTypesFromAssembly(Assembly assembly)
         {
-            CoreLoader loader = Main.loader;
+            CoreLoader loader = CoreLoader.Main;
 
             foreach (RegisterModLoaderType att in assembly.GetCustomAttributes<RegisterModLoaderType>())
                 loader.RegisterModLoader(att.loaderType);

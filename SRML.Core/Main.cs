@@ -9,13 +9,14 @@ using UnityEngine;
 using System.Linq;
 using TMPro;
 using System.Reflection;
+using SRML.Core.API;
+using Sentry;
 
 namespace SRML.Core
 {
     internal static class Main
     {
         public static Harmony HarmonyInstance;
-        public static CoreLoader loader;
         public static AssetBundle uiBundle;
 
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
@@ -42,7 +43,9 @@ namespace SRML.Core
             foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
                 text.alignment = TextAlignmentOptions.TopLeft;
 
-            loader = new CoreLoader();
+            CoreAPI.Main = new CoreAPI();
+
+            CoreLoader loader = CoreLoader.Main = new CoreLoader();
             loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));
             loader.RegisterModLoader(typeof(BasicModLoader));
 

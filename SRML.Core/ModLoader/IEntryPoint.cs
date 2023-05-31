@@ -24,11 +24,16 @@ namespace SRML.Core.ModLoader
         /// A console logger created for a mod based on the mod info.
         /// </summary>
         public Console.Console.ConsoleInstance ConsoleInstance { get; internal set; }
+        /// <summary>
+        /// The info of this mod.
+        /// </summary>
+        public IModInfo Info { get; internal set; }
 
         protected EntryPoint(IModInfo info)
         {
             HarmonyInstance = HarmonyPatcher.SetInstance(info.GetDefaultHarmonyName());
             ConsoleInstance = Console.Console.ConsoleInstance.PopulateConsoleInstanceFromType(GetType(), info.GetDefaultConsoleName());
+            Info = info;
         }
     }
 }
