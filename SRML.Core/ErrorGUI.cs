@@ -43,14 +43,16 @@ namespace SRML.Core
                     Instantiate(extendedError, eg.errorContainer).GetComponent<IndividualExceptionUI>()
                         .GenerateMessage(exception.Value.Item1, exception.Value.Item2, exception.Key);
             }
-            catch
+            catch (Exception e)
             {
                 if (gui?.GetComponent<ErrorGUI>() != null)
                     gui.GetComponent<ErrorGUI>().fallback = true;
                 gui?.Destroy();
 
+                UnityEngine.Debug.LogError(e);
                 UnityEngine.Debug.LogError("Fatal error encountered, unable to display extended error information. Displaying basic information ...");
-                CreateBasicError($"{errors.First().Value.Item2.Message}:\n{errors.First().Value.Item2.InnerException}\n--- End of inner exception stack trace ---", ui);
+                UnityEngine.Debug.LogError(errors.First().Value.Item2);
+                CreateBasicError($"{errors.First().Value.Item2}", ui);
             }
         }
 
@@ -136,9 +138,9 @@ namespace SRML.Core
 
         public void GenerateMessage(ErrorGUI.ErrorType type, Exception exception, string id)
         {
-            titleText = string.Format(ErrorGUI.messageForType[type], exception.InnerException.GetType().Name, id);
+            titleText = string.Format(ErrorGUI.messageForType[type], exception.GetType(), id ?? "<unknown>");
             title.SetText($"{titleText}");
-            extended.SetText(exception.InnerException.ToString());
+            extended.SetText(exception.ToString());
         }
 
         public void GenerateMessageWithoutId(ErrorGUI.ErrorType type, Exception exception) => GenerateMessage(type, exception, "<unknown>");

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace SRML.Core.API.Builtin
+namespace SRML.Core.API.BuiltIn
 {
     public abstract class ComponentRegistry<T, C> : Registry<T> where C : Component
     {

@@ -1,10 +1,12 @@
 ﻿using Doorstop;
 using HarmonyLib;
 using SRML.Console;
+using SRML.Core.ModLoader.Attributes;
 using SRML.Core.ModLoader.DataTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -90,6 +92,31 @@ namespace SRML.Core.ModLoader
                 loaders.Remove(loaders.FirstOrDefault(x => x.GetType() == loaderType));
                 registeredLoaderTypes.Remove(loaderType);
             }
+        }
+
+        internal void LoadFromDefaultPath()
+        {
+            Assembly[] potentialDlls = Directory.GetFiles(Path.GetFullPath(Core.Main.MODS_PATH), "*.dll", SearchOption.AllDirectories).Select(x => Assembly.LoadFrom(x)).ToArray();
+
+            Assembly FindAssembly(object obj, ResolveEventArgs args)
+            {
+                var name = new AssemblyName(args.Name);
+                return potentialDlls.FirstOrDefault(x => x.GetName() == name);
+            }
+
+            AppDomain.CurrentDomain.AssemblyResolve += FindAssembly;
+
+            try
+            {
+                foreach (Assembly dll in potentialDlls)
+                {
+                    foreach (RegisterModLoaderType att in dll.GetCustomAttributes<RegisterModLoaderType>())
+                        RegisterModLoader(att.loaderType);
+                    foreach (RegisterModType att in dll.GetCustomAttributes<RegisterModType>())
+                        RegisterModType(att.modType, att.entryType);
+                }
+            }
+            finally { AppDomain.CurrentDomain.AssemblyResolve -= FindAssembly; }
         }
 
         internal void LoadModStack()

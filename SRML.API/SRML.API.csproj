@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{32B90FD0-FC71-47C4-A332-5B7105CC35E0}</ProjectGuid>
+    <ProjectGuid>{2DA9762E-BA43-48AD-934E-F5FBCE4C2EC6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SRML.Core</RootNamespace>
-    <AssemblyName>SRML.Core</AssemblyName>
+    <RootNamespace>SRML.API</RootNamespace>
+    <AssemblyName>SRML.API</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,11 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\HarmonyX.2.10.1\lib\net45\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\publicized_assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="DOTween">
@@ -47,41 +46,40 @@
     <Reference Include="InControl.Examples">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\InControl.Examples.dll</HintPath>
     </Reference>
+    <Reference Include="INIFileParser">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\INIFileParser.dll</HintPath>
+    </Reference>
     <Reference Include="Logger">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Logger.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.dll</HintPath>
+    <Reference Include="Mono.Cecil">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    <Reference Include="MonoMod.RuntimeDetour">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\MonoMod.RuntimeDetour.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.RuntimeDetour, Version=22.3.23.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.RuntimeDetour.22.3.23.4\lib\net452\MonoMod.RuntimeDetour.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoMod.Utils, Version=22.3.23.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoMod.Utils.22.3.23.4\lib\net452\MonoMod.Utils.dll</HintPath>
+    <Reference Include="MonoMod.Utils">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Semver, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Semver.2.3.0\lib\net452\Semver.dll</HintPath>
+    <Reference Include="Semver">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\Semver.dll</HintPath>
     </Reference>
     <Reference Include="SRML">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML.Core">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Core.dll</HintPath>
     </Reference>
     <Reference Include="SRML.Editor">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Editor.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -294,48 +292,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
-    <Compile Include="API\CoreAPI.cs" />
-    <Compile Include="API\IRegistry.cs" />
-    <Compile Include="ClassSingleton.cs" />
-    <Compile Include="ErrorGUI.cs" />
-    <Compile Include="Loader.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="ModLoader\Attributes\RegisterModLoaderType.cs" />
-    <Compile Include="ModLoader\Attributes\RegisterModType.cs" />
-    <Compile Include="ModLoader\Attributes\RegisterMod.cs" />
-    <Compile Include="ModLoader\BuiltIn\EntryPoint\CoreModEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\EntryPoint\LegacyEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModInfo\JSONModInfo.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModLoader\BasicFileModLoader.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModLoader\CoreModLoader.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModLoader\BasicModLoader.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModLoader\FileModLoader.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModLoader\LegacyModLoader.cs" />
-    <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
-    <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModInfo\BasicModInfo.cs" />
-    <Compile Include="ModLoader\BuiltIn\Mod\CoreMod.cs" />
-    <Compile Include="ModLoader\CoreLoader.cs" />
-    <Compile Include="ModLoader\DataTypes\DependencyMetadata.cs" />
-    <Compile Include="ModLoader\DataTypes\IPathProvider.cs" />
-    <Compile Include="ModLoader\IEntryPoint.cs" />
-    <Compile Include="ModLoader\IMod.cs" />
-    <Compile Include="ModLoader\IModInfo.cs" />
-    <Compile Include="ModLoader\IModLoader.cs" />
-    <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
-    <Compile Include="Patches\MainMenuPatch.cs" />
+    <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-    <EmbeddedResource Include="srml" />
+    <EmbeddedResource Include="modinfo.json" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

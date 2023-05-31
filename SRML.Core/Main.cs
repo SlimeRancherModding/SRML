@@ -11,6 +11,7 @@ using TMPro;
 using System.Reflection;
 using SRML.Core.API;
 using Sentry;
+using SRML.Core.ModLoader.Attributes;
 
 namespace SRML.Core
 {
@@ -22,6 +23,7 @@ namespace SRML.Core
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
 
         public const string VERSION_STRING = "BETA-0.3.0";
+        public const string MODS_PATH = @"SRML\NewMods";
 
         public static void Initialize()
         {
@@ -46,8 +48,12 @@ namespace SRML.Core
             CoreAPI.Main = new CoreAPI();
 
             CoreLoader loader = CoreLoader.Main = new CoreLoader();
+            loader.LoadFromDefaultPath();
+            
             loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));
+            loader.RegisterModType(typeof(CoreMod), typeof(CoreModEntryPoint));
             loader.RegisterModLoader(typeof(BasicModLoader));
+            loader.RegisterModLoader(typeof(CoreModLoader));
 
             var identical = loader.modStack.GroupBy(x => x.Item2.Id).FirstOrDefault(x => x.Count() > 1);
             if (identical != default)
