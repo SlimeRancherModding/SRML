@@ -19,7 +19,7 @@ namespace SRML
     {
         public delegate object AlternateEnumRegister(object value, string name);
         private static readonly Dictionary<Type, AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type, AlternateEnumRegister>()
-        {
+        /*{
             { typeof(Identifiable.Id), (x,y) => IdentifiableRegistry.CreateIdentifiableId(x,y) },
             { typeof(Gadget.Id), (x,y) => GadgetRegistry.CreateGadgetId(x,y) },
             { typeof(PlayerState.Upgrade), (x,y) => PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y) },
@@ -27,7 +27,7 @@ namespace SRML
             { typeof(LandPlot.Id), (x,y) => LandPlotRegistry.CreateLandPlotId(x,y) },
             { typeof(RanchDirector.Palette), (x,y) => ChromaRegistry.CreatePalette(x,y) },
             { typeof(RanchDirector.PaletteType), (x,y) => ChromaRegistry.CreatePaletteType(x,y) }
-        };
+        }*/; // TODO: reimplement
 
         public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) where TEnum : Enum => RegisterAlternate(typeof(TEnum), del);
 

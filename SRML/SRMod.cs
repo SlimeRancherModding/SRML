@@ -110,7 +110,8 @@ namespace SRML
 
         internal bool encounteredError = false;
 
-        /// <summary>
+        // me when I comment out an entire chunk of code as a way to find all the ways it's called
+        /*/// <summary>
         /// Gets the current executing mod as an SRMod instance 
         /// </summary>
         /// <returns>The current executing mod</returns>
@@ -134,7 +135,7 @@ namespace SRML
         internal static void ClearModContext()
         {
             forcedContext = null;
-        }
+        }*/
 
         public Harmony HarmonyInstance
         {

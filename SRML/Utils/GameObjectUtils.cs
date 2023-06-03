@@ -68,12 +68,12 @@ namespace SRML.Utils
 
         public static void Prefabitize(GameObject obj)
         {
-            obj.transform.SetParent(Main.prefabParent, false);
+            obj.transform.SetParent(SRML.Core.Main.prefabParent, false);
         }
 
         public static GameObject InstantiateInactive(GameObject original)
         {
-            GameObject newObj = GameObject.Instantiate(original, Main.prefabParent, true);
+            GameObject newObj = GameObject.Instantiate(original, SRML.Core.Main.prefabParent, true);
             newObj.SetActive(false);
             newObj.transform.SetParent(null, false);
             return newObj;

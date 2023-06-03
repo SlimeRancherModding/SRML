@@ -12,6 +12,7 @@ namespace SRML.Core.API
     {
         void Initialize();
         void Register(object toRegister);
+        bool IsRegistered(object registered);
     }
 
     public abstract class Registry<T> : ClassSingleton<Registry<T>>, IRegistry
@@ -21,6 +22,9 @@ namespace SRML.Core.API
         public abstract void Initialize();
 
         public void Register(object toRegister) => Register((T)toRegister);
+        public bool IsRegistered(object registered) => IsRegistered((T)registered);
+
         public abstract void Register(T toRegister);
+        public abstract bool IsRegistered(T registered);
     }
 }

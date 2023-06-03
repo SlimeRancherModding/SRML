@@ -192,7 +192,7 @@ namespace SRML
 
         internal static void PreLoadMods()
         {
-            CurrentLoadingStep = LoadingStep.PRELOAD;
+            /*CurrentLoadingStep = LoadingStep.PRELOAD;
             Console.Console.Reload += Main.Reload;
             foreach (var modid in loadOrder)
             {
@@ -212,7 +212,7 @@ namespace SRML
                     Debug.LogError(ex);
                     //ErrorGUI.errors.Add(ex);
                 }
-            }
+            }*/
         }
         
         internal static void LoadMods()
@@ -263,7 +263,7 @@ namespace SRML
 
         internal static void ReloadMods()
         {
-            CurrentLoadingStep = LoadingStep.RELOAD;
+            /*CurrentLoadingStep = LoadingStep.RELOAD;
             foreach (var modid in loadOrder)
             {
                 var mod = Mods[modid];
@@ -282,7 +282,7 @@ namespace SRML
                     Debug.LogError(new ModLoadException(modid, CurrentLoadingStep, e));
                 }
             }
-            CurrentLoadingStep = LoadingStep.FINISHED;
+            CurrentLoadingStep = LoadingStep.FINISHED;*/
         }
 
         internal static void UnloadMods()

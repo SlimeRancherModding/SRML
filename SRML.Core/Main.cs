@@ -12,6 +12,8 @@ using System.Reflection;
 using SRML.Core.API;
 using Sentry;
 using SRML.Core.ModLoader.Attributes;
+using SRML.Patches;
+using SRML.Utils.Enum;
 
 namespace SRML.Core
 {
@@ -19,17 +21,27 @@ namespace SRML.Core
     {
         public static Harmony HarmonyInstance;
         public static AssetBundle uiBundle;
+        public static Transform prefabParent;
 
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
 
         public const string VERSION_STRING = "BETA-0.3.0";
         public const string MODS_PATH = @"SRML\NewMods";
 
+        public static bool initialized = false;
+
         public static void Initialize()
         {
+            if (initialized)
+                return;
+
+            initialized = true;
+
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyInstance = new Harmony("net.veesus.srml");
             HarmonyInstance.PatchAll();
+            HarmonyInstance.Patch(AccessTools.Method(Type.GetType("System.Enum"), "GetCachedValuesAndNames"),
+                transpiler: new HarmonyMethod(AccessTools.Method(typeof(EnumInfoPatch), "Transpiler")));
 
             FileLogger.Init();
             Console.Console.Init();
@@ -38,6 +50,11 @@ namespace SRML.Core
             uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srml"));
             ErrorGUI.extendedUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI");
             ErrorGUI.extendedError = uiBundle.LoadAsset<GameObject>("ErrorModInfo");
+
+            prefabParent = new GameObject("PrefabParent").transform;
+            prefabParent.gameObject.DontDestroyOnLoad();
+            prefabParent.gameObject.SetActive(false);
+            prefabParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
             // TODO: find a way to prevent this issue in assetbundles so I don't have to do this garbage
             foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
@@ -48,6 +65,8 @@ namespace SRML.Core
             CoreAPI.Main = new CoreAPI();
 
             CoreLoader loader = CoreLoader.Main = new CoreLoader();
+            loader.ProcessMods += EnumHolderResolver.RegisterAllEnums;
+            
             loader.LoadFromDefaultPath();
             
             loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));

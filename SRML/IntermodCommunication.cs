@@ -38,7 +38,8 @@ namespace SRML
 
         static void RegisterIntermodMethod(string imcmethodName,IntermodCommunicationInfo info)
         {
-            RegisterIntermodMethod(SRMod.GetCurrentMod(), imcmethodName, info);
+            // TODO: Upgrade to new method
+            //RegisterIntermodMethod(SRMod.GetCurrentMod(), imcmethodName, info);
         }
 
         public static void RegisterIntermodMethod(string imcmethodName, CallMethodDelegate method, Type[] paramtypes, Type returnType)
@@ -101,7 +102,8 @@ namespace SRML
             
             try
             {
-                var currentMod = SRMod.GetCurrentMod();
+                // TODO: Upgrade to new system
+                SRMod currentMod = /*SRMod.GetCurrentMod()*/null;
                 var mod = SRModLoader.GetMod(modid);
                 if (mod == null) throw new Exception($"Non-Existent modid: '{modid}'");
                 if (!TryGetIMCInfo(mod, methodName, out var info)) throw new Exception($"Non-Existent IMC method '{methodName}' for mod '{modid}'");

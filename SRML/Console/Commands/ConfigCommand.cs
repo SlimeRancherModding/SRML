@@ -33,9 +33,10 @@ namespace SRML.Console.Commands
             }
             if (!srmlConfig)
             {
-                SRMod.ForceModContext(mod);
+                // TODO: Upgrade to new system
+                /*SRMod.ForceModContext(mod);
                 config.SaveToFile();
-                SRMod.ClearModContext();
+                SRMod.ClearModContext();*/
             }
             else config.SaveToFile();
             return true;

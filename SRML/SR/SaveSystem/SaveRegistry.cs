@@ -28,7 +28,9 @@ namespace SRML.SR.SaveSystem
 
         internal static ModSaveInfo GetSaveInfo()
         {
-            return GetSaveInfo(SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            return null;
+            //return GetSaveInfo(SRMod.GetCurrentMod());
         }
 
 
@@ -151,15 +153,18 @@ namespace SRML.SR.SaveSystem
 
         public static void RegisterWorldDataPreLoadDelegate(WorldDataPreLoadDelegate del)
         {
-            GetSaveInfo(SRMod.GetCurrentMod()).OnDataPreload += del;
+            // TODO: Upgrade to new system
+            GetSaveInfo(null/*SRMod.GetCurrentMod()*/).OnDataPreload += del;
         }
         public static void RegisterWorldDataSaveDelegate(WorldDataSaveDelegate del)
         {
-            GetSaveInfo(SRMod.GetCurrentMod()).OnWorldSave += del;
+            // TODO: Upgrade to new system
+            GetSaveInfo(null/*SRMod.GetCurrentMod()*/).OnWorldSave += del;
         }
         public static void RegisterWorldDataLoadDelegate(WorldDataLoadDelegate del)
         {
-            GetSaveInfo(SRMod.GetCurrentMod()).OnDataLoad += del;
+            // TODO: Upgrade to new system
+            GetSaveInfo(null/*SRMod.GetCurrentMod()*/).OnDataLoad += del;
         }
 
         public static void RegisterGameData<T>(T handler, int forceSuffix = int.MaxValue) where T : ModdedGameData =>
@@ -167,7 +172,8 @@ namespace SRML.SR.SaveSystem
 
         public static void RegisterGameData<T>(T handler, IdDirector director, int forceSuffix = int.MaxValue) where T : ModdedGameData
         {
-            string mod = SRMod.GetCurrentMod()?.ModInfo.Id ?? "base";
+            // TODO: Upgrade to new system
+            string mod = /*SRMod.GetCurrentMod()?.ModInfo.Id ?? */"base";
             string id = $"{handler.IdPrefix()}.{mod}.{(forceSuffix == int.MaxValue ? ModdedGameData.GetInSave<T>(mod) : forceSuffix)}";
             ModdedGameData.IncrementInSave<T>(mod);
 

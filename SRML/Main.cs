@@ -25,7 +25,7 @@ namespace SRML
         public const string VERSION_STRING = "BETA-0.2.2-2023020501";
 
         private static bool isPreInitialized;
-        internal static Transform prefabParent;
+        //internal static Transform prefabParent;
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
         internal static ConfigFile config;
         internal static AssetBundle uiBundle/* = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"))*/;
@@ -35,6 +35,8 @@ namespace SRML
         /// </summary>
         internal static void PreLoad() 
         {
+            return; // I'll remove Main later, but for the time being, this is being incredibly annoying.
+
             if (isPreInitialized) return;
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
@@ -53,9 +55,9 @@ namespace SRML
             }
 
             StorageProvider.Initialize();
-            prefabParent = new GameObject("PrefabParent").transform;
-            prefabParent.gameObject.SetActive(false);
-            GameObject.DontDestroyOnLoad(prefabParent.gameObject);
+            //prefabParent = new GameObject("PrefabParent").transform;
+            //prefabParent.gameObject.SetActive(false);
+            //GameObject.DontDestroyOnLoad(prefabParent.gameObject);
             foreach (var v in Assembly.GetExecutingAssembly().GetTypes())
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);

@@ -32,7 +32,11 @@ namespace SRML.SR
         /// Registers a rancher.
         /// </summary>
         /// <param name="rancher"></param>
-        public static void RegisterRancher(ExchangeDirector.Rancher rancher) => customRanchers.Add(rancher, SRMod.GetCurrentMod());
+        public static void RegisterRancher(ExchangeDirector.Rancher rancher)
+        {
+            // TODO: Upgrade to new system
+            //customRanchers.Add(rancher, SRMod.GetCurrentMod());
+        }
 
         /// <summary>
         /// Registers a progress type for a rancher.
@@ -45,20 +49,32 @@ namespace SRML.SR
         /// Registers a rancher's id
         /// </summary>
         /// <param name="id"></param>
-        public static void RegisterRancherID(string id) => customRancherIDs.Add(id, SRMod.GetCurrentMod());
+        public static void RegisterRancherID(string id)
+        {
+            // TODO: Upgrade to new system
+            customRancherIDs.Add(id, null/*SRMod.GetCurrentMod()*/);
+        }
 
         /// <summary>
         /// Registers an offer id
         /// </summary>
         /// <param name="id"></param>
-        public static void RegisterOfferID(string id) => customOfferIDs.Add(id, SRMod.GetCurrentMod());
+        public static void RegisterOfferID(string id)
+        {
+            // TODO: Upgrade to new system
+            customOfferIDs.Add(id, null/*SRMod.GetCurrentMod()*/);
+        }
 
         /// <summary>
         /// Registers a category for exchange requests/rewards
         /// </summary>
         /// <param name="category">The category to register</param>
         /// <param name="ids">The ids in the category</param>
-        public static void RegisterCategory(ExchangeDirector.Category category, Identifiable.Id[] ids) => customCategories.Add((category, ids), SRMod.GetCurrentMod());
+        public static void RegisterCategory(ExchangeDirector.Category category, Identifiable.Id[] ids)
+        {
+            // TODO: Upgrade to new system
+            customCategories.Add((category, ids), null/*SRMod.GetCurrentMod()*/);
+        }
 
         /// <summary>
         /// Registers an item to be unlocked in a category

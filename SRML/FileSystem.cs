@@ -56,7 +56,9 @@ namespace SRML
         /// <returns>The config path</returns>
         public static string GetMyConfigPath()
         {
-            return GetConfigPath(SRMod.GetCurrentMod());    
+            // TODO: Upgrade to new system
+            return null;
+            //return GetConfigPath(SRMod.GetCurrentMod());    
         }
     }
 }

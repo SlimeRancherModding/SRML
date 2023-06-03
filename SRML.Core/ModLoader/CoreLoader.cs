@@ -32,9 +32,15 @@ namespace SRML.Core.ModLoader
         internal Dictionary<Type, IModLoader> loaderForEntryType = new Dictionary<Type, IModLoader>();
         internal Dictionary<IEntryPoint, IModInfo> infoForEntry = new Dictionary<IEntryPoint, IModInfo>();
         internal Dictionary<Assembly, IMod> modsForAssembly = new Dictionary<Assembly, IMod>();
+        internal Dictionary<IMod, Assembly> assembliesForMod = new Dictionary<IMod, Assembly>();
 
         internal Stack<(Type, IModInfo)> modStack = new Stack<(Type, IModInfo)>();
         internal bool loadedStack = false;
+
+        public delegate void ModProcessor(IMod mod);
+        public event ModProcessor ProcessMods;
+
+        internal IMod forceMod;
 
         public readonly string[] FORBIDDEN_IDS = new string[]
         {
@@ -146,24 +152,16 @@ namespace SRML.Core.ModLoader
                 mods.Add(mod);
 
                 modsForAssembly.Add(protoMod.Item1.Assembly, mod);
-                
+                assembliesForMod.Add(mod, protoMod.Item1.Assembly);
+
+                ProcessMods(mod);
+
                 return mod;
             }
             catch (Exception ex)
             {
                 ErrorGUI.errors.Add(protoMod.Item2.Id, (ErrorGUI.ErrorType.LoadMod, ex));
             }
-            return null;
-        }
-
-        public IMod GetExecutingMod()
-        {
-            foreach (StackFrame frame in new StackTrace().GetFrames())
-            {
-                if (modsForAssembly.TryGetValue(frame.GetMethod().DeclaringType.Assembly, out IMod mod))
-                    return mod;
-            }
-
             return null;
         }
 
@@ -191,5 +189,32 @@ namespace SRML.Core.ModLoader
                 ErrorGUI.errors.Add(entryType.Assembly.GetName().Name, (ErrorGUI.ErrorType.LoadMod, ex));
             }
         }
+
+        public IMod GetModFromAssembly(Assembly assembly) => modsForAssembly[assembly];
+
+        public IMod GetExecutingModContext()
+        {
+            if (forceMod != null)
+                return forceMod;
+
+            // TODO: This is terrible and awful, try to find a better way.
+            // Unfortunately, C# has probably no implemented way to do this recursively. It can only find the direct calling method.
+            int recursionCheck = 0;
+            foreach (StackFrame frame in new StackTrace().GetFrames())
+            {
+                if (recursionCheck >= 100)
+                    break;
+
+                if (modsForAssembly.TryGetValue(frame.GetMethod().DeclaringType.Assembly, out IMod found))
+                    return found;
+                recursionCheck++;
+            }
+
+            return null;
+        }
+
+        public void ForceModContext(IMod mod) => forceMod = mod;
+
+        public void ClearModContext() => forceMod = null;
     }
 }

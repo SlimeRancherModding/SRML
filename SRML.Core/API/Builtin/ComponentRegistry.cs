@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SRML.Core.ModLoader;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -8,36 +9,52 @@ namespace SRML.Core.API.BuiltIn
 {
     public abstract class ComponentRegistry<T, C> : Registry<T> where C : Component
     {
-        internal delegate void Execute(C component);
-        internal static Execute PrefixRegisterDelegate;
-        internal static Execute PostfixRegisterDelegate;
-
         protected List<T> registered = new List<T>();
+        private bool alreadyRegistered;
 
-        public abstract MethodInfo ComponentInitializeMethod { get; set; }
-        public abstract bool Prefix { get; set; }
+        public C RegisteredComponent { get; internal set; }
+        
+        public abstract MethodInfo ComponentInitializeMethod { get; }
+        public abstract bool Prefix { get; }
 
         public abstract void InitializeComponent(C component);
 
-        public abstract void RegisterAllIntoComponent(C component);
+        public abstract void RegisterIntoComponent(T toRegister, C component);
+
+        public abstract bool IsRegistered(T registered, C component);
+
+        private void RegisterAllIntoComponent(C component)
+        {
+            if (component == RegisteredComponent)
+                return;
+
+            RegisteredComponent = component;
+            alreadyRegistered = true;
+
+            foreach (T toRegister in registered)
+                Register(toRegister);
+        }
 
         public sealed override void Initialize()
         {
-            if (Prefix)
-                PrefixRegisterDelegate += RegisterAllIntoComponent;
-            else
-                PostfixRegisterDelegate += RegisterAllIntoComponent;
+            if (ComponentInitializeMethod.DeclaringType != typeof(C))
+                throw new InvalidOperationException("Cannot initialize component on method that does not belong to that component.");
 
             Main.HarmonyInstance.Patch(ComponentInitializeMethod, 
-                Prefix ? new HarmonyMethod(PrefixRegisterDelegate.Method) : null, 
-                Prefix ? null : new HarmonyMethod(PostfixRegisterDelegate.Method), null);
+                Prefix ? new HarmonyMethod(GetType(), "AddToComponent") : null, 
+                Prefix ? null : new HarmonyMethod(GetType(), "AddToComponent"), null);
         }
 
         public sealed override void Register(T toRegister)
         {
-            registered.Add(toRegister);
+            if (IsRegistered(toRegister))
+                return;
 
-            IMod mod = CoreLoader.Main.GetExecutingMod();
+            registered.Add(toRegister);
+            if (alreadyRegistered)
+                RegisterIntoComponent(toRegister, RegisteredComponent);
+
+            IMod mod = CoreLoader.Main.GetExecutingModContext();
             if (mod != null)
             {
                 if (!registeredForMod.ContainsKey(mod))
@@ -46,5 +63,15 @@ namespace SRML.Core.API.BuiltIn
                 registeredForMod[mod].Add(toRegister);
             }
         }
+
+        public sealed override bool IsRegistered(T registered)
+        {
+            if (RegisteredComponent == null)
+                return false;
+
+            return IsRegistered(registered, RegisteredComponent);
+        }
+
+        internal static void AddToComponent(C __instance) => ((ComponentRegistry<T, C>)Instance).RegisterAllIntoComponent(__instance);
     }
 }

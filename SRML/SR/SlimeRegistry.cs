@@ -48,7 +48,8 @@ namespace SRML.SR
         /// <param name="refreshEatMaps">Whether or not to refresh the EatMaps of the slime and its bases.</param>
         public static void RegisterSlimeDefinition(SlimeDefinition definition, bool refreshEatMaps = true)
         {
-            slimeDefinitions[definition] = SRMod.GetCurrentMod();
+            // TODO: Upgrade to new system
+            //slimeDefinitions[definition] = SRMod.GetCurrentMod();
             SlimeDefinitions definitions;
             switch (SRModLoader.CurrentLoadingStep)
             {

@@ -1,4 +1,5 @@
-﻿using SRML.Core;
+﻿using SRML.API.Identifiable;
+using SRML.Core.API;
 using SRML.Core.ModLoader;
 using SRML.Core.ModLoader.BuiltIn.EntryPoint;
 
@@ -12,7 +13,7 @@ namespace SRML.API
 
         public override void Initialize()
         {
-            ConsoleInstance.Log("SRML API initializing.");
+            CoreAPI.Main.RegisterRegistry(new IdentifiableRegistry());
         }
     }
 }

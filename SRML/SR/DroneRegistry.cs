@@ -17,7 +17,8 @@ namespace SRML.SR
         /// <param name="id"></param>
         public static void RegisterBasicTarget(Identifiable.Id id)
         {
-            customBasicTarget.Add(id, SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            //customBasicTarget.Add(id, SRMod.GetCurrentMod());
 
             foreach(var v in GetMetadatas())
                 v.targets = v.targets.AddToArray(new DroneMetadata.Program.Target.Basic(id));

@@ -6,65 +6,77 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using SRML.SR.Utils;
+using SRML.Core.ModLoader;
 
 namespace SRML.Utils.Enum
 {
     internal static class EnumHolderResolver
     {
-        public static void RegisterAllEnums(Module module)
+        public static void RegisterAllEnums(IMod mod) => RegisterAllEnums(mod, CoreLoader.Main.assembliesForMod[mod]);
+
+        public static void RegisterAllEnums(IMod mod, Assembly assembly)
         {
-            SRMod.ForceModContext(SRModLoader.GetModForAssembly(module.Assembly));
-            foreach (var type in module.GetTypes())
+            CoreLoader loader = CoreLoader.Main;
+            loader.ForceModContext(mod);
+
+            // TODO: Update this so that auto-categorization can easier be defined by a mod.
+            try
             {
-                if (type.GetCustomAttributes(true).Any((x) => x is EnumHolderAttribute))
+                foreach (var type in assembly.GetTypes())
                 {
-                    EnumHolderAttribute enumHolder = type.GetCustomAttribute<EnumHolderAttribute>();
-
-                    foreach (var field in type.GetFields(BindingFlags.Static | BindingFlags.Public |
-                                                         BindingFlags.NonPublic))
+                    if (type.GetCustomAttributes(true).Any((x) => x is EnumHolderAttribute))
                     {
-                        if (!field.FieldType.IsEnum) continue;
+                        EnumHolderAttribute enumHolder = type.GetCustomAttribute<EnumHolderAttribute>();
 
-                        if ((int) field.GetValue(null) == 0)
+                        foreach (var field in type.GetFields(BindingFlags.Static | BindingFlags.Public |
+                                                             BindingFlags.NonPublic))
                         {
-                            var newVal = EnumPatcher.GetFirstFreeValue(field.FieldType);
-                            EnumPatcher.AddEnumValueWithAlternatives(field.FieldType, newVal, field.Name);
-                            field.SetValue(null, newVal);
-                        }
-                        else
-                        EnumPatcher.AddEnumValueWithAlternatives(field.FieldType, field.GetValue(null), field.Name);
+                            if (!field.FieldType.IsEnum) continue;
 
-                        if (field.FieldType == typeof(Identifiable.Id))
-                        {
-                            if (enumHolder.shouldCategorize)
+                            if ((int)field.GetValue(null) == 0)
                             {
-                                foreach (var att in field.GetCustomAttributes())
-                                    if (att is IdentifiableCategorization)
-                                        ((Identifiable.Id)field.GetValue(null)).Categorize(((IdentifiableCategorization)att).rules);
+                                var newVal = EnumPatcher.GetFirstFreeValue(field.FieldType);
+                                EnumPatcher.AddEnumValueWithAlternatives(field.FieldType, newVal, field.Name);
+                                field.SetValue(null, newVal);
                             }
                             else
-                            {
-                                IdentifiableCategorization.doNotAutoCategorize.Add((Identifiable.Id)field.GetValue(null));
-                            }
-                        }
+                                EnumPatcher.AddEnumValueWithAlternatives(field.FieldType, field.GetValue(null), field.Name);
 
-                        if (field.FieldType == typeof(Gadget.Id))
-                        {
-                            if (enumHolder.shouldCategorize)
+                            if (field.FieldType == typeof(Identifiable.Id))
                             {
-                                foreach (var att in field.GetCustomAttributes())
-                                    if (att is GadgetCategorization)
-                                        ((Gadget.Id)field.GetValue(null)).Categorize(((GadgetCategorization)att).rules);
+                                if (enumHolder.shouldCategorize)
+                                {
+                                    foreach (var att in field.GetCustomAttributes())
+                                        if (att is IdentifiableCategorization)
+                                            ((Identifiable.Id)field.GetValue(null)).Categorize(((IdentifiableCategorization)att).rules);
+                                }
+                                else
+                                {
+                                    IdentifiableCategorization.doNotAutoCategorize.Add((Identifiable.Id)field.GetValue(null));
+                                }
                             }
-                            else
+
+                            if (field.FieldType == typeof(Gadget.Id))
                             {
-                                IdentifiableCategorization.doNotAutoCategorize.Add((Identifiable.Id)field.GetValue(null));
+                                if (enumHolder.shouldCategorize)
+                                {
+                                    foreach (var att in field.GetCustomAttributes())
+                                        if (att is GadgetCategorization)
+                                            ((Gadget.Id)field.GetValue(null)).Categorize(((GadgetCategorization)att).rules);
+                                }
+                                else
+                                {
+                                    IdentifiableCategorization.doNotAutoCategorize.Add((Identifiable.Id)field.GetValue(null));
+                                }
                             }
                         }
                     }
                 }
             }
-            SRMod.ClearModContext();    
+            finally
+            {
+                loader.ClearModContext();
+            }
         }
     }
 }

@@ -110,7 +110,8 @@ namespace SRML.Console
                 return false;
             }
 
-            cmd.belongingMod = SRMod.GetCurrentMod();
+            // TODO: Update to new system
+            //cmd.belongingMod = SRMod.GetCurrentMod();
             commands.Add(cmd.ID.ToLowerInvariant(), cmd);
             ConsoleWindow.cmdsText += $"{(ConsoleWindow.cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
             return true;
@@ -279,14 +280,15 @@ namespace SRML.Console
 
                         if (keepExecution)
                         {
-                            SRMod.ForceModContext(commands[cmd].belongingMod);
+                            // TODO: Upgrade to new system
+                            //SRMod.ForceModContext(commands[cmd].belongingMod);
                             try
                             {
                                 executed = commands[cmd].Execute(args);
                             }
                             finally
                             {
-                                SRMod.ClearModContext();
+                                //SRMod.ClearModContext();
                             }
                         }
 
@@ -330,7 +332,8 @@ namespace SRML.Console
 
         internal static string GetLogName()
         {
-            SRMod mod = SRMod.GetCurrentMod();
+            // TODO: Upgrade to new system
+            SRMod mod = null/*SRMod.GetCurrentMod()*/;
             if (mod != null) return mod.ModInfo.Name;
             return "SRML";
         }
@@ -485,7 +488,8 @@ namespace SRML.Console
 
             public ConsoleInstance(string name) : this(name, Colors.lime) { }
 
-            public ConsoleInstance(string name, Colors nameCol) : this(name, nameCol, $"{SRMod.GetCurrentMod()?.ModInfo.Id ?? "unknown"}.{name.ToLower().Replace(' ', '_')}") { }
+            // TODO: Upgrade to new system
+            public ConsoleInstance(string name, Colors nameCol) : this(name, nameCol, $"{/*SRMod.GetCurrentMod()?.ModInfo.Id ?? */"unknown"}.{name.ToLower().Replace(' ', '_')}") { }
 
             internal ConsoleInstance(string name, Colors nameCol, string id)
             {

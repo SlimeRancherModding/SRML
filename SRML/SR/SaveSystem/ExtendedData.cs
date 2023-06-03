@@ -86,7 +86,9 @@ namespace SRML.SR.SaveSystem
 
         public static CompoundDataPiece GetWorldSaveData()
         {
-            return worldSaveData.Get(SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            return null;
+            //return worldSaveData.Get(SRMod.GetCurrentMod());
         }
 
         internal static void Clear()
@@ -256,7 +258,8 @@ namespace SRML.SR.SaveSystem
 
         internal static CompoundDataPiece GetDataForCurrentMod(CompoundDataPiece piece)
         {
-            var strin = SRMod.GetCurrentMod().ModInfo.Id;
+            // TODO: Upgrade to new system
+            string strin = null/*SRMod.GetCurrentMod().ModInfo.Id*/;
             return ExtendedDataUtils.GetPieceForMod(strin, piece);
         }
 
