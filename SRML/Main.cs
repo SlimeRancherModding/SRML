@@ -88,7 +88,7 @@ namespace SRML
             Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
             HarmonyOverrideHandler.PatchAll();
             SRModLoader.PreLoadMods();
-            IdentifiableRegistry.CategorizeAllIds();
+            //IdentifiableRegistry.CategorizeAllIds();
             GadgetRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
 

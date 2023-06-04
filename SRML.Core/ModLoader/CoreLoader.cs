@@ -13,10 +13,8 @@ using UnityEngine;
 
 namespace SRML.Core.ModLoader
 {
-    public class CoreLoader
+    public class CoreLoader : ClassSingleton<CoreLoader>
     {
-        public static CoreLoader Main { get; internal set; }
-
         /// <summary>
         /// All loaded mods
         /// </summary>
@@ -154,7 +152,7 @@ namespace SRML.Core.ModLoader
                 modsForAssembly.Add(protoMod.Item1.Assembly, mod);
                 assembliesForMod.Add(mod, protoMod.Item1.Assembly);
 
-                ProcessMods(mod);
+                ProcessMods?.Invoke(mod);
 
                 return mod;
             }
@@ -190,7 +188,13 @@ namespace SRML.Core.ModLoader
             }
         }
 
-        public IMod GetModFromAssembly(Assembly assembly) => modsForAssembly[assembly];
+        public IMod GetModFromAssembly(Assembly assembly)
+        {
+            if (modsForAssembly.TryGetValue(assembly, out IMod mod))
+                return mod;
+
+            return null;
+        }
 
         public IMod GetExecutingModContext()
         {

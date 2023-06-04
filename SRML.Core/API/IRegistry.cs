@@ -1,10 +1,5 @@
 ﻿using SRML.Core.ModLoader;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SRML.Core.API
 {
@@ -15,7 +10,7 @@ namespace SRML.Core.API
         bool IsRegistered(object registered);
     }
 
-    public abstract class Registry<T> : ClassSingleton<Registry<T>>, IRegistry
+    public abstract class Registry<R, T> : IRegistry where R : Registry<R, T>
     {
         protected Dictionary<IMod, List<T>> registeredForMod = new Dictionary<IMod, List<T>>();
 
@@ -26,5 +21,9 @@ namespace SRML.Core.API
 
         public abstract void Register(T toRegister);
         public abstract bool IsRegistered(T registered);
+
+        public static R Instance { get; private set; }
+
+        internal Registry() => Instance = (R)this;
     }
 }

@@ -57,6 +57,9 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SRML.API">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\NewMods\SRML.API.dll</HintPath>
+    </Reference>
     <Reference Include="SRML.Core">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Core.dll</HintPath>
     </Reference>
@@ -386,7 +389,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="IModEntryPoint.cs" />
     <Compile Include="ModLoadException.cs" />
-    <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRMLConfig.cs" />
     <Compile Include="SR\AchievementRegistry.cs" />
@@ -520,7 +522,6 @@
     <Compile Include="SR\PlortRegistry.cs" />
     <Compile Include="SR\Patches\GameModelActorCreatePatch.cs" />
     <Compile Include="SR\Patches\GameModelGadgetCreatePatch.cs" />
-    <Compile Include="SR\Patches\LookupAwakePatch.cs" />
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\MainMenuStartPatch.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />

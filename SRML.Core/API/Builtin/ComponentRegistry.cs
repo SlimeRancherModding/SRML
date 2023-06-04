@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace SRML.Core.API.BuiltIn
 {
-    public abstract class ComponentRegistry<T, C> : Registry<T> where C : Component
+    public abstract class ComponentRegistry<R, T, C> : Registry<R, T> 
+        where C : Component 
+        where R : ComponentRegistry<R, T, C>
     {
         protected List<T> registered = new List<T>();
         private bool alreadyRegistered;
@@ -17,9 +19,9 @@ namespace SRML.Core.API.BuiltIn
         public abstract MethodInfo ComponentInitializeMethod { get; }
         public abstract bool Prefix { get; }
 
-        public abstract void InitializeComponent(C component);
+        protected abstract void InitializeComponent(C component);
 
-        public abstract void RegisterIntoComponent(T toRegister, C component);
+        protected abstract void RegisterIntoComponent(T toRegister, C component);
 
         public abstract bool IsRegistered(T registered, C component);
 
@@ -54,7 +56,7 @@ namespace SRML.Core.API.BuiltIn
             if (alreadyRegistered)
                 RegisterIntoComponent(toRegister, RegisteredComponent);
 
-            IMod mod = CoreLoader.Main.GetExecutingModContext();
+            IMod mod = CoreLoader.Instance.GetExecutingModContext();
             if (mod != null)
             {
                 if (!registeredForMod.ContainsKey(mod))
@@ -72,6 +74,6 @@ namespace SRML.Core.API.BuiltIn
             return IsRegistered(registered, RegisteredComponent);
         }
 
-        internal static void AddToComponent(C __instance) => ((ComponentRegistry<T, C>)Instance).RegisterAllIntoComponent(__instance);
+        internal static void AddToComponent(C __instance) => Instance.RegisterAllIntoComponent(__instance);
     }
 }

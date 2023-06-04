@@ -5,7 +5,7 @@
         public static T Instance { get => _instance; }
         private static T _instance;
 
-        public ClassSingleton()
+        internal ClassSingleton()
         {
             _instance = (T)this;
         }

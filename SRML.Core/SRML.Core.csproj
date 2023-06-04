@@ -296,6 +296,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
+    <Compile Include="API\BuiltIn\EnumObject.cs" />
+    <Compile Include="API\BuiltIn\EnumRegistry.cs" />
+    <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
+    <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\CoreAPI.cs" />
     <Compile Include="API\IRegistry.cs" />
     <Compile Include="ClassSingleton.cs" />
@@ -326,6 +330,7 @@
     <Compile Include="ModLoader\IModInfo.cs" />
     <Compile Include="ModLoader\IModLoader.cs" />
     <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
+    <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Patches\MainMenuPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

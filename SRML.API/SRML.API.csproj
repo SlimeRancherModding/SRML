@@ -10,7 +10,7 @@
     <RootNamespace>SRML.API</RootNamespace>
     <AssemblyName>SRML.API</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-	<GameDir>E:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
+    <GameDir>E:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -296,6 +296,11 @@
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Identifiable\IdentifiableRegistry.cs" />
+    <Compile Include="Identifiable\IdentifiablePrefabRegistry.cs" />
+    <Compile Include="Identifiable\LiquidRegistry.cs" />
+    <Compile Include="Identifiable\Slime\GordoRegistry.cs" />
+    <Compile Include="Identifiable\Slime\ToyRegistry.cs" />
+    <Compile Include="Identifiable\VacItemRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -304,6 +309,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\NewMods\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

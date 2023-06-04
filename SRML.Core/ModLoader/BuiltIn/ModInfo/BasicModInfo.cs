@@ -106,7 +106,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
                 }
                 pm.dependencies = new DependencyMetadata(pm.id, pm.version, loadBefore, loadAfter, dependencies);
 
-                if (string.IsNullOrEmpty(pm.id) || CoreLoader.Main.FORBIDDEN_IDS.Contains(pm.id) || pm.id.Contains(" ") || pm.id.Contains("."))
+                if (string.IsNullOrEmpty(pm.id) || CoreLoader.Instance.FORBIDDEN_IDS.Contains(pm.id) || pm.id.Contains(" ") || pm.id.Contains("."))
                     throw new Exception($"Invalid or missing mod id: {pm.id}");
                 pm.id = pm.id.ToLower();
 

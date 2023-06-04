@@ -12,7 +12,6 @@ using System.Reflection;
 using SRML.Core.API;
 using Sentry;
 using SRML.Core.ModLoader.Attributes;
-using SRML.Patches;
 using SRML.Utils.Enum;
 
 namespace SRML.Core
@@ -40,8 +39,6 @@ namespace SRML.Core
             Debug.Log("SRML has successfully invaded the game!");
             HarmonyInstance = new Harmony("net.veesus.srml");
             HarmonyInstance.PatchAll();
-            HarmonyInstance.Patch(AccessTools.Method(Type.GetType("System.Enum"), "GetCachedValuesAndNames"),
-                transpiler: new HarmonyMethod(AccessTools.Method(typeof(EnumInfoPatch), "Transpiler")));
 
             FileLogger.Init();
             Console.Console.Init();
@@ -62,9 +59,9 @@ namespace SRML.Core
             foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
                 text.alignment = TextAlignmentOptions.TopLeft;
 
-            CoreAPI.Main = new CoreAPI();
+            CoreAPI api = new CoreAPI();
 
-            CoreLoader loader = CoreLoader.Main = new CoreLoader();
+            CoreLoader loader = new CoreLoader();
             loader.ProcessMods += EnumHolderResolver.RegisterAllEnums;
             
             loader.LoadFromDefaultPath();

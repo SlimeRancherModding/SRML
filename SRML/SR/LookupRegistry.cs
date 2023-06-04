@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SRML.API.Identifiable;
+using SRML.API.Identifiable.Slime;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,8 +10,6 @@ namespace SRML.SR
 {
     public static class LookupRegistry
     {
-        internal static HashSet<GameObject> objectsToPatch = new HashSet<GameObject>();
-        internal static HashSet<VacItemDefinition> vacEntriesToPatch = new HashSet<VacItemDefinition>();
         internal static HashSet<GadgetDefinition> gadgetEntriesToPatch = new HashSet<GadgetDefinition>();
 
         internal static HashSet<UpgradeDefinition> upgradeEntriesToPatch =
@@ -19,62 +19,24 @@ namespace SRML.SR
 
         internal static HashSet<GameObject> resourceSpawnersToPatch = new HashSet<GameObject>();
 
-        internal static HashSet<GameObject> gordosToPatch = new HashSet<GameObject>();
-
-        internal static HashSet<LiquidDefinition> liquidsToPatch = new HashSet<LiquidDefinition>();
-
-        internal static HashSet<ToyDefinition> toysToPatch = new HashSet<ToyDefinition>();
-
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="b">The prefab to register.</param>
-        public static void RegisterIdentifiablePrefab(GameObject b)
-        {
-            if (Identifiable.GetId(b) == Identifiable.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a prefab with id NONE. This is not allowed.");
-
-            switch (CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    objectsToPatch.Add(b);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.identifiablePrefabs.AddAndRemoveWhere(b,(x,y)=> Identifiable.GetId(x)== Identifiable.GetId(y));
-                    GameContext.Instance.LookupDirector.identifiablePrefabDict[Identifiable.GetId(b)] = b;
-                    break;
-            }
-        }
+        public static void RegisterIdentifiablePrefab(GameObject b) => RegisterIdentifiablePrefab(b.GetComponent<Identifiable>());
 
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="b">The <see cref="Identifiable"/> belonging to the prefab to register.</param>
-        public static void RegisterIdentifiablePrefab(Identifiable b)
-        {   
-            RegisterIdentifiablePrefab(b.gameObject);
-        }
+        public static void RegisterIdentifiablePrefab(Identifiable b) => 
+            API.Identifiable.IdentifiableRegistry.Instance.Register(b);
 
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry"></param>
-        public static void RegisterVacEntry(VacItemDefinition entry)
-        {
-            if (entry.id == Identifiable.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a VacItemDefinition with id NONE. This is not allowed.");
-
-            switch (CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    vacEntriesToPatch.Add(entry);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.vacItemDefinitions.AddAndRemoveWhere(entry, (x,y) => x.id == y.id);
-                    GameContext.Instance.LookupDirector.vacItemDict[entry.id] = entry;
-                    break;
-            }
-        }
+        public static void RegisterVacEntry(VacItemDefinition entry) => VacItemRegistry.Instance.Register(entry);
         /// <summary>
         /// Register a landplot prefab into the <see cref="LookupDirector"/>
         /// </summary>
@@ -188,64 +150,19 @@ namespace SRML.SR
         /// Register a gordo prefab into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="gordo"></param>
-        public static void RegisterGordo(GameObject gordo)
-        {
-            if (gordo.GetComponent<GordoIdentifiable>().id == Identifiable.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a gordo prefab with id NONE. This is not allowed.");
-
-            switch (SRModLoader.CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    gordosToPatch.Add(gordo);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.gordoEntries.AddAndRemoveWhere(gordo,(x,y)=>x.GetComponent<GordoIdentifiable>().id == y.GetComponent<GordoIdentifiable>().id);
-                    GameContext.Instance.LookupDirector.gordoDict[gordo.GetComponent<GordoIdentifiable>().id] = gordo;
-                    break;
-            }
-        }
+        public static void RegisterGordo(GameObject gordo) => GordoRegistry.Instance.Register(gordo.GetComponent<GordoIdentifiable>());
 
         /// <summary>
         /// Register <paramref name="liquid"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="liquid">Liquid to register</param>
-        public static void RegisterLiquid(LiquidDefinition liquid)
-        {
-            if (liquid.id == Identifiable.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a LiquidDefinition with id NONE. This is not allowed.");
-
-            switch (SRModLoader.CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    liquidsToPatch.Add(liquid);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.liquidDefinitions.AddAndRemoveWhere(liquid, (x,y) => x.id == y.id);
-                    GameContext.Instance.LookupDirector.liquidDict[liquid.id] = liquid;
-                    break;
-            }
-        }
+        public static void RegisterLiquid(LiquidDefinition liquid) => LiquidRegistry.Instance.Register(liquid);
 
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry">Entry to register</param>
-        public static void RegisterToy(ToyDefinition entry)
-        {
-            if (entry.toyId == Identifiable.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a ToyDefinition with id NONE. This is not allowed.");
-
-            switch (SRModLoader.CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    toysToPatch.Add(entry);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.toyDefinitions.AddAndRemoveWhere(entry, (x,y) => x.toyId == y.toyId);
-                    GameContext.Instance.LookupDirector.toyDict[entry.toyId] = entry;
-                    break;
-            }
-        }
+        public static void RegisterToy(ToyDefinition entry) => API.Identifiable.Slime.ToyRegistry.Instance.Register(entry);
 
         internal static void AddAndRemoveWhere<T>(this ListAsset<T> list,T value,Func<T,T,bool> cond)
         {

@@ -9,6 +9,6 @@ namespace SRML.Core.ModLoader.BuiltIn.EntryPoint
         {
         }
 
-        public IMod[] GetMyMods() => CoreLoader.Main.Mods.Where(x => x.ModInfo.Dependencies.dependencies.Keys.Contains(Info.Id)).ToArray();
+        public IMod[] GetMyMods() => CoreLoader.Instance.Mods.Where(x => x.ModInfo.Dependencies.dependencies.Keys.Contains(Info.Id)).ToArray();
     }
 }
