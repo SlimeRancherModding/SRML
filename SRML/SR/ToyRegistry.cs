@@ -1,5 +1,8 @@
-﻿namespace SRML.SR
+﻿using System;
+
+namespace SRML.SR
 {
+    [Obsolete]
     public static class ToyRegistry
     {
         /// <summary>

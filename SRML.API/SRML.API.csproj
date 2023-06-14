@@ -295,13 +295,34 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Gadget\DroneTargetRegistry.cs" />
+    <Compile Include="Gadget\Patches\GordoSnareOnTriggerPatch.cs" />
+    <Compile Include="Gadget\Patches\GordoSnarePatch.cs" />
+    <Compile Include="Gadget\RefineryRegistry.cs" />
+    <Compile Include="Gadget\SnareRegistry.cs" />
+    <Compile Include="Identifiable\SpawnResourcePrefabRegistry.cs" />
     <Compile Include="Identifiable\IdentifiableRegistry.cs" />
     <Compile Include="Identifiable\IdentifiablePrefabRegistry.cs" />
     <Compile Include="Identifiable\LiquidRegistry.cs" />
+    <Compile Include="Identifiable\Patches\AttachFashionsParentOffsetPatch.cs" />
+    <Compile Include="Identifiable\Slime\FashionOffsetRegistry.cs" />
+    <Compile Include="Identifiable\Slime\FashionSlotRegistry.cs" />
+    <Compile Include="Identifiable\Slime\FoodGroupRegistry.cs" />
     <Compile Include="Identifiable\Slime\GordoRegistry.cs" />
     <Compile Include="Identifiable\Slime\ToyRegistry.cs" />
+    <Compile Include="Identifiable\SpawnResourceRegistry.cs" />
     <Compile Include="Identifiable\VacItemRegistry.cs" />
+    <Compile Include="Identifiable\Patches\AttachFashionsParentPatch.cs" />
+    <Compile Include="Identifiable\Patches\FashionSlotParentPatch.cs" />
+    <Compile Include="Gadget\Patches\GadgetDirectorIsRefineryResourcePatch.cs" />
+    <Compile Include="Player\Patches\PlayerStatePotentialAmmoPatch.cs" />
+    <Compile Include="Player\Patches\PlayerStateResetPatch.cs" />
+    <Compile Include="Player\Patches\TargetingUIGetTargetPatch.cs" />
+    <Compile Include="Player\TargetingRegistry.cs" />
+    <Compile Include="World\Patches\StorageTypeExtensionsRegistryPatch.cs" />
+    <Compile Include="Player\PlayerAmmoRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\SiloAmmoRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="modinfo.json" />

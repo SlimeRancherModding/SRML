@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using SRML.SR.Utils;
-using SRML.SR.SaveSystem;
-using UnityEngine;
 
 namespace SRML.SR
 {
+    [Obsolete]
     public static class IdentifiableRegistry
     {
         /// <summary>
@@ -28,7 +25,7 @@ namespace SRML.SR
         /// <exception cref="Exception">Throws if ran outside of PreLoad</exception>
         public static Identifiable.Id CreateIdentifiableId(object value, string name, bool shouldCategorize = true)
         {
-            Identifiable.Id id = API.Identifiable.IdentifiableRegistry.Instance.Register(value, name);
+            Identifiable.Id id = API.Identifiable.IdentifiableRegistry.Instance.RegisterAndParse(name, value);
             if (!shouldCategorize)
                 API.Identifiable.IdentifiableRegistry.Instance.Decategorize(id);
             return id;

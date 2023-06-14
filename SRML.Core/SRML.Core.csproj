@@ -296,8 +296,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
-    <Compile Include="API\BuiltIn\EnumObject.cs" />
     <Compile Include="API\BuiltIn\EnumRegistry.cs" />
+    <Compile Include="API\BuiltIn\GenericRegistry.cs" />
     <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\CoreAPI.cs" />

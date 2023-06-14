@@ -38,3 +38,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("0.2.1.0")]
 
 [assembly: InternalsVisibleTo("SRML.Core")]
+[assembly: InternalsVisibleTo("SRML.API")]

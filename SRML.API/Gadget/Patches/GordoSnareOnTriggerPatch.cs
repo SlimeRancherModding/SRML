@@ -1,8 +1,9 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 
-namespace SRML.SR.Patches
+namespace SRML.API.Gadget.Patches
 {
     [HarmonyPatch(typeof(GordoSnare), "OnTriggerEnter")]
     internal static class GordoSnareOnTriggerPatch
@@ -24,6 +25,7 @@ namespace SRML.SR.Patches
             return instructions;
         }
 
-        public static bool IsSnareable(Identifiable.Id identifiable) => SnareRegistry.snareables.Contains(identifiable) || Identifiable.IsFood(identifiable);
+        public static bool IsSnareable(global::Identifiable.Id identifiable) => 
+            SnareRegistry.Instance.Registered.Contains(identifiable) || global::Identifiable.IsFood(identifiable);
     }
 }

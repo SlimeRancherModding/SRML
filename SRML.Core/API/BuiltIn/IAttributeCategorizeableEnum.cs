@@ -7,6 +7,7 @@ namespace SRML.Core.API.BuiltIn
     {
         Type AttributeType { get; }
         List<Enum> Categorized { get; }
+        bool TakesPresidenceOverCategorizable { get; }
 
         void Categorize(Enum toCategorize, Attribute att);
         bool IsCategorized(Enum categorized);

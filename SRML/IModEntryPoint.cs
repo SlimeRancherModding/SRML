@@ -8,6 +8,7 @@ using SRML.Console;
 
 namespace SRML
 {
+    [Obsolete]
     public interface IModEntryPoint
     {
         /// <summary>
@@ -29,6 +30,7 @@ namespace SRML
         void PostLoad();
     }
 
+    [Obsolete]
     public abstract class ModEntryPoint : IModEntryPoint
     {
         public Harmony HarmonyInstance => harmony;

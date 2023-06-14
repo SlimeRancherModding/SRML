@@ -8,60 +8,64 @@ namespace SRML.Core.API.BuiltIn
     public interface IEnumRegistry
     {
         void Process(Enum toProcess);
-        void Register(object toRegister);
+        void Register(string name, object value);
     }
 
-    public abstract class EnumRegistry<R, T> : Registry<R, EnumObject<T>>, IEnumRegistry
-        where R : EnumRegistry<R, T>
-        where T : Enum
+    public abstract class EnumRegistry<R, TEnum> : Registry<R, string, object>, IEnumRegistry
+        where R : EnumRegistry<R, TEnum>
+        where TEnum : Enum
     {
-        protected Dictionary<string, List<T>> valuesForMod = new Dictionary<string, List<T>>();
+        protected Dictionary<string, List<TEnum>> valuesForMod = new Dictionary<string, List<TEnum>>();
 
-        public abstract void Process(T toProcess);
-        public void Process(Enum toProcess) => Process((T)toProcess);
+        public abstract void Process(TEnum toProcess);
+        public void Process(Enum toProcess) => Process((TEnum)toProcess);
 
-        public T Register(string name) => Register(null, name);
-        public T Register(object value, string name)
+        public TEnum Register(string name)
         {
-            EnumObject<T> enumOb = new EnumObject<T>(name, value);
-            Register(enumOb);
-            return (T)enumOb.Value;
+            Register(name, null);
+            return (TEnum)Enum.Parse(typeof(TEnum), name);
         }
 
-        public T[] RegisteredForMod(string id)
+        public TEnum RegisterAndParse(string name, object value)
+        {
+            Register(name, value);
+            return (TEnum)Enum.ToObject(typeof(TEnum), value);
+        }
+
+        public TEnum[] RegisteredForMod(string id)
         {
             if (!valuesForMod.ContainsKey(id))
                 return null;
             return valuesForMod[id].ToArray();
         }
 
-        public bool IsRegistered(T registered) => valuesForMod.Any(x => x.Value.Contains(registered));
+        public bool IsRegistered(TEnum registered) => valuesForMod.Any(x => x.Value.Contains(registered));
 
         public override void Initialize()
         {
-            EnumPatcher.RegisterEnumRegistry(typeof(T), this);
+            EnumPatcher.RegisterEnumRegistry(typeof(TEnum), this);
         }
 
-        public sealed override bool IsRegistered(EnumObject<T> registered)
+        public sealed override bool IsRegistered(string name, object value)
         {
-            if (registered.Value == null || registered.Value.GetType() != typeof(T))
+            if (value == null || value.GetType() != typeof(TEnum))
                 return false;
 
-            return IsRegistered((T)registered.Value);
+            return IsRegistered((TEnum)value);
         }
 
-        public sealed override void Register(EnumObject<T> toRegister)
+        public sealed override void Register(string name, object value)
         {
-            if (toRegister.Value == null)
-                toRegister.Value = EnumPatcher.AddEnumValue<T>(toRegister.Name);
+            if (value == null)
+                value = EnumPatcher.AddEnumValue<TEnum>(name);
             else
-                EnumPatcher.AddEnumValue<T>(toRegister.Value, toRegister.Name);
+                EnumPatcher.AddEnumValue<TEnum>(value, name);
 
-            T newVal = (T)toRegister.Value;
+            TEnum newVal = (TEnum)value;
 
             string id = CoreLoader.Instance.GetExecutingModContext()?.ModInfo.Id;
             if (!valuesForMod.ContainsKey(id))
-                valuesForMod[id] = new List<T>();
+                valuesForMod[id] = new List<TEnum>();
 
             valuesForMod[id].Add(newVal);
         }

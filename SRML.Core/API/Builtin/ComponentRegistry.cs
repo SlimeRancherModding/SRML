@@ -11,8 +11,7 @@ namespace SRML.Core.API.BuiltIn
         where C : Component 
         where R : ComponentRegistry<R, T, C>
     {
-        protected List<T> registered = new List<T>();
-        private bool alreadyRegistered;
+        protected bool AlreadyRegistered { get; private set; }
 
         public C RegisteredComponent { get; internal set; }
         
@@ -31,9 +30,9 @@ namespace SRML.Core.API.BuiltIn
                 return;
 
             RegisteredComponent = component;
-            alreadyRegistered = true;
+            AlreadyRegistered = true;
 
-            foreach (T toRegister in registered)
+            foreach (T toRegister in _registered)
                 Register(toRegister);
         }
 
@@ -52,10 +51,10 @@ namespace SRML.Core.API.BuiltIn
             if (IsRegistered(toRegister))
                 return;
 
-            registered.Add(toRegister);
-            if (alreadyRegistered)
+            if (AlreadyRegistered)
                 RegisterIntoComponent(toRegister, RegisteredComponent);
 
+            _registered.AddIfDoesNotContain(toRegister);
             IMod mod = CoreLoader.Instance.GetExecutingModContext();
             if (mod != null)
             {
@@ -74,6 +73,156 @@ namespace SRML.Core.API.BuiltIn
             return IsRegistered(registered, RegisteredComponent);
         }
 
-        internal static void AddToComponent(C __instance) => Instance.RegisterAllIntoComponent(__instance);
+        internal static void AddToComponent(C __instance)
+        {
+            Instance.InitializeComponent(__instance);
+            Instance.RegisterAllIntoComponent(__instance);
+        }
+    }
+
+    public abstract class ComponentRegistry<R, T, T2, C> : Registry<R, T, T2>
+        where C : Component
+        where R : ComponentRegistry<R, T, T2, C>
+    {
+        protected bool AlreadyRegistered { get; private set; }
+
+        public C RegisteredComponent { get; internal set; }
+
+        public abstract MethodInfo ComponentInitializeMethod { get; }
+        public abstract bool Prefix { get; }
+
+        protected abstract void InitializeComponent(C component);
+
+        protected abstract void RegisterIntoComponent(T toRegister, T2 toRegister2, C component);
+
+        public abstract bool IsRegistered(T registered, T2 registered2, C component);
+
+        private void RegisterAllIntoComponent(C component)
+        {
+            if (component == RegisteredComponent)
+                return;
+
+            RegisteredComponent = component;
+            AlreadyRegistered = true;
+
+            foreach (var toRegister in _registered)
+                Register(toRegister.Item1, toRegister.Item2);
+        }
+
+        public sealed override void Initialize()
+        {
+            if (ComponentInitializeMethod.DeclaringType != typeof(C))
+                throw new InvalidOperationException("Cannot initialize component on method that does not belong to that component.");
+
+            Main.HarmonyInstance.Patch(ComponentInitializeMethod,
+                Prefix ? new HarmonyMethod(GetType(), "AddToComponent") : null,
+                Prefix ? null : new HarmonyMethod(GetType(), "AddToComponent"), null);
+        }
+
+        public sealed override void Register(T toRegister, T2 toRegister2)
+        {
+            if (IsRegistered(toRegister, toRegister2))
+                return;
+
+            if (AlreadyRegistered)
+                RegisterIntoComponent(toRegister, toRegister2, RegisteredComponent);
+
+            _registered.AddIfDoesNotContain((toRegister, toRegister2));
+            IMod mod = CoreLoader.Instance.GetExecutingModContext();
+            if (mod != null)
+            {
+                if (!registeredForMod.ContainsKey(mod))
+                    registeredForMod.Add(mod, new List<(T, T2)>());
+
+                registeredForMod[mod].Add((toRegister, toRegister2));
+            }
+        }
+
+        public sealed override bool IsRegistered(T registered, T2 registered2)
+        {
+            if (RegisteredComponent == null)
+                return false;
+
+            return IsRegistered(registered, registered2, RegisteredComponent);
+        }
+
+        internal static void AddToComponent(C __instance)
+        {
+            Instance.InitializeComponent(__instance);
+            Instance.RegisterAllIntoComponent(__instance);
+        }
+    }
+
+    public abstract class ComponentRegistry<R, T, T2, T3, C> : Registry<R, T, T2, T3>
+        where C : Component
+        where R : ComponentRegistry<R, T, T2, T3, C>
+    {
+        protected bool AlreadyRegistered { get; private set; }
+
+        public C RegisteredComponent { get; internal set; }
+
+        public abstract MethodInfo ComponentInitializeMethod { get; }
+        public abstract bool Prefix { get; }
+
+        protected abstract void InitializeComponent(C component);
+
+        protected abstract void RegisterIntoComponent(T toRegister, T2 toRegister2, T3 toRegister3, C component);
+
+        public abstract bool IsRegistered(T registered, T2 registered2, T3 registered3, C component);
+
+        private void RegisterAllIntoComponent(C component)
+        {
+            if (component == RegisteredComponent)
+                return;
+
+            RegisteredComponent = component;
+            AlreadyRegistered = true;
+
+            foreach (var toRegister in _registered)
+                Register(toRegister.Item1, toRegister.Item2, toRegister.Item3);
+        }
+
+        public sealed override void Initialize()
+        {
+            if (ComponentInitializeMethod.DeclaringType != typeof(C))
+                throw new InvalidOperationException("Cannot initialize component on method that does not belong to that component.");
+
+            Main.HarmonyInstance.Patch(ComponentInitializeMethod,
+                Prefix ? new HarmonyMethod(GetType(), "AddToComponent") : null,
+                Prefix ? null : new HarmonyMethod(GetType(), "AddToComponent"), null);
+        }
+
+        public sealed override void Register(T toRegister, T2 toRegister2, T3 toRegister3)
+        {
+            if (IsRegistered(toRegister, toRegister2, toRegister3))
+                return;
+
+            if (AlreadyRegistered)
+                RegisterIntoComponent(toRegister, toRegister2, toRegister3, RegisteredComponent);
+
+            _registered.AddIfDoesNotContain((toRegister, toRegister2, toRegister3));
+            IMod mod = CoreLoader.Instance.GetExecutingModContext();
+            if (mod != null)
+            {
+                if (!registeredForMod.ContainsKey(mod))
+                    registeredForMod.Add(mod, new List<(T, T2, T3)>());
+
+                registeredForMod[mod].Add((toRegister, toRegister2, toRegister3));
+            }
+        }
+
+        public sealed override bool IsRegistered(T registered, T2 registered2, T3 registered3)
+        {
+            if (RegisteredComponent == null)
+                return false;
+
+            return IsRegistered(registered, registered2, registered3, RegisteredComponent);
+        }
+
+        internal static void AddToComponent(C __instance)
+        {
+            Instance.InitializeComponent(__instance);
+            Instance.RegisterAllIntoComponent(__instance);
+        }
     }
 }

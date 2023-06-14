@@ -17,8 +17,6 @@ namespace SRML.SR
 
         internal static HashSet<GameObject> landPlotsToPatch = new HashSet<GameObject>();
 
-        internal static HashSet<GameObject> resourceSpawnersToPatch = new HashSet<GameObject>();
-
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
         /// </summary>
@@ -30,7 +28,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="b">The <see cref="Identifiable"/> belonging to the prefab to register.</param>
         public static void RegisterIdentifiablePrefab(Identifiable b) => 
-            API.Identifiable.IdentifiableRegistry.Instance.Register(b);
+            API.Identifiable.IdentifiablePrefabRegistry.Instance.Register(b);
 
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
@@ -129,22 +127,8 @@ namespace SRML.SR
         /// Register a <see cref="SpawnResource"/> into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="b"></param>
-        public static void RegisterSpawnResource(GameObject b)
-        {
-            if (b.GetComponent<SpawnResource>().id == SpawnResource.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a SpawnResource with id NONE. This is not allowed.");
-
-            switch (SRModLoader.CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    resourceSpawnersToPatch.Add(b);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.resourceSpawnerPrefabs.AddAndRemoveWhere(b,(x,y)=>x.GetComponent<SpawnResource>().id == y.GetComponent<SpawnResource>().id);
-                    GameContext.Instance.LookupDirector.resourcePrefabDict[b.GetComponent<SpawnResource>().id] = b;
-                    break;
-            }
-        }
+        public static void RegisterSpawnResource(GameObject b) =>
+            SpawnResourcePrefabRegistry.Instance.Register(b.GetComponent<SpawnResource>());
 
         /// <summary>
         /// Register a gordo prefab into the <see cref="LookupDirector"/>

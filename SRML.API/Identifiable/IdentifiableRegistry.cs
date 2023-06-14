@@ -10,6 +10,7 @@ namespace SRML.API.Identifiable
     {
         public List<Enum> Categorized => new List<Enum>();
         public Type AttributeType => typeof(IdentifiableCategorization);
+        public bool TakesPresidenceOverCategorizable => true;
 
         // TODO: remake this ENTIRE thing in a more extendable way
         // currently, the system is just directly ported from the original IdentifiableRegistry

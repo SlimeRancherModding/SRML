@@ -45,7 +45,7 @@ namespace SRML.Utils.Enum
                                 {
                                     if (EnumPatcher.categorizableRegistries.TryGetValue(x => x.AttributeType == att.GetType(), out var reg))
                                     {
-                                        if (reg is ICategorizableEnum catEnum)
+                                        if (reg is ICategorizableEnum catEnum && reg.TakesPresidenceOverCategorizable)
                                             catEnum.Decategorize(generated);
                                         reg.Categorize(generated, att);
                                     }

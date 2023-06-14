@@ -107,10 +107,11 @@ namespace SRML
             if (registriesForType.TryGetValue(enumType, out IEnumRegistry enumReg))
             {
                 Enum newVal = (Enum)Enum.ToObject(enumType, (ulong)value);
-                enumReg.Process(newVal);
 
                 if (enumReg is ICategorizableEnum categorizable)
                     categorizable.Categorize(newVal);
+
+                enumReg.Process(newVal);
             }
         }
 
