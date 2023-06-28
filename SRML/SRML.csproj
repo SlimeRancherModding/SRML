@@ -400,7 +400,6 @@
     <Compile Include="SR\FoodGroupRegistry.cs" />
     <Compile Include="SR\GadgetCategorization.cs" />
     <Compile Include="SR\IdentifiableCategorization.cs" />
-    <Compile Include="SR\Patches\AchievementDirectorModdedAchievementsPatch.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
     <Compile Include="SR\Patches\BugReportUIDestroyPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerBuyPatch.cs" />
@@ -409,7 +408,6 @@
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
     <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
-    <Compile Include="SR\Patches\GamepadPanelSetupBindingsPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
     <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
@@ -480,7 +478,6 @@
     <Compile Include="SR\Patches\InitInitialBlueprintsPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
     <Compile Include="SR\Patches\MailReadPatch.cs" />
-    <Compile Include="SR\Patches\OptionsUISetupInputPatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorMaybeShowPopupPatch.cs" />
     <Compile Include="SR\Patches\PediaUIAwakePatch.cs" />
@@ -489,8 +486,6 @@
     <Compile Include="SR\Patches\PlayerStateNullCheckPatches.cs" />
     <Compile Include="SR\Patches\RegisterActorPatch.cs" />
     <Compile Include="SR\Patches\SavedProfilePullBindingsPatch.cs" />
-    <Compile Include="SR\Patches\SavedProfilePullPatch.cs" />
-    <Compile Include="SR\Patches\SavedProfilePushPatch.cs" />
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
     <Compile Include="SR\Patches\SRInputConstructorPatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorNullCheckPatches.cs" />

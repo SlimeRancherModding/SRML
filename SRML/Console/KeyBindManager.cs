@@ -13,11 +13,12 @@ namespace SRML.Console
 {
     internal static class KeyBindManager
     {
-        static List<KeyBinding> customKeyBinds = new List<KeyBinding>();
+        private static List<KeyBinding> customKeyBinds = new List<KeyBinding>();
+        public static List<PlayerAction> ephemeralActions = new List<PlayerAction>();
 
         const string FILENAME = "consolekeybindings";
 
-        static ConsoleActions Actions;
+        public static ConsoleActions Actions;
 
         public static void Update()
         {
@@ -99,7 +100,7 @@ namespace SRML.Console
             public static PlayerAction GetEphemeralPlayerAction()
             {
                 var action = new PlayerAction(PREFIX+latestID++, KeyBindManager.Actions);
-                BindingRegistry.ephemeralActions.Add(action);
+                ephemeralActions.Add(action);
                 return action;
             }
 
@@ -108,7 +109,7 @@ namespace SRML.Console
                 var binding = new BindingV01();
                 binding.Load(reader.BaseStream);
                 var action = new PlayerAction(binding.action, KeyBindManager.Actions);
-                BindingRegistry.ephemeralActions.Add(action);
+                ephemeralActions.Add(action);
                 if (int.TryParse(binding.action.Substring(PREFIX.Length), out var val) && val >= latestID) latestID = val+1;
                 SRInput.AddOrReplaceBinding(action, binding);
                 var keybind = new KeyBinding() { action = action, commandToRun = reader.ReadString() };

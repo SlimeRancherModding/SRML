@@ -20,6 +20,8 @@ namespace SRML.Core.API
         public abstract void Register(T toRegister);
         public abstract bool IsRegistered(T registered);
 
+        public List<T> GetRegisteredForMod(string id) => registeredForMod.First(x => x.Key.ModInfo.Id == id).Value;
+
         public static R Instance { get; private set; }
 
         internal Registry() => Instance = (R)this;
@@ -36,6 +38,8 @@ namespace SRML.Core.API
         public abstract void Register(T toRegister, T2 toRegister2);
         public abstract bool IsRegistered(T registered, T2 registered2);
 
+        public List<(T, T2)> GetRegisteredForMod(string id) => registeredForMod.First(x => x.Key.ModInfo.Id == id).Value;
+
         public static R Instance { get; private set; }
 
         internal Registry() => Instance = (R)this;
@@ -51,6 +55,8 @@ namespace SRML.Core.API
 
         public abstract void Register(T toRegister, T2 toRegister2, T3 toRegister3);
         public abstract bool IsRegistered(T registered, T2 registered2, T3 toRegister3);
+
+        public List<(T, T2, T3)> GetRegisteredForMod(string id) => registeredForMod.First(x => x.Key.ModInfo.Id == id).Value;
 
         public static R Instance { get; private set; }
 

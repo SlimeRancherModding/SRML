@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
-using InControl;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
-namespace SRML.SR.Patches
+namespace SRML.API.Player.Patches
 {
     [HarmonyPatch(typeof(GamepadPanel))]
     [HarmonyPatch("SetupBindings")]
@@ -30,7 +27,7 @@ namespace SRML.SR.Patches
 
         public static void Alternate(GamepadPanel ui)
         {
-            foreach (var v in SRInput.Actions.Actions.Where(x => BindingRegistry.moddedBindings.Contains(x)))
+            foreach (var v in SRInput.Actions.Actions.Where(x => PlayerActionRegistry.Instance.registeredBindings.Contains(x)))
                 ui.CreateGamepadBindingLine("key." + v.Name.ToLowerInvariant(), v);
         }
     }

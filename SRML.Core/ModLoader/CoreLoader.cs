@@ -1,7 +1,4 @@
-﻿using Doorstop;
-using HarmonyLib;
-using SRML.Console;
-using SRML.Core.ModLoader.Attributes;
+﻿using SRML.Core.ModLoader.Attributes;
 using SRML.Core.ModLoader.DataTypes;
 using System;
 using System.Collections.Generic;
@@ -9,12 +6,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace SRML.Core.ModLoader
 {
-    public class CoreLoader : ClassSingleton<CoreLoader>
+    public class CoreLoader
     {
+        public static CoreLoader Instance { get; private set; }
+
         /// <summary>
         /// All loaded mods
         /// </summary>
@@ -220,5 +218,7 @@ namespace SRML.Core.ModLoader
         public void ForceModContext(IMod mod) => forceMod = mod;
 
         public void ClearModContext() => forceMod = null;
+
+        internal CoreLoader() => Instance = this;
     }
 }

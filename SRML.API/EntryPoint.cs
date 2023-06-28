@@ -19,26 +19,30 @@ namespace SRML.API
         {
             HarmonyInstance.PatchAll();
 
-            CoreAPI.Instance.RegisterRegistry(new DroneTargetRegistry());
-            CoreAPI.Instance.RegisterRegistry(new RefineryRegistry());
-            CoreAPI.Instance.RegisterRegistry(new SnareRegistry());
+            CoreAPI api = CoreAPI.Instance;
+            api.RegisterRegistry(new DroneTargetRegistry());
+            api.RegisterRegistry(new RefineryRegistry());
+            api.RegisterRegistry(new SnareRegistry());
 
-            CoreAPI.Instance.RegisterRegistry(new FashionOffsetRegistry());
-            CoreAPI.Instance.RegisterRegistry(new FashionSlotRegistry());
-            CoreAPI.Instance.RegisterRegistry(new FoodGroupRegistry());
-            CoreAPI.Instance.RegisterRegistry(new GordoRegistry());
-            CoreAPI.Instance.RegisterRegistry(new ToyRegistry());
+            api.RegisterRegistry(new FashionOffsetRegistry());
+            api.RegisterRegistry(new FashionSlotRegistry());
+            api.RegisterRegistry(new FoodGroupRegistry());
+            api.RegisterRegistry(new GordoRegistry());
+            api.RegisterRegistry(new ToyRegistry());
 
-            CoreAPI.Instance.RegisterRegistry(new IdentifiablePrefabRegistry());
-            CoreAPI.Instance.RegisterRegistry(new IdentifiableRegistry());
-            CoreAPI.Instance.RegisterRegistry(new LiquidRegistry());
-            CoreAPI.Instance.RegisterRegistry(new SpawnResourcePrefabRegistry());
-            CoreAPI.Instance.RegisterRegistry(new VacItemRegistry());
+            api.RegisterRegistry(new IdentifiablePrefabRegistry());
+            api.RegisterRegistry(new IdentifiableRegistry());
+            api.RegisterRegistry(new LiquidRegistry());
+            api.RegisterRegistry(new SpawnResourcePrefabRegistry());
+            api.RegisterRegistry(new VacItemRegistry());
 
-            CoreAPI.Instance.RegisterRegistry(new PlayerAmmoRegistry());
-            CoreAPI.Instance.RegisterRegistry(new TargetingRegistry());
+            api.RegisterRegistry(new AchievementsRegistry());
+            api.RegisterRegistry(new AchievementTierRegistry());
+            api.RegisterRegistry(new PlayerActionRegistry());
+            api.RegisterRegistry(new PlayerAmmoRegistry());
+            api.RegisterRegistry(new TargetingRegistry());
 
-            CoreAPI.Instance.RegisterRegistry(new SiloAmmoRegistry());
+            api.RegisterRegistry(new SiloAmmoRegistry());
         }
     }
 }

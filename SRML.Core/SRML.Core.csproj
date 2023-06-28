@@ -302,7 +302,6 @@
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\CoreAPI.cs" />
     <Compile Include="API\IRegistry.cs" />
-    <Compile Include="ClassSingleton.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />

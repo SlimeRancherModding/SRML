@@ -18,7 +18,13 @@ namespace SRML.Core.API.BuiltIn
         public abstract MethodInfo ComponentInitializeMethod { get; }
         public abstract bool Prefix { get; }
 
-        protected abstract void InitializeComponent(C component);
+        protected virtual void InitializeComponent(C component)
+        {
+        }
+
+        protected virtual void PreRegister(T toRegister)
+        {
+        }
 
         protected abstract void RegisterIntoComponent(T toRegister, C component);
 
@@ -33,7 +39,7 @@ namespace SRML.Core.API.BuiltIn
             AlreadyRegistered = true;
 
             foreach (T toRegister in _registered)
-                Register(toRegister);
+                RegisterIntoComponent(toRegister, component);
         }
 
         public sealed override void Initialize()
@@ -51,6 +57,7 @@ namespace SRML.Core.API.BuiltIn
             if (IsRegistered(toRegister))
                 return;
 
+            PreRegister(toRegister);
             if (AlreadyRegistered)
                 RegisterIntoComponent(toRegister, RegisteredComponent);
 
@@ -91,7 +98,13 @@ namespace SRML.Core.API.BuiltIn
         public abstract MethodInfo ComponentInitializeMethod { get; }
         public abstract bool Prefix { get; }
 
-        protected abstract void InitializeComponent(C component);
+        protected virtual void InitializeComponent(C component)
+        {
+        }
+
+        protected virtual void PreRegister(T toRegister, T2 toRegister2)
+        {
+        }
 
         protected abstract void RegisterIntoComponent(T toRegister, T2 toRegister2, C component);
 
@@ -106,7 +119,7 @@ namespace SRML.Core.API.BuiltIn
             AlreadyRegistered = true;
 
             foreach (var toRegister in _registered)
-                Register(toRegister.Item1, toRegister.Item2);
+                RegisterIntoComponent(toRegister.Item1, toRegister.Item2, component);
         }
 
         public sealed override void Initialize()
@@ -124,6 +137,7 @@ namespace SRML.Core.API.BuiltIn
             if (IsRegistered(toRegister, toRegister2))
                 return;
 
+            PreRegister(toRegister, toRegister2);
             if (AlreadyRegistered)
                 RegisterIntoComponent(toRegister, toRegister2, RegisteredComponent);
 
@@ -164,7 +178,13 @@ namespace SRML.Core.API.BuiltIn
         public abstract MethodInfo ComponentInitializeMethod { get; }
         public abstract bool Prefix { get; }
 
-        protected abstract void InitializeComponent(C component);
+        protected virtual void InitializeComponent(C component)
+        {
+        }
+
+        protected virtual void PreRegister(T toRegister, T2 toRegister2, T3 toRegister3)
+        {
+        }
 
         protected abstract void RegisterIntoComponent(T toRegister, T2 toRegister2, T3 toRegister3, C component);
 
@@ -179,7 +199,7 @@ namespace SRML.Core.API.BuiltIn
             AlreadyRegistered = true;
 
             foreach (var toRegister in _registered)
-                Register(toRegister.Item1, toRegister.Item2, toRegister.Item3);
+                RegisterIntoComponent(toRegister.Item1, toRegister.Item2, toRegister.Item3, component);
         }
 
         public sealed override void Initialize()
@@ -197,6 +217,7 @@ namespace SRML.Core.API.BuiltIn
             if (IsRegistered(toRegister, toRegister2, toRegister3))
                 return;
 
+            PreRegister(toRegister, toRegister2, toRegister3);
             if (AlreadyRegistered)
                 RegisterIntoComponent(toRegister, toRegister2, toRegister3, RegisteredComponent);
 
