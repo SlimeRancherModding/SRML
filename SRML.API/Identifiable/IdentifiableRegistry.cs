@@ -1,4 +1,5 @@
-﻿using SRML.Core.API.BuiltIn;
+﻿using SRML.Console;
+using SRML.Core.API.BuiltIn;
 using SRML.SR;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,9 @@ namespace SRML.API.Identifiable
         public Type AttributeType => typeof(IdentifiableCategorization);
         public bool TakesPresidenceOverCategorizable => true;
 
-        // TODO: remake this ENTIRE thing in a more extendable way
-        // currently, the system is just directly ported from the original IdentifiableRegistry
-        // and it's incredibly stupid
+        public delegate void CategorizationProcessor(global::Identifiable.Id id, string name, IdentifiableCategorization.Rule rule);
+
+        // this is now extendable! but it's still TERRIBLE
         internal Dictionary<string, IdentifiableCategorization.Rule> categorizationSuffixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
         {
             { "_VEGGIE", IdentifiableCategorization.Rule.VEGGIE },
@@ -36,7 +37,82 @@ namespace SRML.API.Identifiable
         };
         internal Dictionary<string, IdentifiableCategorization.Rule> categorizationPrefixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
         {
-            { "ECHO_NOTE_", IdentifiableCategorization.Rule.ECHO_NOTE }
+            { "ECHO_NOTE_", IdentifiableCategorization.Rule.ECHO_NOTE },
+            { "ELDER_", IdentifiableCategorization.Rule.ELDER }
+        };
+        internal Dictionary<IdentifiableCategorization.Rule, List<HashSet<global::Identifiable.Id>>> ruleLists =
+            new Dictionary<IdentifiableCategorization.Rule, List<HashSet<global::Identifiable.Id>>>()
+        {
+                { IdentifiableCategorization.Rule.VEGGIE, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.FOOD_CLASS, global::Identifiable.VEGGIE_CLASS } },
+                { IdentifiableCategorization.Rule.FRUIT, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.FOOD_CLASS, global::Identifiable.FRUIT_CLASS } },
+                { IdentifiableCategorization.Rule.MEAT, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.FOOD_CLASS, global::Identifiable.MEAT_CLASS } },
+                { IdentifiableCategorization.Rule.TOFU, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.FOOD_CLASS, global::Identifiable.TOFU_CLASS } },
+                { IdentifiableCategorization.Rule.PLORT, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.PLORT_CLASS } },
+                { IdentifiableCategorization.Rule.CHICK, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.CHICK_CLASS } },
+                { IdentifiableCategorization.Rule.CRAFT, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
+                global::Identifiable.CRAFT_CLASS } },
+                { IdentifiableCategorization.Rule.SLIME, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.SLIME_CLASS,
+                global::Identifiable.EATERS_CLASS } },
+                { IdentifiableCategorization.Rule.LARGO, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.LARGO_CLASS,
+                global::Identifiable.EATERS_CLASS } },
+                { IdentifiableCategorization.Rule.GORDO, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.GORDO_CLASS } },
+                { IdentifiableCategorization.Rule.LIQUID, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.LIQUID_CLASS } },
+                { IdentifiableCategorization.Rule.FASHION, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.FASHION_CLASS } },
+                { IdentifiableCategorization.Rule.ECHO, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.ECHO_CLASS } },
+                { IdentifiableCategorization.Rule.ECHO_NOTE, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.ECHO_NOTE_CLASS } },
+                { IdentifiableCategorization.Rule.ORNAMENT, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.ORNAMENT_CLASS } },
+                { IdentifiableCategorization.Rule.TOY, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.TOY_CLASS } },
+                { IdentifiableCategorization.Rule.ELDER, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.ELDER_CLASS } },
+        };
+        internal List<HashSet<global::Identifiable.Id>> baseRuleLists = new List<HashSet<global::Identifiable.Id>>()
+        {
+            global::Identifiable.ALLERGY_FREE_CLASS,
+            global::Identifiable.BOOP_CLASS,
+            global::Identifiable.CHICK_CLASS,
+            global::Identifiable.CRAFT_CLASS,
+            global::Identifiable.EATERS_CLASS,
+            global::Identifiable.ECHO_CLASS,
+            global::Identifiable.ECHO_NOTE_CLASS,
+            global::Identifiable.ELDER_CLASS,
+            global::Identifiable.FASHION_CLASS,
+            global::Identifiable.FOOD_CLASS,
+            global::Identifiable.FRUIT_CLASS,
+            global::Identifiable.GORDO_CLASS,
+            global::Identifiable.LARGO_CLASS,
+            global::Identifiable.LIQUID_CLASS,
+            global::Identifiable.MEAT_CLASS,
+            global::Identifiable.NON_SLIMES_CLASS,
+            global::Identifiable.ORNAMENT_CLASS,
+            global::Identifiable.PLORT_CLASS,
+            global::Identifiable.SLIME_CLASS,
+            global::Identifiable.STANDARD_CRATE_CLASS,
+            global::Identifiable.TARR_CLASS,
+            global::Identifiable.TOFU_CLASS,
+            global::Identifiable.TOY_CLASS,
+        };
+        internal List<CategorizationProcessor> processors = new List<CategorizationProcessor>()
+        {
+            (x, y, z) =>
+            {
+                if (y.Contains("TANGLE"))
+                    global::Identifiable.ALLERGY_FREE_CLASS.Add(x);
+            },
+            (x, y, z) =>
+            {
+                if (y.Contains("TABBY"))
+                    global::Identifiable.BOOP_CLASS.Add(x);
+            },
+            (x, y, z) =>
+            {
+                if (y.Contains("TARR"))
+                    global::Identifiable.TARR_CLASS.Add(x);
+            },
         };
 
         public bool IsCategorized(Enum categorized) => Categorized.Contains(categorized);
@@ -52,44 +128,23 @@ namespace SRML.API.Identifiable
         public void Categorize(global::Identifiable.Id id, IdentifiableCategorization.Rule rule)
         {
             string name = Enum.GetName(typeof(global::Identifiable.Id), id);
-            if (name.Contains("TANGLE"))
-            {
-                global::Identifiable.ALLERGY_FREE_CLASS.Add(id);
-            }
             if (rule == IdentifiableCategorization.Rule.NONE) return;
 
-            if ((rule & (IdentifiableCategorization.Rule.VEGGIE |
-                IdentifiableCategorization.Rule.FRUIT |
-                IdentifiableCategorization.Rule.TOFU |
-                IdentifiableCategorization.Rule.PLORT |
-                IdentifiableCategorization.Rule.MEAT |
-                IdentifiableCategorization.Rule.CHICK |
-                IdentifiableCategorization.Rule.CRAFT)) != 0) global::Identifiable.NON_SLIMES_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.VEGGIE |
-                IdentifiableCategorization.Rule.FRUIT |
-                IdentifiableCategorization.Rule.TOFU |
-                IdentifiableCategorization.Rule.MEAT)) != 0) global::Identifiable.FOOD_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.VEGGIE)) != 0) global::Identifiable.VEGGIE_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.FRUIT)) != 0) global::Identifiable.FRUIT_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.TOFU)) != 0) global::Identifiable.TOFU_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.SLIME)) != 0) global::Identifiable.SLIME_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.LARGO)) != 0) global::Identifiable.LARGO_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.GORDO)) != 0) global::Identifiable.GORDO_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.PLORT)) != 0) global::Identifiable.PLORT_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.MEAT)) != 0) global::Identifiable.MEAT_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.CHICK)) != 0) global::Identifiable.CHICK_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.LIQUID)) != 0) global::Identifiable.LIQUID_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.CRAFT)) != 0) global::Identifiable.CRAFT_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.FASHION)) != 0) global::Identifiable.FASHION_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.ECHO)) != 0) global::Identifiable.ECHO_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.ECHO_NOTE)) != 0) global::Identifiable.ECHO_NOTE_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.ORNAMENT)) != 0) global::Identifiable.ORNAMENT_CLASS.Add(id);
-            if ((rule & (IdentifiableCategorization.Rule.TOY)) != 0) global::Identifiable.TOY_CLASS.Add(id);
-
-            global::Identifiable.EATERS_CLASS.UnionWith(global::Identifiable.SLIME_CLASS);
-            global::Identifiable.EATERS_CLASS.UnionWith(global::Identifiable.LARGO_CLASS);
+            foreach (var ruleList in ruleLists)
+            {
+                if ((ruleList.Key & rule) != 0)
+                {
+                    Console.Console.Instance.Log($"registering {id} as {rule}");
+                    foreach (var hashset in ruleList.Value)
+                        hashset.Add(id);
+                }
+            }
+            foreach (var processor in processors)
+                processor(id, name, rule);
 
             Categorized.Add(id);
+
+            Slime.FoodGroupRegistry.Instance.Register(id);
         }
 
         public void Categorize(Enum toCategorize)
@@ -121,29 +176,8 @@ namespace SRML.API.Identifiable
         {
             global::Identifiable.Id id = (global::Identifiable.Id)toDecategorize;
 
-            global::Identifiable.ALLERGY_FREE_CLASS.Remove(id);
-            global::Identifiable.BOOP_CLASS.Remove(id);
-            global::Identifiable.CHICK_CLASS.Remove(id);
-            global::Identifiable.CRAFT_CLASS.Remove(id);
-            global::Identifiable.EATERS_CLASS.Remove(id);
-            global::Identifiable.ECHO_CLASS.Remove(id);
-            global::Identifiable.ECHO_NOTE_CLASS.Remove(id);
-            global::Identifiable.ELDER_CLASS.Remove(id);
-            global::Identifiable.FASHION_CLASS.Remove(id);
-            global::Identifiable.FOOD_CLASS.Remove(id);
-            global::Identifiable.FRUIT_CLASS.Remove(id);
-            global::Identifiable.GORDO_CLASS.Remove(id);
-            global::Identifiable.LARGO_CLASS.Remove(id);
-            global::Identifiable.LIQUID_CLASS.Remove(id);
-            global::Identifiable.MEAT_CLASS.Remove(id);
-            global::Identifiable.NON_SLIMES_CLASS.Remove(id);
-            global::Identifiable.ORNAMENT_CLASS.Remove(id);
-            global::Identifiable.PLORT_CLASS.Remove(id);
-            global::Identifiable.SLIME_CLASS.Remove(id);
-            global::Identifiable.STANDARD_CRATE_CLASS.Remove(id);
-            global::Identifiable.TARR_CLASS.Remove(id);
-            global::Identifiable.TOFU_CLASS.Remove(id);
-            global::Identifiable.TOY_CLASS.Remove(id);
+            foreach (var hashset in baseRuleLists)
+                hashset.Remove(id);
         }
 
         public void RegisterPrefixRule(string prefix, IdentifiableCategorization.Rule rule) =>
@@ -151,6 +185,18 @@ namespace SRML.API.Identifiable
 
         public void RegisterSuffixRule(string suffix, IdentifiableCategorization.Rule rule) =>
             categorizationSuffixRules[suffix] = rule;
+
+        public void RegisterCategorizationProcessor(CategorizationProcessor processor) =>
+            processors.Add(processor);
+
+        public void RegisterHashSet(IdentifiableCategorization.Rule rule, HashSet<global::Identifiable.Id> hashset)
+        {
+            if (!ruleLists.ContainsKey(rule))
+                ruleLists[rule] = new List<HashSet<global::Identifiable.Id>>();
+
+            ruleLists[rule].Add(hashset);
+            baseRuleLists.AddIfDoesNotContain(hashset);
+        }
 
         public override void Process(global::Identifiable.Id toProcess)
         {

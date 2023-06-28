@@ -159,6 +159,7 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
+            // TODO: incompatible with flags enum
             if (!enumType.IsEnum) throw new ArgumentException("enumType");
             if (enumType == null) throw new ArgumentNullException("enumType");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SRML.Core.API;
+using SRML.SR.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,8 @@ namespace SRML.API.Identifiable.Slime
             {
                 if (item.Value.Invoke(id))
                     Register(item.Key, id);
+                else
+                    Deregister(item.Key, id);
             }
         }
 

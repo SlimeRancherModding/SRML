@@ -30,7 +30,8 @@ namespace SRML.SR
             ECHO = 4096,
             ECHO_NOTE = 8192,
             ORNAMENT = 16384,
-            TOY = 32768
+            TOY = 32768,
+            ELDER = 65536
         }
     }
 }

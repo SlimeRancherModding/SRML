@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SRML.Core.ModLoader.BuiltIn.EntryPoint;
+using SRML.SR.Utils;
 using System;
 
 namespace SRML.Core.ModLoader.Patches
@@ -26,6 +27,8 @@ namespace SRML.Core.ModLoader.Patches
         }
         public static void Postfix()
         {
+            // TODO: reimplement permanant eatmap additions
+            GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
             foreach (var del in BasicLoadEntryPoint.GameContextPostLoad.GetInvocationList())
             {
                 try
