@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -40,6 +41,7 @@ namespace SRML.SR.Patches
             return instructions;
         }
 
-        public static bool Contains(Identifiable.Id slime, Identifiable.Id transformsInto) => SlimeRegistry.preventLargoTransforms.Contains(new KeyValuePair<Identifiable.Id, Identifiable.Id>(slime, transformsInto));
+        public static bool Contains(Identifiable.Id slime, Identifiable.Id transformsInto) => 
+            SlimeRegistry.preventLargoTransforms.Any(x => x.Key == slime && x.Value == transformsInto);
     }
 }

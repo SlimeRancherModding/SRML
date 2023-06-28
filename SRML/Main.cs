@@ -15,27 +15,33 @@ using SRML.SR.UI;
 using SRML.SR.Utils;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
+using TMPro;
 using UnityEngine;
 
 namespace SRML
 {
     internal static class Main
     {
+        public const string VERSION_STRING = "BETA-0.2.2-2023020501";
+
         private static bool isPreInitialized;
-        internal static Transform prefabParent;
+        //internal static Transform prefabParent;
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
         internal static ConfigFile config;
-        internal static AssetBundle uiBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
+        internal static AssetBundle uiBundle/* = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"))*/;
 
         /// <summary>
         /// Called before GameContext.Awake()
         /// </summary>
         internal static void PreLoad() 
         {
+            return; // I'll remove Main later, but for the time being, this is being incredibly annoying.
+
             if (isPreInitialized) return;
             isPreInitialized = true;
             Debug.Log("SRML has successfully invaded the game!");
 
+            SystemContext.IsModded = true;
             SentrySdk sentrySdk = UnityEngine.Object.FindObjectOfType<SentrySdk>();
             if (sentrySdk != null)
             {
@@ -49,9 +55,9 @@ namespace SRML
             }
 
             StorageProvider.Initialize();
-            prefabParent = new GameObject("PrefabParent").transform;
-            prefabParent.gameObject.SetActive(false);
-            GameObject.DontDestroyOnLoad(prefabParent.gameObject);
+            //prefabParent = new GameObject("PrefabParent").transform;
+            //prefabParent.gameObject.SetActive(false);
+            //GameObject.DontDestroyOnLoad(prefabParent.gameObject);
             foreach (var v in Assembly.GetExecutingAssembly().GetTypes())
             {
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
@@ -74,23 +80,15 @@ namespace SRML
             catch (Exception e)
             {
                 Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                //ErrorGUI.errors.Add(new ModLoadException("<unknown>", SRModLoader.LoadingStep.INITIALIZATION, e));
                 return;
             }
             FileLogger.Init();
             Console.Console.Init();
+            Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
             HarmonyOverrideHandler.PatchAll();
-            try
-            {
-                SRModLoader.PreLoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.Message}");
-                return;
-            }
-            IdentifiableRegistry.CategorizeAllIds();
+            SRModLoader.PreLoadMods();
+            //IdentifiableRegistry.CategorizeAllIds();
             GadgetRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
 
@@ -114,17 +112,8 @@ namespace SRML
             SlimeRegistry.Initialize(GameContext.Instance.SlimeDefinitions);
             GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
-
-            try
-            {
-                SRModLoader.LoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
-                return;
-            }
+            
+            SRModLoader.LoadMods();
             GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
 
             PostLoad();
@@ -139,16 +128,7 @@ namespace SRML
         {
             if (isPostInitialized) return;
             isPostInitialized = true;
-            try
-            {
-                SRModLoader.PostLoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
-                return;
-            }
+            SRModLoader.PostLoadMods();
         }
 
         internal static void Reload()

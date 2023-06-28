@@ -53,7 +53,7 @@ namespace SRML.SR.Patches
                 {
                     var current = codes.Current;
                     if (current.opcode == OpCodes.Ldsfld && (current.operand as FieldInfo).Name == "TUTORIALS_ENTRIES")
-                    {
+                    { 
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         yield return new CodeInstruction(OpCodes.Ldarg_1);
                         yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PediaUISelectEntryPatch), "CheckIfHasCustomRenderer"));
@@ -63,6 +63,11 @@ namespace SRML.SR.Patches
                     else yield return current;
                 }
             }
+        }
+
+        public static void Prefix(PediaDirector.Id id)
+        {
+            Console.Console.Log($"selecting entry {id}");
         }
     }
 }

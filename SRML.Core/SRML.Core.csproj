@@ -1,0 +1,347 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{32B90FD0-FC71-47C4-A332-5B7105CC35E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SRML.Core</RootNamespace>
+    <AssemblyName>SRML.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <GameDir>E:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.10.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HarmonyX.2.10.1\lib\net45\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\publicized_assemblies\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\DOTween.dll</HintPath>
+    </Reference>
+    <Reference Include="InControl">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\InControl.dll</HintPath>
+    </Reference>
+    <Reference Include="InControl.Examples">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\InControl.Examples.dll</HintPath>
+    </Reference>
+    <Reference Include="Logger">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Logger.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.11.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.RuntimeDetour, Version=22.3.23.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.RuntimeDetour.22.3.23.4\lib\net452\MonoMod.RuntimeDetour.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoMod.Utils, Version=22.3.23.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoMod.Utils.22.3.23.4\lib\net452\MonoMod.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Semver, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Semver.2.3.0\lib\net452\Semver.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML.Editor">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Unity.Analytics.DataPrivacy">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.Analytics.DataPrivacy.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.StandardEvents">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.Analytics.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Analytics.Tracker">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.Analytics.Tracker.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Recorder">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.Recorder.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Recorder.Base">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.Recorder.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Timeline">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\Unity.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AndroidJNIModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DSPGraphModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubsystemsModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
+    <Compile Include="API\BuiltIn\EnumRegistry.cs" />
+    <Compile Include="API\BuiltIn\GenericRegistry.cs" />
+    <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
+    <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
+    <Compile Include="API\CoreAPI.cs" />
+    <Compile Include="API\IRegistry.cs" />
+    <Compile Include="ClassSingleton.cs" />
+    <Compile Include="ErrorGUI.cs" />
+    <Compile Include="Loader.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModLoaderType.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModType.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterMod.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\CoreModEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\LegacyEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\JSONModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\BasicFileModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\CoreModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\BasicModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\FileModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModLoader\LegacyModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\BasicModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\Mod\CoreMod.cs" />
+    <Compile Include="ModLoader\CoreLoader.cs" />
+    <Compile Include="ModLoader\DataTypes\DependencyMetadata.cs" />
+    <Compile Include="ModLoader\DataTypes\IPathProvider.cs" />
+    <Compile Include="ModLoader\IEntryPoint.cs" />
+    <Compile Include="ModLoader\IMod.cs" />
+    <Compile Include="ModLoader\IModInfo.cs" />
+    <Compile Include="ModLoader\IModLoader.cs" />
+    <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
+    <Compile Include="Patches\EnumInfoPatch.cs" />
+    <Compile Include="Patches\MainMenuPatch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="srml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

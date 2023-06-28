@@ -9,6 +9,10 @@ using System.Reflection;
 using HarmonyLib;
 using SRML.SR;
 using SRML.Utils;
+using SRML.Core.ModLoader;
+using SRML.Core.API.BuiltIn;
+using SRML.Core.API;
+using SRML.Console;
 
 namespace SRML
 {
@@ -18,24 +22,21 @@ namespace SRML
     public static class EnumPatcher
     {
         public delegate object AlternateEnumRegister(object value, string name);
-        private static readonly Dictionary<Type, AlternateEnumRegister> BANNED_ENUMS = new Dictionary<Type, AlternateEnumRegister>()
-        {
-            { typeof(Identifiable.Id), (x,y) => IdentifiableRegistry.CreateIdentifiableId(x,y) },
-            { typeof(Gadget.Id), (x,y) => GadgetRegistry.CreateGadgetId(x,y) },
-            { typeof(PlayerState.Upgrade), (x,y) => PersonalUpgradeRegistry.CreatePersonalUpgrade(x,y) },
-            { typeof(PediaDirector.Id), (x,y) => PediaRegistry.CreatePediaId(x,y) },
-            { typeof(LandPlot.Id), (x,y) => LandPlotRegistry.CreateLandPlotId(x,y) },
-            { typeof(RanchDirector.Palette), (x,y) => ChromaRegistry.CreatePalette(x,y) },
-            { typeof(RanchDirector.PaletteType), (x,y) => ChromaRegistry.CreatePaletteType(x,y) }
-        };
+        internal static readonly Dictionary<Type, IEnumRegistry> registriesForType = new Dictionary<Type, IEnumRegistry>();
+        internal static readonly List<IAttributeCategorizeableEnum> categorizableRegistries = new List<IAttributeCategorizeableEnum>();
 
+        [Obsolete]
         public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) where TEnum : Enum => RegisterAlternate(typeof(TEnum), del);
 
-        public static void RegisterAlternate(Type type, AlternateEnumRegister del)
+        [Obsolete]
+        public static void RegisterAlternate(Type type, AlternateEnumRegister del) =>
+            throw new NotSupportedException("Using AlternateEnumRegister is no longer supported.");
+
+        public static void RegisterEnumRegistry(Type enumType, IEnumRegistry registry)
         {
-            if (type == null) throw new ArgumentNullException("type");
-            if (!type.IsEnum) throw new Exception($"The given type {type} isn't an enum");
-            BANNED_ENUMS.Add(type, del);
+            registriesForType.Add(enumType, registry);
+            if (registry is IAttributeCategorizeableEnum categorizable)
+                categorizableRegistries.Add(categorizable);
         }
 
         private static FieldInfo cache;
@@ -85,10 +86,12 @@ namespace SRML
         /// <param name="name">The name of the new value</param>
         public static void AddEnumValue(Type enumType, object value, string name)
         {
-            if (enumType == null) throw new ArgumentNullException("enumType");
-            if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
-            if (SRModLoader.GetModForAssembly(Assembly.GetCallingAssembly()) != null && BANNED_ENUMS.ContainsKey(enumType)) throw new Exception($"Patching {enumType} through EnumPatcher is not supported!");
-            if (AlreadyHasName(enumType, name) || EnumUtils.HasEnumValue(enumType, name)) throw new Exception($"The enum ({enumType.FullName}) already has a value with the name \"{name}\"");
+            if (enumType == null) 
+                throw new ArgumentNullException("enumType");
+            if (!enumType.IsEnum)
+                throw new Exception($"{enumType} is not a valid Enum!");
+            if (AlreadyHasName(enumType, name) || EnumUtils.HasEnumValue(enumType, name)) 
+                throw new Exception($"The enum ({enumType.FullName}) already has a value with the name \"{name}\"");
 
             value = (ulong)Convert.ToInt64(value, CultureInfo.InvariantCulture);
             if (!patches.TryGetValue(enumType, out var patch))
@@ -100,15 +103,23 @@ namespace SRML
             ClearEnumCache(enumType);
 
             patch.AddValue((ulong)value, name);
+
+            if (registriesForType.TryGetValue(enumType, out IEnumRegistry enumReg))
+            {
+                Enum newVal = (Enum)Enum.ToObject(enumType, (ulong)value);
+
+                if (enumReg is ICategorizableEnum categorizable)
+                    categorizable.Categorize(newVal);
+
+                enumReg.Process(newVal);
+            }
         }
 
-        public static void AddEnumValueWithAlternatives<TEnum>(object value, string name) where TEnum : Enum => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
+        [Obsolete]
+        public static void AddEnumValueWithAlternatives<TEnum>(object value, string name) where TEnum : Enum => AddEnumValue(typeof(TEnum), value, name);
 
-        public static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
-        {
-            if (BANNED_ENUMS.TryGetValue(enumType, out var alternate)) alternate(value, name);
-            else AddEnumValue(enumType, value, name);
-        }
+        [Obsolete]
+        public static void AddEnumValueWithAlternatives(Type enumType, object value, string name) => AddEnumValue(enumType, value, name);
 
         internal static bool TryAsNumber(this object value, Type type, out object result)
         {

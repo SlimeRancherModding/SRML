@@ -152,8 +152,8 @@ namespace SRML.Console
         // DRAWS THE WINDOW
         private void OnGUI()
         {
-            Font font = GUI.skin.font;
-            GUI.skin.font = consoleFont;
+            //Font font = GUI.skin.font;
+            //GUI.skin.font = consoleFont;
 
             // UNITY PREVENTS "GUI" STUFF FROM BEING CALLED OUTSIDE "OnGUI"
             if (textArea == null) textArea = new GUIStyle(GUI.skin.label);
@@ -208,7 +208,7 @@ namespace SRML.Console
                 }
             }
 
-            GUI.skin.font = font;
+            //GUI.skin.font = font;
         }
 
         private void DrawWindow(int id)

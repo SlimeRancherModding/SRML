@@ -44,6 +44,10 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static VanillaLandPlotData CreateLandPlotData(LandPlotModel model)
         {
+            GameObject plotObject = model.gameObj.GetComponentInChildren<LandPlot>().gameObject;
+            if (!ExtendedData.landplotsInSave.ContainsKey(plotObject))
+                ExtendedData.OnRegisterLandPlot(model.gameObj.GetComponent<LandPlotLocation>().id, plotObject);
+
             var mod = SaveRegistry.ModForModelType(model.GetType());
             if (mod != null)
             {

@@ -37,7 +37,11 @@ namespace SRML.SR
         /// <param name="bundlename">Key bundle the localization key is located in</param>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddTranslationKey(string bundlename, string key, string value) => AddTranslationKey(bundlename, key, value, SRMod.GetCurrentMod());
+        public static void AddTranslationKey(string bundlename, string key, string value)
+        {
+            // TODO: Upgrade to new system
+            //AddTranslationKey(bundlename, key, value, SRMod.GetCurrentMod());
+        }
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'pedia' bundle

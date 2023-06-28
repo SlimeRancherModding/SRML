@@ -10,15 +10,16 @@ namespace SRML.Config
     {
         public static void PopulateConfigs(SRMod mod)
         {
-            SRMod.ForceModContext(mod);
+            // TODO: Upgrade to new system
+            //SRMod.ForceModContext(mod);
 
-            foreach(var file in GetConfigs(mod.EntryType.Module))
+            foreach (var file in GetConfigs(mod.EntryType.Module))
             {
                 mod.Configs.Add(file);
                 file.TryLoadFromFile();
             }
 
-            SRMod.ClearModContext();
+            //SRMod.ClearModContext();
         }
 
         public static IEnumerable<ConfigFile> GetConfigs(Module module)

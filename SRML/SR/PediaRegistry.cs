@@ -69,7 +69,11 @@ namespace SRML.SR
         /// Registers a tab for the Slimepedia.
         /// </summary>
         /// <param name="tab">The tab to register</param>
-        public static void RegisterPediaTab(PediaTab tab) => customTabs.Add(tab, SRMod.GetCurrentMod());
+        public static void RegisterPediaTab(PediaTab tab)
+        {
+            // TODO: Upgrade to new system
+            //customTabs.Add(tab, SRMod.GetCurrentMod());
+        }
 
         /// <summary>
         /// Registers a <see cref="PediaDirector.IdEntry"/> into the Slimepedia.

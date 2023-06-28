@@ -47,7 +47,10 @@ namespace SRML.SR
             OnGameContextReady?.Invoke();
         }
 
-        internal static void OnMainMenuLoad(MainMenuUI mainmenu) => OnMainMenuLoaded?.Invoke(mainmenu);
+        internal static void OnMainMenuLoad(MainMenuUI mainmenu)
+        {
+            OnMainMenuLoaded?.Invoke(mainmenu);
+        }
 
         internal static void OnZoneEnterCallback(ZoneDirector.Zone zone, PlayerState playerState) => OnZoneEntered?.Invoke(zone, playerState);
 

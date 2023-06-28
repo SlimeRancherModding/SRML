@@ -41,7 +41,8 @@ namespace SRML.SR
         public static void RegisterSecretStyle(SlimeDefinition definition, SlimeAppearance exoticAppearance)
         {
             SecretStyle ss = new SecretStyle(definition, exoticAppearance);
-            SRMod mod = SRMod.GetCurrentMod();
+            // TODO: Upgrade to new system
+            SRMod mod = null/*SRMod.GetCurrentMod()*/;
             if (secretStyles.ContainsKey(ss))
                 throw new Exception($"{definition.IdentifiableId} already has a secret style registered by {secretStyles[ss].ModInfo.Id}");
             secretStyles[ss] = mod;

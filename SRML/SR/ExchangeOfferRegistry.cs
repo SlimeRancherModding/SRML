@@ -19,6 +19,8 @@ namespace SRML.SR
         internal static Dictionary<Identifiable.Id, float> customUnlockValues = new Dictionary<Identifiable.Id, float>();
         internal static Dictionary<string, SRMod> customRancherIDs = new Dictionary<string, SRMod>();
         internal static Dictionary<string, SRMod> customOfferIDs = new Dictionary<string, SRMod>();
+        internal static Dictionary<string, ProgressDirector.ProgressType> customRancherProgress = new Dictionary<string, ProgressDirector.ProgressType>();
+        internal static Dictionary<string, ProgressDirector.ProgressType> customRancherNames = new Dictionary<string, ProgressDirector.ProgressType>();
 
         static ExchangeOfferRegistry()
         {
@@ -30,26 +32,49 @@ namespace SRML.SR
         /// Registers a rancher.
         /// </summary>
         /// <param name="rancher"></param>
-        public static void RegisterRancher(ExchangeDirector.Rancher rancher) => customRanchers.Add(rancher, SRMod.GetCurrentMod());
+        public static void RegisterRancher(ExchangeDirector.Rancher rancher)
+        {
+            // TODO: Upgrade to new system
+            //customRanchers.Add(rancher, SRMod.GetCurrentMod());
+        }
+
+        /// <summary>
+        /// Registers a progress type for a rancher.
+        /// </summary>
+        /// <param name="rancherName">Name of the rancher</param>
+        /// <param name="progressType">The progress that will be added to everytime their daily offer is selected</param>
+        public static void RegisterRancherProgress(string rancherName, ProgressDirector.ProgressType progressType) => customRancherProgress.Add(rancherName, progressType);
 
         /// <summary>
         /// Registers a rancher's id
         /// </summary>
         /// <param name="id"></param>
-        public static void RegisterRancherID(string id) => customRancherIDs.Add(id, SRMod.GetCurrentMod());
+        public static void RegisterRancherID(string id)
+        {
+            // TODO: Upgrade to new system
+            customRancherIDs.Add(id, null/*SRMod.GetCurrentMod()*/);
+        }
 
         /// <summary>
         /// Registers an offer id
         /// </summary>
         /// <param name="id"></param>
-        public static void RegisterOfferID(string id) => customOfferIDs.Add(id, SRMod.GetCurrentMod());
+        public static void RegisterOfferID(string id)
+        {
+            // TODO: Upgrade to new system
+            customOfferIDs.Add(id, null/*SRMod.GetCurrentMod()*/);
+        }
 
         /// <summary>
         /// Registers a category for exchange requests/rewards
         /// </summary>
         /// <param name="category">The category to register</param>
         /// <param name="ids">The ids in the category</param>
-        public static void RegisterCategory(ExchangeDirector.Category category, Identifiable.Id[] ids) => customCategories.Add((category, ids), SRMod.GetCurrentMod());
+        public static void RegisterCategory(ExchangeDirector.Category category, Identifiable.Id[] ids)
+        {
+            // TODO: Upgrade to new system
+            customCategories.Add((category, ids), null/*SRMod.GetCurrentMod()*/);
+        }
 
         /// <summary>
         /// Registers an item to be unlocked in a category
@@ -62,6 +87,24 @@ namespace SRML.SR
             if (!customUnlocks.ContainsKey(type)) customUnlocks[type] = new ExchangeDirector.UnlockList() { unlock = type, ids = new Identifiable.Id[0] };
             customUnlocks[type].ids = customUnlocks[type].ids.AddToArray(item);
             customUnlockValues.Add(item, countForValue);
+        }
+
+        /// <summary>
+        /// Generates the necessary objects for a rancher.
+        /// </summary>
+        /// <param name="name">The name of the rancher.</param>
+        /// <param name="progress">The generated progress.</param>
+        /// <param name="rancherName">The generated name.</param>
+        /// <param name="mail">The generated mail.</param>
+        /// <exception cref="Exception">Throws if </exception>
+        public static void RegisterNecessaryRancherIds
+            (string name, out ProgressDirector.ProgressType progress, out RancherChatMetadata.Entry.RancherName rancherName, out MailRegistry.MailEntry mail)
+        {
+            if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
+                throw new Exception("Can't register identifiables outside of the PreLoad step");
+            progress = moddedProgress.RegisterValueWithEnum((ProgressDirector.ProgressType)EnumPatcher.GetFirstFreeValue(typeof(ProgressDirector.ProgressType)), "EXCHANGE_" + name.ToUpper());
+            rancherName = moddedRancherNames.RegisterValueWithEnum((RancherChatMetadata.Entry.RancherName)EnumPatcher.GetFirstFreeValue(typeof(RancherChatMetadata.Entry.RancherName)), name.ToUpper());
+            mail = MailRegistry.RegisterMailEntry(new MailRegistry.MailEntry("exchange_" + name.ToLower()));
         }
 
         /// <summary>

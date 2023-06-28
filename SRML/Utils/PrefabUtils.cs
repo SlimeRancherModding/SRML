@@ -29,7 +29,7 @@ namespace SRML.Utils
 
         public static GameObject CopyPrefab(GameObject prefab)
         {
-            return GameObject.Instantiate(prefab, Main.prefabParent, false);
+            return GameObject.Instantiate(prefab, SRML.Core.Main.prefabParent, false);
         }
 
         public static UnityEngine.Object DeepCopyObject(UnityEngine.Object ob)

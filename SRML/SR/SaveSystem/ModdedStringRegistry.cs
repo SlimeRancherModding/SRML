@@ -34,24 +34,29 @@ namespace SRML.SR.SaveSystem
 
         public static string ClaimID(string prefix,string id)
         {
-            return ClaimID(prefix, SRMod.GetCurrentMod(),id);
+            // TODO: Upgrade to new system
+            return null;
+            //return ClaimID(prefix, SRMod.GetCurrentMod(),id);
         }
 
         public static void FreeID(string prefix, string id)
         {
-            GetRegistry(prefix).UnRegisterID(id,SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            GetRegistry(prefix).UnRegisterID(id,null/*SRMod.GetCurrentMod()*/);
         }
 
         public static void FreeAllIDs(string prefix)
         {
-            GetRegistry(prefix).UnRegisterAll(SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            GetRegistry(prefix).UnRegisterAll(null/*SRMod.GetCurrentMod()*/);
         }
 
         public static void FreeAllIDs()
         {
             foreach(var v in Registries)
             {
-                v.UnRegisterAll(SRMod.GetCurrentMod());
+                // TODO: Upgrade to new system
+                v.UnRegisterAll(/*SRMod.GetCurrentMod()*/null);
             }
         }
         internal static bool IsModdedString(string str) => StringRegistry.IsLongForm(str);

@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using SRML.SR.Utils.Debug;
+using System.Linq;
+using System.Reflection;
 
 namespace SRML.Console
 {
@@ -20,14 +22,17 @@ namespace SRML.Console
         // LOG STUFF
         internal static string unityLogFile = Path.Combine(Main.StorageProvider.SavePath(), "Player.log");
         internal static string srmlLogFile = Path.Combine(Main.StorageProvider.SavePath(), "SRML/srml.log");
+        internal static string logHideFile = Path.Combine(FileSystem.GetConfigPath(null), "hiddeninstances");
         internal static readonly Console console = new Console();
-        private static ConsoleInstance srmlInstance = new ConsoleInstance("SRML");
-        private static ConsoleInstance unityInstance = new ConsoleInstance("Unity");
+        private static ConsoleInstance srmlInstance;
+        private static ConsoleInstance unityInstance;
         public static ConsoleInstance Instance { get { return srmlInstance; } }
 
         // COMMAND STUFF
         internal static Dictionary<string, ConsoleCommand> commands = new Dictionary<string, ConsoleCommand>();
         internal static Dictionary<string, ConsoleButton> cmdButtons = new Dictionary<string, ConsoleButton>();
+        internal static List<string> hideLogs = new List<string>();
+        internal static Dictionary<string, List<ConsoleInstance>> instancesForMod = new Dictionary<string, List<ConsoleInstance>>();
 
         // LINES
         internal static List<string> lines = new List<string>();
@@ -58,6 +63,8 @@ namespace SRML.Console
         internal static void Init()
         {
             Application.logMessageReceived += console.AppLog;
+            srmlInstance = new ConsoleInstance("SRML", Colors.lightblue, "internal.srml");
+            unityInstance = new ConsoleInstance("Unity", Colors.yellow, "internal.unity");
 
             Instance.Log("CONSOLE INITIALIZED!");
             Instance.Log("Patching SceneManager to attach window");
@@ -66,18 +73,16 @@ namespace SRML.Console
             RegisterCommand(new Commands.HelpCommand());
             RegisterCommand(new Commands.ReloadCommand());
             RegisterCommand(new Commands.ModsCommand());
+            RegisterCommand(new Commands.HideLogCommand());
             RegisterCommand(new Commands.DumpCommand());
-            RegisterCommand(new Commands.AddButtonCommand());
-            RegisterCommand(new Commands.RemoveButtonCommand());
-            RegisterCommand(new Commands.EditButtonCommand());
+            RegisterCommand(new Commands.ButtonCommand());
+            RegisterCommand(new Commands.BindCommand());
             RegisterCommand(new Commands.SpawnCommand());
             RegisterCommand(new Commands.GiveCommand());
-            RegisterCommand(new Commands.BindCommand());
             RegisterCommand(new Commands.ConfigCommand());
             RegisterCommand(new Commands.KillAllCommand());
             RegisterCommand(new Commands.KillCommand());
             RegisterCommand(new Commands.NoclipCommand());
-            RegisterCommand(new Commands.UnbindCommand());
             RegisterCommand(new Commands.FastForwardCommand());
             RegisterCommand(new DebugCommand());
 
@@ -88,6 +93,7 @@ namespace SRML.Console
             RegisterButton("dump.all", new ConsoleButton("Dump All Files", "dump all"));
 
             ConsoleBinder.ReadBinds();
+            ReadLogHiders();
             SceneManager.activeSceneChanged += ConsoleWindow.AttachWindow;
         }
 
@@ -104,7 +110,8 @@ namespace SRML.Console
                 return false;
             }
 
-            cmd.belongingMod = SRMod.GetCurrentMod();
+            // TODO: Update to new system
+            //cmd.belongingMod = SRMod.GetCurrentMod();
             commands.Add(cmd.ID.ToLowerInvariant(), cmd);
             ConsoleWindow.cmdsText += $"{(ConsoleWindow.cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
             return true;
@@ -161,49 +168,77 @@ namespace SRML.Console
             catchers.Add(catcher);
         }
 
+        public static bool RegisterLogHider(string id)
+        {
+            string[] parts = id.Split('.');
+            if (parts.Length != 2)
+            {
+                LogWarning($"Trying to supress {id}, which is an invalid id.");
+                return false;
+            }
+            if (!instancesForMod.ContainsKey(parts[0]))
+            {
+                LogWarning($"Trying to get invalid mod id '{parts[0]}'");
+                return false;
+            }
+            if (!instancesForMod[parts[0]].TryGetValue(x => x.id == parts[1], out ConsoleInstance inst))
+            {
+                LogWarning($"Trying to get ConsoleInstance '{parts[1]}' from '{parts[0]}', but no such instance exists");
+                return false;
+            }
+
+            hideLogs.Add(id);
+            File.AppendAllText(logHideFile, $"{id}\n");
+            inst.SetActive(false);
+            return true;
+        }
+
+        internal static void ReadLogHiders()
+        {
+            if (!File.Exists(logHideFile))
+                return;
+
+            IEnumerable<ConsoleInstance> instances = instancesForMod.Values.SelectMany(x => x);
+
+            foreach (string line in File.ReadAllLines(logHideFile))
+            {
+                if (!line.Contains("."))
+                    return;
+
+                instances.FirstOrDefault(x => x.id == line)?.SetActive(false);
+
+                hideLogs.Add(line);
+            }
+        }
+
         /// <summary>
         /// Logs a info message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.Log instead!")]
-        public static void Log(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Log, message, logToFile, GetLogName());
-        }
+        public static void Log(string message, bool logToFile = true) => srmlInstance.Log(message, logToFile);
 
         /// <summary>
         /// Logs a success message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.LogSuccess instead!")]
-        public static void LogSuccess(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, GetLogName());
-        }
+        public static void LogSuccess(string message, bool logToFile = true) => srmlInstance.LogSuccess(message, logToFile);
 
         /// <summary>
         /// Logs a warning message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.LogWarning instead!")]
-        public static void LogWarning(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Warning, message, logToFile, GetLogName());
-        }
+        public static void LogWarning(string message, bool logToFile = true) => srmlInstance.LogWarning(message, logToFile);
 
         /// <summary>
         /// Logs an error message
         /// </summary>
         /// <param name="message">Message to log</param>
         /// <param name="logToFile">Should log to file?</param>
-        [Obsolete("Use ConsoleInstance.LogError instead!")]
-        public static void LogError(string message, bool logToFile = true)
-        {
-            console.LogEntry(LogType.Error, message, logToFile, GetLogName());
-        }
+        public static void LogError(string message, bool logToFile = true) => srmlInstance.LogError(message, logToFile);
+
 
         // PROCESSES THE TEXT FROM THE CONSOLE INPUT
         internal static void ProcessInput(string command, bool forced = false)
@@ -245,14 +280,15 @@ namespace SRML.Console
 
                         if (keepExecution)
                         {
-                            SRMod.ForceModContext(commands[cmd].belongingMod);
+                            // TODO: Upgrade to new system
+                            //SRMod.ForceModContext(commands[cmd].belongingMod);
                             try
                             {
                                 executed = commands[cmd].Execute(args);
                             }
                             finally
                             {
-                                SRMod.ClearModContext();
+                                //SRMod.ClearModContext();
                             }
                         }
 
@@ -296,13 +332,14 @@ namespace SRML.Console
 
         internal static string GetLogName()
         {
-            SRMod mod = SRMod.GetCurrentMod();
+            // TODO: Upgrade to new system
+            SRMod mod = null/*SRMod.GetCurrentMod()*/;
             if (mod != null) return mod.ModInfo.Name;
             return "SRML";
         }
 
         // LOGS A NEW ENTRY
-        internal void LogEntry(LogType logType, string message, bool logToFile, string name)
+        internal void LogEntry(LogType logType, string message, bool logToFile, string name, Colors nameCol)
         {
             string type = TypeToText(logType);
             string color = "white";
@@ -312,7 +349,7 @@ namespace SRML.Console
             if (lines.Count >= MAX_ENTRIES)
                 lines.RemoveRange(0, 10);
             
-            lines.Add($"<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color> <color=lime>[{name}]</color> <color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>");
+            lines.Add($"<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color> <color={nameCol}>[{name}]</color> <color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>");
 
             if (logToFile)
                 FileLogger.LogEntry(logType, message, name);
@@ -384,24 +421,92 @@ namespace SRML.Console
         public class ConsoleInstance
         {
             public readonly string Name;
+            internal Colors col = Colors.lime;
+            internal string id;
+            internal bool enabled = true;
 
-            public void Log(object message, bool logToFile = true) => console.LogEntry(LogType.Log, message.ToString(), logToFile, Name);
+            public static ConsoleInstance PopulateConsoleInstanceFromType(Type entryType, string modId)
+            {
+                Colors nameCol = Colors.lime;
+                string text = null;
+                foreach (Attribute customAttribute in entryType.GetCustomAttributes())
+                {
+                    if (customAttribute.GetType() == typeof(ConsoleAppearance))
+                    {
+                        ConsoleAppearance consoleAppearance = (ConsoleAppearance)customAttribute;
+                        nameCol = consoleAppearance.consoleCol;
+                        text = consoleAppearance.name;
+                    }
+                }
 
-            public void LogWarning(object message, bool logToFile = true) => console.LogEntry(LogType.Warning, message.ToString(), logToFile, Name);
+                return new ConsoleInstance(text ?? modId, nameCol, modId + ".main");
+            }
 
-            public void LogError(object message, bool logToFile = true) => console.LogEntry(LogType.Error, message.ToString(), logToFile, Name);
+            public void Log(object message, bool logToFile = true)
+            {
+                if (enabled)
+                    console.LogEntry(LogType.Log, message.ToString(), logToFile, Name, col);
+            }
 
-            public void LogSuccess(object message, bool logToFile = true) => console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, Name);
+            public void LogWarning(object message, bool logToFile = true)
+            {
+                if (enabled)
+                    console.LogEntry(LogType.Warning, message.ToString(), logToFile, Name, col);
+            }
 
-            public void LogToFile(object message) => FileLogger.LogEntry(LogType.Log, message.ToString(), Name);
+            public void LogError(object message, bool logToFile = true)
+            {
+                if (enabled)
+                    console.LogEntry(LogType.Error, message.ToString(), logToFile, Name, col);
+            }
 
-            public void LogWarningToFile(object message) => FileLogger.LogEntry(LogType.Warning, message.ToString(), Name);
+            public void LogSuccess(object message, bool logToFile = true)
+            {
+                if (enabled)
+                    console.LogEntry(LogType.Log, $"<color=#AAFF99>{message}</color>", logToFile, Name, col);
+            }
 
-            public void LogErrorToFile(object message) => FileLogger.LogEntry(LogType.Error, message.ToString(), Name);
+            public void LogToFile(object message)
+            {
+                if (enabled)
+                    FileLogger.LogEntry(LogType.Log, message.ToString(), Name);
+            }
 
-            public ConsoleInstance(string name)
+            public void LogWarningToFile(object message)
+            {
+                if (enabled)
+                    FileLogger.LogEntry(LogType.Warning, message.ToString(), Name);
+            }
+
+            public void LogErrorToFile(object message)
+            {
+                if (enabled)
+                    FileLogger.LogEntry(LogType.Error, message.ToString(), Name);
+            }
+
+            public void SetActive(bool active) => enabled = active;
+
+            public ConsoleInstance(string name) : this(name, Colors.lime) { }
+
+            // TODO: Upgrade to new system
+            public ConsoleInstance(string name, Colors nameCol) : this(name, nameCol, $"{/*SRMod.GetCurrentMod()?.ModInfo.Id ?? */"unknown"}.{name.ToLower().Replace(' ', '_')}") { }
+
+            internal ConsoleInstance(string name, Colors nameCol, string id)
             {
                 Name = name;
+                col = nameCol;
+                this.id = id;
+
+                string modId = id.Split('.')[0];
+
+                if (!instancesForMod.ContainsKey(modId))
+                    instancesForMod.Add(modId, new List<ConsoleInstance>());
+                instancesForMod[modId].Add(this);
+
+                if (SRModLoader.CurrentLoadingStep == SRModLoader.LoadingStep.INITIALIZATION)
+                    return;
+
+                SetActive(!hideLogs.Contains(id));
             }
         }
     }

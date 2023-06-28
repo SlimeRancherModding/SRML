@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SRML.SR
 {
+    [Obsolete]
     public static class TargetingRegistry
     {
         internal static List<(Predicate<Identifiable.Id>, (Func<Identifiable.Id, MessageBundle, MessageBundle, string>, Func<Identifiable.Id, MessageBundle, MessageBundle, string>))> customTargetingInfo = 

@@ -50,6 +50,9 @@ namespace SRML.SR.SaveSystem.Patches
 
         public static VanillaGadgetData CreateGadgetData(GadgetSiteModel model)
         {
+            if (!ExtendedData.gadgetsInSave.ContainsKey(model.attached.transform.gameObject))
+                ExtendedData.OnRegisterGadget(model.id, model.attached.transform.gameObject);
+
             var mod = SaveRegistry.ModForModelType(model.attached.GetType());
             if (mod != null)
             {
@@ -58,8 +61,8 @@ namespace SRML.SR.SaveSystem.Patches
                 newmodel.PullCustomModel(model.attached);
                 return newmodel;
             }
-            return new VanillaGadgetData();
 
+            return new VanillaGadgetData();
         }
     }
 }

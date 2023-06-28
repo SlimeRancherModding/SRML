@@ -23,15 +23,23 @@ namespace SRML.SR.SaveSystem.Registry
 
 
         public delegate void ExtendedActorDataLoaded(ActorModel actor, GameObject obj, CompoundDataPiece data);
+        public delegate void ExtendedGameDataLoaded(IdHandler handler, GameObject obj, CompoundDataPiece data);
+        public delegate void ExtendedGadgetDataLoaded(GadgetSiteModel site, GameObject obj, CompoundDataPiece data);
+        public delegate void ExtendedLandPlotDataLoaded(LandPlotModel plot, GameObject obj, CompoundDataPiece data);
 
         public ExtendedActorDataLoaded onExtendedActorDataLoaded;
+        public ExtendedGameDataLoaded onExtendedGameDataLoaded;
+        public ExtendedGadgetDataLoaded onExtendedGadgetDataLoaded;
+        public ExtendedLandPlotDataLoaded onExtendedLandPlotDataLoaded;
 
-        public void OnExtendedActorDataLoaded(ActorModel model, GameObject obj, CompoundDataPiece piece)
-        {
+        public void OnExtendedActorDataLoaded(ActorModel model, GameObject obj, CompoundDataPiece piece) =>
             onExtendedActorDataLoaded?.Invoke(model, obj, piece);
-        }
-
-        
+        public void OnExtendedGameDataLoaded(IdHandler handler, GameObject obj, CompoundDataPiece piece) =>
+            onExtendedGameDataLoaded?.Invoke(handler, obj, piece);
+        public void OnExtendedGadgetDataLoaded(GadgetSiteModel site, GameObject obj, CompoundDataPiece piece) =>
+            onExtendedGadgetDataLoaded?.Invoke(site, obj, piece);
+        public void OnExtendedLandPlotDataLoaded(LandPlotModel plot, GameObject obj, CompoundDataPiece piece) =>
+            onExtendedLandPlotDataLoaded?.Invoke(plot, obj, piece);
 
         internal WorldDataPreLoadDelegate OnDataPreload;
         internal WorldDataLoadDelegate OnDataLoad;

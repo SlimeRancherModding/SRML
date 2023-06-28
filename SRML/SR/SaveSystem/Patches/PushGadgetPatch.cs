@@ -51,9 +51,7 @@ namespace SRML.SR.SaveSystem.Patches
         public static void CheckModel(GadgetModel model, VanillaGadgetData data)
         {
             if (data is CustomGadgetData custom)
-            {
                 custom.PushCustomModel(model);
-            }
         }
     }
 }

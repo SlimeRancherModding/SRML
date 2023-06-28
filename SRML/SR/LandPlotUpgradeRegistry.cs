@@ -58,7 +58,7 @@ namespace SRML.SR
             PurchasableUIRegistry.RegisterPurchasable((PurchasableUIRegistry.PurchasableCreatorDelegateGeneric<T>)(x => 
             new PurchaseUI.Purchasable(entry.NameKey, entry.icon, entry.mainImg, entry.DescKey, entry.cost, entry.landplotPediaId, 
                 () => x.Upgrade(entry.upgrade, entry.cost), entry.isUnlocked != null ? () => entry.isUnlocked(x.activator) : (Func<bool>)(() => true), 
-                entry.isAvailable != null ? () => entry.isAvailable(x.activator) : (System.Func<bool>)(() => !x.activator.HasUpgrade(entry.upgrade)), 
+                entry.isAvailable != null ? () => entry.isAvailable(x.activator) : (Func<bool>)(() => !x.activator.HasUpgrade(entry.upgrade)), 
                 warning: (entry.warning ?? null), requireHoldToPurchase: entry.holdtopurchase)));
 
         /// <summary>

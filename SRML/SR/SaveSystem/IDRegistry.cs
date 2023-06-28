@@ -36,7 +36,9 @@ namespace SRML.SR.SaveSystem
             if (ContainsKey(id))
                 throw new Exception(
                     $"{id} is already registered to {this[id].ModInfo.Id}");
-            var sr = SRMod.GetCurrentMod();
+
+            // TODO: Upgrade to new system
+            SRMod sr = null;/*SRMod.GetCurrentMod();*/
             if (sr != null) this[id] = sr;
             return id;
         }

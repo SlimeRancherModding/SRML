@@ -102,13 +102,16 @@ namespace SRML
         public Type EntryType { get; private set; }
         private Harmony _harmonyInstance;
 
-        private IModEntryPoint entryPoint;
-        private ModEntryPoint entryPoint2;
+        internal IModEntryPoint entryPoint;
+        internal ModEntryPoint entryPoint2;
         private bool useNewEntry = false;
 
         private static SRMod forcedContext;
 
-        /// <summary>
+        internal bool encounteredError = false;
+
+        // me when I comment out an entire chunk of code as a way to find all the ways it's called
+        /*/// <summary>
         /// Gets the current executing mod as an SRMod instance 
         /// </summary>
         /// <returns>The current executing mod</returns>
@@ -132,7 +135,7 @@ namespace SRML
         internal static void ClearModContext()
         {
             forcedContext = null;
-        }
+        }*/
 
         public Harmony HarmonyInstance
         {

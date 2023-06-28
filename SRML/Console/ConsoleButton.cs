@@ -15,6 +15,8 @@
 		/// </summary>
 		public string Command { get; private set; }
 
+		internal string textSafe;
+
 		/// <summary>
 		/// Creates a new console button button
 		/// </summary>
@@ -24,6 +26,8 @@
 		{
 			Text = text;
 			Command = command.ToLowerInvariant();
-		}
+
+			textSafe = text.Replace("U: ", string.Empty);
+        }
 	}
 }

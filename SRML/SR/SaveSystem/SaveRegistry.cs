@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using MonomiPark.SlimeRancher.DataModel;
+using SRML.SR.SaveSystem.Data;
 using SRML.SR.SaveSystem.Data.Actor;
 using SRML.SR.SaveSystem.Data.Gadget;
 using SRML.SR.SaveSystem.Data.LandPlot;
@@ -27,7 +28,9 @@ namespace SRML.SR.SaveSystem
 
         internal static ModSaveInfo GetSaveInfo()
         {
-            return GetSaveInfo(SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            return null;
+            //return GetSaveInfo(SRMod.GetCurrentMod());
         }
 
 
@@ -114,28 +117,74 @@ namespace SRML.SR.SaveSystem
         /// <typeparam name="T">Type of the participant to register</typeparam>
         public static void RegisterDataParticipant<T>() where T : Component, ExtendedData.Participant
         {
+            void AddComp(object ob, GameObject obj, CompoundDataPiece tag)
+            {
+                if (tag.HasPiece(ExtendedDataUtils.GetParticipantName(typeof(T))) && !obj.HasComponent<T>())
+                    obj.AddComponent<T>();
+            }
+
+            GetSaveInfo().onExtendedActorDataLoaded += AddComp;
+            GetSaveInfo().onExtendedGameDataLoaded += AddComp;
+            GetSaveInfo().onExtendedGadgetDataLoaded += AddComp;
+            GetSaveInfo().onExtendedLandPlotDataLoaded += AddComp;
+        }
+
+        /// <summary>
+        /// Register a <see cref="Component"/> that will take part in the extended data system
+        /// </summary>
+        /// <typeparam name="T">Type of the participant to register</typeparam>
+        public static void RegisterTransformableDataParticipant<T>() where T : Component, ExtendedData.TransformableParticipant
+        {
             GetSaveInfo().onExtendedActorDataLoaded += (model, obj, tag) =>
             {
                 if (tag.HasPiece(ExtendedDataUtils.GetParticipantName(typeof(T))))
                 {
                     obj.AddComponent<T>();
-                    
+                }
+            };
+            GetSaveInfo().onExtendedGameDataLoaded += (model, obj, tag) =>
+            {
+                if (tag.HasPiece(ExtendedDataUtils.GetParticipantName(typeof(T))))
+                {
+                    obj.AddComponent<T>();
                 }
             };
         }
 
         public static void RegisterWorldDataPreLoadDelegate(WorldDataPreLoadDelegate del)
         {
-            GetSaveInfo(SRMod.GetCurrentMod()).OnDataPreload += del;
+            // TODO: Upgrade to new system
+            GetSaveInfo(null/*SRMod.GetCurrentMod()*/).OnDataPreload += del;
         }
         public static void RegisterWorldDataSaveDelegate(WorldDataSaveDelegate del)
         {
-            GetSaveInfo(SRMod.GetCurrentMod()).OnWorldSave += del;
+            // TODO: Upgrade to new system
+            GetSaveInfo(null/*SRMod.GetCurrentMod()*/).OnWorldSave += del;
         }
         public static void RegisterWorldDataLoadDelegate(WorldDataLoadDelegate del)
         {
-            GetSaveInfo(SRMod.GetCurrentMod()).OnDataLoad += del;
+            // TODO: Upgrade to new system
+            GetSaveInfo(null/*SRMod.GetCurrentMod()*/).OnDataLoad += del;
         }
 
+        public static void RegisterGameData<T>(T handler, int forceSuffix = int.MaxValue) where T : ModdedGameData =>
+            RegisterGameData(handler, handler.GetRequiredComponentInParent<IdDirector>(), forceSuffix);
+
+        public static void RegisterGameData<T>(T handler, IdDirector director, int forceSuffix = int.MaxValue) where T : ModdedGameData
+        {
+            // TODO: Upgrade to new system
+            string mod = /*SRMod.GetCurrentMod()?.ModInfo.Id ?? */"base";
+            string id = $"{handler.IdPrefix()}.{mod}.{(forceSuffix == int.MaxValue ? ModdedGameData.GetInSave<T>(mod) : forceSuffix)}";
+            ModdedGameData.IncrementInSave<T>(mod);
+
+            director.persistenceDict?.Add(handler, id);
+            director.persistenceKeys?.Add(handler);
+            director.persistenceValues?.Add(id);
+
+            // call handler.id so that save data is initialized
+            id = handler.id;
+            handler.Init();
+            ModdedGameData.allData.Add(id, handler);
+        }
     }
 }

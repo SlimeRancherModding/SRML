@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using HarmonyLib;
-using UnityEngine;
 
 namespace SRML.SR.Patches
 {
@@ -72,11 +67,11 @@ namespace SRML.SR.Patches
             }
 
             TranslationPatcher.doneDictionaries[path] = __result;
-            if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) return;    
+            if (!TranslationPatcher.patches.TryGetValue(path, out var dict)) 
+                return;
+
             foreach (var entry in dict)
-            {
                 __result[entry.Key] = entry.Value;
-            }
         }
     }
 }

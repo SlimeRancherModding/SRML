@@ -23,7 +23,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="tier">The id of the tier.</param>
         /// <param name="icon">The icon to be displayed in the achievement UI.</param>
-        public static void RegisterAchievmentTier(Tier tier, Sprite icon) => moddedTiers.Add(tier, icon);
+        public static void RegisterAchievementTier(Tier tier, Sprite icon) => moddedTiers.Add(tier, icon);
 
         /// <summary>
         /// Check if an achievement is modded.

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SRML</RootNamespace>
     <AssemblyName>SRML</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>false</Deterministic>
     <GameDir>E:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
@@ -38,7 +38,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="0Harmony">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -54,8 +54,14 @@
     <Reference Include="Microsoft.CSharp">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML.API">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\NewMods\SRML.API.dll</HintPath>
+    </Reference>
+    <Reference Include="SRML.Core">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Core.dll</HintPath>
     </Reference>
     <Reference Include="SRML.Editor">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SlimeRancher_Data\Managed\SRML.Editor.dll</HintPath>
@@ -345,24 +351,23 @@
     <Compile Include="Config\Parsing\StringParser.cs" />
     <Compile Include="Config\Parsing\StringUtils.cs" />
     <Compile Include="Config\Range.cs" />
-    <Compile Include="Console\Commands\AddButtonCommand.cs" />
     <Compile Include="Console\Commands\BindCommand.cs" />
+    <Compile Include="Console\Commands\ButtonCommand.cs" />
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
     <Compile Include="Console\Commands\DumpCommand.cs" />
-    <Compile Include="Console\Commands\EditButtonCommand.cs" />
     <Compile Include="Console\Commands\FastForwardCommand.cs" />
     <Compile Include="Console\Commands\GiveCommand.cs" />
     <Compile Include="Console\Commands\HelpCommand.cs" />
+    <Compile Include="Console\Commands\HideLogCommand.cs" />
     <Compile Include="Console\Commands\KillAllCommand.cs" />
     <Compile Include="Console\Commands\ModsCommand.cs" />
     <Compile Include="Console\Commands\NoclipCommand.cs" />
     <Compile Include="Console\Commands\ReloadCommand.cs" />
-    <Compile Include="Console\Commands\RemoveButtonCommand.cs" />
     <Compile Include="Console\Commands\KillCommand.cs" />
     <Compile Include="Console\Commands\SpawnCommand.cs" />
-    <Compile Include="Console\Commands\UnbindCommand.cs" />
     <Compile Include="Console\Console.cs" />
+    <Compile Include="Console\ConsoleAppearance.cs" />
     <Compile Include="Console\ConsoleBinder.cs" />
     <Compile Include="Console\ConsoleButton.cs" />
     <Compile Include="Console\ConsoleCommand.cs" />
@@ -378,13 +383,12 @@
     <Compile Include="Editor\Runtime\InstanceInfo.cs" />
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="EnumTranslator.cs" />
-    <Compile Include="ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="IntermodCommunication.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="IModEntryPoint.cs" />
-    <Compile Include="Patches\EnumInfoPatch.cs" />
+    <Compile Include="ModLoadException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRMLConfig.cs" />
     <Compile Include="SR\AchievementRegistry.cs" />
@@ -398,16 +402,12 @@
     <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\Patches\AchievementDirectorModdedAchievementsPatch.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
-    <Compile Include="SR\Patches\AttachFashionsGetOffsetPatch.cs" />
-    <Compile Include="SR\Patches\AttachFashionsGetParentBonePatch.cs" />
     <Compile Include="SR\Patches\BugReportUIDestroyPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerBuyPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerRebuildDynamicPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerUIAwakePatch.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
     <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
-    <Compile Include="SR\Patches\GordoSnareOnTriggerPatch.cs" />
-    <Compile Include="SR\Patches\GordoSnarePatch.cs" />
     <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
     <Compile Include="SR\Patches\GamepadPanelSetupBindingsPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
@@ -415,16 +415,27 @@
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
     <Compile Include="SR\Patches\ActorModelResetRegionSetIdPatch.cs" />
     <Compile Include="SR\Patches\RegionRegistryCustomRegionsPatch.cs" />
-    <Compile Include="SR\Patches\SlimeAppearanceApplicatorBoneSlotPatch.cs" />
     <Compile Include="SR\Patches\SlimeDietRefreshEatMapAddExtrasPatch.cs" />
     <Compile Include="SR\Patches\SlimeDietRefreshEatmapPatch.cs" />
-    <Compile Include="SR\Patches\TargetingUIGetTargetPatch.cs" />
     <Compile Include="SR\Patches\UnlockAppearancePatch.cs" />
     <Compile Include="SR\Patches\WeaponVacuumExpelEmotionsPatch.cs" />
     <Compile Include="SR\CorporatePartnerRegistry.cs" />
     <Compile Include="SR\Patches\ZoneDirectorCustomRegionForZonePatch.cs" />
     <Compile Include="SR\RegionSetRegistry.cs" />
+    <Compile Include="SR\SaveSystem\DronePersistentAmmoManager.cs" />
+    <Compile Include="SR\SaveSystem\ModdedGameData.cs" />
+    <Compile Include="SR\SaveSystem\Patches\DroneExtendedDataPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\EatAndTransformCopyPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\LoadSaveMethodPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\OnLandPlotDestroyPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\OnGadgetDestroyPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\OnIdHandlerGetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PlaceLandPlotPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\PlaceGadgetPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SavedGameIgnoreNullGadgetsPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SavedGameIgnoreNullActorsPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SkipMissingGadgetsPatch.cs" />
+    <Compile Include="SR\SaveSystem\Patches\SkipMissingActorsPatch.cs" />
     <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
@@ -464,7 +475,6 @@
     <Compile Include="SR\Patches\BuildActorDataPatch.cs" />
     <Compile Include="SR\Patches\DirectedActorSpawnerStartPatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
-    <Compile Include="SR\Patches\GadgetDirectorPatch.cs" />
     <Compile Include="SR\Patches\GardenCatcherAwakePatch.cs" />
     <Compile Include="SR\Patches\InitBlueprintLocksPatch.cs" />
     <Compile Include="SR\Patches\InitInitialBlueprintsPatch.cs" />
@@ -476,17 +486,13 @@
     <Compile Include="SR\Patches\PediaUIAwakePatch.cs" />
     <Compile Include="SR\Patches\PediaUISelectEntryPatch.cs" />
     <Compile Include="SR\Patches\PediaUISelectTabPatch.cs" />
-    <Compile Include="SR\Patches\PlayerStateGetPotentialAmmoPatch.cs" />
     <Compile Include="SR\Patches\PlayerStateNullCheckPatches.cs" />
-    <Compile Include="SR\Patches\PlayerStateResetPatch.cs" />
-    <Compile Include="SR\Patches\RefineryUIPatch.cs" />
     <Compile Include="SR\Patches\RegisterActorPatch.cs" />
     <Compile Include="SR\Patches\SavedProfilePullBindingsPatch.cs" />
     <Compile Include="SR\Patches\SavedProfilePullPatch.cs" />
     <Compile Include="SR\Patches\SavedProfilePushPatch.cs" />
     <Compile Include="SR\Patches\SetAvailUpgradesPatch.cs" />
     <Compile Include="SR\Patches\SRInputConstructorPatch.cs" />
-    <Compile Include="SR\Patches\StorageTypeExtensionsGetContentsPatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorNullCheckPatches.cs" />
     <Compile Include="SR\PediaRegistry.cs" />
     <Compile Include="SR\PlantSlotRegistry.cs" />
@@ -505,7 +511,6 @@
     <Compile Include="SR\PlortRegistry.cs" />
     <Compile Include="SR\Patches\GameModelActorCreatePatch.cs" />
     <Compile Include="SR\Patches\GameModelGadgetCreatePatch.cs" />
-    <Compile Include="SR\Patches\LookupAwakePatch.cs" />
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\MainMenuStartPatch.cs" />
     <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
@@ -649,10 +654,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <EmbeddedResource Include="SR\UI\srml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"
+xcopy /Y "$(TargetDir)SRML.pdb" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

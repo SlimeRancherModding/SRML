@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using SRML.SR.Utils;
+using System.Collections.Generic;
 
 namespace SRML.SR.Patches
 {
@@ -8,8 +9,8 @@ namespace SRML.SR.Patches
     {
         public static void Postfix(SlimeDiet __instance, SlimeDefinition definition)
         {
-            if (SlimeExtensions.extraEatEntries.ContainsKey(definition.IdentifiableId))
-                __instance.EatMap.AddRange(SlimeExtensions.extraEatEntries[definition.IdentifiableId]);
+            if (SlimeExtensions.extraEatEntries.TryGetValue(definition.IdentifiableId, out List<SlimeDiet.EatMapEntry> ents))
+                __instance.EatMap.AddRange(ents);
         }
     }
 }

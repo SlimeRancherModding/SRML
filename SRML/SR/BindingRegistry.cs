@@ -29,7 +29,8 @@ namespace SRML.SR
         public static PlayerAction RegisterAction(string name)
         {
             PlayerAction act = new PlayerAction(name, SRInput.Actions);
-            RegisterAction(act, SRMod.GetCurrentMod());
+            // TODO: Upgrade to new system
+            //RegisterAction(act, SRMod.GetCurrentMod());
             return act;
         }
 
@@ -71,7 +72,8 @@ namespace SRML.SR
         /// <param name="type">Type holding the <see cref="PlayerAction"/>'s</param>
         public static void RegisterActions(Type type)
         {
-            var mod = SRMod.GetCurrentMod();
+            // TODO: Upgrade to new system
+            SRMod mod = null/*SRMod.GetCurrentMod()*/;
             foreach (var field in type.GetFields().Where(x => x.IsStatic && typeof(PlayerAction).IsAssignableFrom(x.FieldType)))
             {
                 PlayerAction action = new PlayerAction(field.Name, SRInput.Actions);
