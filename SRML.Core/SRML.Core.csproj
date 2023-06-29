@@ -300,6 +300,7 @@
     <Compile Include="API\BuiltIn\GenericRegistry.cs" />
     <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
+    <Compile Include="API\BuiltIn\NameCategorizableEnumRegistry.cs" />
     <Compile Include="API\CoreAPI.cs" />
     <Compile Include="API\IRegistry.cs" />
     <Compile Include="ErrorGUI.cs" />

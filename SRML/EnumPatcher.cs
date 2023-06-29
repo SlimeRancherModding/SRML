@@ -186,6 +186,8 @@ namespace SRML
             Array.Sort(vals);
             var length = vals.Length;
             var magic = vals[0] == 0U ? 1U : 0U; // I genuinely couldn't think of a better name for this
+                                                 // I couldn't tell you what this number actually is, but it makes the math work
+                                                 // therefore, magic
 
             for (uint i = magic; i <= uint.MaxValue; i++)
             {
