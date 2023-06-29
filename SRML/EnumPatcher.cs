@@ -152,6 +152,51 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static TEnum GetFirstFreeValue<TEnum>() => (TEnum)GetFirstFreeValue(typeof(TEnum));
 
+        private static readonly Converter<Enum, int> converter = new Converter<Enum, int>(x => Convert.ToInt32(x));
+        private static readonly Converter<Enum, uint> uConverter = new Converter<Enum, uint>(x => Convert.ToUInt32(x));
+
+        private static object GetFirstFreeValueRegular(Type enumType)
+        {
+            var vals = Array.ConvertAll(Enum.GetValues(enumType).OfType<Enum>().ToArray(), converter);
+            Array.Sort(vals);
+            var length = vals.Length;
+            int index = vals.IndexOfItem(vals.FirstOrDefault(x => x > -1));
+
+            for (int i = index == -1 ? 0 : index; i <= int.MaxValue; i++)
+            {
+                if (i == length || vals[i] != i)
+                    return i;
+            }
+
+            if (index > 0)
+            {
+                for (int i = index; i >= int.MinValue; i--)
+                {
+                    if (i == length || vals[i] != i)
+                        return i;
+                }
+            }
+
+            throw new Exception("No unused values in enum " + enumType.FullName);
+        }
+
+        private static object GetFirstFreeValueFlags(Type enumType)
+        {
+            var vals = Array.ConvertAll(Enum.GetValues(enumType).OfType<Enum>().ToArray(), uConverter);
+            Array.Sort(vals);
+            var length = vals.Length;
+            var magic = vals[0] == 0U ? 1U : 0U; // I genuinely couldn't think of a better name for this
+
+            for (uint i = magic; i <= uint.MaxValue; i++)
+            {
+                uint pow = (uint)Math.Pow(2, i - magic);
+                if (i == length || vals[i] != pow)
+                    return pow;
+            }
+
+            throw new Exception("No unused values in enum " + enumType.FullName);
+        }
+
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
@@ -159,34 +204,14 @@ namespace SRML
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType)
         {
-            // TODO: incompatible with flags enum
             if (!enumType.IsEnum) throw new ArgumentException("enumType");
             if (enumType == null) throw new ArgumentNullException("enumType");
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
 
-            var vals = Enum.GetValues(enumType);
-            long l = 0;
-            for (ulong i = 0; i <= ulong.MaxValue; i++)
-            {
-                if (!i.TryAsNumber(enumType, out var v))
-                    break;
-                for (; l < vals.Length; l++)
-                    if (vals.GetValue(l).Equals(v))
-                        goto skip;
-                return v;
-                skip:;
-            }
-            for (long i = -1; i >= long.MinValue; i--)
-            {
-                if (!i.TryAsNumber(enumType, out var v))
-                    break;
-                for (; l < vals.Length; l++)
-                    if (vals.GetValue(l).Equals(v))
-                        goto skip;
-                return v;
-                skip:;
-            }
-            throw new Exception("No unused values in enum " + enumType.FullName);
+            if (enumType.GetCustomAttributes<FlagsAttribute>().Any())
+                return GetFirstFreeValueFlags(enumType);
+            else
+                return GetFirstFreeValueRegular(enumType);
         }
 
         public static void ClearEnumCache(Type enumType)
