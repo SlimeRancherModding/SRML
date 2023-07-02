@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using SRML.Core.ModLoader;
 using SRML.SR.SaveSystem.Data.Partial;
 using UnityEngine;
 
@@ -20,13 +21,13 @@ namespace SRML.SR
 
         internal static Dictionary<MessageDirector.Lang, KeyValuePair<string, string>> srmlErrorMessages = new Dictionary<MessageDirector.Lang, KeyValuePair<string, string>>();
 
-        internal static Dictionary<KeyValuePair<string,string>,SRMod> keyToMod = new Dictionary<KeyValuePair<string, string>,SRMod>();
+        internal static Dictionary<KeyValuePair<string,string>, IMod> keyToMod = new Dictionary<KeyValuePair<string, string>, IMod>();
 
-        internal static void SetModForTranslationKey(string bundlename, string key, SRMod mod) => keyToMod[new KeyValuePair<string, string>(bundlename, key)] = mod;
+        internal static void SetModForTranslationKey(string bundlename, string key, IMod mod) => keyToMod[new KeyValuePair<string, string>(bundlename, key)] = mod;
 
-        internal static void AddTranslationKey(string bundlename, string key, string value, SRMod mod)
+        internal static void AddTranslationKey(string bundlename, string key, string value, IMod mod)
         {
-            if (GetPatchesFor(bundlename).ContainsKey(key)) Debug.LogWarning($"Translation key '{key}' for bundle '{bundlename}' is already taken by {keyToMod[new KeyValuePair<string, string>(bundlename, key)].ModInfo.Name}! Overwriting...");
+            if (GetPatchesFor(bundlename).ContainsKey(key)) Debug.LogWarning($"Translation key '{key}' for bundle '{bundlename}' is already taken by {keyToMod[new KeyValuePair<string, string>(bundlename, key)].ModInfo.Id}! Overwriting...");
             GetPatchesFor(bundlename)[key] = value;
             SetModForTranslationKey(bundlename, key, mod);
         }
@@ -37,11 +38,8 @@ namespace SRML.SR
         /// <param name="bundlename">Key bundle the localization key is located in</param>
         /// <param name="key">The localization key</param>
         /// <param name="value">The plain text translation</param>
-        public static void AddTranslationKey(string bundlename, string key, string value)
-        {
-            // TODO: Upgrade to new system
-            //AddTranslationKey(bundlename, key, value, SRMod.GetCurrentMod());
-        }
+        public static void AddTranslationKey(string bundlename, string key, string value) =>
+            AddTranslationKey(bundlename, key, value, CoreLoader.Instance.GetExecutingModContext());
 
         /// <summary>
         /// Add a plaintext translation for a localization key in the 'pedia' bundle
@@ -132,8 +130,8 @@ namespace SRML.SR
             return output;
         }
 
-        static internal SRMod GetModForKey(string bundlename, string key) => GetModForKey(new KeyValuePair<string, string>(bundlename, key));
+        static internal IMod GetModForKey(string bundlename, string key) => GetModForKey(new KeyValuePair<string, string>(bundlename, key));
 
-        static internal SRMod GetModForKey(KeyValuePair<string,string> pair) => keyToMod.TryGetValue(pair, out var value) ? value : null;
+        static internal IMod GetModForKey(KeyValuePair<string,string> pair) => keyToMod.TryGetValue(pair, out var value) ? value : null;
     }
 }

@@ -39,7 +39,10 @@ namespace SRML.Core.API.BuiltIn
             AlreadyRegistered = true;
 
             foreach (T toRegister in _registered)
-                RegisterIntoComponent(toRegister, component);
+            {
+                if (!IsRegistered(toRegister, component))
+                    RegisterIntoComponent(toRegister, component);
+            }
         }
 
         public sealed override void Initialize()

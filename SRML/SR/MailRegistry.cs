@@ -33,9 +33,11 @@ namespace SRML.SR
             public string SubjectKey => MAIL_SUBJ_PREFIX + MailKey;
             public string BodyKey => MAIL_BODY_PREFIX + MailKey;
 
+            // TODO: Upgrade to new system
             internal SRMod GetMod()
             {
-                return TranslationPatcher.GetModForKey(MAIL_BUNDLE, FromKey) ?? TranslationPatcher.GetModForKey(MAIL_BUNDLE, SubjectKey) ?? TranslationPatcher.GetModForKey(MAIL_BUNDLE, BodyKey);
+                return null;
+                //return TranslationPatcher.GetModForKey(MAIL_BUNDLE, FromKey) ?? TranslationPatcher.GetModForKey(MAIL_BUNDLE, SubjectKey) ?? TranslationPatcher.GetModForKey(MAIL_BUNDLE, BodyKey);
             }
 
             /// <summary>

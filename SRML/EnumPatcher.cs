@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 using System.Reflection;
 using HarmonyLib;
-using SRML.SR;
 using SRML.Utils;
-using SRML.Core.ModLoader;
 using SRML.Core.API.BuiltIn;
-using SRML.Core.API;
-using SRML.Console;
 
 namespace SRML
 {
@@ -180,7 +173,7 @@ namespace SRML
             throw new Exception("No unused values in enum " + enumType.FullName);
         }
 
-        private static object GetFirstFreeValueFlags(Type enumType)
+        private static object GetFirstFreeValueFlags(Type enumType) // TODO: This works, but there can only be 32 total values because integer limit
         {
             var vals = Array.ConvertAll(Enum.GetValues(enumType).OfType<Enum>().ToArray(), uConverter);
             Array.Sort(vals);

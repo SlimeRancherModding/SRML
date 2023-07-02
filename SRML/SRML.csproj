@@ -474,8 +474,6 @@
     <Compile Include="SR\Patches\DirectedActorSpawnerStartPatch.cs" />
     <Compile Include="SR\Patches\EconomyPatch.cs" />
     <Compile Include="SR\Patches\GardenCatcherAwakePatch.cs" />
-    <Compile Include="SR\Patches\InitBlueprintLocksPatch.cs" />
-    <Compile Include="SR\Patches\InitInitialBlueprintsPatch.cs" />
     <Compile Include="SR\Patches\InitUpgradeLocksPatch.cs" />
     <Compile Include="SR\Patches\MailReadPatch.cs" />
     <Compile Include="SR\Patches\PediaDirectorAwakePatch.cs" />
@@ -508,7 +506,6 @@
     <Compile Include="SR\Patches\GameModelGadgetCreatePatch.cs" />
     <Compile Include="SR\LookupRegistry.cs" />
     <Compile Include="SR\Patches\MainMenuStartPatch.cs" />
-    <Compile Include="SR\Patches\ResourceBundlePatch.cs" />
     <Compile Include="SR\Patches\SceneContextStartPatch.cs" />
     <Compile Include="SR\SaveSystem\CustomChecker.cs" />
     <Compile Include="SR\SaveSystem\Data\Actor\PartialActorData.cs" />

@@ -101,7 +101,7 @@ public static class CollectionExtensions
     public static bool TryGetValue<T>(this ICollection<T> collection, Func<T, bool> predicate, out T result)
     {
         T tryGet = collection.FirstOrDefault(predicate);
-        if (!tryGet.Equals(default(T)))
+        if (!EqualityComparer<T>.Default.Equals(tryGet, default)) // why do I have to do this garabageg just to get this to not throw nulls
         {
             result = tryGet;
             return true;

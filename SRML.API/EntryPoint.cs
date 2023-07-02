@@ -20,7 +20,9 @@ namespace SRML.API
             HarmonyInstance.PatchAll();
 
             CoreAPI api = CoreAPI.Instance;
+            api.RegisterRegistry(new BlueprintRegistry());
             api.RegisterRegistry(new DroneTargetRegistry());
+            api.RegisterRegistry(new GadgetRegistry());
             api.RegisterRegistry(new RefineryRegistry());
             api.RegisterRegistry(new SnareRegistry());
 

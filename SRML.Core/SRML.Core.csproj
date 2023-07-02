@@ -332,6 +332,7 @@
     <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Patches\MainMenuPatch.cs" />
+    <Compile Include="Patches\ResourceBundlePatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
