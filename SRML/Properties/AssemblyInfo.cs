@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using SRML.SR;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -39,3 +40,16 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("SRML.Core")]
 [assembly: InternalsVisibleTo("SRML.API")]
+
+[assembly: TypeForwardedTo(typeof(AchievementRegistry))]
+[assembly: TypeForwardedTo(typeof(AmmoRegistry))]
+[assembly: TypeForwardedTo(typeof(BindingRegistry))]
+[assembly: TypeForwardedTo(typeof(DroneRegistry))]
+[assembly: TypeForwardedTo(typeof(FashionRegistry))]
+[assembly: TypeForwardedTo(typeof(FoodGroupRegistry))]
+[assembly: TypeForwardedTo(typeof(GadgetRegistry))]
+[assembly: TypeForwardedTo(typeof(IdentifiableRegistry))]
+[assembly: TypeForwardedTo(typeof(SnareRegistry))]
+[assembly: TypeForwardedTo(typeof(SpawnResourceRegistry))]
+[assembly: TypeForwardedTo(typeof(ToyRegistry))]
+[assembly: TypeForwardedTo(typeof(TranslationPatcher))]

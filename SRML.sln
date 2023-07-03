@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML.Core", "SRML.Core\SRML
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML.API", "SRML.API\SRML.API.csproj", "{2DA9762E-BA43-48AD-934E-F5FBCE4C2EC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SRML.Compatibility", "SRML.Compatibility\SRML.Compatibility.csproj", "{A73CDEAD-EEA5-4967-B7DE-327226BEEDD6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{2DA9762E-BA43-48AD-934E-F5FBCE4C2EC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DA9762E-BA43-48AD-934E-F5FBCE4C2EC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DA9762E-BA43-48AD-934E-F5FBCE4C2EC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A73CDEAD-EEA5-4967-B7DE-327226BEEDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A73CDEAD-EEA5-4967-B7DE-327226BEEDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A73CDEAD-EEA5-4967-B7DE-327226BEEDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A73CDEAD-EEA5-4967-B7DE-327226BEEDD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

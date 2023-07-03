@@ -67,8 +67,8 @@ namespace SRML
             Type sm = typeof(GameContext).Assembly.GetType("SteamManager", false, true);
             if (sm != null)
             {
-                HarmonyPatcher.Instance.Patch(sm.GetMethod("AddAchievement"),
-                    prefix: new HarmonyMethod(typeof(AchievementRegistry).GetMethod("ModdedAchievementPatch", BindingFlags.NonPublic | BindingFlags.Static)));
+                //HarmonyPatcher.Instance.Patch(sm.GetMethod("AddAchievement"),
+                    //prefix: new HarmonyMethod(typeof(AchievementRegistry).GetMethod("ModdedAchievementPatch", BindingFlags.NonPublic | BindingFlags.Static)));
             }
             config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
             config.TryLoadFromFile();

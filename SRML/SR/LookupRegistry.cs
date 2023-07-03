@@ -1,4 +1,5 @@
-﻿using SRML.API.Identifiable;
+﻿using SRML.API.Gadget;
+using SRML.API.Identifiable;
 using SRML.API.Identifiable.Slime;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,6 @@ namespace SRML.SR
 {
     public static class LookupRegistry
     {
-        internal static HashSet<GadgetDefinition> gadgetEntriesToPatch = new HashSet<GadgetDefinition>();
-
         internal static HashSet<UpgradeDefinition> upgradeEntriesToPatch =
             new HashSet<UpgradeDefinition>();
 
@@ -59,22 +58,8 @@ namespace SRML.SR
         /// Register a gadget entry to the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="entry"></param>
-        public static void RegisterGadget(GadgetDefinition entry)
-        {
-            if (entry.id == Gadget.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a GadgetDefinition with id NONE. This is not allowed.");
+        public static void RegisterGadget(GadgetDefinition entry) => BlueprintRegistry.Instance.Register(entry);
 
-            switch (CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    gadgetEntriesToPatch.Add(entry);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.gadgetDefinitions.AddAndRemoveWhere(entry,(x,y)=>x.id==y.id);
-                    GameContext.Instance.LookupDirector.gadgetDefinitionDict[entry.id] = entry;
-                    break;
-            }
-        }
         /// <summary>
         /// Register a vacuumable item into the <see cref=""/>
         /// </summary>

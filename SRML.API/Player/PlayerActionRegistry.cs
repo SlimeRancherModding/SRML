@@ -1,4 +1,5 @@
 ﻿using InControl;
+using SRML.Core;
 using SRML.Core.API.BuiltIn;
 using SRML.SR;
 using System;
@@ -12,8 +13,8 @@ namespace SRML.API.Player
         internal List<PlayerAction> registeredBindings = new List<PlayerAction>();
 
         public void RegisterBindingLine(PlayerAction toRegister) => registeredBindings.Add(toRegister);
-        public void AddTranslation(PlayerAction toRegister, string translated) => 
-            TranslationPatcher.AddUITranslation($"key.{toRegister.Name.ToLowerInvariant()}", translated); // TODO: multi-language support?
+        public void AddTranslation(PlayerAction toRegister, MessageDirector.Lang lang, string translated) => 
+            CoreTranslator.Instance.AddUITranslation(lang, $"key.{toRegister.Name.ToLowerInvariant()}", translated);
 
         public void RegisterAllActions<T>() => RegisterAllActions(typeof(T));
         

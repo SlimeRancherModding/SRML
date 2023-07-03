@@ -60,6 +60,9 @@
     <Reference Include="SRML.API">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\NewMods\SRML.API.dll</HintPath>
     </Reference>
+    <Reference Include="SRML.Compatibility">
+      <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Compatibility.dll</HintPath>
+    </Reference>
     <Reference Include="SRML.Core">
       <HintPath>E:\Steam\steamapps\common\Slime Rancher\SRML\Libs\SRML.Core.dll</HintPath>
     </Reference>
@@ -391,13 +394,9 @@
     <Compile Include="ModLoadException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SRMLConfig.cs" />
-    <Compile Include="SR\AchievementRegistry.cs" />
-    <Compile Include="SR\AmmoRegistry.cs" />
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\ChromaRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
-    <Compile Include="SR\FashionRegistry.cs" />
-    <Compile Include="SR\FoodGroupRegistry.cs" />
     <Compile Include="SR\GadgetCategorization.cs" />
     <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
@@ -434,7 +433,6 @@
     <Compile Include="SR\SaveSystem\Patches\SavedGameIgnoreNullActorsPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SkipMissingGadgetsPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SkipMissingActorsPatch.cs" />
-    <Compile Include="SR\SnareRegistry.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
     <Compile Include="SR\UI\EnhancedCorporatePartnerHandler.cs" />
@@ -459,11 +457,7 @@
     <Compile Include="SR\Utils\Debug\DebugSystem.cs" />
     <Compile Include="SR\Utils\Debug\MarkerType.cs" />
     <Compile Include="SR\DirectedActorSpawnerRegistry.cs" />
-    <Compile Include="SR\DroneRegistry.cs" />
     <Compile Include="SR\ExchangeOfferRegistry.cs" />
-    <Compile Include="SR\GadgetRegistry.cs" />
-    <Compile Include="SR\IdentifiableRegistry.cs" />
-    <Compile Include="SR\BindingRegistry.cs" />
     <Compile Include="SR\LandPlotRegistry.cs" />
     <Compile Include="SR\LandPlotUpgradeRegistry.cs" />
     <Compile Include="SR\MailRegistry.cs" />
@@ -573,7 +567,6 @@
     <Compile Include="SR\SaveSystem\SaveRegistry.cs" />
     <Compile Include="SR\SaveSystem\VersionedSerializable.cs" />
     <Compile Include="SR\SlimeRegistry.cs" />
-    <Compile Include="SR\SpawnResourceRegistry.cs" />
     <Compile Include="SR\SRCallbacks.cs" />
     <Compile Include="SR\Templates\Components\ActionOnAwake.cs" />
     <Compile Include="SR\Templates\Components\ActionOnStart.cs" />
@@ -604,8 +597,6 @@
     <Compile Include="SR\Templates\Plots\PlotUpgradeTemplate.cs" />
     <Compile Include="SR\Templates\TemplateActions.cs" />
     <Compile Include="SR\Templates\UIs\ActivatorUITemplate.cs" />
-    <Compile Include="SR\ToyRegistry.cs" />
-    <Compile Include="SR\TranslationPatcher.cs" />
     <Compile Include="SR\Translation\GadgetTranslation.cs" />
     <Compile Include="SR\Translation\ITranslatable.cs" />
     <Compile Include="SR\Translation\PediaEntryTranslation.cs" />

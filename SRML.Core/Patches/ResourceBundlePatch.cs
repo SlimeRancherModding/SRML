@@ -16,7 +16,7 @@ namespace SRML.SR.Patches
 
             if (path == "ui")
             {
-                if (TranslationPatcher.srmlErrorMessages.ContainsKey(lang))
+                if (translations.srmlErrorMessages.ContainsKey(lang))
                 {
                     __result["t.srml_error"] = translations.srmlErrorMessages[lang].Key;
                     __result["t.srml_error.abort"] = translations.srmlErrorMessages[lang].Value;
