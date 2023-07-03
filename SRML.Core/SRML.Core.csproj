@@ -303,6 +303,7 @@
     <Compile Include="API\BuiltIn\NameCategorizableEnumRegistry.cs" />
     <Compile Include="API\CoreAPI.cs" />
     <Compile Include="API\IRegistry.cs" />
+    <Compile Include="CoreTranslator.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
@@ -333,6 +334,7 @@
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Patches\MainMenuPatch.cs" />
     <Compile Include="Patches\ResourceBundlePatch.cs" />
+    <Compile Include="Patches\SetSelectedLangPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

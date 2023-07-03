@@ -59,6 +59,7 @@ namespace SRML.Core
             foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
                 text.alignment = TextAlignmentOptions.TopLeft;
 
+            CoreTranslator translator = new CoreTranslator();
             CoreAPI api = new CoreAPI();
 
             CoreLoader loader = new CoreLoader();
