@@ -9,9 +9,10 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
+#pragma warning disable CS0612
 namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 {
-    public class LegacyModLoader : FileModLoader<BasicMod, LegacyEntryPoint, BasicModInfo>
+    public class LegacyModLoader : FileModLoader<LegacyMod, LegacyEntryPoint, BasicModInfo>
     {
         public override string Path => @"SRML\Mods";
 
@@ -21,36 +22,36 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
         public override IModInfo LoadModInfo(Type entryType)
         {
-            throw new NotImplementedException();
+            BasicModInfo info = new BasicModInfo();
+            info.Parse(entryType.Assembly);
+            return info;
         }
 
         public override IMod LoadMod(Type entryType, IModInfo modInfo)
         {
-            BasicMod mod = new BasicMod();
+            LegacyMod mod = new LegacyMod();
             Assembly asm = entryType.Assembly;
             LegacyEntryPoint entryPoint = new LegacyEntryPoint(modInfo);
             mod.Entry = entryPoint;
             mod.Path = asm.Location;
 
-            BasicModInfo info = new BasicModInfo();
-            info.Parse(asm);
-            mod.ModInfo = info;
+            mod.ModInfo = modInfo;
 
             loadedMods.Add(mod);
 
-            entryPoint.legacyEntry = ModEntryPoint.CreateEntry(entryType, info.Id);
+            entryPoint.legacyEntry = ModEntryPoint.CreateEntry(entryType, modInfo.Id);
             entryPoint.Initialize();
+            mod.Initialize();
 
             return mod;
         }
 
         public override void DiscoverTypesFromAssembly(Assembly assembly)
         {
-            Debug.Log($"attempting to load from {assembly.FullName}");
-            Type entryType = assembly.ManifestModule.GetTypes().FirstOrDefault(x => typeof(IModEntryPoint).IsAssignableFrom(x));
-            // TODO: actually get modinfo
+            Type entryType = assembly.ManifestModule.GetTypes().FirstOrDefault((x) => (typeof(IModEntryPoint).IsAssignableFrom(x)));
             if (entryType != null)
-                LoadMod(entryType, null);
+                CoreLoader.Instance.LoadMod(entryType);
         }
     }
 }
+#pragma warning restore CS0612

@@ -318,6 +318,7 @@
     <Compile Include="ModLoader\BuiltIn\ModLoader\BasicModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\FileModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\LegacyModLoader.cs" />
+    <Compile Include="ModLoader\BuiltIn\Mod\LegacyMod.cs" />
     <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />

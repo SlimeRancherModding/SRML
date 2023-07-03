@@ -116,6 +116,11 @@ namespace SRML.Core.ModLoader.DataTypes
                 loadOrder.Insert(toAdd, after.Key);
             }
 
+            if (loadOrder.Contains("srmlapi"))
+            {
+                loadOrder.Remove("srmlapi");
+                loadOrder.Insert(0, "srmlapi");
+            }
             return loadOrder.ToArray();
         }
     }

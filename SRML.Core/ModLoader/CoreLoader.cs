@@ -34,6 +34,14 @@ namespace SRML.Core.ModLoader
         internal bool loadedStack = false;
 
         public delegate void ModProcessor(IMod mod);
+        public delegate void ModPreProcessor(Type type, IModInfo info);
+        /// <summary>
+        /// Event that runs before a mod is loaded.
+        /// </summary>
+        public event ModPreProcessor PreProcessMods;
+        /// <summary>
+        /// Event that runs after a mod is loaded.
+        /// </summary>
         public event ModProcessor ProcessMods;
 
         internal IMod forceMod;
@@ -141,6 +149,7 @@ namespace SRML.Core.ModLoader
             (Type, IModInfo) protoMod = modStack.Pop();
             try
             {
+                PreProcessMods?.Invoke(protoMod.Item1, protoMod.Item2);
                 IMod mod = loaderForEntryType[protoMod.Item1].LoadMod(protoMod.Item1, protoMod.Item2);
 
                 if (mod.Entry != null)
@@ -169,7 +178,7 @@ namespace SRML.Core.ModLoader
         {
             try
             {
-                Type modType = modTypeForEntryType.FirstOrDefault(x => entryType.IsSubclassOf(x.Key)).Value;
+                Type modType = modTypeForEntryType.FirstOrDefault(x => entryType.IsSubclassOf(x.Key) || x.Key.IsAssignableFrom(entryType)).Value;
                 var loader = loaders.FirstOrDefault(x => x.ModType == modType);
                 if (loader == null)
                     throw new ArgumentException($"Unable to load entry of type {entryType}; no registered loader loads mod type {entryType.BaseType}");

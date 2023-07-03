@@ -63,22 +63,26 @@ namespace SRML.Core
             CoreAPI api = new CoreAPI();
 
             CoreLoader loader = new CoreLoader();
-            loader.ProcessMods += EnumHolderResolver.RegisterAllEnums;
+            loader.PreProcessMods += EnumHolderResolver.RegisterAllEnums;
             
             loader.LoadFromDefaultPath();
             
             loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));
             loader.RegisterModType(typeof(CoreMod), typeof(CoreModEntryPoint));
+#pragma warning disable CS0612
+            loader.modTypeForEntryType.Add(typeof(IModEntryPoint), typeof(LegacyMod));
+            loader.registeredModTypes.Add(typeof(LegacyMod));
+#pragma warning restore CS0612
             loader.RegisterModLoader(typeof(BasicModLoader));
             loader.RegisterModLoader(typeof(CoreModLoader));
+            // This DOES work, but then it breaks everything because the API is currently still built upon the old modloader.
+            loader.RegisterModLoader(typeof(LegacyModLoader));
 
             var identical = loader.modStack.GroupBy(x => x.Item2.Id).FirstOrDefault(x => x.Count() > 1);
             if (identical != default)
                 throw new Exception($"Attempting to load mod with duplicate id: {identical.First().Item2.Id}");
 
             loader.LoadModStack();
-            // This DOES work, but then it breaks everything because the API is currently still built upon the old modloader.
-            //loader.RegisterModLoader(typeof(LegacyModLoader));
         }
     }
 }
