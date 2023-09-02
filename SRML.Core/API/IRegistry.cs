@@ -17,32 +17,6 @@ namespace SRML.Core.API
         void RegisterAllOfType(Type processorType, object registerInto);
     }
 
-    public interface IProcessor
-    {
-        void Register(object registerInto);
-    }
-
-    public abstract class Processor<T> : IProcessor
-    {
-        public sealed override int GetHashCode() => base.GetHashCode();
-
-        public sealed override bool Equals(object obj)
-        {
-            if (obj.GetType().IsInstanceOfType(typeof(Processor<>)))
-                return false;
-
-            if (obj.GetType() != this.GetType())
-                return false;
-
-            return IsIdenticalTo((Processor<T>)obj);
-        }
-
-        
-        public abstract bool IsIdenticalTo(Processor<T> other);
-        public abstract void Register(T registerInto);
-        public void Register(object registerInto) => Register((T)registerInto);
-    }
-
     public abstract class Registry<R> : IRegistryNew where R : Registry<R>
     {
         private Dictionary<Type, List<IProcessor>> registered = new Dictionary<Type, List<IProcessor>>();
@@ -95,55 +69,7 @@ namespace SRML.Core.API
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public abstract class RegistryAttribute : Attribute
-    {
-        public abstract void Register(IRegistryNew toRegister);
-    }
-
-    public class HarmonyRegistryAttribute : RegistryAttribute
-    {
-        public Type processorType;
-
-        public Type registrationType;
-        public string registrationMethod;
-        public Type[] registrationParameters;
-        public Type[] registrationGenerics;
-        
-        public bool prefix;
-
-        internal static Dictionary<MethodBase, List<(IRegistryNew, Type)>> registerOnBase = new Dictionary<MethodBase, List<(IRegistryNew, Type)>>();
-
-        internal static void Patch(object __instance, MethodBase __originalMethod)
-        {
-            foreach (var registryRegistrations in registerOnBase[__originalMethod])
-                registryRegistrations.Item1.RegisterAllOfType(registryRegistrations.Item2, __instance);
-        }
-
-        public override void Register(IRegistryNew toRegister)
-        {
-            MethodBase method = AccessTools.Method(registrationType, registrationMethod, registrationParameters, registrationGenerics);
-            HarmonyMethod harmony = new HarmonyMethod(typeof(HarmonyRegistryAttribute), "Patch");
-
-            Main.HarmonyInstance.Patch(method, prefix ? harmony : null, prefix ? null : harmony);
-
-            if (!registerOnBase.ContainsKey(method))
-                registerOnBase[method] = new List<(IRegistryNew, Type)>();
-
-            registerOnBase[method].Add((toRegister, processorType));
-        }
-
-        public HarmonyRegistryAttribute(Type processorType, Type registrationType, string registrationMethod, bool prefix = true, Type[] registrationParameters = null,
-            Type[] registrationGenerics = null)
-        {
-            this.processorType = processorType;
-            this.registrationType = registrationType;
-            this.registrationMethod = registrationMethod;
-            this.prefix = prefix;
-            this.registrationParameters = registrationParameters;
-            this.registrationGenerics = registrationGenerics;
-        }
-    }
+    // EVERYTHING AFTER THIS IS OBSOLETE LOL
 
     public abstract class Registry<R, T> : IRegistry where R : Registry<R, T>
     {

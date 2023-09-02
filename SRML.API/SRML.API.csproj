@@ -350,7 +350,9 @@
   <ItemGroup>
     <EmbeddedResource Include="modinfo.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Identifiable\Processors\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\NewMods\"</PostBuildEvent>

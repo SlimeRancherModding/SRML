@@ -295,6 +295,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\BuiltIn\Attributes\HarmonyRegistryAttribute.cs" />
     <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
     <Compile Include="API\BuiltIn\EnumRegistry.cs" />
     <Compile Include="API\BuiltIn\GenericRegistry.cs" />
@@ -302,9 +303,13 @@
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\BuiltIn\IDRegistry.cs" />
     <Compile Include="API\BuiltIn\NameCategorizableEnumRegistry.cs" />
-    <Compile Include="API\Registerable.cs" />
+    <Compile Include="API\BuiltIn\Processors\EnumProcessor.cs" />
+    <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumProcessor.cs" />
+    <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumMetadata.cs" />
     <Compile Include="API\CoreAPI.cs" />
+    <Compile Include="API\IProcessor.cs" />
     <Compile Include="API\IRegistry.cs" />
+    <Compile Include="API\RegistryAttribute.cs" />
     <Compile Include="CoreTranslator.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="Loader.cs" />
@@ -346,7 +351,9 @@
     <None Include="packages.config" />
     <EmbeddedResource Include="srml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="API\BuiltIn\Registries\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\Libs\"</PostBuildEvent>

@@ -1,30 +1,24 @@
 ﻿using SRML.Console;
+using SRML.Core.API;
+using SRML.Core.API.BuiltIn.Processors;
 using SRML.Core.API.BuiltIn;
 using SRML.SR;
 using System;
 using System.Collections.Generic;
+using SRML.Core.API.BuiltIn.Attributes;
 
 namespace SRML.API.Identifiable
 {
-    public class IdentifiableRegistry : NameCategorizableEnumRegistry<IdentifiableRegistry, global::Identifiable.Id, IdentifiableCategorization.Rule>,
-        IAttributeCategorizeableEnum
+    public class IdentifiableRegistry : Registry<IdentifiableRegistry>
     {
-        public Type AttributeType => typeof(IdentifiableCategorization);
-        public bool TakesPresidenceOverCategorizable => true;
-
-        public void Categorize(Enum toCategorize, Attribute att)
-        {
-            if (att.GetType() != typeof(IdentifiableCategorization))
-                throw new ArgumentException("IdentifiableRegistry cannot process non-IdentifiableCategorization attributes.");
-
-            Categorize((global::Identifiable.Id)toCategorize, ((IdentifiableCategorization)att).rules);
-        }
+        private NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorization.Rule> metadata;
 
         public override void Initialize()
         {
-            base.Initialize(); 
             // hell
-            categorizationSuffixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
+            metadata = new NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorization.Rule>();
+
+            metadata.categorizationSuffixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
             {
                 { "_VEGGIE", IdentifiableCategorization.Rule.VEGGIE },
                 { "_FRUIT", IdentifiableCategorization.Rule.FRUIT },
@@ -43,12 +37,12 @@ namespace SRML.API.Identifiable
                 { "_ORNAMENT", IdentifiableCategorization.Rule.ORNAMENT },
                 { "_TOY", IdentifiableCategorization.Rule.TOY }
             };
-            categorizationPrefixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
+            metadata.categorizationPrefixRules = new Dictionary<string, IdentifiableCategorization.Rule>()
             {
                 { "ECHO_NOTE_", IdentifiableCategorization.Rule.ECHO_NOTE },
                 { "ELDER_", IdentifiableCategorization.Rule.ELDER }
-            }; 
-            ruleLists = new Dictionary<IdentifiableCategorization.Rule, List<HashSet<global::Identifiable.Id>>>()
+            };
+            metadata.ruleLists = new Dictionary<IdentifiableCategorization.Rule, List<HashSet<global::Identifiable.Id>>>()
             {
                 { IdentifiableCategorization.Rule.VEGGIE, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
                     global::Identifiable.FOOD_CLASS, global::Identifiable.VEGGIE_CLASS } },
@@ -77,7 +71,7 @@ namespace SRML.API.Identifiable
                 { IdentifiableCategorization.Rule.TOY, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.TOY_CLASS } },
                 { IdentifiableCategorization.Rule.ELDER, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.ELDER_CLASS } },
             };
-            baseRuleLists = new List<HashSet<global::Identifiable.Id>>()
+            metadata.baseRuleLists = new List<HashSet<global::Identifiable.Id>>()
             {
                 global::Identifiable.ALLERGY_FREE_CLASS,
                 global::Identifiable.BOOP_CLASS,
@@ -102,8 +96,8 @@ namespace SRML.API.Identifiable
                 global::Identifiable.TARR_CLASS,
                 global::Identifiable.TOFU_CLASS,
                 global::Identifiable.TOY_CLASS,
-            }; 
-            processors = new List<CategorizationProcessor>()
+            };
+            metadata.processors = new List<NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorization.Rule>.CategorizationProcessor>()
             {
                 (x, y, z) =>
                 {
@@ -123,11 +117,35 @@ namespace SRML.API.Identifiable
             };
         }
 
-        protected override void OnCategorize(global::Identifiable.Id toCategorize) =>
-            Slime.FoodGroupRegistry.Instance.Register(toCategorize);
+        public void RegisterPrefixRule(string prefix, IdentifiableCategorization.Rule rule) =>
+            metadata.categorizationPrefixRules[prefix] = rule;
 
-        public override void Process(global::Identifiable.Id toProcess)
+        public void RegisterSuffixRule(string suffix, IdentifiableCategorization.Rule rule) =>
+            metadata.categorizationSuffixRules[suffix] = rule;
+
+        public void RegisterCategorizationProcessor(NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorization.Rule>.CategorizationProcessor processor) =>
+            metadata.processors.Add(processor);
+
+        public void RegisterHashSet(IdentifiableCategorization.Rule rule, HashSet<global::Identifiable.Id> hashset)
         {
+            if (!metadata.ruleLists.ContainsKey(rule))
+                metadata.ruleLists[rule] = new List<HashSet<global::Identifiable.Id>>();
+
+            metadata.ruleLists[rule].Add(hashset);
+            metadata.baseRuleLists.AddIfDoesNotContain(hashset);
+        }
+
+        private class IdentifiableProcessor : NameCategorizedEnumProcessor<global::Identifiable.Id, IdentifiableCategorization.Rule>
+        {
+            protected override void OnCategorize(global::Identifiable.Id toCategorize) =>
+                Slime.FoodGroupRegistry.Instance.Register(toCategorize);
+
+            public IdentifiableProcessor(string name, NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorization.Rule> metadata) : base(name, metadata)
+            {
+            }
+            public IdentifiableProcessor(string name, object value, NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorization.Rule> metadata) : base(name, value, metadata)
+            {
+            }
         }
     }
 }
