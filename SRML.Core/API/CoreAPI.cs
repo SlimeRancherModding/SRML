@@ -1,4 +1,6 @@
-﻿namespace SRML.Core.API
+﻿using System.Reflection;
+
+namespace SRML.Core.API
 {
     public class CoreAPI
     {
@@ -10,6 +12,14 @@
         public void RegisterRegistry(IRegistry registry)
         {
             registry.Initialize();
+
+            // TODO: once I replace old registry system with this, this should be changed to always run
+            if (registry is IRegistryNew reg)
+            {
+                foreach (RegistryAttribute att in registry.GetType().GetCustomAttributes<RegistryAttribute>())
+                    att.Register(reg);
+            }
+
             ProcessAPIs?.Invoke(registry);
         }
 

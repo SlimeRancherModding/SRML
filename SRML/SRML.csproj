@@ -406,7 +406,6 @@
     <Compile Include="SR\Patches\CorporatePartnerUIAwakePatch.cs" />
     <Compile Include="SR\Patches\EnterZonePatch.cs" />
     <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
-    <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
     <Compile Include="SR\Patches\RanchDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\RanchModelSelectPalettePatch.cs" />
@@ -458,8 +457,6 @@
     <Compile Include="SR\Utils\Debug\MarkerType.cs" />
     <Compile Include="SR\DirectedActorSpawnerRegistry.cs" />
     <Compile Include="SR\ExchangeOfferRegistry.cs" />
-    <Compile Include="SR\LandPlotRegistry.cs" />
-    <Compile Include="SR\LandPlotUpgradeRegistry.cs" />
     <Compile Include="SR\MailRegistry.cs" />
     <Compile Include="SR\Options\ModOptionsV01.cs" />
     <Compile Include="SR\Options\OptionsHandler.cs" />
@@ -530,7 +527,6 @@
     <Compile Include="SR\SaveSystem\Patches\PushGadgetPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SiloCatcherOnTriggerStayPatch.cs" />
     <Compile Include="SR\SaveSystem\Patches\SiloCatcherTriggerEnterPatch.cs" />
-    <Compile Include="SR\Patches\UITemplatesPurchasablePatch.cs" />
     <Compile Include="SR\SaveSystem\StringRegistry.cs" />
     <Compile Include="SR\SaveSystem\Utils\AmmoDataUtils.cs" />
     <Compile Include="SR\SaveSystem\Utils\ExtendedDataUtils.cs" />

@@ -40,10 +40,16 @@ namespace SRML.API
 
             api.RegisterRegistry(new AchievementsRegistry());
             api.RegisterRegistry(new AchievementTierRegistry());
+            api.RegisterRegistry(new PersonalUpgradeRegistry());
+            api.RegisterRegistry(new PersonalUpgradeDefinitionRegistry());
             api.RegisterRegistry(new PlayerActionRegistry());
             api.RegisterRegistry(new PlayerAmmoRegistry());
             api.RegisterRegistry(new TargetingRegistry());
 
+            api.RegisterRegistry(new PurchasableRegistry());
+            api.RegisterRegistry(new LandPlotPrefabRegistry());
+            api.RegisterRegistry(new LandPlotRegistry());
+            api.RegisterRegistry(new LandPlotUpgradeRegistry());
             api.RegisterRegistry(new SiloAmmoRegistry());
         }
     }

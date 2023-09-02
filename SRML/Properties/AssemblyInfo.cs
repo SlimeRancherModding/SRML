@@ -49,6 +49,8 @@ using System.Runtime.InteropServices;
 [assembly: TypeForwardedTo(typeof(FoodGroupRegistry))]
 [assembly: TypeForwardedTo(typeof(GadgetRegistry))]
 [assembly: TypeForwardedTo(typeof(IdentifiableRegistry))]
+[assembly: TypeForwardedTo(typeof(LandPlotRegistry))]
+[assembly: TypeForwardedTo(typeof(LandPlotUpgradeRegistry))]
 [assembly: TypeForwardedTo(typeof(SnareRegistry))]
 [assembly: TypeForwardedTo(typeof(SpawnResourceRegistry))]
 [assembly: TypeForwardedTo(typeof(ToyRegistry))]

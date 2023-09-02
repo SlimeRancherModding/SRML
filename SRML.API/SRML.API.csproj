@@ -326,16 +326,25 @@
     <Compile Include="Player\Patches\AchievementTrackerRegisterPatch.cs" />
     <Compile Include="Player\Patches\GamepadPanelSetupBindingsPatch.cs" />
     <Compile Include="Player\Patches\OptionsUISetupInputPatch.cs" />
+    <Compile Include="Player\Patches\PlayerModelApplyUpgradePatch.cs" />
     <Compile Include="Player\Patches\PlayerStatePotentialAmmoPatch.cs" />
     <Compile Include="Player\Patches\PlayerStateResetPatch.cs" />
+    <Compile Include="Player\Patches\PlayerStateUpgradeLockerPatch.cs" />
     <Compile Include="Player\Patches\SavedProfilePullPatch.cs" />
     <Compile Include="Player\Patches\SavedProfilePushPatch.cs" />
     <Compile Include="Player\Patches\TargetingUIGetTargetPatch.cs" />
+    <Compile Include="Player\PersonalUpgradeDefinitionRegistry.cs" />
     <Compile Include="Player\PlayerActionRegistry.cs" />
+    <Compile Include="Player\PersonalUpgradeRegistry.cs" />
     <Compile Include="Player\TargetingRegistry.cs" />
+    <Compile Include="World\LandPlotPrefabRegistry.cs" />
+    <Compile Include="World\LandPlotRegistry.cs" />
+    <Compile Include="World\LandPlotUpgradeRegistry.cs" />
     <Compile Include="World\Patches\StorageTypeExtensionsRegistryPatch.cs" />
     <Compile Include="Player\PlayerAmmoRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="World\Patches\UITemplatesPurchasablePatch.cs" />
+    <Compile Include="World\PurchasableRegistry.cs" />
     <Compile Include="World\SiloAmmoRegistry.cs" />
   </ItemGroup>
   <ItemGroup>

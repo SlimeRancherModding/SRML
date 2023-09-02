@@ -14,8 +14,6 @@ namespace SRML.SR
         internal static HashSet<UpgradeDefinition> upgradeEntriesToPatch =
             new HashSet<UpgradeDefinition>();
 
-        internal static HashSet<GameObject> landPlotsToPatch = new HashSet<GameObject>();
-
         /// <summary>
         /// Register an Identifiable Prefab into the <see cref="LookupDirector"/>
         /// </summary>
@@ -27,7 +25,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="b">The <see cref="Identifiable"/> belonging to the prefab to register.</param>
         public static void RegisterIdentifiablePrefab(Identifiable b) => 
-            API.Identifiable.IdentifiablePrefabRegistry.Instance.Register(b);
+            IdentifiablePrefabRegistry.Instance.Register(b);
 
         /// <summary>
         /// Register <paramref name="entry"/> into the <see cref="LookupDirector"/>
@@ -38,22 +36,9 @@ namespace SRML.SR
         /// Register a landplot prefab into the <see cref="LookupDirector"/>
         /// </summary>
         /// <param name="prefab">The prefab to register</param>
-        public static void RegisterLandPlot(GameObject prefab)
-        {
-            if (prefab.GetComponentInChildren<LandPlot>(true).typeId == LandPlot.Id.NONE)
-                throw new InvalidOperationException("Attempting to register a LandPlot with id NONE. This is not allowed.");
+        public static void RegisterLandPlot(GameObject prefab) =>
+            API.World.LandPlotPrefabRegistry.Instance.Register(prefab.GetComponent<LandPlot>());
 
-            switch (CurrentLoadingStep)
-            {
-                case LoadingStep.PRELOAD:
-                    landPlotsToPatch.Add(prefab);
-                    break;
-                default:
-                    GameContext.Instance.LookupDirector.plotPrefabs.AddAndRemoveWhere(prefab,(x,y)=> x.GetComponentInChildren<LandPlot>(true).typeId == y.GetComponentInChildren<LandPlot>(true).typeId);
-                    GameContext.Instance.LookupDirector.plotPrefabDict[prefab.GetComponentInChildren<LandPlot>(true).typeId] = prefab;
-                    break;
-            }
-        }
         /// <summary>
         /// Register a gadget entry to the <see cref="LookupDirector"/>
         /// </summary>

@@ -11,41 +11,47 @@ namespace SRML.Utils.Enum
     {
         public static void RegisterAllEnums(Type modType, IModInfo info)
         {
-            foreach (var type in modType.Assembly.GetTypes())
+            foreach (var type in modType.Assembly.ManifestModule.GetTypes())
             {
-                if (type.GetCustomAttributes(true).Any((x) => x is EnumHolderAttribute))
+                try
                 {
-                    EnumHolderAttribute enumHolder = type.GetCustomAttribute<EnumHolderAttribute>();
-
-                    foreach (var field in type.GetFields(BindingFlags.Static | BindingFlags.Public |
-                                                         BindingFlags.NonPublic))
+                    if (type.GetCustomAttributes(true).Any((x) => x is EnumHolderAttribute))
                     {
-                        if (!field.FieldType.IsEnum) continue;
+                        EnumHolderAttribute enumHolder = type.GetCustomAttribute<EnumHolderAttribute>();
 
-                        if ((int)field.GetValue(null) == 0)
+                        foreach (var field in type.GetFields(BindingFlags.Static | BindingFlags.Public |
+                                                             BindingFlags.NonPublic))
                         {
-                            var newVal = EnumPatcher.GetFirstFreeValue(field.FieldType);
-                            EnumPatcher.AddEnumValue(field.FieldType, newVal, field.Name);
-                            field.SetValue(null, newVal);
-                        }
-                        else
-                            EnumPatcher.AddEnumValue(field.FieldType, field.GetValue(null), field.Name);
+                            if (!field.FieldType.IsEnum) continue;
 
-                        if (enumHolder.shouldCategorize)
-                        {
-                            System.Enum generated = (System.Enum)field.GetValue(null);
-
-                            foreach (var att in field.GetCustomAttributes())
+                            if ((int)field.GetValue(null) == 0)
                             {
-                                if (EnumPatcher.categorizableRegistries.TryGetValue(x => x.AttributeType == att.GetType(), out var reg))
+                                var newVal = EnumPatcher.GetFirstFreeValue(field.FieldType);
+                                EnumPatcher.AddEnumValue(field.FieldType, newVal, field.Name);
+                                field.SetValue(null, newVal);
+                            }
+                            else
+                                EnumPatcher.AddEnumValue(field.FieldType, field.GetValue(null), field.Name);
+
+                            if (enumHolder.shouldCategorize)
+                            {
+                                System.Enum generated = (System.Enum)field.GetValue(null);
+
+                                foreach (var att in field.GetCustomAttributes())
                                 {
-                                    if (reg is ICategorizableEnum catEnum && reg.TakesPresidenceOverCategorizable)
-                                        catEnum.Decategorize(generated);
-                                    reg.Categorize(generated, att);
+                                    if (EnumPatcher.categorizableRegistries.TryGetValue(x => x.AttributeType == att.GetType(), out var reg))
+                                    {
+                                        if (reg is ICategorizableEnum catEnum && reg.TakesPresidenceOverCategorizable)
+                                            catEnum.Decategorize(generated);
+                                        reg.Categorize(generated, att);
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                catch (ReflectionTypeLoadException)
+                {
                 }
             }
         }

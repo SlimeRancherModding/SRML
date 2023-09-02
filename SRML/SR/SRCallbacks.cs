@@ -13,7 +13,7 @@ namespace SRML.SR
 
         static SRCallbacks()
         {
-            OnMainMenuLoaded += ModMenuUIHandler.OnMainMenuLoaded;
+            //OnMainMenuLoaded += ModMenuUIHandler.OnMainMenuLoaded;
         }
 
         public delegate void OnSaveGameLoadedDelegate(SceneContext t);

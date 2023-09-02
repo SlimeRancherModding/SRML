@@ -8,7 +8,7 @@ namespace SRML.Core.API.BuiltIn
     {
         public sealed override void Register(T toRegister)
         {
-            if (IsRegistered(toRegister))
+            if (IsRegistered(toRegister) || !IsValid(toRegister))
                 return;
 
             _registered.AddIfDoesNotContain(toRegister);
@@ -24,6 +24,8 @@ namespace SRML.Core.API.BuiltIn
 
         public sealed override bool IsRegistered(T registered) =>
             _registered.Contains(registered);
+
+        public virtual bool IsValid(T toRegister) => true;
     }
 
     public abstract class GenericRegistry<R, T, T2> : Registry<R, T, T2>
@@ -31,7 +33,7 @@ namespace SRML.Core.API.BuiltIn
     {
         public sealed override void Register(T toRegister, T2 toRegister2)
         {
-            if (IsRegistered(toRegister, toRegister2))
+            if (IsRegistered(toRegister, toRegister2) || !IsValid(toRegister, toRegister2))
                 return;
 
             _registered.AddIfDoesNotContain((toRegister, toRegister2));
@@ -47,6 +49,8 @@ namespace SRML.Core.API.BuiltIn
 
         public sealed override bool IsRegistered(T registered, T2 registered2) =>
             _registered.Contains((registered, registered2));
+
+        public virtual bool IsValid(T toRegister, T2 toRegister2) => true;
     }
 
     public abstract class GenericRegistry<R, T, T2, T3> : Registry<R, T, T2, T3>
@@ -54,7 +58,7 @@ namespace SRML.Core.API.BuiltIn
     {
         public sealed override void Register(T toRegister, T2 toRegister2, T3 toRegister3)
         {
-            if (IsRegistered(toRegister, toRegister2, toRegister3))
+            if (IsRegistered(toRegister, toRegister2, toRegister3) || !IsValid(toRegister, toRegister2, toRegister3))
                 return;
 
             _registered.AddIfDoesNotContain((toRegister, toRegister2, toRegister3));
@@ -70,5 +74,7 @@ namespace SRML.Core.API.BuiltIn
 
         public sealed override bool IsRegistered(T registered, T2 registered2, T3 registered3) =>
             _registered.Contains((registered, registered2, registered3));
+
+        public virtual bool IsValid(T toRegister, T2 toRegister2, T3 toRegister3) => true;
     }
 }
