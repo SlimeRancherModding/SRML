@@ -1,43 +1,38 @@
-﻿using SRML.Core.API.BuiltIn;
-using SRML.SR;
-using System;
+﻿using SRML.API.Gadget.Attributes;
+using SRML.Core.API.BuiltIn;
 using System.Collections.Generic;
 
 namespace SRML.API.Gadget
 {
-    public class GadgetRegistry : NameCategorizableEnumRegistry<GadgetRegistry, global::Gadget.Id, GadgetCategorization.Rule>,
-        IAttributeCategorizeableEnum
+    public class GadgetRegistry : NameCategorizedEnumRegistry<GadgetRegistry, global::Gadget.Id, GadgetCategorizationAttribute.Rule>
     {
-        public Type AttributeType => typeof(GadgetCategorization);
-        public bool TakesPresidenceOverCategorizable => true;
-
         public override void Initialize()
         {
             base.Initialize();
 
-            categorizationPrefixRules = new Dictionary<string, GadgetCategorization.Rule>()
+            metadata.categorizationPrefixRules = new Dictionary<string, GadgetCategorizationAttribute.Rule>()
             {
-                { "EXTRACTOR_", GadgetCategorization.Rule.EXTRACTOR },
-                { "TELEPORTER_", GadgetCategorization.Rule.TELEPORTER },
-                { "WARP_DEPOT_", GadgetCategorization.Rule.WARP_DEPOT },
-                { "ECHO_NET", GadgetCategorization.Rule.ECHO_NET },
-                { "LAMP_", GadgetCategorization.Rule.LAMP },
-                { "FASHION_POD_", GadgetCategorization.Rule.FASHION_POD },
-                { "GORDO_SNARE_", GadgetCategorization.Rule.SNARE },
-                { "DRONE", GadgetCategorization.Rule.DRONE }
+                { "EXTRACTOR_", GadgetCategorizationAttribute.Rule.EXTRACTOR },
+                { "TELEPORTER_", GadgetCategorizationAttribute.Rule.TELEPORTER },
+                { "WARP_DEPOT_", GadgetCategorizationAttribute.Rule.WARP_DEPOT },
+                { "ECHO_NET", GadgetCategorizationAttribute.Rule.ECHO_NET },
+                { "LAMP_", GadgetCategorizationAttribute.Rule.LAMP },
+                { "FASHION_POD_", GadgetCategorizationAttribute.Rule.FASHION_POD },
+                { "GORDO_SNARE_", GadgetCategorizationAttribute.Rule.SNARE },
+                { "DRONE", GadgetCategorizationAttribute.Rule.DRONE }
             };
-            ruleLists = new Dictionary<GadgetCategorization.Rule, List<HashSet<global::Gadget.Id>>>()
+            metadata.ruleLists = new Dictionary<GadgetCategorizationAttribute.Rule, List<HashSet<global::Gadget.Id>>>()
             {
-                { GadgetCategorization.Rule.EXTRACTOR, new List<HashSet<global::Gadget.Id>>() { global::Gadget.EXTRACTOR_CLASS } },
-                { GadgetCategorization.Rule.TELEPORTER, new List<HashSet<global::Gadget.Id>>() { global::Gadget.TELEPORTER_CLASS } },
-                { GadgetCategorization.Rule.WARP_DEPOT, new List<HashSet<global::Gadget.Id>>() { global::Gadget.WARP_DEPOT_CLASS } },
-                { GadgetCategorization.Rule.ECHO_NET, new List<HashSet<global::Gadget.Id>>() { global::Gadget.ECHO_NET_CLASS } },
-                { GadgetCategorization.Rule.LAMP, new List<HashSet<global::Gadget.Id>>() { global::Gadget.LAMP_CLASS } },
-                { GadgetCategorization.Rule.FASHION_POD, new List<HashSet<global::Gadget.Id>>() { global::Gadget.FASHION_POD_CLASS } },
-                { GadgetCategorization.Rule.SNARE, new List<HashSet<global::Gadget.Id>>() { global::Gadget.SNARE_CLASS } },
-                { GadgetCategorization.Rule.DRONE, new List<HashSet<global::Gadget.Id>>() { global::Gadget.DRONE_CLASS } }
+                { GadgetCategorizationAttribute.Rule.EXTRACTOR, new List<HashSet<global::Gadget.Id>>() { global::Gadget.EXTRACTOR_CLASS } },
+                { GadgetCategorizationAttribute.Rule.TELEPORTER, new List<HashSet<global::Gadget.Id>>() { global::Gadget.TELEPORTER_CLASS } },
+                { GadgetCategorizationAttribute.Rule.WARP_DEPOT, new List<HashSet<global::Gadget.Id>>() { global::Gadget.WARP_DEPOT_CLASS } },
+                { GadgetCategorizationAttribute.Rule.ECHO_NET, new List<HashSet<global::Gadget.Id>>() { global::Gadget.ECHO_NET_CLASS } },
+                { GadgetCategorizationAttribute.Rule.LAMP, new List<HashSet<global::Gadget.Id>>() { global::Gadget.LAMP_CLASS } },
+                { GadgetCategorizationAttribute.Rule.FASHION_POD, new List<HashSet<global::Gadget.Id>>() { global::Gadget.FASHION_POD_CLASS } },
+                { GadgetCategorizationAttribute.Rule.SNARE, new List<HashSet<global::Gadget.Id>>() { global::Gadget.SNARE_CLASS } },
+                { GadgetCategorizationAttribute.Rule.DRONE, new List<HashSet<global::Gadget.Id>>() { global::Gadget.DRONE_CLASS } }
             };
-            baseRuleLists = new List<HashSet<global::Gadget.Id>>()
+            metadata.baseRuleLists = new List<HashSet<global::Gadget.Id>>()
             {
                 global::Gadget.EXTRACTOR_CLASS,
                 global::Gadget.TELEPORTER_CLASS,
@@ -48,21 +43,6 @@ namespace SRML.API.Gadget
                 global::Gadget.SNARE_CLASS,
                 global::Gadget.DRONE_CLASS
             };
-        }
-
-        public void Categorize(Enum toCategorize, Attribute att)
-        {
-            if (att.GetType() != typeof(GadgetCategorization))
-                throw new ArgumentException("GadgetRegistry cannot process non-GadgetCategorization attributes.");
-
-            Categorize((global::Gadget.Id)toCategorize, ((GadgetCategorization)att).rules);
-        }
-
-        public void RegisterIdentifiableTranslationMapping(global::Gadget.Id gadgetId, global::Identifiable.Id identId) =>
-            global::Identifiable.GADGET_NAME_DICT.Add(identId, gadgetId);
-
-        public override void Process(global::Gadget.Id toProcess)
-        {
         }
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SRML.Core.API.BuiltIn.Processors
 {
@@ -12,6 +8,9 @@ namespace SRML.Core.API.BuiltIn.Processors
         public object Value { get; private set; }
 
         public TEnum EnumValue { get; private set; }
+
+        public delegate void CategorizationPostProcessor(TEnum value);
+        public CategorizationPostProcessor OnCategorize;
 
         public override void Register()
         {
@@ -29,13 +28,7 @@ namespace SRML.Core.API.BuiltIn.Processors
             return otherEnum.Name == Name || otherEnum.Value == Value;
         }
 
-        protected virtual void OnCategorize(TEnum toCategorize)
-        {
-        }
-        public virtual void Categorize(TEnum value)
-        {
-            OnCategorize(value);
-        }
+        public virtual void Categorize(TEnum value) => OnCategorize?.Invoke(value);
         public virtual void Decategorize(TEnum value)
         {
         }

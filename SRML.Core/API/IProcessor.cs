@@ -26,6 +26,9 @@ namespace SRML.Core.API
             return IsIdenticalTo((Processor<T>)obj);
         }
 
+        public virtual void Initialize()
+        {
+        }
 
         public abstract bool IsIdenticalTo(Processor<T> other);
         public abstract void Register();

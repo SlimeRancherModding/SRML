@@ -295,6 +295,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Gadget\Attributes\GadgetCategorizationAttribute.cs" />
     <Compile Include="Gadget\BlueprintRegistry.cs" />
     <Compile Include="Gadget\DroneTargetRegistry.cs" />
     <Compile Include="Gadget\GadgetRegistry.cs" />
@@ -302,8 +303,11 @@
     <Compile Include="Gadget\Patches\GordoSnarePatch.cs" />
     <Compile Include="Gadget\Patches\InitBlueprintLocksPatch.cs" />
     <Compile Include="Gadget\Patches\InitInitialBlueprintsPatch.cs" />
+    <Compile Include="Gadget\Processors\GadgetProcessor.cs" />
     <Compile Include="Gadget\RefineryRegistry.cs" />
     <Compile Include="Gadget\SnareRegistry.cs" />
+    <Compile Include="Identifiable\Attributes\IdentifiableCategorizationAttribute.cs" />
+    <Compile Include="Identifiable\Processors\IdentifiableProcessor.cs" />
     <Compile Include="Identifiable\SpawnResourcePrefabRegistry.cs" />
     <Compile Include="Identifiable\IdentifiableRegistry.cs" />
     <Compile Include="Identifiable\IdentifiablePrefabRegistry.cs" />
@@ -350,9 +354,7 @@
   <ItemGroup>
     <EmbeddedResource Include="modinfo.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Identifiable\Processors\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\NewMods\"</PostBuildEvent>

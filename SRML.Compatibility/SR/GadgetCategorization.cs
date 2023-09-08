@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace SRML.SR
 {
+    // TODO: properly account for this in the new system
+    [Obsolete]
     [AttributeUsage(AttributeTargets.Field)]
     public class GadgetCategorization : Attribute
     {

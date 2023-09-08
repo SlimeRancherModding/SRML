@@ -8,7 +8,7 @@ namespace SRML.Core.API.BuiltIn.Processors
         where TRule : Enum
     {
         public List<TEnum> Categorized => new List<TEnum>();
-        private NameCategorizedEnumMetadata<TEnum, TRule> metadata;
+        private readonly NameCategorizedEnumMetadata<TEnum, TRule> metadata;
 
         public bool IsCategorized(TEnum categorized) => Categorized.Contains(categorized);
 

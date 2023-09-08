@@ -296,6 +296,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SR\GadgetCategorization.cs" />
+    <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\LandPlotRegistry.cs" />
     <Compile Include="SR\LandPlotUpgradeRegistry.cs" />
     <Compile Include="SR\SnareRegistry.cs" />

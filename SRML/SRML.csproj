@@ -397,8 +397,6 @@
     <Compile Include="SR\AppearanceRegistry.cs" />
     <Compile Include="SR\ChromaRegistry.cs" />
     <Compile Include="SR\DataModelRegistry.cs" />
-    <Compile Include="SR\GadgetCategorization.cs" />
-    <Compile Include="SR\IdentifiableCategorization.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
     <Compile Include="SR\Patches\BugReportUIDestroyPatch.cs" />
     <Compile Include="SR\Patches\CorporatePartnerBuyPatch.cs" />

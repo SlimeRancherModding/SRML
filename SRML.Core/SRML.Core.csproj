@@ -296,13 +296,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\BuiltIn\Attributes\HarmonyRegistryAttribute.cs" />
+    <Compile Include="API\BuiltIn\Attributes\EnumCategorizerAttribute.cs" />
     <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
     <Compile Include="API\BuiltIn\EnumRegistry.cs" />
     <Compile Include="API\BuiltIn\GenericRegistry.cs" />
     <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\BuiltIn\IDRegistry.cs" />
-    <Compile Include="API\BuiltIn\NameCategorizableEnumRegistry.cs" />
+    <Compile Include="API\BuiltIn\NameCategorizedEnumRegistry.cs" />
     <Compile Include="API\BuiltIn\Processors\EnumProcessor.cs" />
     <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumProcessor.cs" />
     <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumMetadata.cs" />
