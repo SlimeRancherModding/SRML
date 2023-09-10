@@ -527,6 +527,7 @@ namespace SRML.SR.Templates.Identifiables
         /// Generates a Gordo Slime for this slime (use this if you want the slime to have a Gordo counter part)
         /// </summary>
         /// <param name="gordoID">The ID for the gordo</param>
+        /// <param name="gordoMaterials">The materials for the gordo</param>
         /// <returns>The gordo template for the static gordo (YOU NEED TO CLASS .Create TO FINISH THE PROCESS)</returns>
         public GordoTemplate MakeStaticGordo(Identifiable.Id gordoID, Material[] gordoMaterials)
         {

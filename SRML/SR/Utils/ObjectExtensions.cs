@@ -190,7 +190,6 @@ public static class ObjectExtensions
     /// <param name="obj">The object to set the property value of</param>
     /// <param name="name">The name of the property</param>
     /// <param name="value">The value to set</param>
-    /// <typeparam name="T">Type of value</typeparam>
     public static void SetProperty(this object obj, string name, object value)
     {
         try
