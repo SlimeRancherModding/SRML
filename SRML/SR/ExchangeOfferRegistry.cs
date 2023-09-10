@@ -10,6 +10,7 @@ namespace SRML.SR
 {
     public static class ExchangeOfferRegistry
     {
+        internal static IDRegistry<ExchangeDirector.OfferType> moddedOfferTypes = new IDRegistry<ExchangeDirector.OfferType>();
         internal static IDRegistry<ProgressDirector.ProgressType> moddedProgress = new IDRegistry<ProgressDirector.ProgressType>();
         internal static IDRegistry<RancherChatMetadata.Entry.RancherName> moddedRancherNames = new IDRegistry<RancherChatMetadata.Entry.RancherName>();
 
@@ -24,6 +25,7 @@ namespace SRML.SR
 
         static ExchangeOfferRegistry()
         {
+            ModdedIDRegistry.RegisterIDRegistry(moddedOfferTypes);
             ModdedIDRegistry.RegisterIDRegistry(moddedProgress);
             ModdedIDRegistry.RegisterIDRegistry(moddedRancherNames);
         }
