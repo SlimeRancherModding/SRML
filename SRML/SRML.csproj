@@ -432,6 +432,8 @@
     <Compile Include="SR\SaveSystem\Patches\SkipMissingActorsPatch.cs" />
     <Compile Include="SR\StyleRegistry.cs" />
     <Compile Include="SR\TargetingRegistry.cs" />
+    <Compile Include="SR\Translation\AchievementTranslation.cs" />
+    <Compile Include="SR\Translation\ChromaTranslation.cs" />
     <Compile Include="SR\UI\EnhancedCorporatePartnerHandler.cs" />
     <Compile Include="SR\UI\ExtendedMarketUI.cs" />
     <Compile Include="SR\Utils\CollectionExtensions.cs" />
