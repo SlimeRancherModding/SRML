@@ -14,6 +14,7 @@ namespace SRML.SR
         internal static IDRegistry<RancherChatMetadata.Entry.RancherName> moddedRancherNames = new IDRegistry<RancherChatMetadata.Entry.RancherName>();
 
         internal static Dictionary<ExchangeDirector.Rancher, SRMod> customRanchers = new Dictionary<ExchangeDirector.Rancher, SRMod>();
+        internal static Dictionary<ExchangeDirector.ProgressOfferEntry, SRMod> customProgressOffers = new Dictionary<ExchangeDirector.ProgressOfferEntry, SRMod>();
         internal static Dictionary<(ExchangeDirector.Category, Identifiable.Id[]), SRMod> customCategories = new Dictionary<(ExchangeDirector.Category, Identifiable.Id[]), SRMod>();
         internal static Dictionary<ProgressDirector.ProgressType, ExchangeDirector.UnlockList> customUnlocks = new Dictionary<ProgressDirector.ProgressType, ExchangeDirector.UnlockList>();
         internal static Dictionary<Identifiable.Id, float> customUnlockValues = new Dictionary<Identifiable.Id, float>();
@@ -113,6 +114,12 @@ namespace SRML.SR
         /// <param name="item">The <see cref="Identifiable.Id"/> to be unlocked.</param>
         /// <param name="countForValue">The value used in the offer generator for count</param>
         public static void RegisterInitialItem(Identifiable.Id item, int countForValue) => RegisterUnlockableItem(item, ProgressDirector.ProgressType.NONE, countForValue);
+
+        /// <summary>
+        /// Registers a progress offer.
+        /// </summary>
+        /// <param name="entry"></param>
+        public static void RegisterProgressOffer(ExchangeDirector.ProgressOfferEntry entry) => customProgressOffers.Add(entry, SRMod.GetCurrentMod());
 
         /// <summary>
         /// Checks if a rancher or offer ID is modded.
