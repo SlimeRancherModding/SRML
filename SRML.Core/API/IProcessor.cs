@@ -10,8 +10,7 @@ namespace SRML.Core.API
     public abstract class Processor<T> : IProcessor
     {
         public readonly string ModId;
-        
-        private T registerInto;
+        protected T registerInto;
 
         public sealed override int GetHashCode() => base.GetHashCode();
 
