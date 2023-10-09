@@ -1,13 +1,70 @@
-﻿using SRML.Core.API.BuiltIn.Processors;
-using System.Collections.Generic;
-using SRML.API.Identifiable.Attributes;
-using SRML.Core.API.BuiltIn;
+﻿using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
+using SRML.Core.API;
+using SRML.Core.ModLoader;
+using static SECTR_AudioSystem;
 
 namespace SRML.API.Identifiable
 {
-    public class IdentifiableRegistry : NameCategorizedEnumRegistry<IdentifiableRegistry, global::Identifiable.Id, IdentifiableCategorizationAttribute.Rule>
+    [HarmonyPatch]
+    public class IdentifiableRegistry : Registry<IdentifiableRegistry>
     {
+        internal Dictionary<string, List<global::Identifiable.Id>> moddedIds = new Dictionary<string, List<global::Identifiable.Id>>();
+        internal Dictionary<string, List<global::Identifiable>> moddedPrefabs = new Dictionary<string, List<global::Identifiable>>();
+
+        public delegate void IdentifiableRegisterEvent(global::Identifiable identifiable);
+        public delegate void IdentifiableIdRegisterEvent(global::Identifiable.Id id);
+        public readonly IdentifiableRegisterEvent OnRegisterPrefab;
+        public readonly IdentifiableIdRegisterEvent OnRegisterId;
+
+
+        [HarmonyPatch(typeof(LookupDirector), "Awake")]
+        internal static void RegisterPrefabs(LookupDirector __instance)
+        {
+            Instance.RegisterIntoLookup(__instance);
+        }
+
         public override void Initialize()
+        {
+        }
+
+        public virtual void RegisterIntoLookup(LookupDirector lookupDirector)
+        {
+            foreach (var ident in Instance.moddedPrefabs.SelectMany(x => x.Value, (y, z) => z))
+            {
+                lookupDirector.identifiablePrefabDict[ident.id] = ident.gameObject;
+                lookupDirector.identifiablePrefabs.items.Add(ident.gameObject);
+            }
+        }
+
+        public virtual void RegisterPrefab(global::Identifiable identifiable)
+        {
+            string executingId = CoreLoader.Instance.GetExecutingModContext().ModInfo.Id;
+            if (!moddedPrefabs.ContainsKey(executingId))
+                moddedPrefabs[executingId] = new List<global::Identifiable>();
+
+            moddedPrefabs[executingId].Add(identifiable);
+            OnRegisterPrefab?.Invoke(identifiable);
+        }
+
+        public global::Identifiable.Id Create(string name) => Create(name, null);
+
+        public global::Identifiable.Id Create(string name, object value)
+        {
+            if (value == null)
+                value = EnumPatcher.AddEnumValue(typeof(global::Identifiable.Id), name);
+            else
+                EnumPatcher.AddEnumValue(typeof(global::Identifiable.Id), value, name);
+
+            global::Identifiable.Id result = (global::Identifiable.Id)value;
+            OnRegisterId?.Invoke(result);
+            // TODO: Add processors, add categorization.
+
+            return result;
+        }
+
+        /*public override void Initialize()
         {
             // hell
             base.Initialize();
@@ -109,6 +166,6 @@ namespace SRML.API.Identifiable
                         global::Identifiable.TARR_CLASS.Add(x);
                 },
             };
-        }
+        }*/
     }
 }

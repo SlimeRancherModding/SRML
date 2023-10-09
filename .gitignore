@@ -33,6 +33,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+[Ll]ibs/
+
 # Make sure debug is correctly included
 !SRML/SR/Utils/Debug/
 # Visual Studio 2015/2017 cache/options directory
