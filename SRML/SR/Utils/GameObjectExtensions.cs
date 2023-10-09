@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SRML.SR.Templates.Components;
 using SRML.SR.Utils.BaseObjects;
 using SRML.SR.Utils.Debug;
 using SRML.Utils;
@@ -15,7 +14,8 @@ public static class GameObjectExtensions
 		return obj;
 	}
 
-	public static GameObject AddStartAction(this GameObject obj, string actionID)
+	// TODO: figure out what this is and why it's in my damned source code
+	/*public static GameObject AddStartAction(this GameObject obj, string actionID)
 	{
 		if (obj.GetComponent<ActionOnStart>() == null)
 			obj.AddComponent<ActionOnStart>().actions.Add(actionID);
@@ -23,7 +23,7 @@ public static class GameObjectExtensions
 			obj.GetComponent<ActionOnStart>().actions.Add(actionID);
 
 		return obj;
-	}
+	}*/
 
 	// DEBUG STUFF
 	public static GameObject GetReadyForMarker(this GameObject obj, MarkerType type, float scaleMult = 1f)

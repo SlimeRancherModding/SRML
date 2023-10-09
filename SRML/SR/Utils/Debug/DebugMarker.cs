@@ -1,6 +1,4 @@
-﻿using SRML.SR.Utils.BaseObjects;
-using SRML.SR.Templates;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SRML.SR.Utils.Debug
 {

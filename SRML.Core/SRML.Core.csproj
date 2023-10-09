@@ -299,6 +299,7 @@
     <Compile Include="API\IRegistry.cs" />
     <Compile Include="API\RegistryAttribute.cs" />
     <Compile Include="CoreTranslator.cs" />
+    <Compile Include="EnumHolderResolver.cs" />
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />

@@ -3,20 +3,16 @@ using System.Linq;
 using HarmonyLib;
 using SRML.Core.API;
 using SRML.Core.ModLoader;
-using static SECTR_AudioSystem;
 
 namespace SRML.API.Identifiable
 {
     [HarmonyPatch]
     public class IdentifiableRegistry : Registry<IdentifiableRegistry>
     {
-        internal Dictionary<string, List<global::Identifiable.Id>> moddedIds = new Dictionary<string, List<global::Identifiable.Id>>();
         internal Dictionary<string, List<global::Identifiable>> moddedPrefabs = new Dictionary<string, List<global::Identifiable>>();
 
         public delegate void IdentifiableRegisterEvent(global::Identifiable identifiable);
-        public delegate void IdentifiableIdRegisterEvent(global::Identifiable.Id id);
         public readonly IdentifiableRegisterEvent OnRegisterPrefab;
-        public readonly IdentifiableIdRegisterEvent OnRegisterId;
 
 
         [HarmonyPatch(typeof(LookupDirector), "Awake")]
@@ -46,22 +42,6 @@ namespace SRML.API.Identifiable
 
             moddedPrefabs[executingId].Add(identifiable);
             OnRegisterPrefab?.Invoke(identifiable);
-        }
-
-        public global::Identifiable.Id Create(string name) => Create(name, null);
-
-        public global::Identifiable.Id Create(string name, object value)
-        {
-            if (value == null)
-                value = EnumPatcher.AddEnumValue(typeof(global::Identifiable.Id), name);
-            else
-                EnumPatcher.AddEnumValue(typeof(global::Identifiable.Id), value, name);
-
-            global::Identifiable.Id result = (global::Identifiable.Id)value;
-            OnRegisterId?.Invoke(result);
-            // TODO: Add processors, add categorization.
-
-            return result;
         }
 
         /*public override void Initialize()

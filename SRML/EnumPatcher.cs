@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using SRML.Utils;
-using SRML.Core.API.BuiltIn;
 
 namespace SRML
 {
@@ -15,8 +14,6 @@ namespace SRML
     public static class EnumPatcher
     {
         public delegate object AlternateEnumRegister(object value, string name);
-        internal static readonly Dictionary<Type, IEnumRegistry> registriesForType = new Dictionary<Type, IEnumRegistry>();
-        internal static readonly List<IAttributeCategorizeableEnum> categorizableRegistries = new List<IAttributeCategorizeableEnum>();
 
         [Obsolete]
         public static void RegisterAlternate<TEnum>(AlternateEnumRegister del) where TEnum : Enum => RegisterAlternate(typeof(TEnum), del);
@@ -24,13 +21,6 @@ namespace SRML
         [Obsolete]
         public static void RegisterAlternate(Type type, AlternateEnumRegister del) =>
             throw new NotSupportedException("Using AlternateEnumRegister is no longer supported.");
-
-        public static void RegisterEnumRegistry(Type enumType, IEnumRegistry registry)
-        {
-            registriesForType.Add(enumType, registry);
-            if (registry is IAttributeCategorizeableEnum categorizable)
-                categorizableRegistries.Add(categorizable);
-        }
 
         private static FieldInfo cache;
         
@@ -96,16 +86,6 @@ namespace SRML
             ClearEnumCache(enumType);
 
             patch.AddValue((ulong)value, name);
-
-            if (registriesForType.TryGetValue(enumType, out IEnumRegistry enumReg))
-            {
-                Enum newVal = (Enum)Enum.ToObject(enumType, (ulong)value);
-
-                if (enumReg is ICategorizableEnum categorizable)
-                    categorizable.Categorize(newVal);
-
-                enumReg.Process(newVal);
-            }
         }
 
         [Obsolete]
