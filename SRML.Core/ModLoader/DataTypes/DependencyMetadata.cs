@@ -9,6 +9,13 @@ namespace SRML.Core.ModLoader.DataTypes
 {
     public class DependencyMetadata
     {
+        public static readonly string[] priorityModules = new string[]
+        {
+            "srml",
+            "srmlapi",
+            "srmladdons",
+        };
+
         public readonly string[] loadBeforeIds;
         public readonly string[] loadAfterIds;
         public readonly Dictionary<string, SemVersion> dependencies;
@@ -101,6 +108,13 @@ namespace SRML.Core.ModLoader.DataTypes
                 throw new InvalidOperationException("Two dependencies cannot load before or after one another.");
 
             List<string> loadOrder = dependencies.Select(x => x.id).ToList();
+
+            foreach (string s in priorityModules)
+            {
+                if (loadOrder.Remove(s))
+                    loadOrder.Insert(0, s);
+            }
+
             foreach (var after in loadAfters)
             {
                 if (after.Value.Count == 0)

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
-using SRML.Config;
 using SRML.Utils;
 
 namespace SRML
@@ -13,6 +12,7 @@ namespace SRML
     /// <summary>
     /// A basic mod data class that is safe to share between mods (no logic in it)
     /// </summary>
+    [Obsolete]
     public class SRModInfo
     {
         public SRModInfo(string modid, string name, string author, ModVersion version, string description, Dictionary<string, ModVersion> dependencies)
@@ -87,6 +87,7 @@ namespace SRML
     /// <summary>
     /// Actual internal implementation of a mod
     /// </summary>
+    [Obsolete]
     internal class SRMod 
     {
         /// <summary>

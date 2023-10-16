@@ -4,13 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2DA9762E-BA43-48AD-934E-F5FBCE4C2EC6}</ProjectGuid>
+    <ProjectGuid>{2A256C3E-837F-494E-9228-DA33BBAB0A14}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SRML.API</RootNamespace>
-    <AssemblyName>SRML.API</AssemblyName>
+    <RootNamespace>SRML.Addons</RootNamespace>
+    <AssemblyName>SRML.Addons</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <GameDir>E:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -22,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -71,7 +69,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -284,84 +281,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Console\Commands\FastForwardCommand.cs" />
+    <Compile Include="Console\Commands\GiveCommand.cs" />
+    <Compile Include="Console\Commands\KillAllCommand.cs" />
+    <Compile Include="Console\Commands\KillCommand.cs" />
+    <Compile Include="Console\Commands\NoclipCommand.cs" />
+    <Compile Include="Console\Commands\SpawnCommand.cs" />
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="Gadget\Attributes\GadgetCategorizationAttribute.cs" />
-    <Compile Include="Gadget\BlueprintRegistry.cs" />
-    <Compile Include="Gadget\DroneTargetRegistry.cs" />
-    <Compile Include="Gadget\GadgetRegistry.cs" />
-    <Compile Include="Gadget\Patches\GordoSnareOnTriggerPatch.cs" />
-    <Compile Include="Gadget\Patches\GordoSnarePatch.cs" />
-    <Compile Include="Gadget\Patches\InitBlueprintLocksPatch.cs" />
-    <Compile Include="Gadget\Patches\InitInitialBlueprintsPatch.cs" />
-    <Compile Include="Gadget\Processors\GadgetProcessor.cs" />
-    <Compile Include="Gadget\RefineryRegistry.cs" />
-    <Compile Include="Gadget\SnareRegistry.cs" />
-    <Compile Include="Identifiable\Attributes\IdentifiableCategorizationAttribute.cs" />
-    <Compile Include="Identifiable\Processors\IdentifiableProcessor.cs" />
-    <Compile Include="Identifiable\SpawnResourcePrefabRegistry.cs" />
-    <Compile Include="Identifiable\IdentifiableRegistry.cs" />
-    <Compile Include="Identifiable\IdentifiablePrefabRegistry.cs" />
-    <Compile Include="Identifiable\LiquidRegistry.cs" />
-    <Compile Include="Identifiable\Patches\AttachFashionsParentOffsetPatch.cs" />
-    <Compile Include="Identifiable\Slime\FashionOffsetRegistry.cs" />
-    <Compile Include="Identifiable\Slime\FashionSlotRegistry.cs" />
-    <Compile Include="Identifiable\Slime\FoodGroupRegistry.cs" />
-    <Compile Include="Identifiable\Slime\GordoRegistry.cs" />
-    <Compile Include="Identifiable\Slime\ToyRegistry.cs" />
-    <Compile Include="Identifiable\SpawnResourceRegistry.cs" />
-    <Compile Include="Identifiable\VacItemRegistry.cs" />
-    <Compile Include="Identifiable\Patches\AttachFashionsParentPatch.cs" />
-    <Compile Include="Identifiable\Patches\FashionSlotParentPatch.cs" />
-    <Compile Include="Gadget\Patches\GadgetDirectorIsRefineryResourcePatch.cs" />
-    <Compile Include="Options\ModOptionsV01.cs" />
-    <Compile Include="Options\OptionsHandler.cs" />
-    <Compile Include="Player\AchievementsRegistry.cs" />
-    <Compile Include="Player\AchievementTierRegistry.cs" />
-    <Compile Include="Player\Patches\AchievementIconRegisterPatch.cs" />
-    <Compile Include="Player\Patches\AchievementRegisterVanillaTierPatch.cs" />
-    <Compile Include="Player\Patches\AchievementTrackerRegisterPatch.cs" />
-    <Compile Include="Player\Patches\GamepadPanelSetupBindingsPatch.cs" />
-    <Compile Include="Player\Patches\OptionsUISetupInputPatch.cs" />
-    <Compile Include="Player\Patches\PlayerModelApplyUpgradePatch.cs" />
-    <Compile Include="Player\Patches\PlayerStatePotentialAmmoPatch.cs" />
-    <Compile Include="Player\Patches\PlayerStateResetPatch.cs" />
-    <Compile Include="Player\Patches\PlayerStateUpgradeLockerPatch.cs" />
-    <Compile Include="Player\Patches\SavedProfilePullPatch.cs" />
-    <Compile Include="Player\Patches\SavedProfilePushPatch.cs" />
-    <Compile Include="Player\Patches\TargetingUIGetTargetPatch.cs" />
-    <Compile Include="Player\PersonalUpgradeDefinitionRegistry.cs" />
-    <Compile Include="Player\PlayerActionRegistry.cs" />
-    <Compile Include="Player\PersonalUpgradeRegistry.cs" />
-    <Compile Include="Player\TargetingRegistry.cs" />
-    <Compile Include="World\LandPlotPrefabRegistry.cs" />
-    <Compile Include="World\LandPlotRegistry.cs" />
-    <Compile Include="World\LandPlotUpgradeRegistry.cs" />
-    <Compile Include="World\Patches\StorageTypeExtensionsRegistryPatch.cs" />
-    <Compile Include="Player\PlayerAmmoRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="World\Patches\UITemplatesPurchasablePatch.cs" />
-    <Compile Include="World\PurchasableRegistry.cs" />
-    <Compile Include="World\SiloAmmoRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="modinfo.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SMRL.Editor\SRML.Editor.csproj">
-      <Project>{d462e179-1c78-452b-94bf-64abaaf2ab35}</Project>
-      <Name>SRML.Editor</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SRML.Core\SRML.Core.csproj">
       <Project>{32b90fd0-fc71-47c4-a332-5b7105cc35e0}</Project>
       <Name>SRML.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SRML\SRML.csproj">
-      <Project>{5733599a-5318-4a2c-9998-f7e0cdc664de}</Project>
-      <Name>SRML</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="modinfo.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(TargetPath)" "$(GameDir)\..\..\SRML\NewMods\"</PostBuildEvent>
-  </PropertyGroup>
 </Project>
