@@ -288,16 +288,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyChecker.cs" />
-    <Compile Include="Editor\ReplacerCache.cs" />
-    <Compile Include="Editor\ResolvedInstance.cs" />
-    <Compile Include="Editor\ResolvedReplacer.cs" />
-    <Compile Include="Editor\Runtime\FieldReplacement.cs" />
-    <Compile Include="Editor\Runtime\FieldReplacer.cs" />
-    <Compile Include="Editor\Runtime\InstanceInfo.cs" />
-    <Compile Include="EnumPatcher.cs" />
-    <Compile Include="EnumTranslator.cs" />
-    <Compile Include="FileSystem.cs" />
-    <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="IntermodCommunication.cs" />
     <Compile Include="Legacy\AchievementRegistry.cs" />
     <Compile Include="Legacy\AmmoRegistry.cs" />
@@ -388,7 +378,6 @@
     <Compile Include="Legacy\TranslationPatcher.cs" />
     <Compile Include="Legacy\UI\EnhancedCorporatePartnerHandler.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="IModEntryPoint.cs" />
     <Compile Include="ModLoadException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SR\Patches\ActorModelInitPatch.cs" />
@@ -427,8 +416,6 @@
     <Compile Include="SR\Utils\TransformExtensions.cs" />
     <Compile Include="SR\Utils\TypeExtensions.cs" />
     <Compile Include="SR\Utils\VectorExtensions.cs" />
-    <Compile Include="Utils\EnumUtils.cs" />
-    <Compile Include="Utils\ScriptableObjectUtils.cs" />
     <Compile Include="SR\UI\Utils\UIUtils.cs" />
     <Compile Include="SR\Utils\Debug\AddDebugMarker.cs" />
     <Compile Include="SR\Utils\Debug\DebugCommand.cs" />
@@ -537,19 +524,11 @@
     <Compile Include="SR\Utils\BoneMappingUtils.cs" />
     <Compile Include="SR\Utils\ComponentExtensions.cs" />
     <Compile Include="SR\Utils\GameObjectExtensions.cs" />
-    <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
-    <Compile Include="Utils\HarmonyOverrideAttribute.cs" />
     <Compile Include="SR\Utils\IdHandlerUtils.cs" />
-    <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="SRMod.cs" />
     <Compile Include="SRModLoader.cs" />
-    <Compile Include="Utils\GameObjectUtils.cs" />
-    <Compile Include="Utils\BinaryUtils.cs" />
-    <Compile Include="Utils\LogUtils.cs" />
-    <Compile Include="Utils\PrefabUtils.cs" />
     <Compile Include="SR\Utils\RegionUtils.cs" />
     <Compile Include="SR\Utils\SiloStorageExtensions.cs" />
-    <Compile Include="Utils\Tuple.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
