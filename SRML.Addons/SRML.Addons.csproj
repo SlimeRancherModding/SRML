@@ -289,6 +289,11 @@
     <Compile Include="Console\Commands\SpawnCommand.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\EnhancedCorporatePartnerHandler.cs" />
+    <Compile Include="UI\ExtendedMarketUI.cs" />
+    <Compile Include="UI\Patches\CorporatePartnerRebuildDynamicPatch.cs" />
+    <Compile Include="UI\Patches\CorporatePartnerUIAwakePatch.cs" />
+    <Compile Include="UI\Patches\MarketPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SRML.Core\SRML.Core.csproj">
