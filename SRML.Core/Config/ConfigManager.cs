@@ -8,16 +8,16 @@ namespace SRML.Config
 {
     internal static class ConfigManager
     {
-        public static void PopulateConfigs(SRMod mod)
+        public static void PopulateConfigs(object mod)
         {
             // TODO: Upgrade to new system
             //SRMod.ForceModContext(mod);
 
-            foreach (var file in GetConfigs(mod.EntryType.Module))
+            /*foreach (var file in GetConfigs(mod.EntryType.Module))
             {
                 mod.Configs.Add(file);
                 file.TryLoadFromFile();
-            }
+            }*/
 
             //SRMod.ClearModContext();
         }

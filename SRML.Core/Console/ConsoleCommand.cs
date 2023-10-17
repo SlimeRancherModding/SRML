@@ -8,7 +8,8 @@ namespace SRML.Console
 	public abstract class ConsoleCommand
 	{
 
-        internal SRMod belongingMod;
+		// TODO: upgrade
+        internal object belongingMod;
 		/// <summary>
 		/// The ID of this command (Always lowercase)
 		/// </summary>

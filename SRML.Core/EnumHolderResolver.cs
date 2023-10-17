@@ -4,6 +4,7 @@ using System.Reflection;
 using SRML.Core.ModLoader;
 using SRML.Core.API.BuiltIn;
 using System;
+using SRML.Core.SRML.Attributes;
 
 namespace SRML.Utils.Enum
 {
@@ -39,16 +40,22 @@ namespace SRML.Utils.Enum
 
                                 foreach (var att in field.GetCustomAttributes())
                                 {
-                                    if (EnumPatcher.categorizableRegistries.TryGetValue(x => x.AttributeType == att.GetType(), out var reg))
+                                    // TODO: categorize reg
+                                    /*if (EnumPatcher.categorizableRegistries.TryGetValue(x => x.AttributeType == att.GetType(), out var reg))
                                     {
                                         if (reg is ICategorizableEnum catEnum && reg.TakesPresidenceOverCategorizable)
                                             catEnum.Decategorize(generated);
                                         reg.Categorize(generated, att);
-                                    }
+                                    }*/
                                 }
                             }
                         }
                     }
+
+                    foreach (EnumForwardedToAttribute att in type.GetCustomAttributes<EnumForwardedToAttribute>())
+                        EnumPatcher.RegisterForward(type, att.ForwardedTo);
+                    foreach (EnumForwardedFromAttribute att in type.GetCustomAttributes<EnumForwardedFromAttribute>())
+                        EnumPatcher.RegisterForward(att.ForwardedFrom, type);
                 }
                 catch (ReflectionTypeLoadException)
                 {

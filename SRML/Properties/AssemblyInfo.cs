@@ -1,4 +1,7 @@
-﻿using SRML.SR;
+﻿using Doorstop;
+using SRML;
+using SRML.Core.ModLoader.Attributes;
+using SRML.SR;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -40,3 +43,5 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("SRML.Core")]
 [assembly: InternalsVisibleTo("SRML.API")]
+
+[assembly: RegisterMod(typeof(EntryPoint))]

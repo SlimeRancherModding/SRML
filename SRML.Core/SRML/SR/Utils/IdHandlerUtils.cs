@@ -1,10 +1,6 @@
-﻿using SRML.SR;
-using SRML.SR.SaveSystem;
-using SRML.Utils;
+﻿using SRML.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace SRML.SR.Utils
@@ -52,7 +48,8 @@ namespace SRML.SR.Utils
             var newG = GameObjectUtils.InstantiateInactive(gameObj);
 
             newG.GetComponent<T>().director = GlobalIdDirector;
-            GlobalIdDirector.persistenceDict[newG.GetComponent<T>()] = ModdedStringRegistry.IsModdedString(id) ? id : ModdedStringRegistry.ClaimID(GetPrefix<T>(), id);
+            //GlobalIdDirector.persistenceDict[newG.GetComponent<T>()] = ModdedStringRegistry.IsModdedString(id) ? id : ModdedStringRegistry.ClaimID(GetPrefix<T>(), id);
+            // TODO: I do not know what this is, but fix it
 
             return newG;
         }

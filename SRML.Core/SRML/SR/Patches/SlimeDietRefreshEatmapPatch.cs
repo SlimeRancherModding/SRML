@@ -41,7 +41,7 @@ namespace SRML.SR.Patches
             return instructions;
         }
 
-        public static bool Contains(Identifiable.Id slime, Identifiable.Id transformsInto) => 
-            SlimeRegistry.preventLargoTransforms.Any(x => x.Key == slime && x.Value == transformsInto);
+        public static bool Contains(Identifiable.Id slime, Identifiable.Id transformsInto) => // TODO: upgrade
+            /*SlimeRegistry.preventLargoTransforms.Any(x => x.Key == slime && x.Value == transformsInto);*/ false;
     }
 }

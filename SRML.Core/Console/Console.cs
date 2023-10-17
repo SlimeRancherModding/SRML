@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using SRML.SR.Utils.Debug;
 using System.Linq;
 using System.Reflection;
+using SRML.Core;
+using SRML.Core.ModLoader;
 
 namespace SRML.Console
 {
@@ -77,13 +79,7 @@ namespace SRML.Console
             RegisterCommand(new Commands.DumpCommand());
             RegisterCommand(new Commands.ButtonCommand());
             RegisterCommand(new Commands.BindCommand());
-            RegisterCommand(new Commands.SpawnCommand());
-            RegisterCommand(new Commands.GiveCommand());
             RegisterCommand(new Commands.ConfigCommand());
-            RegisterCommand(new Commands.KillAllCommand());
-            RegisterCommand(new Commands.KillCommand());
-            RegisterCommand(new Commands.NoclipCommand());
-            RegisterCommand(new Commands.FastForwardCommand());
             RegisterCommand(new DebugCommand());
 
             RegisterButton("clear", new ConsoleButton("Clear Console", "clear"));
@@ -333,8 +329,8 @@ namespace SRML.Console
         internal static string GetLogName()
         {
             // TODO: Upgrade to new system
-            SRMod mod = null/*SRMod.GetCurrentMod()*/;
-            if (mod != null) return mod.ModInfo.Name;
+            /*SRMod mod = nullSRMod.GetCurrentMod();
+            if (mod != null) return mod.ModInfo.Name;*/
             return "SRML";
         }
 
@@ -503,7 +499,9 @@ namespace SRML.Console
                     instancesForMod.Add(modId, new List<ConsoleInstance>());
                 instancesForMod[modId].Add(this);
 
-                if (SRModLoader.CurrentLoadingStep == SRModLoader.LoadingStep.INITIALIZATION)
+                /*if (SRModLoader.CurrentLoadingStep == SRModLoader.LoadingStep.INITIALIZATION)
+                    return;*/
+                if (!CoreLoader.Instance.loadedStack)
                     return;
 
                 SetActive(!hideLogs.Contains(id));

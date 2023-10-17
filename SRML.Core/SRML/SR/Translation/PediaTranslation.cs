@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SRML.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,6 @@ namespace SRML.SR.Translation
 {
     public abstract class PediaTranslation<T> : ITranslatable<T>
     {
-
         public virtual string DefaultPrefix => "m.";
 
         public virtual string DefaultNamePrefix => DefaultPrefix + PediaType + ".name.";
@@ -17,6 +17,7 @@ namespace SRML.SR.Translation
         public virtual string DescriptionPrefix => DefaultDescriptionPrefix;
 
         public virtual T Key { get; protected set; }
+        public MessageDirector.Lang Language { get; protected set; }
 
         public virtual string StringKey => Key.ToString().ToLower();
 
@@ -28,12 +29,12 @@ namespace SRML.SR.Translation
 
         public virtual PediaTranslation<T> SetDescriptionTranslation(string desc)
         {
-            TranslationPatcher.AddPediaTranslation(DescriptionKey, desc);
+            CoreTranslator.Instance.AddPediaTranslation(Language, DescriptionKey, desc);
             return this;
         }
         public virtual PediaTranslation<T> SetNameTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(NameKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, NameKey, name);
             return this;
         }
     }

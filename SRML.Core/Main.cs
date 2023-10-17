@@ -44,14 +44,16 @@ namespace SRML.Core
             Console.Console.Init();
             Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
 
-            uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srml"));
-            ErrorGUI.extendedUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI");
-            ErrorGUI.extendedError = uiBundle.LoadAsset<GameObject>("ErrorModInfo");
-
             prefabParent = new GameObject("PrefabParent").transform;
             prefabParent.gameObject.DontDestroyOnLoad();
             prefabParent.gameObject.SetActive(false);
             prefabParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
+
+            uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srmlassets"));
+            ErrorGUI.extendedUI = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("SRMLErrorUI"));
+            ErrorGUI.extendedError = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("ErrorModInfo"));
+            ErrorGUI.extendedUI.Prefabitize();
+            ErrorGUI.extendedError.Prefabitize();
 
             // TODO: find a way to prevent this issue in assetbundles so I don't have to do this garbage
             foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())

@@ -10,7 +10,7 @@
     <RootNamespace>SRML.Core</RootNamespace>
     <AssemblyName>SRML.Core</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <GameDir>E:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
+    <GameDir>C:\Steam\SteamApps\common\Slime Rancher\SlimeRancher_Data\Managed</GameDir>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -289,7 +289,6 @@
     <Compile Include="API\BuiltIn\GenericRegistry.cs" />
     <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
-    <Compile Include="API\BuiltIn\IDRegistry.cs" />
     <Compile Include="API\BuiltIn\NameCategorizedEnumRegistry.cs" />
     <Compile Include="API\BuiltIn\Processors\EnumProcessor.cs" />
     <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumProcessor.cs" />
@@ -369,6 +368,8 @@
     <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Patches\GameContextAwakePatch.cs" />
+    <Compile Include="SRML\Attributes\EnumForwardedFromAttribute.cs" />
+    <Compile Include="SRML\Attributes\EnumForwardedToAttribute.cs" />
     <Compile Include="SRML\FileSystem.cs" />
     <Compile Include="SRML\IModEntryPoint.cs" />
     <Compile Include="Patches\MainMenuPatch.cs" />
@@ -378,7 +379,7 @@
     <Compile Include="SRML\EnumPatcher.cs" />
     <Compile Include="SRML\EnumTranslator.cs" />
     <Compile Include="SRML\HarmonyPatcher.cs" />
-    <Compile Include="SRML\SRMLConfig.cs" />
+    <Compile Include="SRMLConfig.cs" />
     <Compile Include="SRML\SR\Patches\ActorModelInitPatch.cs" />
     <Compile Include="SRML\SR\Patches\BugReportUIDestroyPatch.cs" />
     <Compile Include="SRML\SR\Patches\CorporatePartnerBuyPatch.cs" />
@@ -461,10 +462,6 @@
     <ProjectReference Include="..\SMRL.Editor\SRML.Editor.csproj">
       <Project>{d462e179-1c78-452b-94bf-64abaaf2ab35}</Project>
       <Name>SRML.Editor</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SRML\SRML.csproj">
-      <Project>{5733599a-5318-4a2c-9998-f7e0cdc664de}</Project>
-      <Name>SRML</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

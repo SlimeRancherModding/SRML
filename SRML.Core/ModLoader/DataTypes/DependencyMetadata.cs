@@ -14,6 +14,7 @@ namespace SRML.Core.ModLoader.DataTypes
             "srml",
             "srmlapi",
             "srmladdons",
+            "srmllegacy"
         };
 
         public readonly string[] loadBeforeIds;

@@ -12,7 +12,8 @@ namespace SRML.SR.Patches
     {
         public static void Postfix(MailDirector __instance, MailDirector.Mail mail)
         {
-            MailRegistry.ModdedMails.FirstOrDefault((x) => mail.key == x.MailKey)?.onReadCallback(__instance, mail);
+            // TODO: upgrade
+            //MailRegistry.ModdedMails.FirstOrDefault((x) => mail.key == x.MailKey)?.onReadCallback(__instance, mail);
         }
     }
 }

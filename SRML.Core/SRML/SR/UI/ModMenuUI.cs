@@ -36,13 +36,14 @@ namespace SRML.SR.UI
 
         public void Start()
         {
-            foreach (var mod in SRModLoader.GetMods())
-                AddModInfo(mod.ModInfo);
+            // TODO: upgrade
+            /*foreach (var mod in SRModLoader.GetMods())
+                AddModInfo(mod.ModInfo);*/
         }
 
-        public void AddModInfo(SRModInfo info)
+        public void AddModInfo(object info)
         {
-            var newobj = Instantiate(infoButtonPrefab);
+            /*var newobj = Instantiate(infoButtonPrefab);
             ModButton button = new ModButton(info);
             newobj.GetComponent<SRToggle>().onValueChanged.AddListener((x) =>
             {
@@ -51,7 +52,8 @@ namespace SRML.SR.UI
             newobj.transform.GetChild(0).GetComponent<Text>().text = info.Name;
             newobj.transform.GetChild(1).GetComponent<Text>().text = $"Version: {info.Version}";
             newobj.GetComponent<SRToggle>().group = modScrollbarGroup;
-            newobj.transform.SetParent(modScrollbarContent.transform, false);
+            newobj.transform.SetParent(modScrollbarContent.transform, false);*/
+            throw new NotImplementedException();
         }
 
         public void OnModSelect(ModButton button)
@@ -71,9 +73,9 @@ namespace SRML.SR.UI
             public string author;
             public string version;
 
-            public ModButton(SRModInfo info)
+            public ModButton(object info)
             {
-                name = info.Name;
+                /*name = info.Name;
                 description = $"Description: {(info.Description == null || info.Description == string.Empty ? "No info provided" : info.Description)}";
                 version = $"Version: {info.Version}";
                 author = $"Author: {info.Author}";
@@ -88,7 +90,8 @@ namespace SRML.SR.UI
                         i++;
                     }
                 }
-                else dependencies += "None";
+                else dependencies += "None";*/
+                throw new NotImplementedException();
             }
         }
     }

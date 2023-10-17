@@ -8,6 +8,7 @@ namespace SRML.SR.Translation
     interface ITranslatable<T>
     {
         T Key { get; }
+        MessageDirector.Lang Language { get; }
         string StringKey { get; }
     }
 }

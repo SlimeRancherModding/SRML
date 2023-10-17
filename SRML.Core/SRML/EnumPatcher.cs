@@ -25,6 +25,8 @@ namespace SRML
         private static FieldInfo cache;
         
         private static Dictionary<Type, EnumPatch> patches = new Dictionary<Type, EnumPatch>();
+        
+        private static Dictionary<Type, List<Type>> forwardedEnums = new Dictionary<Type, List<Type>>();
 
         static EnumPatcher()
         {
@@ -86,6 +88,12 @@ namespace SRML
             ClearEnumCache(enumType);
 
             patch.AddValue((ulong)value, name);
+
+            if (forwardedEnums.TryGetValue(enumType, out List<Type> forwarded))
+            {
+                foreach (Type type in forwarded)
+                    AddEnumValue(type, name);
+            }
         }
 
         [Obsolete]
@@ -194,6 +202,13 @@ namespace SRML
             cache.SetValue(enumType, null);
         }
         
+        public static void RegisterForward(Type baseType, Type forwardedType)
+        {
+            if (!forwardedEnums.TryGetValue(baseType, out List<Type> value))
+                value = new List<Type>();
+            value.Add(forwardedType);
+        }
+
         internal static bool TryGetRawPatch(Type enumType, out EnumPatch patch)
         {
             return patches.TryGetValue(enumType, out patch);

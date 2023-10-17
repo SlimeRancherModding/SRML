@@ -36,8 +36,9 @@ namespace SRML
         /// <returns>The base path of the current executing mod</returns>
         public static string GetMyPath()
         {
-            var assembly = ReflectionUtils.GetRelevantAssembly();
-            return SRModLoader.GetModForAssembly(assembly)?.Path ?? Path.GetDirectoryName(assembly.Location);
+            /*var assembly = ReflectionUtils.GetRelevantAssembly();
+            return SRModLoader.GetModForAssembly(assembly)?.Path ?? Path.GetDirectoryName(assembly.Location);*/
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -45,9 +46,11 @@ namespace SRML
         /// </summary>
         /// <param name="mod">The mod whose config path is needed</param>
         /// <returns>The config path</returns>
-        internal static string GetConfigPath(SRMod mod)
+        internal static string GetConfigPath(object mod)
         {
-            return CheckDirectory(Path.Combine(Path.Combine(Main.StorageProvider.SavePath(), "SRML/Config"), mod?.ModInfo.Id ?? "SRML"));
+            // TODO: upgrade
+            //return CheckDirectory(Path.Combine(Path.Combine(Main.StorageProvider.SavePath(), "SRML/Config"), mod?.ModInfo.Id ?? "SRML"));
+            throw new NotImplementedException();
         }
 
         /// <summary>

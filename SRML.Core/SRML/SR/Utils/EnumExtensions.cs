@@ -6,22 +6,16 @@ public static class EnumExtensions
 {
     internal static GameContext GetContextForStep()
     {
-        GameContext context;
-        if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-            context = GameContext.Instance;
-        else
-            context = GameObject.FindObjectOfType<GameContext>();
-        return context;
+        if (GameContext.Instance == null)
+            return GameContext.FindObjectOfType<GameContext>();
+        return GameContext.Instance;
     }
 
     internal static SceneContext GetSceneContextForStep()
     {
-        SceneContext context;
-        if (SRModLoader.CurrentLoadingStep > SRModLoader.LoadingStep.PRELOAD)
-            context = SceneContext.Instance;
-        else
-            context = SceneContext.FindObjectOfType<SceneContext>();
-        return context;
+        if (SceneContext.Instance == null)
+            return SceneContext.FindObjectOfType<SceneContext>();
+        return SceneContext.Instance;
     }
 
     public static GameObject GetPrefab(this Identifiable.Id id) => Identifiable.IsGordo(id) ? GetContextForStep().LookupDirector.GetGordo(id) : GetContextForStep().LookupDirector.GetPrefab(id);

@@ -1,19 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SRML.Core;
+using System;
 
 namespace SRML.SR.Translation
 {
     public class PediaEntryTranslation : ITranslatable<PediaDirector.Id>
     {
         public PediaDirector.Id Key { get; protected set; }
+        public MessageDirector.Lang Language { get; protected set; }
 
         public string StringKey => Enum.GetName(typeof(PediaDirector.Id), Key).ToLower();
 
         public PediaEntryTranslation(PediaDirector.Id id)
         {
             this.Key = id;
+        }
+        public PediaEntryTranslation(PediaDirector.Id id, MessageDirector.Lang lang)
+        {
+            this.Key = id;
+            this.Language = lang;
         }
 
         public string TitleKey => TITLE_PREFIX + StringKey;
@@ -26,19 +30,19 @@ namespace SRML.SR.Translation
 
         public PediaEntryTranslation SetTitleTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(TitleKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, TitleKey, name);
             return this;
         }
 
         public PediaEntryTranslation SetIntroTranslation(string intro)
         {
-            TranslationPatcher.AddPediaTranslation(IntroKey, intro);
+            CoreTranslator.Instance.AddPediaTranslation(Language, IntroKey, intro);
             return this;
         }
 
         public PediaEntryTranslation SetDescriptionTranslation(string description)  
         {
-            TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
+            CoreTranslator.Instance.AddPediaTranslation(Language, DescriptionKey, description);
             return this;
         }
 

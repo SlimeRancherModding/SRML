@@ -16,7 +16,7 @@ namespace SRML.Console.Commands
 
         public override bool Execute(string[] args)
         {
-            var srmlConfig = args[0] == "SRML";
+            /*var srmlConfig = args[0] == "SRML";
             var mod = SRModLoader.GetMod(args[0]);
             var config = srmlConfig ? Main.config : mod.Configs.First(x => x.FileName.ToLower() == args[1].ToLower());
             var section = config.Sections.First(x => x.Name.ToLower() == args[srmlConfig ? 1 : 2].ToLower());
@@ -34,17 +34,18 @@ namespace SRML.Console.Commands
             if (!srmlConfig)
             {
                 // TODO: Upgrade to new system
-                /*SRMod.ForceModContext(mod);
+                SRMod.ForceModContext(mod);
                 config.SaveToFile();
-                SRMod.ClearModContext();*/
+                SRMod.ClearModContext();
             }
-            else config.SaveToFile();
+            else config.SaveToFile();*/
             return true;
         }
 
         public override List<string> GetAutoComplete(int argIndex, string[] args)
         {
-            if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).Union(new[] { "SRML" }).ToList();
+            // TODO: upgrade
+            /*if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).Union(new[] { "SRML" }).ToList();
 
             if (args[0] == "SRML")
             {
@@ -67,7 +68,7 @@ namespace SRML.Console.Commands
                 var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == args[2].ToLower());
 
                 if (argIndex == 3) return section?.Elements.Select(x => x.Options.Name).ToList();
-            }
+            }*/
 
             return base.GetAutoComplete(argIndex, args[argIndex]);
         }

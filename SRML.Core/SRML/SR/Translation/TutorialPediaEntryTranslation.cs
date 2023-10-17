@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SRML.Core;
 
 namespace SRML.SR.Translation
 {
@@ -19,31 +16,31 @@ namespace SRML.SR.Translation
 
         public TutorialPediaEntryTranslation SetInstructionsTranslation(string instructions)
         {
-            TranslationPatcher.AddPediaTranslation(InstructionsKey, instructions);
+            CoreTranslator.Instance.AddPediaTranslation(Language, InstructionsKey, instructions);
             return this;
         }
 
         public TutorialPediaEntryTranslation SetInstructionsGamepadTranslation(string instructions)
         {
-            TranslationPatcher.AddPediaTranslation(InstructionsGamepadKey, instructions);
+            CoreTranslator.Instance.AddPediaTranslation(Language, InstructionsGamepadKey, instructions);
             return this;
         }
 
         public new TutorialPediaEntryTranslation SetTitleTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(TitleKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, TitleKey, name);
             return this;
         }
 
         public new TutorialPediaEntryTranslation SetIntroTranslation(string intro)
         {
-            TranslationPatcher.AddPediaTranslation(IntroKey, intro);
+            CoreTranslator.Instance.AddPediaTranslation(Language, IntroKey, intro);
             return this;
         }
 
         public new TutorialPediaEntryTranslation SetDescriptionTranslation(string description)
         {
-            TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
+            CoreTranslator.Instance.AddPediaTranslation(Language, DescriptionKey, description);
             return this;
         }
     }

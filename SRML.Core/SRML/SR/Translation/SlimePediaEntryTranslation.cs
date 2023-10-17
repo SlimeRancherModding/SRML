@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SRML.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,50 +26,50 @@ namespace SRML.SR.Translation
 
         public SlimePediaEntryTranslation SetDietTranslation(string dietString)
         {
-            TranslationPatcher.AddPediaTranslation(DietKey, dietString);
+            CoreTranslator.Instance.AddPediaTranslation(Language, DietKey, dietString);
             return this;
         }
 
         public SlimePediaEntryTranslation SetFavoriteTranslation(string favorite)
         {
-            TranslationPatcher.AddPediaTranslation(FavoriteKey, favorite);
+            CoreTranslator.Instance.AddPediaTranslation(Language, FavoriteKey, favorite);
             return this;
         }
 
         public SlimePediaEntryTranslation SetPlortonomicsTranslation(string plortonomics)
         {
-            TranslationPatcher.AddPediaTranslation(PlortonomicsKey, plortonomics);
+            CoreTranslator.Instance.AddPediaTranslation(Language, PlortonomicsKey, plortonomics);
             return this;
         }
 
         public SlimePediaEntryTranslation SetSlimeologyTranslation(string slimeology)
         {
-            TranslationPatcher.AddPediaTranslation(SlimeologyKey, slimeology);
+            CoreTranslator.Instance.AddPediaTranslation(Language, SlimeologyKey, slimeology);
             return this;
         }
 
         public SlimePediaEntryTranslation SetRisksTranslation(string risks)
         {
-            TranslationPatcher.AddPediaTranslation(RisksKey, risks);
+            CoreTranslator.Instance.AddPediaTranslation(Language, RisksKey, risks);
             return this;
         }
 
         public new SlimePediaEntryTranslation SetTitleTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(TitleKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, TitleKey, name);
             return this;
         }
 
         public new SlimePediaEntryTranslation SetIntroTranslation(string intro)
         {
-            TranslationPatcher.AddPediaTranslation(IntroKey, intro);
+            CoreTranslator.Instance.AddPediaTranslation(Language, IntroKey, intro);
             return this;
         }
 
         [Obsolete]
         public new SlimePediaEntryTranslation SetDescriptionTranslation(string description)
         {
-            TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
+            CoreTranslator.Instance.AddPediaTranslation(Language, DescriptionKey, description);
             return this;
         }
     }

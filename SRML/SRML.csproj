@@ -287,6 +287,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntryPoint.cs" />
     <Compile Include="LegacyToDelete\DependencyChecker.cs" />
     <Compile Include="LegacyToDelete\IntermodCommunication.cs" />
     <Compile Include="Legacy\AchievementRegistry.cs" />
@@ -467,12 +468,17 @@
     <Compile Include="LegacyToDelete\SRModLoader.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="modinfo.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SMRL.Editor\SRML.Editor.csproj">
       <Project>{d462e179-1c78-452b-94bf-64abaaf2ab35}</Project>
       <Name>SRML.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SRML.Core\SRML.Core.csproj">
+      <Project>{32b90fd0-fc71-47c4-a332-5b7105cc35e0}</Project>
+      <Name>SRML.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using SRML.Core;
 
 namespace SRML.SR.Translation
 {
@@ -23,42 +20,42 @@ namespace SRML.SR.Translation
 
         public ResourcePediaEntryTranslation SetResourceTypeTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(ResourceTypeKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, ResourceTypeKey, name);
             return this;
         }
 
         public ResourcePediaEntryTranslation SetFavoredByLabelTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(FavoredByLabelKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, FavoredByLabelKey, name);
             return this;
         }
 
         public ResourcePediaEntryTranslation SetFavoredByTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(FavoredByKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, FavoredByKey, name);
             return this;
         }
 
         public ResourcePediaEntryTranslation SetHowToUseTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(HowToUseKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, HowToUseKey, name);
             return this;
         }
         public new ResourcePediaEntryTranslation SetTitleTranslation(string name)
         {
-            TranslationPatcher.AddPediaTranslation(TitleKey, name);
+            CoreTranslator.Instance.AddPediaTranslation(Language, TitleKey, name);
             return this;
         }
 
         public new ResourcePediaEntryTranslation SetIntroTranslation(string intro)
         {
-            TranslationPatcher.AddPediaTranslation(IntroKey, intro);
+            CoreTranslator.Instance.AddPediaTranslation(Language, IntroKey, intro);
             return this;
         }
 
         public new ResourcePediaEntryTranslation SetDescriptionTranslation(string description)
         {
-            TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
+            CoreTranslator.Instance.AddPediaTranslation(Language, DescriptionKey, description);
             return this;
         }
     }

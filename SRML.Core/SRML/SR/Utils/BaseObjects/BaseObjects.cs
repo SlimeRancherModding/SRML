@@ -37,6 +37,8 @@ namespace SRML.SR.Utils.BaseObjects
 			{MarkerType.GadgetLocation, new Material(fadeMat).SetTintInfo(new Color(0.5f, 1f, 0.5f, 0.5f), "Gadget Location Area")},
 		};
 
+		public static System.Action OnPopulateGlobalActions;
+
 		public static Mesh cubeMesh;
 
 		public static GameObject debugSystem;
@@ -201,9 +203,8 @@ namespace SRML.SR.Utils.BaseObjects
 			// Single Objects
 			splatQuad = Director.GetPrefab(Identifiable.Id.PINK_SLIME).GetComponent<SplatOnImpact>().splatPrefab;
 
-			// Register Global Template Actions
-			TemplateActions.RegisterAction("buildSlime", AssembleModules);
-			TemplateActions.RegisterAction("populateSlime", PopulateSlimeInfo);
+            // Register Global Template Actions
+            OnPopulateGlobalActions();
 
 			// Populates all other object classes
 			GardenObjects.Populate();
