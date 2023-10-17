@@ -313,8 +313,8 @@
     <Compile Include="Identifiable\Patches\AttachFashionsParentPatch.cs" />
     <Compile Include="Identifiable\Patches\FashionSlotParentPatch.cs" />
     <Compile Include="Gadget\Patches\GadgetDirectorIsRefineryResourcePatch.cs" />
-    <Compile Include="Options\ModOptionsV01.cs" />
-    <Compile Include="Options\OptionsHandler.cs" />
+    <Compile Include="Player\Options\ModOptionsV01.cs" />
+    <Compile Include="Player\Options\OptionsHandler.cs" />
     <Compile Include="Player\AchievementsRegistry.cs" />
     <Compile Include="Player\AchievementTierRegistry.cs" />
     <Compile Include="Player\Patches\AchievementIconRegisterPatch.cs" />

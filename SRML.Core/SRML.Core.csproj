@@ -290,9 +290,7 @@
     <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\BuiltIn\NameCategorizedEnumRegistry.cs" />
-    <Compile Include="API\BuiltIn\Processors\EnumProcessor.cs" />
-    <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumProcessor.cs" />
-    <Compile Include="API\BuiltIn\Processors\NameCategorizedEnumMetadata.cs" />
+    <Compile Include="API\BuiltIn\Data\NameCategorizedEnumMetadata.cs" />
     <Compile Include="API\CoreAPI.cs" />
     <Compile Include="API\IProcessor.cs" />
     <Compile Include="API\IRegistry.cs" />
