@@ -3,7 +3,7 @@ using MonomiPark.SlimeRancher.Persist;
 using SRML.API.Player;
 using System.IO;
 
-namespace SRML.SR.Options
+namespace SRML.API.Player
 {
     internal static class OptionsHandler
     {

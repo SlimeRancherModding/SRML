@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using SRML.API.Identifiable.Attributes;
 using SRML.Core.API;
+using SRML.Core.API.BuiltIn.Processors;
 using SRML.Core.ModLoader;
 
 namespace SRML.API.Identifiable
@@ -14,15 +16,14 @@ namespace SRML.API.Identifiable
         public delegate void IdentifiableRegisterEvent(global::Identifiable identifiable);
         public readonly IdentifiableRegisterEvent OnRegisterPrefab;
 
+        public NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorizationAttribute.Rule> Categorization 
+            { get; protected set; }
+
 
         [HarmonyPatch(typeof(LookupDirector), "Awake")]
         internal static void RegisterPrefabs(LookupDirector __instance)
         {
             Instance.RegisterIntoLookup(__instance);
-        }
-
-        public override void Initialize()
-        {
         }
 
         public virtual void RegisterIntoLookup(LookupDirector lookupDirector)
@@ -44,12 +45,10 @@ namespace SRML.API.Identifiable
             OnRegisterPrefab?.Invoke(identifiable);
         }
 
-        /*public override void Initialize()
+        public override void Initialize()
         {
             // hell
-            base.Initialize();
-
-            metadata.categorizationSuffixRules = new Dictionary<string, IdentifiableCategorizationAttribute.Rule>()
+            Categorization.categorizationSuffixRules = new Dictionary<string, IdentifiableCategorizationAttribute.Rule>()
             {
                 { "_VEGGIE", IdentifiableCategorizationAttribute.Rule.VEGGIE },
                 { "_FRUIT", IdentifiableCategorizationAttribute.Rule.FRUIT },
@@ -68,12 +67,12 @@ namespace SRML.API.Identifiable
                 { "_ORNAMENT", IdentifiableCategorizationAttribute.Rule.ORNAMENT },
                 { "_TOY", IdentifiableCategorizationAttribute.Rule.TOY }
             };
-            metadata.categorizationPrefixRules = new Dictionary<string, IdentifiableCategorizationAttribute.Rule>()
+            Categorization.categorizationPrefixRules = new Dictionary<string, IdentifiableCategorizationAttribute.Rule>()
             {
                 { "ECHO_NOTE_", IdentifiableCategorizationAttribute.Rule.ECHO_NOTE },
                 { "ELDER_", IdentifiableCategorizationAttribute.Rule.ELDER }
             };
-            metadata.ruleLists = new Dictionary<IdentifiableCategorizationAttribute.Rule, List<HashSet<global::Identifiable.Id>>>()
+            Categorization.ruleLists = new Dictionary<IdentifiableCategorizationAttribute.Rule, List<HashSet<global::Identifiable.Id>>>()
             {
                 { IdentifiableCategorizationAttribute.Rule.VEGGIE, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.NON_SLIMES_CLASS,
                     global::Identifiable.FOOD_CLASS, global::Identifiable.VEGGIE_CLASS } },
@@ -102,7 +101,7 @@ namespace SRML.API.Identifiable
                 { IdentifiableCategorizationAttribute.Rule.TOY, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.TOY_CLASS } },
                 { IdentifiableCategorizationAttribute.Rule.ELDER, new List<HashSet<global::Identifiable.Id>>() { global::Identifiable.ELDER_CLASS } },
             };
-            metadata.baseRuleLists = new List<HashSet<global::Identifiable.Id>>()
+            Categorization.baseRuleLists = new List<HashSet<global::Identifiable.Id>>()
             {
                 global::Identifiable.ALLERGY_FREE_CLASS,
                 global::Identifiable.BOOP_CLASS,
@@ -128,7 +127,7 @@ namespace SRML.API.Identifiable
                 global::Identifiable.TOFU_CLASS,
                 global::Identifiable.TOY_CLASS,
             };
-            metadata.processors = new List<NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorizationAttribute.Rule>.CategorizationProcessor>()
+            Categorization.processors = new List<NameCategorizedEnumMetadata<global::Identifiable.Id, IdentifiableCategorizationAttribute.Rule>.CategorizationProcessor>()
             {
                 (x, y, z) =>
                 {
@@ -146,6 +145,6 @@ namespace SRML.API.Identifiable
                         global::Identifiable.TARR_CLASS.Add(x);
                 },
             };
-        }*/
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SRML.Core.SRML.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace SRML.SR

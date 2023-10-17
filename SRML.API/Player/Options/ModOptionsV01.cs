@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace SRML.SR.Options
+namespace SRML.API.Player
 {
     internal class ModOptionsV01 : PersistedDataSet
     {
