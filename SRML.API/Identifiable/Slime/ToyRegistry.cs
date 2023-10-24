@@ -1,29 +1,44 @@
 ﻿using HarmonyLib;
-using SRML.Core.API.BuiltIn;
 using System.Linq;
-using System.Reflection;
 using System;
+using SRML.Core.API;
+using SRML.Core.ModLoader;
+using System.Collections.Generic;
 
 namespace SRML.API.Identifiable.Slime
 {
-    public class ToyRegistry : ComponentRegistry<ToyRegistry, ToyDefinition, LookupDirector>
+    [HarmonyPatch]
+    public class ToyRegistry : Registry<ToyRegistry>
     {
-        public override MethodInfo ComponentInitializeMethod => AccessTools.Method(typeof(LookupDirector), "Awake");
-        public override bool Prefix => true;
+        internal Dictionary<string, List<ToyDefinition>> moddedToys = new Dictionary<string, List<ToyDefinition>>();
 
-        protected override void InitializeComponent(LookupDirector component)
+        public delegate void ToyRegisterEvent(ToyDefinition definition);
+        public readonly ToyRegisterEvent OnRegisterToy;
+
+        [HarmonyPatch(typeof(LookupDirector), "Awake")]
+        [HarmonyPrefix]
+        internal static void RegisterPrefabs(LookupDirector __instance) => Instance.RegisterIntoLookup(__instance);
+
+        public virtual void RegisterIntoLookup(LookupDirector lookupDirector)
         {
+            foreach (var toy in Instance.moddedToys.SelectMany(x => x.Value, (y, z) => z))
+            {
+                lookupDirector.toyDict[toy.toyId] = toy;
+                lookupDirector.toyDefinitions.items.Add(toy);
+            }
         }
 
-        public override bool IsRegistered(ToyDefinition registered, LookupDirector component) => component.toyDefinitions.Contains(registered);
-
-        protected override void RegisterIntoComponent(ToyDefinition toRegister, LookupDirector component)
+        public virtual void RegisterDefinition(ToyDefinition toy)
         {
-            if (toRegister.toyId == global::Identifiable.Id.NONE)
+            if (toy.toyId == global::Identifiable.Id.NONE)
                 throw new ArgumentException("Attempting to register a toy with id NONE. This is not allowed.");
 
-            component.toyDefinitions.items.Add(toRegister);
-            component.toyDict[toRegister.toyId] = toRegister;
+            string executingId = CoreLoader.Instance.GetExecutingModContext().ModInfo.Id;
+            if (!moddedToys.ContainsKey(executingId))
+                moddedToys[executingId] = new List<ToyDefinition>();
+
+            moddedToys[executingId].Add(toy);
+            OnRegisterToy?.Invoke(toy);
         }
 
         public void MarkToyAsBase(global::Identifiable.Id toyId)
@@ -42,6 +57,10 @@ namespace SRML.API.Identifiable.Slime
 
             ToyDirector.BASE_TOYS.Remove(toyId);
             ToyDirector.UPGRADED_TOYS.Add(toyId);
+        }
+
+        public override void Initialize()
+        {
         }
     }
 }

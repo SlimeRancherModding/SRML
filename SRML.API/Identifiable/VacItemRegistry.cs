@@ -1,29 +1,49 @@
 ﻿using HarmonyLib;
-using SRML.Core.API.BuiltIn;
+using SRML.Core.API;
+using SRML.Core.ModLoader;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace SRML.API.Identifiable
 {
-    public class VacItemRegistry : ComponentRegistry<VacItemRegistry, VacItemDefinition, LookupDirector>
+    [HarmonyPatch]
+    public class VacItemRegistry : Registry<VacItemRegistry>
     {
-        public override MethodInfo ComponentInitializeMethod => AccessTools.Method(typeof(LookupDirector), "Awake");
-        public override bool Prefix => true;
+        internal Dictionary<string, List<VacItemDefinition>> moddedVacItems = new Dictionary<string, List<VacItemDefinition>>();
 
-        protected override void InitializeComponent(LookupDirector component)
+        public delegate void VacItemRegisterEvent(VacItemDefinition definition);
+        public readonly VacItemRegisterEvent OnRegisterVacItem;
+
+
+        [HarmonyPatch(typeof(LookupDirector), "Awake")]
+        [HarmonyPrefix]
+        internal static void RegisterVacItems(LookupDirector __instance) => Instance.RegisterIntoLookup(__instance);
+
+        public virtual void RegisterIntoLookup(LookupDirector lookupDirector)
         {
+            foreach (var vacItem in Instance.moddedVacItems.SelectMany(x => x.Value, (y, z) => z))
+            {
+                lookupDirector.vacItemDict[vacItem.id] = vacItem;
+                lookupDirector.vacItemDefinitions.items.Add(vacItem);
+            }
         }
 
-        public override bool IsRegistered(VacItemDefinition registered, LookupDirector component) => component.vacItemDefinitions.Contains(registered);
-
-        protected override void RegisterIntoComponent(VacItemDefinition toRegister, LookupDirector component)
+        public virtual void RegisterDefinition(VacItemDefinition definition)
         {
-            if (toRegister.id == global::Identifiable.Id.NONE)
+            if (definition.id == global::Identifiable.Id.NONE)
                 throw new ArgumentException("Attempting to register a vac item definition with id NONE. This is not allowed.");
 
-            component.vacItemDefinitions.items.Add(toRegister);
-            component.vacItemDict[toRegister.id] = toRegister;
+            string executingId = CoreLoader.Instance.GetExecutingModContext().ModInfo.Id;
+            if (!moddedVacItems.ContainsKey(executingId))
+                moddedVacItems[executingId] = new List<VacItemDefinition>();
+
+            moddedVacItems[executingId].Add(definition);
+            OnRegisterVacItem?.Invoke(definition);
+        }
+
+        public override void Initialize()
+        {
         }
     }
 }

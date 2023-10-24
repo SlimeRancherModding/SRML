@@ -1,15 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using SRML.API.Identifiable.Attributes;
-using SRML.Core.API;
+using SRML.Core.API.BuiltIn;
 using SRML.Core.API.BuiltIn.Processors;
 using SRML.Core.ModLoader;
 
 namespace SRML.API.Identifiable
 {
     [HarmonyPatch]
-    public class IdentifiableRegistry : Registry<IdentifiableRegistry>
+    public class IdentifiableRegistry : EnumRegistry<IdentifiableRegistry, global::Identifiable.Id>
     {
         internal Dictionary<string, List<global::Identifiable>> moddedPrefabs = new Dictionary<string, List<global::Identifiable>>();
 
@@ -21,10 +22,8 @@ namespace SRML.API.Identifiable
 
 
         [HarmonyPatch(typeof(LookupDirector), "Awake")]
-        internal static void RegisterPrefabs(LookupDirector __instance)
-        {
-            Instance.RegisterIntoLookup(__instance);
-        }
+        [HarmonyPrefix]
+        internal static void RegisterPrefabs(LookupDirector __instance) => Instance.RegisterIntoLookup(__instance);
 
         public virtual void RegisterIntoLookup(LookupDirector lookupDirector)
         {
@@ -37,6 +36,9 @@ namespace SRML.API.Identifiable
 
         public virtual void RegisterPrefab(global::Identifiable identifiable)
         {
+            if (identifiable.id == global::Identifiable.Id.NONE)
+                throw new ArgumentException("Attempting to register an identifiable prefab with id NONE. This is not allowed.");
+
             string executingId = CoreLoader.Instance.GetExecutingModContext().ModInfo.Id;
             if (!moddedPrefabs.ContainsKey(executingId))
                 moddedPrefabs[executingId] = new List<global::Identifiable>();

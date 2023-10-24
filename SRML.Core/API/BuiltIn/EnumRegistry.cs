@@ -30,7 +30,6 @@ namespace SRML.Core.API.BuiltIn
 
             TEnum result = (TEnum)value;
             OnRegisterEnum?.Invoke(result);
-            // TODO: Add processors, add categorization.
 
             return result;
         }
