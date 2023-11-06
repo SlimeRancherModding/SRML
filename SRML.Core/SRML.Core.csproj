@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -284,9 +285,7 @@
   <ItemGroup>
     <Compile Include="API\BuiltIn\Attributes\HarmonyRegistryAttribute.cs" />
     <Compile Include="API\BuiltIn\Attributes\EnumCategorizerAttribute.cs" />
-    <Compile Include="API\BuiltIn\ComponentRegistry.cs" />
     <Compile Include="API\BuiltIn\EnumRegistry.cs" />
-    <Compile Include="API\BuiltIn\GenericRegistry.cs" />
     <Compile Include="API\BuiltIn\IAttributeCategorizeableEnum.cs" />
     <Compile Include="API\BuiltIn\ICategorizableEnum.cs" />
     <Compile Include="API\BuiltIn\NameCategorizedEnumRegistry.cs" />
@@ -339,11 +338,15 @@
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="ModLoader\Attributes\RegisterModLoaderType.cs" />
-    <Compile Include="ModLoader\Attributes\RegisterModType.cs" />
-    <Compile Include="ModLoader\Attributes\RegisterMod.cs" />
+    <Compile Include="ModLoader\Attributes\ModInfoAttribute.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModLoaderTypeAttribute.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModTypeAttribute.cs" />
+    <Compile Include="ModLoader\Attributes\RegisterModAttribute.cs" />
+    <Compile Include="ModLoader\BuiltIn\Attributes\DescriptiveModInfoAttribute.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\CoreModEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\LegacyEntryPoint.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\DescriptiveAttributeModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\IDescriptiveModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\ModInfo\JSONModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\BasicFileModLoader.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\CoreModLoader.cs" />
@@ -354,7 +357,7 @@
     <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModInfo\BasicModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\DescriptiveJSONModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\Mod\CoreMod.cs" />
     <Compile Include="ModLoader\CoreLoader.cs" />
     <Compile Include="ModLoader\DataTypes\DependencyMetadata.cs" />
@@ -453,9 +456,7 @@
     <None Include="packages.config" />
     <None Include="srmlassets" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="API\BuiltIn\Registries\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\SMRL.Editor\SRML.Editor.csproj">
       <Project>{d462e179-1c78-452b-94bf-64abaaf2ab35}</Project>

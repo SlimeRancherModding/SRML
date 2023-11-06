@@ -19,7 +19,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
         {
             CoreLoader loader = CoreLoader.Instance;
 
-            foreach (RegisterMod att in assembly.GetCustomAttributes<RegisterMod>())
+            foreach (RegisterModAttribute att in assembly.GetCustomAttributes<RegisterModAttribute>())
             {
                 if (typeof(E).IsAssignableFrom(att.entryType))
                     loader.LoadMod(att.entryType);

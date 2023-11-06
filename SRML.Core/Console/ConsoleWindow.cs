@@ -124,10 +124,10 @@ namespace SRML.Console
 
             foreach (IModInfo info in CoreLoader.Instance.Mods.Select(x => x.ModInfo))
             {
-                if (info is BasicModInfo basicInfo)
-                    modsText += $"{(modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{basicInfo.Name}</color> [<color=#77DDFF>Author:</color> {basicInfo.Author} | <color=#77DDFF>ID:</color> {info.Id} | <color=#77DDFF>Version:</color> {info.Version}]";
+                if (info is DescriptiveJSONModInfo basicInfo)
+                    modsText += $"{(modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{basicInfo.Name}</color> [<color=#77DDFF>Author:</color> {basicInfo.Author} | <color=#77DDFF>ID:</color> {info.ID} | <color=#77DDFF>Version:</color> {info.Version}]";
                 else
-                    modsText += $"{(modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{info.Id}</color> [<color=#77DDFF>ID:</color> {info.Id} | <color=#77DDFF>Version:</color> {info.Version}]";
+                    modsText += $"{(modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{info.ID}</color> [<color=#77DDFF>ID:</color> {info.ID} | <color=#77DDFF>Version:</color> {info.Version}]";
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using SRML.API.Gadget.Processors;
-using SRML.Core.API.BuiltIn.Attributes;
+﻿using SRML.Core.API.BuiltIn.Attributes;
 using System;
 
 namespace SRML.API.Gadget.Attributes
@@ -11,7 +10,7 @@ namespace SRML.API.Gadget.Attributes
         }
 
         public override Type RuleType => typeof(Rule);
-        public override Type ProcessorType => typeof(GadgetProcessor);
+
 
         [Flags]
         public enum Rule

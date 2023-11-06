@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace SRML.Core.ModLoader.Attributes
 {
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public class RegisterModType : Attribute
+    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+    public class RegisterModTypeAttribute : Attribute
     {
         internal Type modType;
         internal Type entryType;
 
-        public RegisterModType(Type modType, Type entryType)
+        public RegisterModTypeAttribute(Type modType, Type entryType)
         {
             if (!modType.IsInstanceOfType(typeof(Mod<,>)))
                 throw new ArgumentException($"Cannot register mod type {modType} that does not inherit from IMod");

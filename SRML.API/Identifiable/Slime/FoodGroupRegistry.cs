@@ -1,15 +1,14 @@
 ﻿using HarmonyLib;
-using SRML.Core.API;
-using SRML.SR.Utils;
+using SRML.Core.API.BuiltIn;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SRML.API.Identifiable.Slime
 {
-    public class FoodGroupRegistry : Registry<FoodGroupRegistry, SlimeEat.FoodGroup, global::Identifiable.Id>
+    public class FoodGroupRegistry : EnumRegistry<FoodGroupRegistry, SlimeEat.FoodGroup>
     {
-        internal static Dictionary<SlimeEat.FoodGroup, Predicate<global::Identifiable.Id>> foodGroupRules = 
+        protected Dictionary<SlimeEat.FoodGroup, Predicate<global::Identifiable.Id>> foodGroupRules = 
             new Dictionary<SlimeEat.FoodGroup, Predicate<global::Identifiable.Id>>()
         {
             { SlimeEat.FoodGroup.FRUIT, x => global::Identifiable.IsFruit(x) },
@@ -24,53 +23,45 @@ namespace SRML.API.Identifiable.Slime
         {
         }
         
-        public void RegisterRange(ICollection<global::Identifiable.Id> ids)
+        public virtual void AddRangeToFoodGroup(ICollection<global::Identifiable.Id> ids)
         {
             foreach (global::Identifiable.Id id in ids)
-                Register(id);
+                AddToFoodGroup(id);
         }
         
-        public void RegisterRange(SlimeEat.FoodGroup foodGroup, ICollection<global::Identifiable.Id> ids)
+        public virtual void AddRangeToFoodGroup(SlimeEat.FoodGroup foodGroup, ICollection<global::Identifiable.Id> ids)
         {
             foreach (global::Identifiable.Id id in ids)
-                Register(foodGroup, id);
+                AddToFoodGroup(foodGroup, id);
         }
 
-        public void Register(global::Identifiable.Id id)
+        public virtual void AddToFoodGroup(global::Identifiable.Id id)
         {
             foreach (var item in foodGroupRules)
             {
                 if (item.Value.Invoke(id))
-                    Register(item.Key, id);
+                    AddToFoodGroup(item.Key, id);
                 else
-                    Deregister(item.Key, id);
+                    RemoveFromFoodGroup(item.Key, id);
             }
         }
 
-        public void Deregister(global::Identifiable.Id id)
+        public virtual void RemoveFromFoodGroups(global::Identifiable.Id id)
         {
             foreach (SlimeEat.FoodGroup foodGroup in (SlimeEat.FoodGroup[])Enum.GetValues(typeof(SlimeEat.FoodGroup)))
-                Deregister(foodGroup, id);
+                RemoveFromFoodGroup(foodGroup, id);
         }
 
-        public void Deregister(SlimeEat.FoodGroup foodGroup, global::Identifiable.Id id)
+        public virtual void RemoveFromFoodGroup(SlimeEat.FoodGroup foodGroup, global::Identifiable.Id id)
         {
             if (SlimeEat.foodGroupIds.ContainsKey(foodGroup))
                 SlimeEat.foodGroupIds[foodGroup] = SlimeEat.foodGroupIds[foodGroup].Where(x => x != id).ToArray();
         }
 
-        public void RegisterFoodGroupRule(Predicate<global::Identifiable.Id> func, SlimeEat.FoodGroup foodGroup) =>
+        public virtual void RegisterFoodGroupRule(Predicate<global::Identifiable.Id> func, SlimeEat.FoodGroup foodGroup) =>
             foodGroupRules[foodGroup] = func;
 
-        public override bool IsRegistered(SlimeEat.FoodGroup foodGroup, global::Identifiable.Id id)
-        {
-            if (!SlimeEat.foodGroupIds.ContainsKey(foodGroup))
-                return false;
-
-            return SlimeEat.foodGroupIds[foodGroup].Contains(id);
-        }
-
-        public override void Register(SlimeEat.FoodGroup foodGroup, global::Identifiable.Id id)
+        public virtual void AddToFoodGroup(SlimeEat.FoodGroup foodGroup, global::Identifiable.Id id)
         {
             if (!SlimeEat.foodGroupIds.ContainsKey(foodGroup))
                 SlimeEat.foodGroupIds[foodGroup] = new global::Identifiable.Id[0];

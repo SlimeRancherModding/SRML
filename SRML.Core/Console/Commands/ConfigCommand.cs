@@ -45,7 +45,7 @@ namespace SRML.Console.Commands
         public override List<string> GetAutoComplete(int argIndex, string[] args)
         {
             // TODO: upgrade
-            /*if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).Union(new[] { "SRML" }).ToList();
+            /*if (argIndex == 0) return SRModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.ID).Union(new[] { "SRML" }).ToList();
 
             if (args[0] == "SRML")
             {

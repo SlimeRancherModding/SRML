@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using SRML.Core;
+using SRML.Core.ModLoader;
 using SRML.Utils;
 using UnityEngine;
 
@@ -34,34 +36,20 @@ namespace SRML
         /// When called from a mod, gets the base path of that mod
         /// </summary>
         /// <returns>The base path of the current executing mod</returns>
-        public static string GetMyPath()
-        {
-            /*var assembly = ReflectionUtils.GetRelevantAssembly();
-            return SRModLoader.GetModForAssembly(assembly)?.Path ?? Path.GetDirectoryName(assembly.Location);*/
-            throw new NotImplementedException();
-        }
+        public static string GetMyPath() => Path.GetDirectoryName(ReflectionUtils.GetRelevantAssembly().Location);
 
         /// <summary>
         /// Gets a mods config path 
         /// </summary>
         /// <param name="mod">The mod whose config path is needed</param>
         /// <returns>The config path</returns>
-        internal static string GetConfigPath(object mod)
-        {
-            // TODO: upgrade
-            //return CheckDirectory(Path.Combine(Path.Combine(Main.StorageProvider.SavePath(), "SRML/Config"), mod?.ModInfo.Id ?? "SRML"));
-            throw new NotImplementedException();
-        }
+        internal static string GetConfigPath(IMod mod) =>
+            CheckDirectory(Path.Combine(Path.Combine(Main.StorageProvider.SavePath(), "SRML/Config"), mod?.ModInfo.ID ?? "SRML"));
 
         /// <summary>
         /// Gets the current mods config path
         /// </summary>
         /// <returns>The config path</returns>
-        public static string GetMyConfigPath()
-        {
-            // TODO: Upgrade to new system
-            return null;
-            //return GetConfigPath(SRMod.GetCurrentMod());    
-        }
+        public static string GetMyConfigPath() => GetConfigPath(CoreLoader.Instance.GetExecutingModContext());
     }
 }

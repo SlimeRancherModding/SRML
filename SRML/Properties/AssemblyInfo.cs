@@ -44,4 +44,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("SRML.Core")]
 [assembly: InternalsVisibleTo("SRML.API")]
 
-[assembly: RegisterMod(typeof(EntryPoint))]
+[assembly: RegisterModAttribute(typeof(EntryPoint))]

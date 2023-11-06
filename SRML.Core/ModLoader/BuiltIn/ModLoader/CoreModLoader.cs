@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 {
-    public class CoreModLoader : BasicFileModLoader<CoreMod, CoreModEntryPoint, BasicModInfo>
+    public class CoreModLoader : BasicFileModLoader<CoreMod, CoreModEntryPoint, IDescriptiveModInfo>
     {
         public override string Path => @"SRML\NewMods";
 
@@ -19,8 +19,21 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
         public override IModInfo LoadModInfo(Type entryType)
         {
-            BasicModInfo info = new BasicModInfo();
-            info.Parse(entryType.Assembly);
+            IDescriptiveModInfo info;
+
+            try
+            {
+                DescriptiveJSONModInfo jsonInfo = new DescriptiveJSONModInfo();
+                jsonInfo.Parse(entryType.Assembly);
+                info = jsonInfo;
+            }
+            catch
+            {
+                DescriptiveAttributeModInfo attInfo = new DescriptiveAttributeModInfo(entryType);
+                attInfo.Parse(entryType.Assembly);
+                info = attInfo;
+            }
+
             return info;
         }
 

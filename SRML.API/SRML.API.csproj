@@ -290,7 +290,6 @@
     <Compile Include="Gadget\GadgetRegistry.cs" />
     <Compile Include="Gadget\Patches\GordoSnareOnTriggerPatch.cs" />
     <Compile Include="Gadget\Patches\GordoSnarePatch.cs" />
-    <Compile Include="Gadget\Processors\GadgetProcessor.cs" />
     <Compile Include="Gadget\RefineryRegistry.cs" />
     <Compile Include="Gadget\SnareRegistry.cs" />
     <Compile Include="Identifiable\Attributes\IdentifiableCategorizationAttribute.cs" />
@@ -302,10 +301,9 @@
     <Compile Include="Identifiable\Slime\FoodGroupRegistry.cs" />
     <Compile Include="Identifiable\Slime\GordoRegistry.cs" />
     <Compile Include="Identifiable\Slime\ToyRegistry.cs" />
+    <Compile Include="Identifiable\Slime\Utils\FoodGroupExtensions.cs" />
     <Compile Include="Identifiable\SpawnResourceRegistry.cs" />
     <Compile Include="Identifiable\VacItemRegistry.cs" />
-    <Compile Include="Identifiable\Patches\AttachFashionsParentPatch.cs" />
-    <Compile Include="Identifiable\Patches\FashionSlotParentPatch.cs" />
     <Compile Include="Gadget\Patches\GadgetDirectorIsRefineryResourcePatch.cs" />
     <Compile Include="Player\Options\ModOptionsV01.cs" />
     <Compile Include="Player\Options\OptionsHandler.cs" />

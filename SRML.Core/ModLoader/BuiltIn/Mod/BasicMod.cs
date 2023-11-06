@@ -5,7 +5,7 @@ using System;
 
 namespace SRML.Core.ModLoader.BuiltIn.Mod
 {
-    public class BasicMod : Mod<BasicLoadEntryPoint, BasicModInfo>, IPathProvider
+    public class BasicMod : Mod<BasicLoadEntryPoint, DescriptiveJSONModInfo>, IPathProvider
     {
         public string Path { get => path; set => path = value; }
         private string path;

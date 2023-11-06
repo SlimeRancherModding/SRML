@@ -206,7 +206,7 @@ namespace SRML
         {
             if (!forwardedEnums.TryGetValue(baseType, out List<Type> value))
                 value = new List<Type>();
-            value.Add(forwardedType);
+            value.AddIfDoesNotContain(forwardedType);
         }
 
         internal static bool TryGetRawPatch(Type enumType, out EnumPatch patch)

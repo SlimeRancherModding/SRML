@@ -93,7 +93,7 @@ namespace SRML.Core.ModLoader.DataTypes
                 throw new InvalidOperationException("Dependency cannot be sorted before and after another dependency.");
 
             Dictionary<string, List<string>> loadAfters = dependencies.ToDictionary(x => x.id, 
-                y => y.loadAfterIds.Where(x => CoreLoader.Instance.mods.Any(z => z.ModInfo.Id == x)).Concat(y.dependencies.Keys).ToList());
+                y => y.loadAfterIds.Where(x => CoreLoader.Instance.mods.Any(z => z.ModInfo.ID == x)).Concat(y.dependencies.Keys).ToList());
             foreach (DependencyMetadata dependency in dependencies)
             {
                 foreach (string s in dependency.loadBeforeIds)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SRML.Core.ModLoader;
+using System.Collections.Generic;
 
 namespace SRML.Console
 {
@@ -9,7 +10,7 @@ namespace SRML.Console
 	{
 
 		// TODO: upgrade
-        internal object belongingMod;
+        internal IMod belongingMod;
 		/// <summary>
 		/// The ID of this command (Always lowercase)
 		/// </summary>

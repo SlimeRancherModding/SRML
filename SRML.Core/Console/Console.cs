@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using SRML.Core;
 using SRML.Core.ModLoader;
+using SRML.Core.ModLoader.BuiltIn.ModInfo;
 
 namespace SRML.Console
 {
@@ -107,7 +108,7 @@ namespace SRML.Console
             }
 
             // TODO: Update to new system
-            //cmd.belongingMod = SRMod.GetCurrentMod();
+            cmd.belongingMod = CoreLoader.Instance.GetExecutingModContext();
             commands.Add(cmd.ID.ToLowerInvariant(), cmd);
             ConsoleWindow.cmdsText += $"{(ConsoleWindow.cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
             return true;
@@ -277,7 +278,7 @@ namespace SRML.Console
                         if (keepExecution)
                         {
                             // TODO: Upgrade to new system
-                            //SRMod.ForceModContext(commands[cmd].belongingMod);
+                            CoreLoader.Instance.ForceModContext(commands[cmd].belongingMod);
                             try
                             {
                                 executed = commands[cmd].Execute(args);
@@ -328,9 +329,16 @@ namespace SRML.Console
 
         internal static string GetLogName()
         {
-            // TODO: Upgrade to new system
-            /*SRMod mod = nullSRMod.GetCurrentMod();
-            if (mod != null) return mod.ModInfo.Name;*/
+            IMod mod = CoreLoader.Instance.GetExecutingModContext();
+            
+            if (mod != null)
+            {
+                if (mod.ModInfo is IDescriptiveModInfo desc)
+                    return desc.Name;
+                else
+                    return mod.ModInfo.ID;
+            }
+            
             return "SRML";
         }
 
@@ -484,8 +492,8 @@ namespace SRML.Console
 
             public ConsoleInstance(string name) : this(name, Colors.lime) { }
 
-            // TODO: Upgrade to new system
-            public ConsoleInstance(string name, Colors nameCol) : this(name, nameCol, $"{/*SRMod.GetCurrentMod()?.ModInfo.Id ?? */"unknown"}.{name.ToLower().Replace(' ', '_')}") { }
+            public ConsoleInstance(string name, Colors nameCol) : this(name, nameCol, 
+                $"{CoreLoader.Instance.GetExecutingModContext().ModInfo?.ID ?? "unknown"}.{name.ToLower().Replace(' ', '_')}") { }
 
             internal ConsoleInstance(string name, Colors nameCol, string id)
             {
@@ -499,8 +507,6 @@ namespace SRML.Console
                     instancesForMod.Add(modId, new List<ConsoleInstance>());
                 instancesForMod[modId].Add(this);
 
-                /*if (SRModLoader.CurrentLoadingStep == SRModLoader.LoadingStep.INITIALIZATION)
-                    return;*/
                 if (!CoreLoader.Instance.loadedStack)
                     return;
 

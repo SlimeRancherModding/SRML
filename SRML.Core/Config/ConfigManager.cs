@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SRML.Core.ModLoader;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,18 +9,22 @@ namespace SRML.Config
 {
     internal static class ConfigManager
     {
-        public static void PopulateConfigs(object mod)
+        public static Dictionary<IMod, List<ConfigFile>> modConfigs = new Dictionary<IMod, List<ConfigFile>>();
+
+        public static void PopulateConfigs(IMod mod)
         {
-            // TODO: Upgrade to new system
-            //SRMod.ForceModContext(mod);
+            CoreLoader.Instance.ForceModContext(mod);
 
-            /*foreach (var file in GetConfigs(mod.EntryType.Module))
+            foreach (var file in GetConfigs(mod.EntryType.Module))
             {
-                mod.Configs.Add(file);
-                file.TryLoadFromFile();
-            }*/
+                if (!modConfigs.ContainsKey(mod))
+                    modConfigs[mod] = new List<ConfigFile>();
 
-            //SRMod.ClearModContext();
+                modConfigs[mod].Add(file);
+                file.TryLoadFromFile();
+            }
+
+            CoreLoader.Instance.ClearModContext();
         }
 
         public static IEnumerable<ConfigFile> GetConfigs(Module module)

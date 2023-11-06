@@ -11,14 +11,14 @@ using System.Text.RegularExpressions;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 {
-    public class BasicModInfo : JSONModInfo
+    public class DescriptiveJSONModInfo : JSONModInfo, IDescriptiveModInfo
     {
-        public override string Id { get => parsedInfo.id; }
+        public string ID { get => parsedInfo.id; }
         public string Name { get => parsedInfo.name; }
         public string Description { get => parsedInfo.description; }
         public string Author { get => parsedInfo.author; }
-        public override SemVersion Version { get => parsedInfo.version; }
-        public override DependencyMetadata Dependencies { get => parsedInfo.dependencies; }
+        public SemVersion Version { get => parsedInfo.version; }
+        public DependencyMetadata Dependencies { get => parsedInfo.dependencies; }
         
         private ProtoMod parsedInfo;
 
@@ -35,8 +35,8 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 
             return json;
         }
-        public override string GetDefaultHarmonyName() => $"net.{(Author == null || Author.Length == 0 ? "srml" : Regex.Replace(Author, @"\s+", ""))}.{Id}";
-        public override string GetDefaultConsoleName() => Name;
+        public string GetDefaultHarmonyName() => $"net.{(Author == null || Author.Length == 0 ? "srml" : Regex.Replace(Author, @"\s+", ""))}.{ID}";
+        public string GetDefaultConsoleName() => Name;
 
         public class ProtoMod
         {

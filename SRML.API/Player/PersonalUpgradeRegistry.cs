@@ -4,7 +4,6 @@ using SRML.Core.API.BuiltIn;
 using SRML.Core.ModLoader;
 using System.Collections.Generic;
 using System.Linq;
-using static SECTR_AudioSystem;
 
 namespace SRML.API.Player
 {

@@ -80,9 +80,9 @@ namespace SRML.Core
             // This DOES work, but then it breaks everything because the API is currently still built upon the old modloader.
             loader.RegisterModLoader(typeof(LegacyModLoader));
 
-            var identical = loader.modStack.GroupBy(x => x.Item2.Id).FirstOrDefault(x => x.Count() > 1);
+            var identical = loader.modStack.GroupBy(x => x.Item2.ID).FirstOrDefault(x => x.Count() > 1);
             if (identical != default)
-                throw new Exception($"Attempting to load mod with duplicate id: {identical.First().Item2.Id}");
+                throw new Exception($"Attempting to load mod with duplicate id: {identical.First().Item2.ID}");
 
             loader.LoadModStack();
         }

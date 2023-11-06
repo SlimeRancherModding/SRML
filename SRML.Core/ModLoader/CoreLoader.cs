@@ -120,9 +120,9 @@ namespace SRML.Core.ModLoader
             {
                 foreach (Assembly dll in potentialDlls)
                 {
-                    foreach (RegisterModLoaderType att in dll.GetCustomAttributes<RegisterModLoaderType>())
+                    foreach (RegisterModLoaderTypeAttribute att in dll.GetCustomAttributes<RegisterModLoaderTypeAttribute>())
                         RegisterModLoader(att.loaderType);
-                    foreach (RegisterModType att in dll.GetCustomAttributes<RegisterModType>())
+                    foreach (RegisterModTypeAttribute att in dll.GetCustomAttributes<RegisterModTypeAttribute>())
                         RegisterModType(att.modType, att.entryType);
                 }
             }
@@ -135,7 +135,7 @@ namespace SRML.Core.ModLoader
             string[] order = DependencyMetadata.CalculateLoadOrder(modStack.Select(x => x.Item2.Dependencies).ToArray());
 
             for (int i = order.Length - 1; i >= 0; i--)
-                sortedStack.Push(modStack.First(x => x.Item2.Id == order[i]));
+                sortedStack.Push(modStack.First(x => x.Item2.ID == order[i]));
 
             modStack = sortedStack;
             while (modStack.Count > 0)
@@ -165,7 +165,7 @@ namespace SRML.Core.ModLoader
             }
             catch (Exception ex)
             {
-                ErrorGUI.errors.Add(protoMod.Item2.Id, (ErrorGUI.ErrorType.LoadMod, ex));
+                ErrorGUI.errors.Add(protoMod.Item2.ID, (ErrorGUI.ErrorType.LoadMod, ex));
             }
             return null;
         }

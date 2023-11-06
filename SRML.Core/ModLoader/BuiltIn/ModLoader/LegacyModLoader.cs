@@ -12,7 +12,7 @@ using UnityEngine;
 #pragma warning disable CS0612
 namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 {
-    public class LegacyModLoader : FileModLoader<LegacyMod, LegacyEntryPoint, BasicModInfo>
+    public class LegacyModLoader : FileModLoader<LegacyMod, LegacyEntryPoint, DescriptiveJSONModInfo>
     {
         public override string Path => @"SRML\Mods";
 
@@ -22,7 +22,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
         public override IModInfo LoadModInfo(Type entryType)
         {
-            BasicModInfo info = new BasicModInfo();
+            DescriptiveJSONModInfo info = new DescriptiveJSONModInfo();
             info.Parse(entryType.Assembly);
             return info;
         }
@@ -39,7 +39,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
             loadedMods.Add(mod);
 
-            entryPoint.legacyEntry = ModEntryPoint.CreateEntry(entryType, modInfo.Id);
+            entryPoint.legacyEntry = ModEntryPoint.CreateEntry(entryType, mod.ModInfo.ID);
             entryPoint.Initialize();
             mod.Initialize();
 

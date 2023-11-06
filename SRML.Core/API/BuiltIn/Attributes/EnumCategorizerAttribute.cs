@@ -6,7 +6,6 @@ namespace SRML.Core.API.BuiltIn.Attributes
     public abstract class EnumCategorizerAttribute : Attribute
     {
         public abstract Type RuleType { get; }
-        public abstract Type ProcessorType { get; }
 
         internal readonly Enum rule;
 

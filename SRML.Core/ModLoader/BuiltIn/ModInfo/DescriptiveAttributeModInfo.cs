@@ -1,0 +1,41 @@
+﻿using Semver;
+using SRML.Core.ModLoader.BuiltIn.Attributes;
+using SRML.Core.ModLoader.DataTypes;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+
+namespace SRML.Core.ModLoader.BuiltIn.ModInfo
+{
+    public class DescriptiveAttributeModInfo : IDescriptiveModInfo
+    {
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public string Author { get; private set; }
+        public string ID { get; private set; }
+        public SemVersion Version { get; private set; }
+        public DependencyMetadata Dependencies { get; private set; }
+
+        private readonly Type entryType;
+
+        public string GetDefaultHarmonyName() => $"net.{(Author == null || Author.Length == 0 ? "srml" : Regex.Replace(Author, @"\s+", ""))}.{ID}";
+        public string GetDefaultConsoleName() => Name;
+
+        public void Parse(Assembly modAssembly)
+        {
+            DescriptiveModInfoAttribute att = entryType.GetCustomAttribute<DescriptiveModInfoAttribute>();
+            if (att == null)
+                throw new ArgumentException("Entry type does not have a DescriptiveModInfoAttribute");
+
+            Name = att.Name;
+            Description = att.Description;
+            Author = att.Author;
+            ID = att.ID;
+            Version = att.Version;
+            Dependencies = att.Dependencies;
+        }
+
+        public DescriptiveAttributeModInfo(Type entryType) => this.entryType = entryType;
+    }
+}

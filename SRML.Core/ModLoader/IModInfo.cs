@@ -9,7 +9,7 @@ namespace SRML.Core.ModLoader
         /// <summary>
         /// The unique id of the mod. If any other loaded mod has this, then loading will be aborted.
         /// </summary>
-        string Id { get; }
+        string ID { get; }
         /// <summary>
         /// The version of the mod in SemVer specification.
         /// </summary>

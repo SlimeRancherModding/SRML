@@ -4,7 +4,7 @@ using SRML.Core.ModLoader.DataTypes;
 
 namespace SRML.Core.ModLoader.BuiltIn.Mod
 {
-    public class LegacyMod : Mod<BasicLoadEntryPoint, BasicModInfo>, IPathProvider
+    public class LegacyMod : Mod<BasicLoadEntryPoint, DescriptiveJSONModInfo>, IPathProvider
     {
         public string Path { get => path; set => path = value; }
         private string path;

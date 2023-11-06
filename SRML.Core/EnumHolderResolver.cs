@@ -25,6 +25,11 @@ namespace SRML.Utils.Enum
                         {
                             if (!field.FieldType.IsEnum) continue;
 
+                            foreach (EnumForwardedToAttribute att in field.FieldType.GetCustomAttributes<EnumForwardedToAttribute>())
+                                EnumPatcher.RegisterForward(field.FieldType, att.ForwardedTo);
+                            foreach (EnumForwardedFromAttribute att in field.FieldType.GetCustomAttributes<EnumForwardedFromAttribute>())
+                                EnumPatcher.RegisterForward(att.ForwardedFrom, field.FieldType);
+
                             if ((int)field.GetValue(null) == 0)
                             {
                                 var newVal = EnumPatcher.GetFirstFreeValue(field.FieldType);
@@ -51,11 +56,6 @@ namespace SRML.Utils.Enum
                             }
                         }
                     }
-
-                    foreach (EnumForwardedToAttribute att in type.GetCustomAttributes<EnumForwardedToAttribute>())
-                        EnumPatcher.RegisterForward(type, att.ForwardedTo);
-                    foreach (EnumForwardedFromAttribute att in type.GetCustomAttributes<EnumForwardedFromAttribute>())
-                        EnumPatcher.RegisterForward(att.ForwardedFrom, type);
                 }
                 catch (ReflectionTypeLoadException)
                 {

@@ -43,6 +43,6 @@ namespace SRML.Core.API
             Register();
         }
 
-        public Processor() => ModId = CoreLoader.Instance.GetExecutingModContext().ModInfo.Id;
+        public Processor() => ModId = CoreLoader.Instance.GetExecutingModContext().ModInfo.ID;
     }
 }
