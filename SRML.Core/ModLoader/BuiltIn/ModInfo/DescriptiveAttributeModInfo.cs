@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 {
@@ -24,16 +25,18 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 
         public void Parse(Assembly modAssembly)
         {
-            DescriptiveModInfoAttribute att = entryType.GetCustomAttribute<DescriptiveModInfoAttribute>();
+            Attribute att = entryType.GetCustomAttribute<DescriptiveModInfoAttribute>();
             if (att == null)
-                throw new ArgumentException("Entry type does not have a DescriptiveModInfoAttribute");
+                throw new MissingModInfoException("Entry type does not have a DescriptiveModInfoAttribute");
 
-            Name = att.Name;
-            Description = att.Description;
-            Author = att.Author;
-            ID = att.ID;
-            Version = att.Version;
-            Dependencies = att.Dependencies;
+            DescriptiveModInfoAttribute descAtt = (DescriptiveModInfoAttribute)att;
+
+            Name = descAtt.Name;
+            Description = descAtt.Description;
+            Author = descAtt.Author;
+            ID = descAtt.ID;
+            Version = descAtt.Version;
+            Dependencies = descAtt.Dependencies;
         }
 
         public DescriptiveAttributeModInfo(Type entryType) => this.entryType = entryType;

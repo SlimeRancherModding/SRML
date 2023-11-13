@@ -32,6 +32,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
                 using (StreamReader reader = new StreamReader(modAssembly.GetManifestResourceStream(fileName)))
                     json = reader.ReadToEnd();
             }
+            else throw new MissingModInfoException();
 
             return json;
         }

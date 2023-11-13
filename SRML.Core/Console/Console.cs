@@ -65,9 +65,9 @@ namespace SRML.Console
         /// </summary>
         internal static void Init()
         {
-            Application.logMessageReceived += console.AppLog;
             srmlInstance = new ConsoleInstance("SRML", Colors.lightblue, "internal.srml");
             unityInstance = new ConsoleInstance("Unity", Colors.yellow, "internal.unity");
+            Application.logMessageReceived += console.AppLog;
 
             Instance.Log("CONSOLE INITIALIZED!");
             Instance.Log("Patching SceneManager to attach window");
@@ -107,8 +107,7 @@ namespace SRML.Console
                 return false;
             }
 
-            // TODO: Update to new system
-            cmd.belongingMod = CoreLoader.Instance.GetExecutingModContext();
+            cmd.belongingMod = CoreLoader.Instance?.GetExecutingModContext();
             commands.Add(cmd.ID.ToLowerInvariant(), cmd);
             ConsoleWindow.cmdsText += $"{(ConsoleWindow.cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
             return true;
@@ -277,7 +276,6 @@ namespace SRML.Console
 
                         if (keepExecution)
                         {
-                            // TODO: Upgrade to new system
                             CoreLoader.Instance.ForceModContext(commands[cmd].belongingMod);
                             try
                             {
@@ -285,7 +283,7 @@ namespace SRML.Console
                             }
                             finally
                             {
-                                //SRMod.ClearModContext();
+                                CoreLoader.Instance.ClearModContext();
                             }
                         }
 
@@ -507,7 +505,7 @@ namespace SRML.Console
                     instancesForMod.Add(modId, new List<ConsoleInstance>());
                 instancesForMod[modId].Add(this);
 
-                if (!CoreLoader.Instance.loadedStack)
+                if (CoreLoader.Instance == null || !CoreLoader.Instance.loadedStack)
                     return;
 
                 SetActive(!hideLogs.Contains(id));

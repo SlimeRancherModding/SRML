@@ -57,7 +57,13 @@ namespace SRML.Core
 
         public static void CreateBasicError(string error, MainMenuUI menu, bool doAbort = true)
         {
-            var mainmen = MainMenuUtils.DisplayBlankPanelWithTranslation<BaseUI>(menu, "ErrorUI", "t.srml_error", () => Application.Quit());
+            GameObject mainmen;
+
+            if (CoreTranslator.Instance != null)
+                mainmen = MainMenuUtils.DisplayBlankPanelWithTranslation<ErrorGUI>(menu, "ErrorUI", "t.srml_error", () => Application.Quit());
+            else
+                mainmen = MainMenuUtils.DisplayBlankPanel<ErrorGUI>(menu, "SRML ERROR", () => Application.Quit());
+
             var panel = mainmen.transform.GetChild(0);
             var title = panel.Find("Title").gameObject;
             var g = Instantiate(title);
@@ -68,13 +74,18 @@ namespace SRML.Core
             g.GetComponent<TMP_Text>().fontSize *= .8f;
             g.GetComponent<TMP_Text>().enableWordWrapping = true;
 
-            mainmen.AddComponent<ErrorGUI>();
-
             if (doAbort)
             {
                 var h = GameObject.Instantiate(title);
                 h.name = "AbortText";
-                h.GetComponent<XlateText>().SetKey("t.srml_error.abort");
+
+                if (CoreTranslator.Instance != null)
+                    h.GetComponent<XlateText>().SetKey("t.srml_error.abort");
+                else
+                {
+                    Destroy(h.GetComponent<XlateText>());
+                    h.GetComponent<TMP_Text>().text = "Aborting mod loading...";
+                }
                 h.GetComponent<TMP_Text>().enableWordWrapping = true;
                 h.GetComponent<TMP_Text>().alignment = TextAlignmentOptions.Bottom;
 
@@ -94,6 +105,8 @@ namespace SRML.Core
             rect.offsetMin = new Vector2(50, 30);
         }
 
+        public static void CreateExtendedErrorOnMenu() => SRCallbacks.OnMainMenuLoaded += ui => TryCreateExtendedError(ui);
+
         public static void CreateBasicErrorOnMenu(string error, bool doAbort = true)
         {
             SRCallbacks.OnMainMenuLoaded += (u) =>
@@ -102,7 +115,13 @@ namespace SRML.Core
             };
         }
 
-        public static void AddError(string id, ErrorType step, Exception e) => errors.Add(id, (step, e));
+        public static void AddError(string id, ErrorType step, Exception e)
+        {
+            int rec = 1;
+            while (errors.ContainsKey($"{id} ({rec})"))
+                rec++;
+            errors.Add($"{id} ({rec})", (step, e));
+        }
 
         public void OpenModsFolder() => Process.Start(Path.GetFullPath(FileSystem.ModPath));
 
@@ -120,7 +139,8 @@ namespace SRML.Core
             LoadModInfo,
             LoadMod,
             RegisterModType,
-            RegisterModLoader
+            RegisterModLoader,
+            LoadSRML
         }
     }
 
@@ -140,6 +160,8 @@ namespace SRML.Core
             titleText = string.Format(ErrorGUI.messageForType[type], exception.GetType(), id ?? "<unknown>");
             title.SetText($"{titleText}");
             extended.SetText(exception.ToString());
+
+            Console.Console.Instance.LogError(exception);
         }
 
         public void GenerateMessageWithoutId(ErrorGUI.ErrorType type, Exception exception) => GenerateMessage(type, exception, "<unknown>");

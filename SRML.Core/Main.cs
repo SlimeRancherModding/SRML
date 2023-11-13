@@ -13,6 +13,8 @@ using SRML.Core.API;
 using Sentry;
 using SRML.Core.ModLoader.Attributes;
 using SRML.Utils.Enum;
+using SRML.Config;
+using SRML.SR;
 
 namespace SRML.Core
 {
@@ -23,6 +25,7 @@ namespace SRML.Core
         public static Transform prefabParent;
 
         internal static FileStorageProvider StorageProvider = new FileStorageProvider();
+        internal static ConfigFile Config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
 
         public const string VERSION_STRING = "BETA-0.3.0";
         public const string MODS_PATH = @"SRML\NewMods";
@@ -34,57 +37,66 @@ namespace SRML.Core
             if (initialized)
                 return;
 
-            initialized = true;
+            try
+            {
+                initialized = true;
 
-            Debug.Log("SRML has successfully invaded the game!");
-            HarmonyInstance = new Harmony("net.veesus.srml");
-            HarmonyInstance.PatchAll();
+                Debug.Log("SRML has successfully invaded the game!");
+                HarmonyInstance = new Harmony("net.veesus.srml");
+                HarmonyInstance.PatchAll();
 
-            FileLogger.Init();
-            Console.Console.Init();
-            Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
+                FileLogger.Init();
+                Console.Console.Init();
+                Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
 
-            prefabParent = new GameObject("PrefabParent").transform;
-            prefabParent.gameObject.DontDestroyOnLoad();
-            prefabParent.gameObject.SetActive(false);
-            prefabParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
+                prefabParent = new GameObject("PrefabParent").transform;
+                prefabParent.gameObject.DontDestroyOnLoad();
+                prefabParent.gameObject.SetActive(false);
+                prefabParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
-            uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srmlassets"));
-            ErrorGUI.extendedUI = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("SRMLErrorUI"));
-            ErrorGUI.extendedError = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("ErrorModInfo"));
-            ErrorGUI.extendedUI.Prefabitize();
-            ErrorGUI.extendedError.Prefabitize();
+                uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srmlassets"));
+                ErrorGUI.extendedUI = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("SRMLErrorUI"));
+                ErrorGUI.extendedError = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("ErrorModInfo"));
+                ErrorGUI.extendedUI.Prefabitize();
+                ErrorGUI.extendedError.Prefabitize();
 
-            // TODO: find a way to prevent this issue in assetbundles so I don't have to do this garbage
-            foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
-                text.alignment = TextAlignmentOptions.Midline;
-            foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
-                text.alignment = TextAlignmentOptions.TopLeft;
+                // TODO: find a way to prevent this issue in assetbundles so I don't have to do this garbage
+                foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
+                    text.alignment = TextAlignmentOptions.Midline;
+                foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
+                    text.alignment = TextAlignmentOptions.TopLeft;
 
-            CoreTranslator translator = new CoreTranslator();
-            CoreAPI api = new CoreAPI();
+                CoreTranslator translator = new CoreTranslator();
+                CoreAPI api = new CoreAPI();
 
-            CoreLoader loader = new CoreLoader();
-            loader.PreProcessMods += EnumHolderResolver.RegisterAllEnums;
-            
-            loader.LoadFromDefaultPath();
-            
-            loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));
-            loader.RegisterModType(typeof(CoreMod), typeof(CoreModEntryPoint));
+                CoreLoader loader = new CoreLoader();
+                loader.PreProcessMods += EnumHolderResolver.RegisterAllEnums;
+                loader.ProcessMods += x => ConfigManager.PopulateConfigs(x);
+
+                loader.LoadFromDefaultPath();
+
+                loader.RegisterModType(typeof(BasicMod), typeof(BasicLoadEntryPoint));
+                loader.RegisterModType(typeof(CoreMod), typeof(CoreModEntryPoint));
 #pragma warning disable CS0612
-            loader.modTypeForEntryType.Add(typeof(IModEntryPoint), typeof(LegacyMod));
-            loader.registeredModTypes.Add(typeof(LegacyMod));
+                loader.modTypeForEntryType.Add(typeof(IModEntryPoint), typeof(LegacyMod));
+                loader.registeredModTypes.Add(typeof(LegacyMod));
 #pragma warning restore CS0612
-            loader.RegisterModLoader(typeof(BasicModLoader));
-            loader.RegisterModLoader(typeof(CoreModLoader));
-            // This DOES work, but then it breaks everything because the API is currently still built upon the old modloader.
-            loader.RegisterModLoader(typeof(LegacyModLoader));
+                loader.RegisterModLoader(typeof(BasicModLoader));
+                loader.RegisterModLoader(typeof(CoreModLoader));
+                // This DOES work, but then it breaks everything because the API is currently still built upon the old modloader.
+                //loader.RegisterModLoader(typeof(LegacyModLoader));
 
-            var identical = loader.modStack.GroupBy(x => x.Item2.ID).FirstOrDefault(x => x.Count() > 1);
-            if (identical != default)
-                throw new Exception($"Attempting to load mod with duplicate id: {identical.First().Item2.ID}");
+                var identical = loader.modStack.GroupBy(x => x.Item2.ID).FirstOrDefault(x => x.Count() > 1);
+                if (identical != default)
+                    throw new Exception($"Attempting to load mod with duplicate id: {identical.First().Item2.ID}");
 
-            loader.LoadModStack();
+                loader.LoadModStack();
+            }
+            catch (Exception e)
+            {
+                ErrorGUI.AddError("SRML", ErrorGUI.ErrorType.LoadSRML, e);
+                ErrorGUI.CreateExtendedErrorOnMenu();
+            }
         }
     }
 }

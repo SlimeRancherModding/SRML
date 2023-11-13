@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace SRML.Core.ModLoader.BuiltIn.Attributes
 {
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class DescriptiveModInfoAttribute : ModInfoAttribute
     {
         public string Name { get; }

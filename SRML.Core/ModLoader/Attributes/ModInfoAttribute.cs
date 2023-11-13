@@ -6,13 +6,12 @@ using System.Linq;
 
 namespace SRML.Core.ModLoader.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class ModInfoAttribute : Attribute
     {
         public string ID { get; }
         public SemVersion Version { get; }
         public DependencyMetadata Dependencies { get; }
-        public Type EntryType { get; }
 
         public ModInfoAttribute(string id, string version) : this(id, version, null, null, null) { }
 

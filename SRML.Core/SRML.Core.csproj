@@ -366,6 +366,7 @@
     <Compile Include="ModLoader\IMod.cs" />
     <Compile Include="ModLoader\IModInfo.cs" />
     <Compile Include="ModLoader\IModLoader.cs" />
+    <Compile Include="ModLoader\MissingModInfoException.cs" />
     <Compile Include="ModLoader\Patches\BasicLoadEntryRegisterPatch.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
     <Compile Include="Patches\GameContextAwakePatch.cs" />
@@ -454,7 +455,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="srmlassets" />
+    <EmbeddedResource Include="srmlassets" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

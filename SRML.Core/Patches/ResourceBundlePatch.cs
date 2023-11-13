@@ -12,6 +12,9 @@ namespace SRML.SR.Patches
         static void Postfix(string path, Dictionary<string, string> __result, string text)
         {
             CoreTranslator translations = CoreTranslator.Instance;
+            if (translations == null)
+                return;
+
             MessageDirector.Lang lang = translations.currLang;
 
             if (path == "ui")

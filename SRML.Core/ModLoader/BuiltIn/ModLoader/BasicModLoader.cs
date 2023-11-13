@@ -27,11 +27,18 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
                 jsonInfo.Parse(entryType.Assembly);
                 info = jsonInfo;
             }
-            catch
+            catch (MissingModInfoException)
             {
-                DescriptiveAttributeModInfo attInfo = new DescriptiveAttributeModInfo(entryType);
-                attInfo.Parse(entryType.Assembly);
-                info = attInfo;
+                try
+                {
+                    DescriptiveAttributeModInfo attInfo = new DescriptiveAttributeModInfo(entryType);
+                    attInfo.Parse(entryType.Assembly);
+                    info = attInfo;
+                }
+                catch (MissingModInfoException)
+                {
+                    throw new MissingModInfoException("EntryPoint does not have an associated mod info");
+                }
             }
             
             return info;

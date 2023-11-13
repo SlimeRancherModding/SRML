@@ -88,6 +88,11 @@ namespace SRML.Config
             var configpath = FileSystem.GetMyConfigPath();
             var parser = new IniParser.FileIniDataParser();
             var filePath = Path.ChangeExtension(Path.Combine(configpath, FileName), "ini");
+
+            FileInfo info = new FileInfo(filePath);
+            if (!info.Directory.Exists)
+                info.Directory.Create();
+
             IniData data;
             try
             {

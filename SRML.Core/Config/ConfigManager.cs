@@ -14,8 +14,10 @@ namespace SRML.Config
         public static void PopulateConfigs(IMod mod)
         {
             CoreLoader.Instance.ForceModContext(mod);
+            UnityEngine.Debug.Log(mod == null);
+            UnityEngine.Debug.Log(mod?.EntryType?.Name ?? "null");
 
-            foreach (var file in GetConfigs(mod.EntryType.Module))
+            foreach (var file in GetConfigs(mod.Entry.GetType().Module))
             {
                 if (!modConfigs.ContainsKey(mod))
                     modConfigs[mod] = new List<ConfigFile>();
@@ -34,6 +36,14 @@ namespace SRML.Config
                 var file = ConfigFile.GenerateConfig(v);
                 if (file != null) yield return file;
             }
+        }
+
+        public static ConfigFile[] GetConfigs(this IMod mod)
+        {
+            if (modConfigs.ContainsKey(mod))
+                return modConfigs[mod].ToArray();
+
+            return new ConfigFile[0];
         }
     }
 }

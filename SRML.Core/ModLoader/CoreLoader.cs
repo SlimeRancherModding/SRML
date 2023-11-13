@@ -27,7 +27,8 @@ namespace SRML.Core.ModLoader
         internal List<IModLoader> loaders = new List<IModLoader>();
         internal Dictionary<Type, IModLoader> loaderForEntryType = new Dictionary<Type, IModLoader>();
         internal Dictionary<IEntryPoint, IModInfo> infoForEntry = new Dictionary<IEntryPoint, IModInfo>();
-        internal Dictionary<Assembly, IMod> modsForAssembly = new Dictionary<Assembly, IMod>();
+        internal Dictionary<Type, IMod> modForEntryType = new Dictionary<Type, IMod>();
+        internal Dictionary<Assembly, List<IMod>> modsForAssembly = new Dictionary<Assembly, List<IMod>>();
         internal Dictionary<IMod, Assembly> assembliesForMod = new Dictionary<IMod, Assembly>();
 
         internal Stack<(Type, IModInfo)> modStack = new Stack<(Type, IModInfo)>();
@@ -156,8 +157,12 @@ namespace SRML.Core.ModLoader
                     infoForEntry.Add(mod.Entry, protoMod.Item2);
                 mods.Add(mod);
 
-                modsForAssembly.Add(protoMod.Item1.Assembly, mod);
+                if (!modsForAssembly.ContainsKey(protoMod.Item1.Assembly))
+                    modsForAssembly[protoMod.Item1.Assembly] = new List<IMod>();
+                modsForAssembly[protoMod.Item1.Assembly].Add(mod);
                 assembliesForMod.Add(mod, protoMod.Item1.Assembly);
+
+                modForEntryType[protoMod.Item1] = mod;
 
                 ProcessMods?.Invoke(mod);
 
@@ -191,13 +196,13 @@ namespace SRML.Core.ModLoader
             }
             catch (Exception ex)
             {
-                ErrorGUI.errors.Add(entryType.Assembly.GetName().Name, (ErrorGUI.ErrorType.LoadMod, ex));
+                ErrorGUI.AddError($"from assembly {entryType.Assembly.GetName().Name}", ErrorGUI.ErrorType.LoadMod, ex);
             }
         }
 
-        public IMod GetModFromAssembly(Assembly assembly)
+        public List<IMod> GetModsFromAssembly(Assembly assembly)
         {
-            if (modsForAssembly.TryGetValue(assembly, out IMod mod))
+            if (modsForAssembly.TryGetValue(assembly, out List<IMod> mod))
                 return mod;
 
             return null;
@@ -216,8 +221,21 @@ namespace SRML.Core.ModLoader
                 if (recursionCheck >= 100)
                     break;
 
-                if (modsForAssembly.TryGetValue(frame.GetMethod().DeclaringType.Assembly, out IMod found))
+                if (modForEntryType.TryGetValue(frame.GetMethod().DeclaringType, out IMod found))
                     return found;
+                recursionCheck++;
+            }
+            
+            // TODO: PLEASE FIND BETTER WAY
+            // THIS IS AWFUL
+            recursionCheck = 0;
+            foreach (StackFrame frame in new StackTrace().GetFrames())
+            {
+                if (recursionCheck >= 100)
+                    break;
+
+                if (modsForAssembly.TryGetValue(frame.GetMethod().DeclaringType.Assembly, out List<IMod> found))
+                    return found.First();
                 recursionCheck++;
             }
 
@@ -227,6 +245,8 @@ namespace SRML.Core.ModLoader
         public void ForceModContext(IMod mod) => forceMod = mod;
 
         public void ClearModContext() => forceMod = null;
+
+        public IMod GetMod(string id) => Mods.FirstOrDefault(x => x.ModInfo.ID == id);
 
         internal CoreLoader() => Instance = this;
     }
