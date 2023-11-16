@@ -50,6 +50,6 @@ namespace SRML
         /// Gets the current mods config path
         /// </summary>
         /// <returns>The config path</returns>
-        public static string GetMyConfigPath() => GetConfigPath(CoreLoader.Instance.GetExecutingModContext());
+        public static string GetMyConfigPath() => GetConfigPath(CoreLoader.Instance?.GetExecutingModContext() ?? null);
     }
 }

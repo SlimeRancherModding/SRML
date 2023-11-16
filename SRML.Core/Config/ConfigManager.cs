@@ -14,8 +14,6 @@ namespace SRML.Config
         public static void PopulateConfigs(IMod mod)
         {
             CoreLoader.Instance.ForceModContext(mod);
-            UnityEngine.Debug.Log(mod == null);
-            UnityEngine.Debug.Log(mod?.EntryType?.Name ?? "null");
 
             foreach (var file in GetConfigs(mod.Entry.GetType().Module))
             {

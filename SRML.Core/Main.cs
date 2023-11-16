@@ -15,6 +15,8 @@ using SRML.Core.ModLoader.Attributes;
 using SRML.Utils.Enum;
 using SRML.Config;
 using SRML.SR;
+using UnityEngine.UI;
+using SRML.SR.UI.Utils;
 
 namespace SRML.Core
 {
@@ -42,12 +44,29 @@ namespace SRML.Core
                 initialized = true;
 
                 Debug.Log("SRML has successfully invaded the game!");
+
+                SentrySdk sentrySdk = UnityEngine.Object.FindObjectOfType<SentrySdk>();
+                if (sentrySdk != null)
+                {
+                    sentrySdk.Dsn = string.Empty;
+                    FieldInfo field = sentrySdk.GetType().GetField("_instance", BindingFlags.Static | BindingFlags.NonPublic);
+                    if (field != null) field.SetValue(null, null);
+                    sentrySdk.StopAllCoroutines();
+                    Application.logMessageReceived -= sentrySdk.OnLogMessageReceived;
+                    UnityEngine.Object.Destroy(sentrySdk, 1f);
+                    Debug.Log("Disabled Sentry SDK");
+                }
+
                 HarmonyInstance = new Harmony("net.veesus.srml");
                 HarmonyInstance.PatchAll();
+
+                CoreTranslator translator = new CoreTranslator();
 
                 FileLogger.Init();
                 Console.Console.Init();
                 Console.Console.Instance.Log($"SRML v {VERSION_STRING}");
+
+                Config.TryLoadFromFile();
 
                 prefabParent = new GameObject("PrefabParent").transform;
                 prefabParent.gameObject.DontDestroyOnLoad();
@@ -55,18 +74,22 @@ namespace SRML.Core
                 prefabParent.gameObject.hideFlags = HideFlags.HideAndDontSave;
 
                 uiBundle = AssetBundle.LoadFromStream(typeof(Main).Assembly.GetManifestResourceStream(typeof(ErrorGUI), "srmlassets"));
-                ErrorGUI.extendedUI = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("SRMLErrorUI"));
-                ErrorGUI.extendedError = GameObject.Instantiate(uiBundle.LoadAsset<GameObject>("ErrorModInfo"));
-                ErrorGUI.extendedUI.Prefabitize();
-                ErrorGUI.extendedError.Prefabitize();
+                ErrorGUI.extendedUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI").CreatePrefabCopy();
+                ErrorGUI.extendedError = uiBundle.LoadAsset<GameObject>("ErrorModInfo").CreatePrefabCopy();
 
                 // TODO: find a way to prevent this issue in assetbundles so I don't have to do this garbage
+                TMP_FontAsset ass = Resources.FindObjectsOfTypeAll<TMP_FontAsset>().First(x => x.name == "OpenSans SDF");
                 foreach (TMP_Text text in ErrorGUI.extendedUI.GetComponentsInChildren<TMP_Text>())
+                {
                     text.alignment = TextAlignmentOptions.Midline;
+                    text.font = ass;
+                }
                 foreach (TMP_Text text in ErrorGUI.extendedError.GetComponentsInChildren<TMP_Text>(true))
+                {
                     text.alignment = TextAlignmentOptions.TopLeft;
+                    text.font = ass;
+                }
 
-                CoreTranslator translator = new CoreTranslator();
                 CoreAPI api = new CoreAPI();
 
                 CoreLoader loader = new CoreLoader();

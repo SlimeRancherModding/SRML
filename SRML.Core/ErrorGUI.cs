@@ -33,6 +33,12 @@ namespace SRML.Core
 
         public static void TryCreateExtendedError(MainMenuUI ui)
         {
+            if (SRMLConfig.FORCE_BASIC_ERROR_HANDLER)
+            {
+                CreateBasicError($"{errors.First().Value.Item2}", ui);
+                return;
+            }
+
             GameObject gui = null;
             try
             {
