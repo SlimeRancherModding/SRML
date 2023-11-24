@@ -338,14 +338,15 @@
     <Compile Include="ErrorGUI.cs" />
     <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
-    <Compile Include="ModLoader\Attributes\ModInfoAttribute.cs" />
+    <Compile Include="ModLoader\Attributes\BaseModInfoAttribute.cs" />
     <Compile Include="ModLoader\Attributes\RegisterModLoaderTypeAttribute.cs" />
     <Compile Include="ModLoader\Attributes\RegisterModTypeAttribute.cs" />
     <Compile Include="ModLoader\Attributes\RegisterModAttribute.cs" />
-    <Compile Include="ModLoader\BuiltIn\Attributes\DescriptiveModInfoAttribute.cs" />
+    <Compile Include="ModLoader\BuiltIn\Attributes\ModInfoAttribute.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\CoreModEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\LegacyEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModInfo\DescriptiveAttributeModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\AttributeModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\EmbeddedFileJSONModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\ModInfo\IDescriptiveModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\ModInfo\JSONModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\ModLoader\BasicFileModLoader.cs" />
@@ -357,7 +358,7 @@
     <Compile Include="ModLoader\BuiltIn\Mod\BasicMod.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\EventEntryPoint.cs" />
     <Compile Include="ModLoader\BuiltIn\EntryPoint\BasicLoadEntryPoint.cs" />
-    <Compile Include="ModLoader\BuiltIn\ModInfo\DescriptiveJSONModInfo.cs" />
+    <Compile Include="ModLoader\BuiltIn\ModInfo\FileJSONModInfo.cs" />
     <Compile Include="ModLoader\BuiltIn\Mod\CoreMod.cs" />
     <Compile Include="ModLoader\CoreLoader.cs" />
     <Compile Include="ModLoader\DataTypes\DependencyMetadata.cs" />

@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 {
-    public class DescriptiveJSONModInfo : JSONModInfo, IDescriptiveModInfo
+    public class FileJSONModInfo : JSONModInfo, IDescriptiveModInfo
     {
         public string ID { get => parsedInfo.id; }
         public string Name { get => parsedInfo.name; }
@@ -26,13 +26,14 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
         public override string GetJSON(Assembly modAssembly)
         {
             string json = null;
+            string potentialPath = Path.Combine(new FileInfo(modAssembly.Location).DirectoryName, "modinfo.json");
 
-            if (modAssembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string fileName)
+            if (File.Exists(potentialPath))
             {
-                using (StreamReader reader = new StreamReader(modAssembly.GetManifestResourceStream(fileName)))
+                using (StreamReader reader = new StreamReader(potentialPath))
                     json = reader.ReadToEnd();
             }
-            else throw new MissingModInfoException();
+            else throw new MissingModInfoException($"No modinfo.json exists in the same directory as {modAssembly.FullName}");
 
             return json;
         }

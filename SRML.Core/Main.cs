@@ -3,20 +3,14 @@ using SRML.Core.ModLoader;
 using SRML.Core.ModLoader.BuiltIn.EntryPoint;
 using SRML.Core.ModLoader.BuiltIn.Mod;
 using SRML.Core.ModLoader.BuiltIn.ModLoader;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
 using System.Linq;
 using TMPro;
 using System.Reflection;
 using SRML.Core.API;
-using Sentry;
-using SRML.Core.ModLoader.Attributes;
 using SRML.Utils.Enum;
 using SRML.Config;
-using SRML.SR;
-using UnityEngine.UI;
-using SRML.SR.UI.Utils;
 
 namespace SRML.Core
 {

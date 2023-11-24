@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SRML.Core.ModLoader;
+using SRML.Core.ModLoader.BuiltIn.ModInfo;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -36,24 +38,26 @@ namespace SRML.SR.UI
 
         public void Start()
         {
-            // TODO: upgrade
-            /*foreach (var mod in SRModLoader.GetMods())
-                AddModInfo(mod.ModInfo);*/
+            foreach (var mod in CoreLoader.Instance.Mods)
+                AddModInfo(mod.ModInfo);
         }
 
-        public void AddModInfo(object info)
+        public void AddModInfo(IModInfo info)
         {
-            /*var newobj = Instantiate(infoButtonPrefab);
+            var newobj = Instantiate(infoButtonPrefab);
             ModButton button = new ModButton(info);
             newobj.GetComponent<SRToggle>().onValueChanged.AddListener((x) =>
             {
                 if (x) OnModSelect(button);
             });
-            newobj.transform.GetChild(0).GetComponent<Text>().text = info.Name;
+
+            if (info is IDescriptiveModInfo desc)
+                newobj.transform.GetChild(0).GetComponent<Text>().text = desc.Name;
+            else
+                newobj.transform.GetChild(0).GetComponent<Text>().text = info.ID;
             newobj.transform.GetChild(1).GetComponent<Text>().text = $"Version: {info.Version}";
             newobj.GetComponent<SRToggle>().group = modScrollbarGroup;
-            newobj.transform.SetParent(modScrollbarContent.transform, false);*/
-            throw new NotImplementedException();
+            newobj.transform.SetParent(modScrollbarContent.transform, false);
         }
 
         public void OnModSelect(ModButton button)

@@ -23,7 +23,7 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
             
             try
             {
-                DescriptiveJSONModInfo jsonInfo = new DescriptiveJSONModInfo();
+                FileJSONModInfo jsonInfo = new FileJSONModInfo();
                 jsonInfo.Parse(entryType.Assembly);
                 info = jsonInfo;
             }
@@ -31,13 +31,23 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
             {
                 try
                 {
-                    DescriptiveAttributeModInfo attInfo = new DescriptiveAttributeModInfo(entryType);
+                    AttributeModInfo attInfo = new AttributeModInfo(entryType);
                     attInfo.Parse(entryType.Assembly);
                     info = attInfo;
                 }
                 catch (MissingModInfoException)
                 {
-                    throw new MissingModInfoException("EntryPoint does not have an associated mod info");
+                    try
+                    {
+
+                        EmbeddedFileJSONModInfo jsonInfo = new EmbeddedFileJSONModInfo(entryType);
+                        jsonInfo.Parse(entryType.Assembly);
+                        info = jsonInfo;
+                    }
+                    catch (MissingModInfoException)
+                    {
+                        throw new MissingModInfoException("EntryPoint does not have an associated mod info");
+                    }
                 }
             }
             

@@ -23,13 +23,13 @@ namespace SRML.Core.ModLoader.BuiltIn.ModLoader
 
             try
             {
-                DescriptiveJSONModInfo jsonInfo = new DescriptiveJSONModInfo();
+                FileJSONModInfo jsonInfo = new FileJSONModInfo();
                 jsonInfo.Parse(entryType.Assembly);
                 info = jsonInfo;
             }
             catch
             {
-                DescriptiveAttributeModInfo attInfo = new DescriptiveAttributeModInfo(entryType);
+                AttributeModInfo attInfo = new AttributeModInfo(entryType);
                 attInfo.Parse(entryType.Assembly);
                 info = attInfo;
             }

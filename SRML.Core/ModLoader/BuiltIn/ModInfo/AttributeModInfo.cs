@@ -1,15 +1,15 @@
 ﻿using Semver;
+using SRML.Core.ModLoader.Attributes;
 using SRML.Core.ModLoader.BuiltIn.Attributes;
 using SRML.Core.ModLoader.DataTypes;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using UnityEngine;
 
 namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 {
-    public class DescriptiveAttributeModInfo : IDescriptiveModInfo
+    public class AttributeModInfo : IDescriptiveModInfo
     {
         public string Name { get; private set; }
         public string Description { get; private set; }
@@ -25,11 +25,11 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
 
         public void Parse(Assembly modAssembly)
         {
-            Attribute att = entryType.GetCustomAttribute<DescriptiveModInfoAttribute>();
+            Attribute att = modAssembly.GetCustomAttributes<BaseModInfoAttribute>().FirstOrDefault(x => x.EntryType == entryType);
             if (att == null)
                 throw new MissingModInfoException("Entry type does not have a DescriptiveModInfoAttribute");
 
-            DescriptiveModInfoAttribute descAtt = (DescriptiveModInfoAttribute)att;
+            ModInfoAttribute descAtt = (ModInfoAttribute)att;
 
             Name = descAtt.Name;
             Description = descAtt.Description;
@@ -39,6 +39,6 @@ namespace SRML.Core.ModLoader.BuiltIn.ModInfo
             Dependencies = descAtt.Dependencies;
         }
 
-        public DescriptiveAttributeModInfo(Type entryType) => this.entryType = entryType;
+        public AttributeModInfo(Type entryType) => this.entryType = entryType;
     }
 }
