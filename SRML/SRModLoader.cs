@@ -527,8 +527,8 @@ namespace SRML
                     {
                         if (token.ContainsKey("load_after"))
                             pm.load_after = token["load_after"].ToObject<string[]>();
-                        if (token.ContainsKey("load_after"))
-                            pm.load_after = token["load_after"].ToObject<string[]>();
+                        if (token.ContainsKey("load_before"))
+                            pm.load_before = token["load_before"].ToObject<string[]>();
                     }
                     catch (Exception e)
                     {
