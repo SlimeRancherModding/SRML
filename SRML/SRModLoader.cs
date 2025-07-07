@@ -38,29 +38,27 @@ namespace SRML
             HashSet<ProtoMod> foundMods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
 
             // process mods without embedded modinfo.jsons
-            foreach (var jsonFile in Directory.GetFiles(FileSystem.ModPath, ModJson, SearchOption.AllDirectories))
+            foreach (string jsonFile in Directory.GetFiles(FileSystem.ModPath, ModJson, SearchOption.AllDirectories))
             {
                 var mod = ProtoMod.ParseFromJson(jsonFile);
-                if (!foundMods.Add(mod))
-                {
-                    throw new Exception("Found mod with duplicate id '"+mod.id+"' in "+jsonFile+"!");
-                }
-            }
-            // process mods with embedded modinfo.jsons
-            foreach (var dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
-            {
-                if(!ProtoMod.TryParseFromDLL(dllFile,out var mod)||mod.id==null) continue;
-                if (!foundMods.Add(mod))
-                {
-                    throw new Exception("Found mod with duplicate id '" + mod.id + "' in " + dllFile + "!");
-                }
+                    throw new Exception($"Found mod with duplicate id {mod.id} in {jsonFile}!");
             }
 
+            // process mods with embedded modinfo.jsons
+            foreach (string dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
+            {
+                if (!ProtoMod.TryParseFromDLL(dllFile, out ProtoMod mod) || mod?.id == null) 
+                    continue;
+
+                if (!foundMods.Add(mod))
+                    throw new Exception($"Found mod with duplicate id {mod.id} in {dllFile}!");
+            }
+
+            // ATTRIBUTE MOD LOADING HERE
             
             // Make sure all dependencies are in order, otherwise throw an exception from checkdependencies
             DependencyChecker.CheckDependencies(foundMods);
-            
-            DependencyChecker.CalculateLoadOrder(foundMods,loadOrder);
+            DependencyChecker.CalculateLoadOrder(foundMods, loadOrder);
 
             // Start loading the assemblies
             DiscoverAndLoadAssemblies(foundMods);
@@ -82,54 +80,63 @@ namespace SRML
         /// <returns>The associated ModInfo</returns>
         public static SRModInfo GetModInfo(string modid) => Mods.TryGetValue(modid, out var mod) ? mod.ModInfo : null;
 
-        internal static bool TryGetEntryType(Assembly assembly,out Type entryType)
+        internal static bool TryGetEntryType(Assembly assembly, out Type entryType)
         {
-            entryType = assembly.ManifestModule.GetTypes()
-                .FirstOrDefault((x) => (typeof(IModEntryPoint).IsAssignableFrom(x)));
-            return entryType != default(Type);
+            entryType = assembly.ManifestModule.GetTypes().FirstOrDefault((x) => (typeof(IModEntryPoint).IsAssignableFrom(x)));
+            return entryType != default;
         }
 
         static void DiscoverAndLoadAssemblies(ICollection<ProtoMod> protomods)
         {
             HashSet<AssemblyInfo> foundAssemblies = new HashSet<AssemblyInfo>();
-            foreach (var mod in protomods)
+            foreach (ProtoMod mod in protomods)
             {
-                foreach (var file in Directory.GetFiles(mod.path,"*.dll", SearchOption.AllDirectories))
+                if (mod.type == ProtoMod.InfoType.FILE_JSON)
                 {
-                    foundAssemblies.Add(new AssemblyInfo(AssemblyName.GetAssemblyName(Path.GetFullPath(file)),
-                        Path.GetFullPath(file), mod));
-                   
+                    foreach (string file in Directory.GetFiles(mod.path, "*.dll", SearchOption.AllDirectories))
+                    {
+                        // ensure no assemblies get found multiple times
+                        if (!foundAssemblies.Any(x => x.Path == Path.GetFullPath(file)))
+                            foundAssemblies.Add(new AssemblyInfo(AssemblyName.GetAssemblyName(Path.GetFullPath(file)), Path.GetFullPath(file), mod));
+                    }
                 }
+                else
+                {
+                    string fullpath = Path.Combine(mod.path, mod.entryFile);
 
+                    // there's a chance a file JSON already claimed this assembly as its own, so overwrite that if that's the case
+                    AssemblyInfo existingInfo = foundAssemblies.FirstOrDefault(x => x.Path == fullpath);
+                    if (existingInfo != null)
+                        existingInfo.mod = mod;
+                    else
+                        foundAssemblies.Add(new AssemblyInfo(AssemblyName.GetAssemblyName(fullpath), fullpath, mod));
+                }
             }
 
-            Assembly FindAssembly(object obj, ResolveEventArgs args)
-            {
-                var name = new AssemblyName(args.Name);
-                return foundAssemblies.FirstOrDefault((x) => x.DoesMatch(name))?.LoadAssembly();
-            }
-
-            
-
+            Assembly FindAssembly(object obj, ResolveEventArgs args) => foundAssemblies.FirstOrDefault((x) => x.DoesMatch(new AssemblyName(args.Name)))?.LoadAssembly();
             AppDomain.CurrentDomain.AssemblyResolve += FindAssembly;
+
             try
             {
-                foreach (var mod in protomods)
+                // load all assemblies related to a mod
+                // if none of these assemblies are a mod assembly, something went wrong
+                foreach (ProtoMod mod in protomods)
                 {
-                    foreach (var assembly in foundAssemblies.Where((x)=>x.mod==mod))
+                    SRMod newMod = null;
+
+                    foreach (AssemblyInfo assembly in foundAssemblies.Where((x) => x.mod == mod))
                     {
-                        var a = assembly.LoadAssembly();
-                        if (!TryGetEntryType(a, out var entryType)||assembly.IsModAssembly||(!mod.isFromJSON&&Path.GetFullPath(assembly.Path)!=Path.GetFullPath(mod.entryFile))) continue;
+                        Assembly a = assembly.LoadAssembly(); // always load assemblies just for the sake of them being in memory
+                        if (newMod != null || assembly.IsModAssembly || !TryGetEntryType(a, out var entryType) || (mod.type == ProtoMod.InfoType.EMBEDDED_JSON && Path.GetFullPath(assembly.Path) != Path.GetFullPath(Path.Combine(mod.path, mod.entryFile)))) 
+                            continue;
+                        
                         assembly.IsModAssembly = true;
-                        var newMod = AddMod(assembly.mod, entryType);
+                        newMod = AddMod(assembly.mod, entryType);
                         HarmonyOverrideHandler.LoadOverrides(entryType.Module);
-                        goto foundmod;
                     }
 
-                    throw new EntryPointNotFoundException($"Could not find assembly for mod '{mod}'");
-
-                    foundmod:
-                    continue;
+                    if (newMod == null)
+                        throw new EntryPointNotFoundException($"Could not find assembly for mod '{mod}'");
                 }
             }
             finally
@@ -167,7 +174,7 @@ namespace SRML
                 if (entryPoint is ModEntryPoint)
                     ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
 
-                var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, modInfo.path);
+                var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, Path.Combine(modInfo.path, modInfo.entryFile));
                 Mods.Add(modInfo.id, newmod);
                 return newmod;
             }
@@ -382,7 +389,7 @@ namespace SRML
             [JsonIgnore]
             public DependencyChecker.Dependency[] parsedDependencies;
 
-            public bool isFromJSON = true;
+            public InfoType type = InfoType.FILE_JSON;
             public string entryFile;
 
             public override bool Equals(object o)
@@ -408,9 +415,9 @@ namespace SRML
 
             public static ProtoMod ParseFromJson(string jsonData, string path)
             {
-                var proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData, new ProtoModConverter());
+                ProtoMod proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData, new ProtoModConverter());
                 proto.path = Path.GetDirectoryName(path);
-                proto.entryFile = path;
+                proto.entryFile = Path.GetFileName(path);
                 proto.ValidateFields();
                 return proto;
             }
@@ -421,25 +428,20 @@ namespace SRML
             /// <param name="dllFile">Path to the DLL file to process</param>
             /// <param name="mod">The parsed <see cref="ProtoMod"/>, or null</param>
             /// <returns>Whether the parsing was successful</returns>
-            public static bool TryParseFromDLL(String dllFile,out ProtoMod mod)
+            public static bool TryParseFromDLL(string dllFile, out ProtoMod mod)
             {
-                var assembly = Assembly.LoadFile(dllFile);
-                mod = new ProtoMod();
-                mod.isFromJSON = false;
-                mod.path = Path.GetDirectoryName(dllFile);
-                mod.entryFile = dllFile;
-                if (assembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string
-                    fileName)
+                Assembly assembly = Assembly.LoadFile(dllFile);
+                mod = null;
+
+                if (assembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string fileName)
                 {
                     using (var reader = new StreamReader(assembly.GetManifestResourceStream(fileName)))
-                    {
                         mod = ParseFromJson(reader.ReadToEnd(), dllFile);
-                        mod.isFromJSON = false;
-                    }
-                }
-                else return false;
 
-                return true;
+                    mod.type = InfoType.EMBEDDED_JSON;
+                }
+
+                return mod != null;
             }
 
             public override string ToString() => $"{id} {version}";
@@ -493,6 +495,13 @@ namespace SRML
                 {
                     return obj.GetHashCode();
                 }
+            }
+
+            public enum InfoType
+            {
+                FILE_JSON,
+                EMBEDDED_JSON,
+                ATTRIBUTE
             }
 
             public class ProtoModConverter : JsonConverter
