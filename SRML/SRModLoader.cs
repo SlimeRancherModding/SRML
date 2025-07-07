@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json;
-using UnityEngine;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using SRML.Utils;
-using Exception = System.Exception;
 using SRML.Utils.Enum;
-using System.Collections.ObjectModel;
 using SRML.Config;
-using SRML.SR;
 using Newtonsoft.Json.Linq;
 
 namespace SRML
@@ -47,14 +41,15 @@ namespace SRML
             // process mods with embedded modinfo.jsons
             foreach (string dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
             {
-                if (!ProtoMod.TryParseFromDLL(dllFile, out ProtoMod mod) || mod?.id == null) 
+                if (!ProtoMod.TryParseFromDLL(dllFile, out ProtoMod[] mods)) 
                     continue;
 
-                if (!foundMods.Add(mod))
-                    throw new Exception($"Found mod with duplicate id {mod.id} in {dllFile}!");
+                foreach (ProtoMod mod in mods)
+                {
+                    if (!foundMods.Add(mod))
+                        throw new Exception($"Found mod with duplicate id {mod.id} in {dllFile}!");
+                }
             }
-
-            // ATTRIBUTE MOD LOADING HERE
             
             // Make sure all dependencies are in order, otherwise throw an exception from checkdependencies
             DependencyChecker.CheckDependencies(foundMods);
@@ -82,7 +77,10 @@ namespace SRML
 
         internal static bool TryGetEntryType(Assembly assembly, out Type entryType)
         {
-            entryType = assembly.ManifestModule.GetTypes().FirstOrDefault((x) => (typeof(IModEntryPoint).IsAssignableFrom(x)));
+            // as attribute modinfos are loaded BEFORE an embedded modinfo.json, they get first pick over the entrypoints in the mod
+            // this way, a modinfo.json can load one mod, and the rest can be loaded by attributes
+            // I don't know why you'd ever want to do this, but you sure can!
+            entryType = assembly.ManifestModule.GetTypes().FirstOrDefault(x => !Mods.Any(y => y.Value.EntryType == x) && typeof(IModEntryPoint).IsAssignableFrom(x));
             return entryType != default;
         }
 
@@ -127,10 +125,15 @@ namespace SRML
                     foreach (AssemblyInfo assembly in foundAssemblies.Where((x) => x.mod == mod))
                     {
                         Assembly a = assembly.LoadAssembly(); // always load assemblies just for the sake of them being in memory
-                        if (newMod != null || assembly.IsModAssembly || !TryGetEntryType(a, out var entryType) || (mod.type == ProtoMod.InfoType.EMBEDDED_JSON && Path.GetFullPath(assembly.Path) != Path.GetFullPath(Path.Combine(mod.path, mod.entryFile)))) 
+                        if (newMod != null || assembly.IsModAssembly || !TryGetEntryType(a, out Type entryType) || 
+                            (mod.type == ProtoMod.InfoType.EMBEDDED_JSON && Path.GetFullPath(assembly.Path) != Path.GetFullPath(Path.Combine(mod.path, mod.entryFile)))) 
                             continue;
                         
                         assembly.IsModAssembly = true;
+                        
+                        if (mod.entryType != null)
+                            entryType = mod.entryType;
+                        
                         newMod = AddMod(assembly.mod, entryType);
                         HarmonyOverrideHandler.LoadOverrides(entryType.Module);
                     }
@@ -380,7 +383,6 @@ namespace SRML
             public string author;
             public string version;
             public string description;
-            public string path;
             public string[] load_after;
             public string[] load_before;
 
@@ -389,8 +391,11 @@ namespace SRML
             [JsonIgnore]
             public DependencyChecker.Dependency[] parsedDependencies;
 
-            public InfoType type = InfoType.FILE_JSON;
+            public string path;
             public string entryFile;
+            public InfoType type = InfoType.FILE_JSON;
+
+            public Type entryType;
 
             public override bool Equals(object o)
             {
@@ -423,25 +428,40 @@ namespace SRML
             }
 
             /// <summary>
-            /// Try to create a protomod from an embedded modinfo json in a DLL
+            /// Try to create protomods from a DLL's attributes and embedded files
             /// </summary>
             /// <param name="dllFile">Path to the DLL file to process</param>
-            /// <param name="mod">The parsed <see cref="ProtoMod"/>, or null</param>
+            /// <param name="mods">The parsed <see cref="ProtoMod"/>s</param>
             /// <returns>Whether the parsing was successful</returns>
-            public static bool TryParseFromDLL(string dllFile, out ProtoMod mod)
+            public static bool TryParseFromDLL(string dllFile, out ProtoMod[] mods)
             {
                 Assembly assembly = Assembly.LoadFile(dllFile);
-                mod = null;
+                List<ProtoMod> modList = new List<ProtoMod>();
+
+                foreach (ModInfoAttribute att in assembly.GetCustomAttributes<ModInfoAttribute>())
+                {
+                    ProtoMod mod = att.Parse();
+
+                    mod.type = InfoType.ATTRIBUTE;
+                    mod.path = Path.GetDirectoryName(dllFile);
+                    mod.entryFile = Path.GetFileName(dllFile);
+
+                    modList.Add(mod);
+                }
 
                 if (assembly.GetManifestResourceNames().FirstOrDefault((x) => x.EndsWith("modinfo.json")) is string fileName)
                 {
+                    ProtoMod mod = null;
                     using (var reader = new StreamReader(assembly.GetManifestResourceStream(fileName)))
                         mod = ParseFromJson(reader.ReadToEnd(), dllFile);
 
                     mod.type = InfoType.EMBEDDED_JSON;
+
+                    modList.Add(mod);
                 }
 
-                return mod != null;
+                mods = modList.ToArray();
+                return mods.Length > 0;
             }
 
             public override string ToString() => $"{id} {version}";
@@ -451,9 +471,11 @@ namespace SRML
             /// </summary>
             void ValidateFields()
             {
-                if (id == null) throw new Exception($"{path} is missing an id field!");
+                if (id == null) 
+                    throw new Exception($"{path} is missing an id field!");
+                if (id.Contains(" "))
+                    throw new Exception($"Invalid mod id: {id}");
                 id = id.ToLower();
-                if (id.Contains(" ")) throw new Exception($"Invalid mod id: {id}");
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
                 /*if (dependencies == null || dependencies.Count == 0) return;

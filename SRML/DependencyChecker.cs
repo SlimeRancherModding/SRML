@@ -20,8 +20,7 @@ namespace SRML
                 foreach (var dep in mod.parsedDependencies)
                 {
                     if (!mods.Any((x) => dep.SatisfiedBy(x)))
-                        throw new Exception(
-                            $"Unresolved dependency for '{mod.id}'! Cannot find '{dep.mod_id} {dep.version}'");
+                        throw new Exception($"Unresolved dependency for '{mod.id}'! Cannot find '{dep.mod_id} {dep.version}'");
                 }
             }
 
@@ -85,7 +84,8 @@ namespace SRML
         public static Dictionary<string, SRModInfo.ModVersion> ToDependencyDictionary(this Dependency[] dependencies)
         {
             Dictionary<string, SRModInfo.ModVersion> result = new Dictionary<string, SRModInfo.ModVersion>();
-            foreach (Dependency dependency in dependencies) result.Add(dependency.mod_id, dependency.version);
+            foreach (Dependency dependency in dependencies) 
+                result.Add(dependency.mod_id, dependency.version);
             return result;
         }
 
