@@ -19,7 +19,7 @@ namespace SRML
 
         public static IEnumerable<SRModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
 
-        private static readonly List<string> loadOrder = new List<string>();
+        private static List<string> loadOrder = new List<string>();
         
         public static LoadingStep CurrentLoadingStep { get; private set; }
 
@@ -59,8 +59,8 @@ namespace SRML
             DiscoverAndLoadAssemblies(foundMods);
             
             // now that every assembly has been found and verified, loading can commence in order
-            DependencyChecker.CalculateLoadOrder(ref foundMods, out _);
-            LoadMods(foundMods);
+            DependencyChecker.CalculateLoadOrder(ref foundMods, out loadOrder);
+            AddMods(foundMods);
         }
 
 
@@ -146,7 +146,7 @@ namespace SRML
             }
         }
 
-        internal static void LoadMods(ICollection<ProtoMod> mods)
+        internal static void AddMods(ICollection<ProtoMod> mods)
         {
             foreach (ProtoMod mod in mods)
             {

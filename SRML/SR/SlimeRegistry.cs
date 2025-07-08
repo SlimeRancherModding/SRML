@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Sentry;
 using SRML.SR.Utils;
 using SRML.Utils;
 using System;
@@ -120,6 +121,7 @@ namespace SRML.SR
         public static SlimeAppearance CombineAppearances(SlimeAppearance slime1, SlimeAppearance slime2, SlimeAppearance.AppearanceSaveSet set, LargoProps props, Shader stripeShader = null)
         {
             SlimeAppearance appearance = ScriptableObject.CreateInstance<SlimeAppearance>();
+            appearance.name = slime1.name + slime2.name;
             appearance.AnimatorOverride = slime1.AnimatorOverride ?? slime2.AnimatorOverride;
             appearance.DependentAppearances = new SlimeAppearance[2] { slime1, slime2 };
             appearance.Face = (SlimeFace)PrefabUtils.DeepCopyObject(slime1.Face);
@@ -208,6 +210,7 @@ namespace SRML.SR
             slimeDefinition.CanLargofy = false;
             slimeDefinition.IdentifiableId = id;
             slimeDefinition.IsLargo = true;
+            slimeDefinition.name = $"{slime1.Name}{slime2.Name}";
             slimeDefinition.Name = $"{slime1.Name} {slime2.Name}";
             slimeDefinition.PrefabScale = 2;
             slimeDefinition.Sounds = ((props & (LargoProps.SWAP_SOUNDS)) != 0) ? slime2.Sounds : slime1.Sounds;
@@ -237,7 +240,7 @@ namespace SRML.SR
         {
             GameObject largoPrefab = PrefabUtils.CopyPrefab(def.BaseSlimes[0].GetPrefab());
             GameObject slime2Prefab = def.BaseSlimes[1].GetPrefab();
-            largoPrefab.name = GenerateLargoName(def.IdentifiableId).Replace(" ", string.Empty).Replace("Largo", string.Empty);
+            largoPrefab.name = $"slime{GenerateLargoName(def.IdentifiableId).Replace(" ", string.Empty).Replace("Largo", string.Empty)}";
             largoPrefab.transform.localScale = Vector3.one * def.PrefabScale;
 
             largoPrefab.GetComponent<SlimeAppearanceApplicator>().SlimeDefinition = def;
@@ -304,6 +307,25 @@ namespace SRML.SR
         /// <param name="largoObject">The <see cref="GameObject"/> of the created largo.</param>
         public static void CraftLargo(Identifiable.Id largoId, Identifiable.Id slime1, Identifiable.Id slime2, LargoProps props,
             out SlimeDefinition largoDefinition, out SlimeAppearance largoAppearance, out GameObject largoObject,
+            LargoProps slime1SSProps = LargoProps.NONE, LargoProps slime2SSProps = LargoProps.NONE, LargoProps slime12SSProps = LargoProps.NONE) =>
+            CraftLargo(largoId, slime1, slime2, props, null, out largoDefinition, out largoAppearance, out largoObject, slime1SSProps, slime2SSProps, slime12SSProps);
+
+        /// <summary>
+        /// Combines two slimes into a largo.
+        /// </summary>
+        /// <param name="largoId">The <see cref="Identifiable.Id"/> belonging to the resulting largo.</param>
+        /// <param name="slime1">The <see cref="Identifiable.Id"/> belonging to the base slime.</param>
+        /// <param name="slime2">The <see cref="Identifiable.Id"/> belonging to the addon slime.</param>
+        /// <param name="props">The properties controlling the way the slimes are combined.</param>
+        /// <param name="processApperances">Code to process appearances after creation, including any DLC appearances generated on DLC load.</param>
+        /// <param name="slime1SSProps">The properties controlling the base Secret Style and the addon normal <see cref="SlimeAppearance"/>s are combined.</param>
+        /// <param name="slime2SSProps">The properties controlling the base normal and the addon Secret Style <see cref="SlimeAppearance"/>s are combined.</param>
+        /// <param name="slime12SSProps">The properties controlling the base Secret Style and the addon Secret Style <see cref="SlimeAppearance"/>s are combined.</param>
+        /// <param name="largoDefinition">The <see cref="SlimeDefinition"/> of the created largo.</param>
+        /// <param name="largoAppearance">The <see cref="SlimeAppearance"/> of the created largo.</param>
+        /// <param name="largoObject">The <see cref="GameObject"/> of the created largo.</param>
+        public static void CraftLargo(Identifiable.Id largoId, Identifiable.Id slime1, Identifiable.Id slime2, LargoProps props, Action<SlimeAppearance> processApperances,
+            out SlimeDefinition largoDefinition, out SlimeAppearance largoAppearance, out GameObject largoObject,
             LargoProps slime1SSProps = LargoProps.NONE, LargoProps slime2SSProps = LargoProps.NONE, LargoProps slime12SSProps = LargoProps.NONE)
         {
             SlimeDefinition slime1Def = slime1.GetSlimeDefinition();
@@ -312,6 +334,8 @@ namespace SRML.SR
             SlimeDefinition def = CombineDefinitions(largoId, slime1Def, slime2Def, props);
             SlimeAppearance app = CombineAppearances(slime1Def.AppearancesDefault[0], slime2Def.AppearancesDefault[0], SlimeAppearance.AppearanceSaveSet.CLASSIC, props);
             GameObject largoOb = CombineSlimePrefabs(def);
+
+            processApperances?.Invoke(app);
 
             if ((props & (LargoProps.GENERATE_NAME)) != 0)
                 TranslationPatcher.AddActorTranslation("l." + largoId.ToString().ToLower(), GenerateLargoName(largoId));
@@ -325,16 +349,24 @@ namespace SRML.SR
                         SlimeAppearance secretSlime1 = slime1Def.GetAppearanceForSet(SlimeAppearance.AppearanceSaveSet.SECRET_STYLE);
                         SlimeAppearance secretSlime2 = slime2Def.GetAppearanceForSet(SlimeAppearance.AppearanceSaveSet.SECRET_STYLE);
 
-                        if (secretSlime1 != null && secretSlime2 != null)
+                        if (secretSlime1)
                         {
-                            RegisterAppearance(def, CombineAppearances(secretSlime1, secretSlime2, SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime12SSProps == default ? props : slime12SSProps));
-                            RegisterAppearance(def, CombineAppearances(slime1Def.AppearancesDefault[0], secretSlime2, SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime2SSProps == default ? props : slime2SSProps));
-                            RegisterAppearance(def, CombineAppearances(secretSlime1, slime2Def.AppearancesDefault[0], SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime1SSProps == default ? props : slime1SSProps));
+                            SlimeAppearance appss1 = CombineAppearances(secretSlime1, slime2Def.AppearancesDefault[0], SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime1SSProps == default ? props : slime1SSProps);
+                            processApperances?.Invoke(appss1);
+                            RegisterAppearance(def, appss1);
                         }
-                        else if (secretSlime1 != null)
-                            RegisterAppearance(def, CombineAppearances(secretSlime1, slime2Def.AppearancesDefault[0], SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime1SSProps == default ? props : slime1SSProps));
-                        else if (secretSlime2 != null)
-                            RegisterAppearance(def, CombineAppearances(slime1Def.AppearancesDefault[0], secretSlime2, SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime2SSProps == default ? props : slime2SSProps));
+                        if (secretSlime2)
+                        {
+                            SlimeAppearance appss2 = CombineAppearances(slime1Def.AppearancesDefault[0], secretSlime2, SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime2SSProps == default ? props : slime2SSProps);
+                            processApperances?.Invoke(appss2);
+                            RegisterAppearance(def, appss2);
+                        }
+                        if (secretSlime1 && secretSlime2)
+                        {
+                            SlimeAppearance appBoth = CombineAppearances(secretSlime1, secretSlime2, SlimeAppearance.AppearanceSaveSet.SECRET_STYLE, slime12SSProps == default ? props : slime12SSProps);
+                            processApperances?.Invoke(appBoth);
+                            RegisterAppearance(def, appBoth);
+                        }
                     }
                 };
             }
