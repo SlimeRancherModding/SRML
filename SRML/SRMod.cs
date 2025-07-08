@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using SRML.Config;
@@ -15,19 +12,21 @@ namespace SRML
     /// </summary>
     public class SRModInfo
     {
-        public SRModInfo(string modid, string name, string author, ModVersion version, string description, Dictionary<string, ModVersion> dependencies)
+        public SRModInfo(string modid, string name, string author, ModVersion version, string description, string url, Dictionary<string, ModVersion> dependencies)
         {
             Id = modid;
             Name = name;
             Author = author;
             Version = version;
             Description = description;
+            URL = url;
             Dependencies = dependencies;
         }
         public string Id { get; private set; }
         public string Name { get; private set; }
         public string Author { get; private set; }
         public string Description { get; private set; }
+        public string URL { get; private set; }
         public ModVersion Version { get; private set; }
         public Dictionary<string, ModVersion> Dependencies { get; private set; }
 

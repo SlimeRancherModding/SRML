@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using HarmonyLib;
-using SRML.Utils;
-using UnityEngine;
 
 namespace SRML
 {
@@ -16,78 +10,43 @@ namespace SRML
         {
             foreach (var mod in mods)
             {
-                if (!mod.HasDependencies) continue;
-                foreach (var dep in mod.parsedDependencies)
-                {
-                    if (!mods.Any((x) => dep.SatisfiedBy(x)))
-                        throw new Exception($"Unresolved dependency for '{mod.id}'! Cannot find '{dep.mod_id} {dep.version}'");
-                }
-            }
+                if (!mod.HasDependencies) 
+                    continue;
 
+                IEnumerable<Dependency> unmet = mod.parsedDependencies.Where(x => !mods.Any(y => x.SatisfiedBy(y)));
+                if (unmet.Any())
+                    throw new Exception($"Unresolved dependency for '{mod.id}'! Cannot find '{unmet.First().mod_id} {unmet.First().version}'");
+            }
             return true;
         }
 
-        public static void CalculateLoadOrder(HashSet<SRModLoader.ProtoMod> mods, List<string> loadOrder)
+        private static int CompareLoadingOrder(SRModLoader.ProtoMod mod1, SRModLoader.ProtoMod mod2)
         {
-            loadOrder.Clear();
-            var modList = new List<SRModLoader.ProtoMod>();
-            
-            HashSet<string> currentlyLoading = new HashSet<string>();
+            if (mod1.load_before.Contains(mod2.id) && mod2.load_before.Contains(mod1.id))
+                throw new Exception($"{mod1.id} and {mod2.id} attempting to load before one another.");
+            if (mod1.load_after.Contains(mod2.id) && mod2.load_after.Contains(mod1.id))
+                throw new Exception($"{mod1.id} and {mod2.id} attempting to load after one another.");
 
-
-            void FixAfters(SRModLoader.ProtoMod mod)
-            {
-                foreach(var h in mod.load_before)
-                {
-
-                    if (mods.FirstOrDefault((x) => x.id == h) is SRModLoader.ProtoMod proto)
-                    {
-                        proto.load_after = new HashSet<string>(proto.load_after.AddToArray(mod.id)).ToArray();
-                        
-                    }
-                }
-
-            }
-
-            foreach (var v in mods)
-            {
-                FixAfters(v);
-            }
-
-            void LoadMod(SRModLoader.ProtoMod mod)
-            {
-                if (modList.Contains(mod)) return;
-                currentlyLoading.Add(mod.id);
-                foreach (var v in mod.load_after)
-                {
-                    if (!(mods.FirstOrDefault((x) => x.id == v) is SRModLoader.ProtoMod proto)) continue;
-                    if (currentlyLoading.Contains(v)) throw new Exception("Circular dependency detected "+mod.id+" "+v);
-                    LoadMod(proto);
-                }
-
-
-                modList.Add(mod);
-
-                currentlyLoading.Remove(mod.id);
-
-                
-            }
-
-            foreach (var v in mods)
-            {
-                LoadMod(v);
-            }
-
-            loadOrder.AddRange(modList.Select((x)=>x.id));
+            if (mod1.load_before.Contains(mod2.id) || mod2.load_after.Contains(mod1.id))
+                return -1;
+            else if (mod1.load_after.Contains(mod2.id) || mod2.load_before.Contains(mod1.id))
+                return 1;
+            else
+                return 0;
         }
 
-        public static Dictionary<string, SRModInfo.ModVersion> ToDependencyDictionary(this Dependency[] dependencies)
+        public static void CalculateLoadOrder(ref HashSet<SRModLoader.ProtoMod> mods, out List<string> loadOrder)
         {
-            Dictionary<string, SRModInfo.ModVersion> result = new Dictionary<string, SRModInfo.ModVersion>();
-            foreach (Dependency dependency in dependencies) 
-                result.Add(dependency.mod_id, dependency.version);
-            return result;
+            List<SRModLoader.ProtoMod> modsSorted = new List<SRModLoader.ProtoMod>(mods);
+            modsSorted.Sort(CompareLoadingOrder);
+            mods = modsSorted.ToHashSet();
+            loadOrder = modsSorted.Select(x => x.id).ToList();
+
+            foreach (string s in loadOrder)
+                UnityEngine.Debug.Log(s);
         }
+
+        public static Dictionary<string, SRModInfo.ModVersion> ToDependencyDictionary(this Dependency[] dependencies) => dependencies.ToDictionary(x => x.mod_id, y => y.version);
 
         internal class Dependency
         {

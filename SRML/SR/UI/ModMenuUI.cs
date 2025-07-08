@@ -75,6 +75,11 @@ namespace SRML.SR.UI
             {
                 name = info.Name;
                 description = $"Description: {(info.Description == null || info.Description == string.Empty ? "No info provided" : info.Description)}";
+
+                // TEMP
+                if (info.URL != null)
+                    description += $"\n\n{info.URL}";
+
                 version = $"Version: {info.Version}";
                 author = $"Author: {info.Author}";
                 dependencies = $"Dependencies: ";

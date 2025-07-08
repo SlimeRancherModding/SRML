@@ -12,6 +12,7 @@ namespace SRML
         private readonly string author;
         private readonly string version;
         private readonly string description;
+        private readonly string url;
         private readonly string[] loadAfter;
         private readonly string[] loadBefore;
         private readonly string[] dependencies;
@@ -24,6 +25,7 @@ namespace SRML
             author = author,
             version = version,
             description = description,
+            url = url,
             load_after = loadAfter ?? new string[0],
             load_before = loadBefore ?? new string[0],
             parsedDependencies = dependencies?.Select(x =>
@@ -50,7 +52,7 @@ namespace SRML
         /// <param name="loadBefore">Mods to load before this mod</param>
         /// <param name="dependencies">Mods that this mod depends on, in the format "ID:VERSION"</param>
         public ModInfoAttribute(Type entryType, string id, string name, string author, string version, 
-            string description = null, string[] loadAfter = null, string[] loadBefore = null, string[] dependencies = null)
+            string description = null, string url = null, string[] loadAfter = null, string[] loadBefore = null, string[] dependencies = null)
         {
             this.entryType = entryType;
             this.id = id;
@@ -58,6 +60,7 @@ namespace SRML
             this.author = author;
             this.version = version;
             this.description = description;
+            this.url = url;
             this.loadAfter = loadAfter;
             this.loadBefore = loadBefore;
             this.dependencies = dependencies;
