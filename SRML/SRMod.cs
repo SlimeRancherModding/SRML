@@ -21,7 +21,9 @@ namespace SRML
             Description = description;
             URL = url;
             Dependencies = dependencies;
+            LoadState = State.INITIALIZED;
         }
+
         public string Id { get; private set; }
         public string Name { get; private set; }
         public string Author { get; private set; }
@@ -29,6 +31,12 @@ namespace SRML
         public string URL { get; private set; }
         public ModVersion Version { get; private set; }
         public Dictionary<string, ModVersion> Dependencies { get; private set; }
+
+        // putting this in the info instead of SRMod as modders MAY find it useful
+        public State LoadState { get; internal set; }
+
+        public bool IsLoaded => (int)LoadState > -1 && !EncounteredError;
+        public bool EncounteredError => (int)LoadState >= 900;
 
         public static SRModInfo GetCurrentInfo()
         {
@@ -57,7 +65,7 @@ namespace SRML
                 return $"{Major}.{Minor}.{Revision}";
             }
 
-            public static ModVersion Parse(String s)
+            public static ModVersion Parse(string s)
             {
                 string[] splits = s.Split('.');
                 if (splits.Length < 2 || splits.Length > 3) goto uhoh;
@@ -82,7 +90,25 @@ namespace SRML
                 return 0;
             }
         }
+
+        public enum State
+        {
+            UNLOADED = -1, // Mod has been disabled manually
+
+            INITIALIZED = 0, // Mod has been created from ProtoMod, but no loading steps have occurred yet
+            PRELOADED = 1, // these correspond to the three loading states by the same name, set AFTER each one has occurred
+            LOADED = 2,
+            POSTLOADED = 3,
+
+            // Individual error states? may not use these
+            ERROR = 900,
+            INITIALIZATION_ERROR = 901,
+            PRELOAD_ERROR = 902,
+            LOAD_ERROR = 903,
+            POSTLOAD_ERROR = 904,
+        }
     }
+
     /// <summary>
     /// Actual internal implementation of a mod
     /// </summary>
@@ -106,6 +132,8 @@ namespace SRML
         private bool useNewEntry = false;
 
         private static SRMod forcedContext;
+
+        public Exception exception;
 
         /// <summary>
         /// Gets the current executing mod as an SRMod instance 
@@ -160,13 +188,17 @@ namespace SRML
         public SRMod(SRModInfo info, IModEntryPoint entryPoint)
         {
             this.ModInfo = info;
-            this.EntryType = entryPoint.GetType();
-            if (entryPoint is ModEntryPoint)
+
+            if (entryPoint != null)
             {
-                entryPoint2 = (ModEntryPoint)entryPoint;
-                useNewEntry = true;
+                this.EntryType = entryPoint.GetType();
+                if (entryPoint is ModEntryPoint)
+                {
+                    entryPoint2 = (ModEntryPoint)entryPoint;
+                    useNewEntry = true;
+                }
+                this.entryPoint = entryPoint;
             }
-            this.entryPoint = entryPoint;
         }
 
         public SRMod(SRModInfo info, IModEntryPoint entryPoint, string path) : this(info, entryPoint)

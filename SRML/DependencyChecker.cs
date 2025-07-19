@@ -10,18 +10,21 @@ namespace SRML
         {
             foreach (var mod in mods)
             {
-                if (!mod.HasDependencies) 
+                if (mod.encounteredError != null || !mod.HasDependencies) 
                     continue;
 
                 IEnumerable<Dependency> unmet = mod.parsedDependencies.Where(x => !mods.Any(y => x.SatisfiedBy(y)));
                 if (unmet.Any())
-                    throw new Exception($"Unresolved dependency for '{mod.id}'! Cannot find '{unmet.First().mod_id} {unmet.First().version}'");
+                    mod.encounteredError = new Exception($"Unresolved dependency for '{mod.id}'! Cannot find '{unmet.First().mod_id} {unmet.First().version}'");
             }
             return true;
         }
 
         private static int CompareLoadingOrder(SRModLoader.ProtoMod mod1, SRModLoader.ProtoMod mod2)
         {
+            if (mod1.id == null || mod2.id == null)
+                return 0;
+
             if (mod1.load_before.Contains(mod2.id) && mod2.load_before.Contains(mod1.id))
                 throw new Exception($"{mod1.id} and {mod2.id} attempting to load before one another.");
             if (mod1.load_after.Contains(mod2.id) && mod2.load_after.Contains(mod1.id))
@@ -40,10 +43,9 @@ namespace SRML
             List<SRModLoader.ProtoMod> modsSorted = new List<SRModLoader.ProtoMod>(mods);
             modsSorted.Sort(CompareLoadingOrder);
             mods = modsSorted.ToHashSet();
-            loadOrder = modsSorted.Select(x => x.id).ToList();
+            loadOrder = modsSorted.Where(x => x.id != null).Select(x => x.id).ToList();
 
-            foreach (string s in loadOrder)
-                UnityEngine.Debug.Log(s);
+            UnityEngine.Debug.Log($"Loading order: [ {string.Join(", ", loadOrder)} ]");
         }
 
         public static Dictionary<string, SRModInfo.ModVersion> ToDependencyDictionary(this Dependency[] dependencies) => dependencies.ToDictionary(x => x.mod_id, y => y.version);
@@ -67,7 +69,7 @@ namespace SRML
                 return dep;
             }
 
-            public bool SatisfiedBy(SRModLoader.ProtoMod mod) => mod.id == mod_id && SRModInfo.ModVersion.Parse(mod.version).CompareTo(version) <= 0;
+            public bool SatisfiedBy(SRModLoader.ProtoMod mod) => mod.id == mod_id && mod.encounteredError != null && SRModInfo.ModVersion.Parse(mod.version).CompareTo(version) <= 0;
         }
     }
 }

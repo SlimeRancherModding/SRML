@@ -15,29 +15,48 @@ using SRML.SR.UI;
 using SRML.SR.Utils;
 using SRML.SR.Utils.BaseObjects;
 using SRML.Utils;
+using TMPro;
 using UnityEngine;
 
 namespace SRML
 {
     internal static class Main
     {
-        public const string VERSION_STRING = "0.2.1b";
+        public const string VERSION_STRING = "0.3.0";
 
-        private static bool isPreInitialized;
+        private static bool isInitialized;
+        private static bool isPreLoaded;
+        private static bool isLoaded;
+        private static bool isPostLoaded;
+
+        internal static bool moveForwardAfterInit = true;
+
+        internal static GameObject context;
         internal static Transform prefabParent;
-        internal static FileStorageProvider StorageProvider = new FileStorageProvider();
+        internal static FileStorageProvider StorageProvider;
         internal static ConfigFile config;
-        internal static AssetBundle uiBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(ModMenuUIHandler), "srml"));
+        internal static AssetBundle uiBundle;
 
-        /// <summary>
-        /// Called before GameContext.Awake()
-        /// </summary>
-        internal static void PreLoad() 
+        internal static bool InitializeSRMLThenBeginLoad(StandaloneStartScreen __instance)
         {
-            if (isPreInitialized) return;
-            isPreInitialized = true;
+            // run after first frame, but before loading commences
+            if (isInitialized || !__instance.pastFirstFrame || __instance.isLoading)
+                return moveForwardAfterInit;
+
+            Main.Initialize();
+            return false;
+        }
+
+        internal static void Initialize()
+        {
+            if (isInitialized)
+                return;
+            isInitialized = true;
+
             Debug.Log("SRML has successfully invaded the game!");
 
+            // Sentry SDK reports errors to Monomi. we don't want to flood them with BS mod errors
+            // vital to be done before Anything
             SentrySdk sentrySdk = UnityEngine.Object.FindObjectOfType<SentrySdk>();
             if (sentrySdk != null)
             {
@@ -50,65 +69,103 @@ namespace SRML
                 Debug.Log("Disabling Sentry SDK");
             }
 
-            StorageProvider.Initialize();
+            context = new GameObject("SRMLContext");
+            UnityEngine.Object.DontDestroyOnLoad(context);
+
             prefabParent = new GameObject("PrefabParent").transform;
             prefabParent.gameObject.SetActive(false);
-            GameObject.DontDestroyOnLoad(prefabParent.gameObject);
-            foreach (var v in Assembly.GetExecutingAssembly().GetTypes())
+            prefabParent.SetParent(context.transform);
+
+            StorageProvider = new FileStorageProvider();
+            StorageProvider.Initialize();
+
+            FileLogger.Init();
+            Console.Console.Init();
+
+            config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
+            config.TryLoadFromFile();
+
+            uiBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Main), "srml"));
+
+            ErrorGUI.errorUI = uiBundle.LoadAsset<GameObject>("SRMLErrorUI");
+            ErrorGUI ui = ErrorGUI.errorUI.GetComponent<ErrorGUI>();
+
+            ErrorGUI.initErrorUI = uiBundle.LoadAsset<GameObject>("InitializationErrorUI");
+            ErrorGUI ui2 = ErrorGUI.initErrorUI.GetComponent<ErrorGUI>();
+
+            // assetbundles don't serialize TMP_Text alignment for some reason
+            foreach (TMP_Text text in ui.GetComponentsInChildren<TMP_Text>(true))
+                text.alignment = TextAlignmentOptions.Midline;
+            foreach (TMP_Text text in ui2.GetComponentsInChildren<TMP_Text>(true))
+                text.alignment = TextAlignmentOptions.Midline;
+            foreach (TMP_Text text in ui.errorInfo.GetComponentsInChildren<TMP_Text>(true))
+                text.alignment = TextAlignmentOptions.MidlineLeft;
+            foreach (TMP_Text text in ui2.errorInfo.GetComponentsInChildren<TMP_Text>(true))
+                text.alignment = TextAlignmentOptions.MidlineLeft;
+
+            foreach (Component c in ui2.GetComponentsInChildren(typeof(Component)))
             {
-                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
+                if (c.GetType().Name.Contains("Styler"))
+                    UnityEngine.Object.DestroyImmediate(c);
             }
+
+            // things break if this doesn't exist for reasons
+            foreach (var v in Assembly.GetExecutingAssembly().GetTypes())
+                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(v.TypeHandle);
+
             HarmonyPatcher.PatchAll();
 
+            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Awake"),
+                prefix: new HarmonyMethod(typeof(Main).GetMethod("PreLoad", BindingFlags.NonPublic | BindingFlags.Static)));
+            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
+                prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
+            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
+                postfix: new HarmonyMethod(typeof(Main).GetMethod("PostLoad", BindingFlags.NonPublic | BindingFlags.Static)));
+
+            // this patch ensures that steam doesn't try to add modded achievements, because it wouldn't like that
             Type sm = typeof(GameContext).Assembly.GetType("SteamManager", false, true);
             if (sm != null)
             {
                 HarmonyPatcher.Instance.Patch(sm.GetMethod("AddAchievement"),
                     prefix: new HarmonyMethod(typeof(AchievementRegistry).GetMethod("ModdedAchievementPatch", BindingFlags.NonPublic | BindingFlags.Static)));
             }
-            config = ConfigFile.GenerateConfig(typeof(SRMLConfig));
-            config.TryLoadFromFile();
 
-            try
-            {
-                SRModLoader.InitializeMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+            SRModLoader.InitializeMods();
+
+            HarmonyOverrideHandler.PatchAll(); // I Don't know what this is; as far as I can tell, it's a system that was never finished and does Nothing
+
+            IEnumerable<SRMod> erroring = SRModLoader.Mods.Values.Where(x => x.ModInfo.EncounteredError);
+            foreach (SRMod mod in erroring)
+                Debug.LogError(mod.exception);
+
+            moveForwardAfterInit = erroring.Count() <= 0;
+            if (!moveForwardAfterInit && !ErrorGUI.TryCreateExtendedError(null, ErrorGUI.initErrorUI, erroring, false))
+                Application.Quit();
+        }
+
+        /// <summary>
+        /// Called before GameContext.Awake()
+        /// </summary>
+        internal static void PreLoad() 
+        {
+            if (isPreLoaded) 
                 return;
-            }
-            FileLogger.Init();
-            Console.Console.Init();
-            HarmonyOverrideHandler.PatchAll();
-            try
-            {
-                SRModLoader.PreLoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.Message}");
-                return;
-            }
+            isPreLoaded = true;
+
+            SRModLoader.PreLoadMods();
             IdentifiableRegistry.CategorizeAllIds();
             GadgetRegistry.CategorizeAllIds();
             ReplacerCache.ClearCache();
-
-            HarmonyPatcher.Instance.Patch(typeof(GameContext).GetMethod("Start"),
-                prefix: new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.NonPublic | BindingFlags.Static)));
         }
-
-        private static bool isInitialized;
 
         /// <summary>
         /// Called before GameContext.Start()
         /// </summary>
         static void Load()
         {
-            if (isInitialized) return;
-            isInitialized = true;
+            if (isLoaded)
+                return;
+            isLoaded = true;
 
             BaseObjects.Populate();
             SRCallbacks.OnLoad();
@@ -117,40 +174,20 @@ namespace SRML
             GameContext.Instance.gameObject.AddComponent<ModManager>();
             GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
 
-            try
-            {
-                SRModLoader.LoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
-                return;
-            }
+            SRModLoader.LoadMods();
             GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
-
-            PostLoad();
         }
-        
-        private static bool isPostInitialized;
 
         /// <summary>
         /// Called after Load
         /// </summary>
         static void PostLoad()
         {
-            if (isPostInitialized) return;
-            isPostInitialized = true;
-            try
-            {
-                SRModLoader.PostLoadMods();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                ErrorGUI.CreateError($"{e.GetType().Name}: {e.Message}");
+            if (isPostLoaded) 
                 return;
-            }
+            isPostLoaded = true;
+
+            SRModLoader.PostLoadMods();
         }
 
         internal static void Reload()

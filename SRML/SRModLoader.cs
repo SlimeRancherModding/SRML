@@ -8,6 +8,9 @@ using SRML.Utils;
 using SRML.Utils.Enum;
 using SRML.Config;
 using Newtonsoft.Json.Linq;
+using UnityEngine.Rendering;
+using System.Runtime.InteropServices;
+using static ModDirector;
 
 namespace SRML
 {
@@ -15,7 +18,7 @@ namespace SRML
     {
         internal const string ModJson = "modinfo.json";
 
-        internal static readonly Dictionary<string,SRMod> Mods = new Dictionary<string, SRMod>();
+        internal static readonly Dictionary<string, SRMod> Mods = new Dictionary<string, SRMod>();
 
         public static IEnumerable<SRModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
 
@@ -28,6 +31,8 @@ namespace SRML
         /// </summary>
         internal static void InitializeMods()
         {
+            CurrentLoadingStep = LoadingStep.INITIALIZATION;
+
             FileSystem.CheckDirectory(FileSystem.ModPath);
             HashSet<ProtoMod> foundMods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
 
@@ -40,7 +45,7 @@ namespace SRML
                 foreach (ProtoMod mod in mods)
                 {
                     if (!foundMods.Add(mod))
-                        throw new Exception($"Found mod with duplicate id {mod.id} in {dllFile}!");
+                        mod.encounteredError = new Exception($"Found mod with duplicate id {mod.id} in {dllFile}!");
                 }
             }
 
@@ -48,8 +53,17 @@ namespace SRML
             foreach (string jsonFile in Directory.GetFiles(FileSystem.ModPath, ModJson, SearchOption.AllDirectories))
             {
                 ProtoMod mod = ProtoMod.ParseFromJson(jsonFile);
-                if (!foundMods.Add(mod))
-                    throw new Exception($"Found mod with duplicate id {mod.id} in {jsonFile}!");
+                if (foundMods.Add(mod))
+                    mod.encounteredError = new Exception($"Found mod with duplicate id {mod.id} in {jsonFile}!");
+            }
+
+            foreach (ProtoMod mod in foundMods)
+            {
+                try
+                {
+                    mod.ValidateFields();
+                }
+                catch (Exception e) { mod.encounteredError = e; }
             }
 
             DependencyChecker.CheckDependencies(foundMods);
@@ -63,13 +77,19 @@ namespace SRML
             AddMods(foundMods);
         }
 
+        /// <summary>
+        /// Check if <paramref name="modid"/> corresponds to any loaded mod
+        /// </summary>
+        /// <param name="modid">Mod ID to check</param>
+        /// <returns>Whether or not the mod is loaded</returns>
+        public static bool IsModLoaded(string modid) => LoadedMods.FirstOrDefault(x => x.Id == modid)?.IsLoaded ?? false;
 
         /// <summary>
         /// Check if <paramref name="modid"/> corresponds with a valid mod
         /// </summary>
         /// <param name="modid">Mod ID to check</param>
         /// <returns>Whether or not the mod exists</returns>
-        public static bool IsModPresent(string modid) => loadOrder.Any((x) => modid == x);
+        public static bool IsModPresent(string modid) => Mods.Keys.Any((x) => modid == x);
 
 
         /// <summary>
@@ -90,6 +110,9 @@ namespace SRML
             HashSet<AssemblyInfo> foundAssemblies = new HashSet<AssemblyInfo>();
             foreach (ProtoMod mod in protomods)
             {
+                if (mod.encounteredError != null)
+                    continue;
+
                 if (mod.type == ProtoMod.InfoType.FILE_JSON)
                 {
                     foreach (string file in Directory.GetFiles(mod.path, "*.dll", SearchOption.AllDirectories))
@@ -136,8 +159,8 @@ namespace SRML
 
                 foreach (ProtoMod mod in protomods)
                 {
-                    if (mod.entryType == null)
-                        throw new EntryPointNotFoundException($"Could not find a suitable entry point for '{mod}'");
+                    if (mod.encounteredError == null && mod.entryType == null)
+                        mod.encounteredError = new EntryPointNotFoundException($"Could not find a suitable entry point for '{mod}'");
                 }
             }
             finally
@@ -151,7 +174,9 @@ namespace SRML
             foreach (ProtoMod mod in mods)
             {
                 AddMod(mod, mod.entryType);
-                HarmonyOverrideHandler.LoadOverrides(mod.entryType.Module);
+                
+                if (mod.entryType != null)
+                    HarmonyOverrideHandler.LoadOverrides(mod.entryType.Module);
             }
         }
         
@@ -167,7 +192,7 @@ namespace SRML
 
         internal static SRMod GetModForAssembly(Assembly a)
         {
-            return Mods.FirstOrDefault((x) => x.Value.EntryType.Assembly == a).Value;
+            return Mods.FirstOrDefault((x) => x.Value.EntryType?.Assembly == a).Value;
         }
 
         internal static ICollection<SRMod> GetMods()
@@ -177,30 +202,42 @@ namespace SRML
 
         static SRMod AddMod(ProtoMod modInfo, Type entryType)
         {
-            try
-            {
-                IModEntryPoint entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
+            SRModInfo parsedModInfo = modInfo.ToModInfo();
+            IModEntryPoint entryPoint = null;
 
-                if (entryPoint is ModEntryPoint)
-                    ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
-
-                var newmod = new SRMod(modInfo.ToModInfo(), entryPoint, Path.Combine(modInfo.path, modInfo.entryFile));
-                Mods.Add(modInfo.id, newmod);
-                return newmod;
-            }
-            catch (Exception e)
+            if (modInfo.encounteredError == null)
             {
-                throw new Exception($"Error initializing '{modInfo.id}'!: {e}");
+                try
+                {
+                    entryPoint = (IModEntryPoint)Activator.CreateInstance(entryType);
+
+                    if (entryPoint is ModEntryPoint)
+                        ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
+                }
+                catch (Exception ex) 
+                { 
+                    modInfo.encounteredError = ex;
+                    UnityEngine.Debug.LogError(ex);
+                }
             }
+
+            SRMod newmod = new SRMod(parsedModInfo, entryPoint, Path.Combine(modInfo.path, modInfo.entryFile));
+            newmod.exception = modInfo.encounteredError;
+            newmod.ModInfo.LoadState = modInfo.encounteredError == null ? SRModInfo.State.INITIALIZED : SRModInfo.State.INITIALIZATION_ERROR;
+
+            Mods.Add(modInfo.id, newmod);
+            return newmod;
         }
 
         internal static void PreLoadMods()
         {
             CurrentLoadingStep = LoadingStep.PRELOAD;
             Console.Console.Reload += Main.Reload;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
@@ -209,7 +246,10 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error pre-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    mod.ModInfo.LoadState = SRModInfo.State.PRELOAD_ERROR;
+                    mod.exception = e;
+
+                    UnityEngine.Debug.LogError(e);
                 }
             }
         }
@@ -217,34 +257,43 @@ namespace SRML
         internal static void LoadMods()
         {
             CurrentLoadingStep = LoadingStep.LOAD;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     mod.Load();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error loading mod '{modid}'!\n{e.GetType().Name}: {e}");
-                }
+                    mod.ModInfo.LoadState = SRModInfo.State.LOAD_ERROR;
+                    mod.exception = e;
 
+                    UnityEngine.Debug.LogError(e);
+                }
             }
         }
 
         internal static void PostLoadMods()
         {
             CurrentLoadingStep = LoadingStep.POSTLOAD;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     mod.PostLoad();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error post-loading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    mod.ModInfo.LoadState = SRModInfo.State.POSTLOAD_ERROR;
+                    mod.exception = e;
+
+                    UnityEngine.Debug.LogError(e);
                 }
             }
 
@@ -254,9 +303,11 @@ namespace SRML
         internal static void ReloadMods()
         {
             CurrentLoadingStep = LoadingStep.RELOAD;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     SRMod.ForceModContext(mod);
@@ -269,7 +320,7 @@ namespace SRML
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error reloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    throw new Exception($"Error reloading mod '{mod.ModInfo.Id}'!\n{e.GetType().Name}: {e}");
                 }
             }
             CurrentLoadingStep = LoadingStep.FINISHED;
@@ -278,16 +329,18 @@ namespace SRML
         internal static void UnloadMods()
         {
             CurrentLoadingStep = LoadingStep.UNLOAD;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     mod.Unload();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error unloading mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    throw new Exception($"Error unloading mod '{mod.ModInfo.Id}'!\n{e.GetType().Name}: {e}");
                 }
             }
         }
@@ -295,16 +348,18 @@ namespace SRML
         internal static void UpdateMods()
         {
             if (CurrentLoadingStep != LoadingStep.FINISHED) return;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     mod.Update();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    throw new Exception($"Error updating mod '{mod.ModInfo.Id}'!\n{e.GetType().Name}: {e}");
                 }
             }
         }
@@ -312,16 +367,15 @@ namespace SRML
         internal static void UpdateModsFixed()
         {
             if (CurrentLoadingStep != LoadingStep.FINISHED) return;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
                 try
                 {
                     mod.FixedUpdate();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error fixed-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    throw new Exception($"Error fixed-updating mod '{mod.ModInfo.Id}'!\n{e.GetType().Name}: {e}");
                 }
             }
         }
@@ -329,16 +383,18 @@ namespace SRML
         internal static void UpdateModsLate()
         {
             if (CurrentLoadingStep != LoadingStep.FINISHED) return;
-            foreach (var modid in loadOrder)
+            foreach (SRMod mod in Mods.Values)
             {
-                var mod = Mods[modid];
+                if (!mod.ModInfo.IsLoaded)
+                    continue;
+
                 try
                 {
                     mod.LateUpdate();
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Error late-updating mod '{modid}'!\n{e.GetType().Name}: {e}");
+                    throw new Exception($"Error late-updating mod '{mod.ModInfo.Id}'!\n{e.GetType().Name}: {e}");
                 }
             }
         }
@@ -399,6 +455,7 @@ namespace SRML
 
         public enum LoadingStep
         {
+            INITIALIZATION,
             PRELOAD,
             LOAD,
             POSTLOAD,
@@ -431,6 +488,7 @@ namespace SRML
             public InfoType type = InfoType.FILE_JSON;
 
             public Type entryType;
+            public Exception encounteredError;
 
             public override bool Equals(object o)
             {
@@ -458,7 +516,6 @@ namespace SRML
                 ProtoMod proto = JsonConvert.DeserializeObject<ProtoMod>(jsonData, new ProtoModConverter());
                 proto.path = Path.GetDirectoryName(path);
                 proto.entryFile = Path.GetFileName(path);
-                proto.ValidateFields();
                 return proto;
             }
 
@@ -504,15 +561,16 @@ namespace SRML
             /// <summary>
             /// Make sure fields are in the correct form and not null
             /// </summary>
-            void ValidateFields()
+            public void ValidateFields()
             {
+                load_after = load_after ?? new string[0];
+                load_before = load_before ?? new string[0];
+
                 if (id == null) 
                     throw new Exception($"{path} is missing an id field!");
                 if (id.Contains(" "))
                     throw new Exception($"Invalid mod id: {id}");
                 id = id.ToLower();
-                load_after = load_after ?? new string[0];
-                load_before = load_before ?? new string[0];
                 /*if (dependencies == null || dependencies.Count == 0) return;
                 try
                 {
@@ -533,7 +591,21 @@ namespace SRML
             /// <returns>Converted <see cref="SRModInfo"/></returns>
             public SRModInfo ToModInfo()
             {
-                return new SRModInfo(id, name, author, SRModInfo.ModVersion.Parse(version), description, url, parsedDependencies == null ? new Dictionary<string, SRModInfo.ModVersion>() : parsedDependencies.ToDependencyDictionary());
+                SRModInfo.ModVersion version = default;
+                Dictionary<string, SRModInfo.ModVersion> dependencies = new Dictionary<string, SRModInfo.ModVersion>();
+
+                if (encounteredError == null)
+                {
+                    try
+                    {
+                        // if version doesn't parse, it doesn't matter if dependencies parse, 
+                        SRModInfo.ModVersion.Parse(this.version);
+                        dependencies = parsedDependencies?.ToDependencyDictionary() ?? dependencies;
+                    }
+                    catch (Exception ex) { encounteredError = ex; }
+                }
+
+                return new SRModInfo(id, name, author, version, description, url, dependencies);
             }
 
             public override int GetHashCode()

@@ -12,8 +12,8 @@ namespace SRML
     public static class FileSystem
     {
         public const string DataPath = "SlimeRancher_Data";
-        public static string ModPath = "SRML/Mods";
-        public static string LibPath = "SRML/Libs";
+        public static string ModPath = @"SRML\Mods";
+        public static string LibPath = @"SRML\Libs";
 
         /// <summary>
         /// Checks if a path exists and creates it if it doesn't
@@ -47,7 +47,7 @@ namespace SRML
         /// <returns>The config path</returns>
         internal static string GetConfigPath(SRMod mod)
         {
-            return CheckDirectory(Path.Combine(Path.Combine(Main.StorageProvider.SavePath(), "SRML/Config"), mod?.ModInfo.Id ?? "SRML"));
+            return CheckDirectory(Path.Combine(Path.Combine(Main.StorageProvider.SavePath(), @"SRML\Config"), mod?.ModInfo.Id ?? "SRML"));
         }
 
         /// <summary>

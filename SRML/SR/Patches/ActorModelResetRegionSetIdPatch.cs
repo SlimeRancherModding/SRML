@@ -11,7 +11,7 @@ namespace SRML.SR.Patches
     {
         public static void Postfix(ActorModel __instance)
         {
-            if (!SceneContext.Instance.RegionRegistry.regionsTrees.ContainsKey(__instance.currRegionSetId) &&
+            if (SceneContext.Instance && !SceneContext.Instance.RegionRegistry.regionsTrees.ContainsKey(__instance.currRegionSetId) &&
                 !RegionSetRegistry.customTrees.ContainsKey(__instance.currRegionSetId))
                 __instance.currRegionSetId = MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId.HOME;
         }

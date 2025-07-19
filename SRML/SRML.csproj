@@ -379,10 +379,12 @@
     <Compile Include="Editor\Runtime\InstanceInfo.cs" />
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="EnumTranslator.cs" />
-    <Compile Include="ErrorGUI.cs" />
+    <Compile Include="SR\Patches\BaseUINullCheckPatch.cs" />
+    <Compile Include="SR\UI\ErrorGUI.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="HarmonyPatcher.cs" />
     <Compile Include="IntermodCommunication.cs" />
+    <Compile Include="Loader.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="IModEntryPoint.cs" />
     <Compile Include="Patches\EnumInfoPatch.cs" />
@@ -651,7 +653,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <EmbeddedResource Include="SR\UI\srml" />
+    <EmbeddedResource Include="srml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SRML.Editor\SRML.Editor.csproj">

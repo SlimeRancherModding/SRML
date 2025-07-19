@@ -69,6 +69,12 @@ namespace SRML.SR.Patches
                             break;
                     }
                 }
+
+                __result["e.srml_error_title_base"] = "{0} during {1}";
+                __result["e.initialization_error"] = "initialization";
+                __result["e.preload_error"] = "preload";
+                __result["e.load_error"] = "load";
+                __result["e.postload_error"] = "postload";
             }
 
             TranslationPatcher.doneDictionaries[path] = __result;

@@ -657,13 +657,7 @@ namespace SRML.Console
                 completeIndex = 0;
 
                 focus = false;
-                if (SceneManager.GetActiveScene().name.Equals("worldGenerated"))
-                {
-                    if (!SceneContext.Instance.TimeDirector.HasPauser())
-                        SceneContext.Instance.TimeDirector.Pause(true);
-                    else
-                        hasAlreadyPaused = true;
-                }
+                SceneContext.Instance.TimeDirector.Pause(true);
 
                 cachedCasters = FindObjectsOfType<GraphicRaycaster>();
                 foreach (GraphicRaycaster caster in cachedCasters)
@@ -683,11 +677,7 @@ namespace SRML.Console
                 forceClose = false;
                 completeIndex = 0;
 
-                if (SceneManager.GetActiveScene().name.Equals("worldGenerated"))
-                {
-                    if (!hasAlreadyPaused)
-                        SceneContext.Instance.TimeDirector.Unpause(true);
-                }
+                SceneContext.Instance.TimeDirector.Unpause(true);
 
                 foreach (GraphicRaycaster caster in cachedCasters)
                 {
@@ -711,11 +701,7 @@ namespace SRML.Console
             forceClose = false;
             completeIndex = 0;
 
-            if (SceneManager.GetActiveScene().name.Equals("worldGenerated"))
-            {
-                if (!hasAlreadyPaused)
-                    SceneContext.Instance.TimeDirector.Unpause(true);
-            }
+            SceneContext.Instance.TimeDirector.Unpause(true);
 
             foreach (GraphicRaycaster caster in cachedCasters)
             {
