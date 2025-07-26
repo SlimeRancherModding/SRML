@@ -12,7 +12,7 @@ namespace SRML.SR
         {
             { x => Identifiable.IsFruit(x), SlimeEat.FoodGroup.FRUIT },
             { x => x.ToString().Contains("GINGER"), SlimeEat.FoodGroup.GINGER },
-            { x => Identifiable.IsAnimal(x), SlimeEat.FoodGroup.MEAT },
+            { x => Identifiable.MEAT_CLASS.Contains(x), SlimeEat.FoodGroup.MEAT },
             { x => Identifiable.IsSlime(x), SlimeEat.FoodGroup.NONTARRGOLD_SLIMES },
             { x => Identifiable.IsPlort(x), SlimeEat.FoodGroup.PLORTS },
             { x => Identifiable.IsVeggie(x), SlimeEat.FoodGroup.VEGGIES }
