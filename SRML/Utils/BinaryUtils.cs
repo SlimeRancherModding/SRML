@@ -235,12 +235,12 @@ namespace SRML.Utils
             return new Matrix4x4(ReadVector4(reader), ReadVector4(reader), ReadVector4(reader), ReadVector4(reader));
         }
 
-        public static void WriteArray(BinaryWriter writer, Array array, Action<BinaryWriter,object> writeAction)
+        public static void WriteArray<T>(BinaryWriter writer, T[] array, Action<BinaryWriter,T> writeAction)
         {
             writer.Write(array.Length);
             for (int i = 0; i < array.Length; i++)
             {
-                writeAction(writer, array.GetValue(i));
+                writeAction(writer, array[i);
             }
         }
 
