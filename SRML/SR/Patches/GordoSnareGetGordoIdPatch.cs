@@ -21,7 +21,7 @@ namespace SRML.SR.Patches
             {
                 GordoIdentifiable gordo = gordoEntry.GetComponent<GordoIdentifiable>();
 
-                if (GordoRegistry.pinks.Contains(gordo.id) || gordo.id == Identifiable.Id.PINK_GORDO || !gordo.nativeZones.Any(HasAccessToZone))
+                if (SnareRegistry.pinks.Contains(gordo.id) || gordo.id == Identifiable.Id.PINK_GORDO || !gordo.nativeZones.Any(HasAccessToZone))
                     continue;
 
                 SlimeDiet diet = gordoEntry.GetComponent<GordoEat>().slimeDefinition.Diet;
@@ -53,10 +53,10 @@ namespace SRML.SR.Patches
                     dictionary.Add(favIds[j], value);
             }
 
-            float value2 = __instance.pinkSnareWeight / (GordoRegistry.pinks.Count + 1);
+            float value2 = __instance.pinkSnareWeight / (SnareRegistry.pinks.Count + 1);
 
-            for (var j = 0; j < GordoRegistry.pinks.Count; j++)
-                dictionary.Add(GordoRegistry.pinks[j], value2);
+            for (var j = 0; j < SnareRegistry.pinks.Count; j++)
+                dictionary.Add(SnareRegistry.pinks[j], value2);
 
             dictionary.Add(Identifiable.Id.PINK_GORDO, value2);
 
