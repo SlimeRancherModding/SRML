@@ -412,6 +412,7 @@
     <Compile Include="SR\Patches\ExchangeDirectorAwakePatch.cs" />
     <Compile Include="SR\Patches\GordoSnareOnTriggerPatch.cs" />
     <Compile Include="SR\Patches\GordoSnarePatch.cs" />
+    <Compile Include="SR\Patches\GordoSnareGetGordoIdPatch.cs" />
     <Compile Include="SR\Patches\LandPlotUpgradersPatch.cs" />
     <Compile Include="SR\Patches\GamepadPanelSetupBindingsPatch.cs" />
     <Compile Include="SR\Patches\ProgressDirectorPersonalUpgradeCheckPatch.cs" />
