@@ -8,9 +8,9 @@ namespace SRML.SR
 {
     public static class SnareRegistry
     {
-        internal static readonly HashSet<Identifiable.Id> snareables = new();
-        internal static readonly HashSet<Func<Identifiable.Id, bool>> baitFuncs = new();
-        internal static readonly HashSet<Identifiable.Id> pinkLike = new();
+        internal static readonly HashSet<Identifiable.Id> snareables = new HashSet<Identifiable.Id>(Identifiable.idComparer);
+        internal static readonly HashSet<Func<Identifiable.Id, bool>> baitFuncs = new HashSet<Func<Identifiable.Id, bool>>();
+        internal static readonly HashSet<Identifiable.Id> pinkLike = new HashSet<Identifiable.Id>(Identifiable.idComparer);
 
         /// <summary>
         /// Allows an <see cref="Identifiable.Id"/> to go onto a gordo snare.
@@ -18,7 +18,8 @@ namespace SRML.SR
         /// <param name="id">The <see cref="Identifiable.Id"/> to register.</param>
         public static void RegisterAsSnareable(this Identifiable.Id id)
         {
-            snareables.Add(id);
+            if (!snareables.Contains(id))
+                snareables.Add(id);
         }
 
         /// <summary>
@@ -27,7 +28,8 @@ namespace SRML.SR
         /// <param name="gordoId">The id of the gordo being registered.</param>
         public static void RegisterGordoWithPinkBehaviour(Identifiable.Id gordoId)
         {
-            pinkLike.Add(gordoId);
+            if (!pinkLike.Contains(gordoId))
+                pinkLike.Add(gordoId);
         }
 
         /// <summary>

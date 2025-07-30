@@ -64,7 +64,7 @@ namespace SRML.Utils
             WriteArray(writer,mesh.bindposes,(x,y)=>WriteMatrix4(x,(Matrix4x4)y));
             WriteArray(writer,mesh.boneWeights,(x,y)=>WriteBoneWeight(x,(BoneWeight)y));
 
-            
+
         }
 
         public static void ReadMesh(BinaryReader reader, Mesh mesh)
@@ -227,7 +227,7 @@ namespace SRML.Utils
             {
                 WriteVector4(writer, matrix.GetColumn(i));
             }
-            
+
         }
 
         public static Matrix4x4 ReadMatrix4(BinaryReader reader)
@@ -240,7 +240,7 @@ namespace SRML.Utils
             writer.Write(array.Length);
             for (int i = 0; i < array.Length; i++)
             {
-                writeAction(writer, array[i);
+                writeAction(writer, array[i]);
             }
         }
 
@@ -250,13 +250,13 @@ namespace SRML.Utils
             T[] output = new T[length];
             for (int i = 0; i < length; i++)
             {
-                
+
                 output[i] = readAction(reader);
             }
 
             return output;
         }
-        
+
     }
 
     public class SerializerPair<T> : SerializerPair
@@ -282,7 +282,7 @@ namespace SRML.Utils
         public T DeserializeGeneric(BinaryReader reader)
         {
             return (T) Deserialize(reader);
-        } 
+        }
 
 
         private BinarySerializer<T> serializerFunc;
