@@ -55,8 +55,8 @@ namespace SRML.SR.Patches
 
             float value2 = __instance.pinkSnareWeight / (SnareRegistry.pinks.Count + 1);
 
-            for (var j = 0; j < SnareRegistry.pinks.Count; j++)
-                dictionary.Add(SnareRegistry.pinks[j], value2);
+            foreach (Identifiable.Id id in SnareRegistry.pinks)
+                dictionary.Add(id, value2);
 
             dictionary.Add(Identifiable.Id.PINK_GORDO, value2);
 
