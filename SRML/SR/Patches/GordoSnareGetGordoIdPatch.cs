@@ -60,8 +60,14 @@ namespace SRML.SR.Patches
 
             dictionary.Add(Identifiable.Id.PINK_GORDO, value2);
 
-            __result = Randoms.SHARED.Pick(dictionary, Identifiable.Id.PINK_GORDO);
+            Identifiable.Id pink = Randoms.SHARED.Pick(SnareRegistry.pinks);
+            __result = Randoms.SHARED.Pick(dictionary, pink);
             return false;
         }
+    }
+
+    private static T Pick<T>(this Randoms random, List<T> vals)
+    {
+        return vals[random.GetInt(vals.Count)];
     }
 }
