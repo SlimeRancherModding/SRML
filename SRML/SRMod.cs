@@ -32,22 +32,35 @@ namespace SRML
         public ModVersion Version { get; private set; }
         public Dictionary<string, ModVersion> Dependencies { get; private set; }
 
-        // putting this in the info instead of SRMod as modders MAY find it useful
-        public State LoadState { get; internal set; }
+        /// <summary>
+        /// The current loading step the mod is on, or the step that it encountered an error.<br />
+        /// Value gets set AFTER mod's corresponding loading step has ran.
+        /// </summary>
+        public State LoadState { get; internal set; } // putting this in the info instead of SRMod as modders MAY find it useful
 
+        /// <summary>
+        /// If the mod hasn't been unloaded and hasn't encountered an error.
+        /// </summary>
         public bool IsLoaded => (int)LoadState > -1 && !EncounteredError;
+        /// <summary>
+        /// If the mod's loading step is one of the error states.
+        /// </summary>
         public bool EncounteredError => (int)LoadState >= 900;
 
+        /// <summary>
+        /// The mod info of the mod whose code is currently running.
+        /// </summary>
+        /// <returns>The found mod if referenced in a mod assembly, otherwise null.</returns>
         public static SRModInfo GetCurrentInfo()
         {
             var assembly = ReflectionUtils.GetRelevantAssembly();
-            return SRModLoader.GetModForAssembly(assembly).ModInfo;
+            return SRModLoader.GetModForAssembly(assembly)?.ModInfo;
         }
 
         /// <summary>
         /// Data structure to simplify versioning and the comparing of versions
         /// </summary>
-        public struct ModVersion : IComparable<ModVersion>
+        public struct ModVersion : IComparable<ModVersion> // TODO: replace with SemVer library
         {
             public readonly int Major;
             public readonly int Minor;
@@ -65,6 +78,12 @@ namespace SRML
                 return $"{Major}.{Minor}.{Revision}";
             }
 
+            /// <summary>
+            /// Parses a mod version string of the format "Major.Minor" or "Major.Minor.Revision"
+            /// </summary>
+            /// <param name="s">Version string in the format "Major.Minor" or "Major.Minor.Revision"</param>
+            /// <returns>The parsed ModVersion</returns>
+            /// <exception cref="Exception">Throws if provided version string is not in the correct format.</exception>
             public static ModVersion Parse(string s)
             {
                 string[] splits = s.Split('.');
@@ -79,6 +98,11 @@ namespace SRML
                 throw new Exception($"Invalid Version String: {s}");
             }
 
+            /// <summary>
+            /// Compare this version to another version
+            /// </summary>
+            /// <param name="other"></param>
+            /// <returns>-1 if other is a lower version, 1 if other is a higher version, otherwise 0</returns>
             public int CompareTo(ModVersion other)
             {
                 if (Major > other.Major) return -1;
@@ -91,20 +115,52 @@ namespace SRML
             }
         }
 
+        /// <summary>
+        /// A mod's state, including loading steps, errors, and being unloaded.
+        /// </summary>
         public enum State
         {
-            UNLOADED = -1, // Mod has been disabled manually
+            /// <summary>
+            /// User has chosen to manually disable mod.
+            /// </summary>
+            UNLOADED = -1,
 
-            INITIALIZED = 0, // Mod has been created from ProtoMod, but no loading steps have occurred yet
-            PRELOADED = 1, // these correspond to the three loading states by the same name, set AFTER each one has occurred
+            /// <summary>
+            /// Mod has been found and loaded successfully, and its constructor has ran, but no loading steps have occurred yet.
+            /// </summary>
+            INITIALIZED = 0,
+            /// <summary>
+            /// Corresponds to <see cref="IModEntryPoint.PreLoad"/>.
+            /// </summary>
+            PRELOADED = 1,
+            /// <summary>
+            /// Corresponds to <see cref="IModEntryPoint.Load"/>.
+            /// </summary>
             LOADED = 2,
+            /// <summary>
+            /// Corresponds to <see cref="IModEntryPoint.PostLoad"/>.
+            /// </summary>
             POSTLOADED = 3,
-
-            // Individual error states? may not use these
+            
+            /// <summary>
+            /// Generic error. This will likely never appear.
+            /// </summary>
             ERROR = 900,
+            /// <summary>
+            /// Error with SRML attempting to parse this mod.
+            /// </summary>
             INITIALIZATION_ERROR = 901,
+            /// <summary>
+            /// Error during mod's <see cref="IModEntryPoint.PreLoad"/>
+            /// </summary>
             PRELOAD_ERROR = 902,
+            /// <summary>
+            /// Error during mod's <see cref="IModEntryPoint.Load"/>
+            /// </summary>
             LOAD_ERROR = 903,
+            /// <summary>
+            /// Error during mod's <see cref="IModEntryPoint.PostLoad"/>
+            /// </summary>
             POSTLOAD_ERROR = 904,
         }
     }
@@ -206,11 +262,23 @@ namespace SRML
             this.Path = path;
         }
 
-        public void PreLoad() => entryPoint.PreLoad();
+        public void PreLoad()
+        {
+            entryPoint.PreLoad();
+            ModInfo.LoadState = SRModInfo.State.PRELOADED;
+        }
 
-        public void Load() => entryPoint.Load();
+        public void Load()
+        {
+            entryPoint.Load();
+            ModInfo.LoadState = SRModInfo.State.LOADED;
+        }
 
-        public void PostLoad() => entryPoint.PostLoad();
+        public void PostLoad()
+        {
+            entryPoint.PostLoad();
+            ModInfo.LoadState = SRModInfo.State.POSTLOADED;
+        }
 
         public void Reload()
         {

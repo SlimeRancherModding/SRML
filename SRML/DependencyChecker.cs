@@ -69,7 +69,7 @@ namespace SRML
                 return dep;
             }
 
-            public bool SatisfiedBy(SRModLoader.ProtoMod mod) => mod.id == mod_id && mod.encounteredError != null && SRModInfo.ModVersion.Parse(mod.version).CompareTo(version) <= 0;
+            public bool SatisfiedBy(SRModLoader.ProtoMod mod) => mod.id == mod_id && mod.encounteredError == null && SRModInfo.ModVersion.Parse(mod.version).CompareTo(version) <= 0;
         }
     }
 }
