@@ -8,7 +8,9 @@ namespace SRML.SR
 {
     public static class SnareRegistry
     {
-        internal static HashSet<Identifiable.Id> snareables = new HashSet<Identifiable.Id>(Identifiable.idComparer);
+        internal static readonly HashSet<Identifiable.Id> snareables = new HashSet<Identifiable.Id>(Identifiable.idComparer);
+        internal static readonly HashSet<Func<Identifiable.Id, bool>> baitFuncs = new HashSet<Func<Identifiable.Id, bool>>();
+        internal static readonly HashSet<Identifiable.Id> pinkLike = new HashSet<Identifiable.Id>(Identifiable.idComparer);
 
         /// <summary>
         /// Allows an <see cref="Identifiable.Id"/> to go onto a gordo snare.
@@ -16,8 +18,27 @@ namespace SRML.SR
         /// <param name="id">The <see cref="Identifiable.Id"/> to register.</param>
         public static void RegisterAsSnareable(this Identifiable.Id id)
         {
-            if (!snareables.Contains(id)) 
+            if (!snareables.Contains(id))
                 snareables.Add(id);
+        }
+
+        /// <summary>
+        /// Registers a gordo to have similar bait behaviour as the pink gordo with gordo snares.
+        /// </summary>
+        /// <param name="gordoId">The id of the gordo being registered.</param>
+        public static void RegisterGordoWithPinkBehaviour(Identifiable.Id gordoId)
+        {
+            if (!pinkLike.Contains(gordoId))
+                pinkLike.Add(gordoId);
+        }
+
+        /// <summary>
+        /// Registers a delegate that handles multiple ids/complex behaviour for bait ids.
+        /// </summary>
+        /// <param name="predicate">The id of the gordo being registered.</param>
+        public static void RegisterCollectiveBaitMethod(Func<Identifiable.Id, bool> predicate)
+        {
+            baitFuncs.Add(predicate);
         }
     }
 }
