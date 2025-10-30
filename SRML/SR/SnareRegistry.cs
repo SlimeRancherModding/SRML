@@ -28,10 +28,10 @@ namespace SRML.SR
         }
 
         /// <summary>
-        /// Registers a gordo to have similar bait behaviour as the pink gordo with gordo snares.
+        /// Registers a gordo that has a chance to be snared anywhere with anything, like the Pink Gordo.
         /// </summary>
         /// <param name="gordoId">The id of the gordo being registered.</param>
-        public static void RegisterGordoWithPinkBehaviour(Identifiable.Id gordoId)
+        public static void RegisterFallbackGordo(Identifiable.Id gordoId)
         {
             if (!pinkLike.Contains(gordoId))
                 pinkLike.Add(gordoId);
