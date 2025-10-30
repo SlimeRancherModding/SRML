@@ -161,7 +161,7 @@ namespace SRML
         /// <summary>
         /// Called before GameContext.Start()
         /// </summary>
-        static void Load()
+        internal static void Load()
         {
             if (isLoaded)
                 return;
@@ -171,8 +171,9 @@ namespace SRML
             SRCallbacks.OnLoad();
             KeyBindManager.ReadBinds();
             SlimeRegistry.Initialize(GameContext.Instance.SlimeDefinitions);
-            GameContext.Instance.gameObject.AddComponent<ModManager>();
-            GameContext.Instance.gameObject.AddComponent<KeyBindManager.ProcessAllBindings>();
+
+            context.AddComponent<ModManager>();
+            context.AddComponent<KeyBindManager.ProcessAllBindings>();
 
             SRModLoader.LoadMods();
             GameContext.Instance.SlimeDefinitions.RefreshEatmaps();
@@ -181,7 +182,7 @@ namespace SRML
         /// <summary>
         /// Called after Load
         /// </summary>
-        static void PostLoad()
+        internal static void PostLoad()
         {
             if (isPostLoaded) 
                 return;
