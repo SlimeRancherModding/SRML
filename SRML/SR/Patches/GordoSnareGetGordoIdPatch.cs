@@ -21,7 +21,7 @@ namespace SRML.SR.Patches
             {
                 GordoIdentifiable gordo = gordoEntry.GetComponent<GordoIdentifiable>();
 
-                if (SnareRegistry.pinkLike.Contains(gordo.id) || gordo.id == Identifiable.Id.PINK_GORDO || !gordo.nativeZones.Any(HasAccessToZone))
+                if (SnareRegistry.pinkLike.Contains(gordo.id) || !gordo.nativeZones.Any(HasAccessToZone))
                     continue;
 
                 SlimeDiet diet = gordoEntry.GetComponent<GordoEat>().slimeDefinition.Diet;
