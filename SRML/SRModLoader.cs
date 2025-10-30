@@ -23,7 +23,7 @@ namespace SRML
         public static IEnumerable<SRModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
 
         private static List<string> loadOrder = new List<string>();
-        
+
         public static LoadingStep CurrentLoadingStep { get; private set; }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SRML
             // process mods with embedded modinfo.jsons
             foreach (string dllFile in Directory.GetFiles(FileSystem.ModPath, "*.dll", SearchOption.AllDirectories))
             {
-                if (!ProtoMod.TryParseFromDLL(dllFile, out ProtoMod[] mods)) 
+                if (!ProtoMod.TryParseFromDLL(dllFile, out ProtoMod[] mods))
                     continue;
 
                 foreach (ProtoMod mod in mods)
@@ -71,7 +71,7 @@ namespace SRML
             // Start loading the assemblies
             // mods are currently in an order that ensures attribute modinfos get first picks
             DiscoverAndLoadAssemblies(foundMods);
-            
+
             // now that every assembly has been found and verified, loading can commence in order
             DependencyChecker.CalculateLoadOrder(ref foundMods, out loadOrder);
             AddMods(foundMods);
@@ -174,12 +174,12 @@ namespace SRML
             foreach (ProtoMod mod in mods)
             {
                 AddMod(mod, mod.entryType);
-                
+
                 if (mod.entryType != null)
                     HarmonyOverrideHandler.LoadOverrides(mod.entryType.Module);
             }
         }
-        
+
         /// <summary>
         /// Get an <see cref="SRMod"/> instance from a Mod ID
         /// </summary>
@@ -214,8 +214,8 @@ namespace SRML
                     if (entryPoint is ModEntryPoint)
                         ((ModEntryPoint)entryPoint).ConsoleInstance = new Console.Console.ConsoleInstance(modInfo.name);
                 }
-                catch (Exception ex) 
-                { 
+                catch (Exception ex)
+                {
                     modInfo.encounteredError = ex;
                     UnityEngine.Debug.LogError(ex);
                 }
@@ -253,7 +253,7 @@ namespace SRML
                 }
             }
         }
-        
+
         internal static void LoadMods()
         {
             CurrentLoadingStep = LoadingStep.LOAD;
@@ -527,7 +527,7 @@ namespace SRML
             /// <returns>Whether the parsing was successful</returns>
             public static bool TryParseFromDLL(string dllFile, out ProtoMod[] mods)
             {
-                Assembly assembly = Assembly.LoadFile(dllFile);
+                Assembly assembly = Assembly.LoadFrom(dllFile);
                 List<ProtoMod> modList = new List<ProtoMod>();
 
                 foreach (ModInfoAttribute att in assembly.GetCustomAttributes<ModInfoAttribute>())
@@ -566,7 +566,7 @@ namespace SRML
                 load_after = load_after ?? new string[0];
                 load_before = load_before ?? new string[0];
 
-                if (id == null) 
+                if (id == null)
                     throw new Exception($"{path} is missing an id field!");
                 if (id.Contains(" "))
                     throw new Exception($"Invalid mod id: {id}");
@@ -575,7 +575,7 @@ namespace SRML
                 try
                 {
                     List<DependencyChecker.Dependency> depends = new List<DependencyChecker.Dependency>();
-                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties()) 
+                    foreach (JProperty prop in ((JObject)dependencies.First().Value).Properties())
                         depends.Add(new DependencyChecker.Dependency(prop.Name, prop.Value.Value<string>()));
                     parsedDependencies = depends.ToArray();
                 }
@@ -598,7 +598,7 @@ namespace SRML
                 {
                     try
                     {
-                        // if version doesn't parse, it doesn't matter if dependencies parse, 
+                        // if version doesn't parse, it doesn't matter if dependencies parse,
                         SRModInfo.ModVersion.Parse(this.version);
                         dependencies = parsedDependencies?.ToDependencyDictionary() ?? dependencies;
                     }

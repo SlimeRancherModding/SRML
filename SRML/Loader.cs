@@ -11,7 +11,7 @@ namespace Doorstop
 {
     internal class Entrypoint
     {
-        public static Assembly[] resolve = Directory.GetFiles(Path.GetFullPath(@"SRML\Libs"), "*.dll").Select(x => Assembly.LoadFile(x)).ToArray();
+        public static Assembly[] resolve = Directory.GetFiles(Path.GetFullPath(@"SRML\Libs"), "*.dll").Select(x => Assembly.LoadFrom(x)).ToArray();
 
         public static void Start() => new Task(() =>
         {

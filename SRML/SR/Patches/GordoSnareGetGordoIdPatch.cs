@@ -21,7 +21,7 @@ namespace SRML.SR.Patches
             {
                 GordoIdentifiable gordo = gordoEntry.GetComponent<GordoIdentifiable>();
 
-                if (SnareRegistry.pinks.Contains(gordo.id) || gordo.id == Identifiable.Id.PINK_GORDO || !gordo.nativeZones.Any(HasAccessToZone))
+                if (SnareRegistry.pinkLike.Contains(gordo.id) || gordo.id == Identifiable.Id.PINK_GORDO || !gordo.nativeZones.Any(HasAccessToZone))
                     continue;
 
                 SlimeDiet diet = gordoEntry.GetComponent<GordoEat>().slimeDefinition.Diet;
@@ -53,21 +53,19 @@ namespace SRML.SR.Patches
                     dictionary.Add(favIds[j], value);
             }
 
-            float value2 = __instance.pinkSnareWeight / (SnareRegistry.pinks.Count + 1);
+            float value2 = __instance.pinkSnareWeight / SnareRegistry.pinkLike.Count;
 
-            foreach (Identifiable.Id id in SnareRegistry.pinks)
+            foreach (Identifiable.Id id in SnareRegistry.pinkLike)
                 dictionary.Add(id, value2);
 
-            dictionary.Add(Identifiable.Id.PINK_GORDO, value2);
-
-            Identifiable.Id pink = Randoms.SHARED.Pick(SnareRegistry.pinks);
+            Identifiable.Id pink = Randoms.SHARED.Pick(SnareRegistry.pinkLike);
             __result = Randoms.SHARED.Pick(dictionary, pink);
             return false;
         }
     }
 
-    private static T Pick<T>(this Randoms random, List<T> vals)
+    private static T Pick<T>(this Randoms random, HashSet<T> vals)
     {
-        return vals[random.GetInt(vals.Count)];
+        return vals.ElementAt(random.GetInt(vals.Count));
     }
 }
