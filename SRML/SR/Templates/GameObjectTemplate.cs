@@ -144,7 +144,7 @@ namespace SRML.SR.Templates
             GameObject obj;
             if (parent == null)
             {
-                obj = new GameObject(SRML.Utils.ReflectionUtils.GetRelevantAssembly().GetName().Name.ToLower() + "." + Name);
+                obj = new GameObject(SRML.Utils.ReflectionUtils.GetRelevantAssembly().GetName().Name.ToLowerInvariant() + "." + Name);
                 SRML.Utils.GameObjectUtils.Prefabitize(obj);
             }
             else

@@ -54,7 +54,7 @@ namespace SRML.SR
         public static PlayerAction RegisterBindedTranslatedAction(string name, string translation)
         {
             PlayerAction act = RegisterBindedAction(name);
-            TranslationPatcher.AddUITranslation("key." + name.ToLower(), translation);
+            TranslationPatcher.AddUITranslation("key." + name.ToLowerInvariant(), translation);
             return act;
         }
 

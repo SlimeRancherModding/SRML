@@ -18,9 +18,9 @@ namespace SRML.Console.Commands
         {
             var srmlConfig = args[0] == "SRML";
             var mod = SRModLoader.GetMod(args[0]);
-            var config = srmlConfig ? Main.config : mod.Configs.First(x => x.FileName.ToLower() == args[1].ToLower());
-            var section = config.Sections.First(x => x.Name.ToLower() == args[srmlConfig ? 1 : 2].ToLower());
-            var element = section.Elements.First(x => x.Options.Name.ToLower() == args[srmlConfig ? 2 : 3].ToLower());
+            var config = srmlConfig ? Main.config : mod.Configs.First(x => x.FileName.ToLowerInvariant() == args[1].ToLowerInvariant());
+            var section = config.Sections.First(x => x.Name.ToLowerInvariant() == args[srmlConfig ? 1 : 2].ToLowerInvariant());
+            var element = section.Elements.First(x => x.Options.Name.ToLowerInvariant() == args[srmlConfig ? 2 : 3].ToLowerInvariant());
 
             if (args.Length >= (srmlConfig ? 4 : 5))
             {
@@ -49,7 +49,7 @@ namespace SRML.Console.Commands
             {
                 if (argIndex == 1) return Main.config.Sections.Select(x => x.Name).ToList();
 
-                var section = Main.config.Sections.FirstOrDefault(x => x.Name.ToLower() == args[1].ToLower());
+                var section = Main.config.Sections.FirstOrDefault(x => x.Name.ToLowerInvariant() == args[1].ToLowerInvariant());
 
                 if (argIndex == 2) return section?.Elements.Select(x => x.Options.Name).ToList();
             }
@@ -59,11 +59,11 @@ namespace SRML.Console.Commands
 
                 if (argIndex == 1) return mod?.Configs.Select(x => x.FileName).ToList();
 
-                var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLower() == args[1].ToLower());
+                var config = mod?.Configs.FirstOrDefault(x => x.FileName.ToLowerInvariant() == args[1].ToLowerInvariant());
 
                 if (argIndex == 2) return config?.Sections.Select(x => x.Name).ToList();
 
-                var section = config?.Sections.FirstOrDefault(x => x.Name.ToLower() == args[2].ToLower());
+                var section = config?.Sections.FirstOrDefault(x => x.Name.ToLowerInvariant() == args[2].ToLowerInvariant());
 
                 if (argIndex == 3) return section?.Elements.Select(x => x.Options.Name).ToList();
             }

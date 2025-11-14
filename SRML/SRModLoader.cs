@@ -570,7 +570,7 @@ namespace SRML
                     throw new Exception($"{path} is missing an id field!");
                 if (id.Contains(" "))
                     throw new Exception($"Invalid mod id: {id}");
-                id = id.ToLower();
+                id = id.ToLowerInvariant();
                 /*if (dependencies == null || dependencies.Count == 0) return;
                 try
                 {

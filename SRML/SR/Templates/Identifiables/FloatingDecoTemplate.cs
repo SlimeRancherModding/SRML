@@ -118,7 +118,7 @@ namespace SRML.SR.Templates.Identifiables
         /// <param name="name">The translated name</param>
         public override FloatingDecoTemplate SetTranslation(string name)
         {
-            TranslationPatcher.AddActorTranslation("l." + ID.ToString().ToLower(), name);
+            TranslationPatcher.AddActorTranslation("l." + ID.ToString().ToLowerInvariant(), name);
             return this;
         }
 

@@ -68,8 +68,8 @@ namespace SRML.SR
             if (refreshEatMaps)
             {
                 definition.Diet.RefreshEatMap(definitions, definition);
-                if (definition.BaseSlimes != null) 
-                    foreach (SlimeDefinition child in definition.BaseSlimes) 
+                if (definition.BaseSlimes != null)
+                    foreach (SlimeDefinition child in definition.BaseSlimes)
                         child.Diet.RefreshEatMap(definitions, child);
             }
         }
@@ -338,7 +338,7 @@ namespace SRML.SR
             processApperances?.Invoke(app);
 
             if ((props & (LargoProps.GENERATE_NAME)) != 0)
-                TranslationPatcher.AddActorTranslation("l." + largoId.ToString().ToLower(), GenerateLargoName(largoId));
+                TranslationPatcher.AddActorTranslation("l." + largoId.ToString().ToLowerInvariant(), GenerateLargoName(largoId));
 
             if ((props & (LargoProps.GENERATE_SECRET_STYLES)) != 0)
             {
@@ -443,11 +443,11 @@ namespace SRML.SR
         /// <returns>The resulting name.</returns>
         public static string GenerateLargoName(Identifiable.Id id)
         {
-            string[] name = id.ToString().ToLower().Split('_');
+            string[] name = id.ToString().ToLowerInvariant().Split('_');
             int i = 0;
             foreach (string namePiece in name)
             {
-                name[i] = namePiece[0].ToString().ToUpper() + namePiece.Substring(1);
+                name[i] = namePiece[0].ToString().ToUpperInvariant() + namePiece.Substring(1);
                 i++;
             }
             return string.Join(" ", name).Replace("Slime", "Largo");

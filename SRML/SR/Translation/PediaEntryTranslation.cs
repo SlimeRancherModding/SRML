@@ -9,7 +9,7 @@ namespace SRML.SR.Translation
     {
         public PediaDirector.Id Key { get; protected set; }
 
-        public string StringKey => Enum.GetName(typeof(PediaDirector.Id), Key).ToLower();
+        public string StringKey => Enum.GetName(typeof(PediaDirector.Id), Key).ToLowerInvariant();
 
         public PediaEntryTranslation(PediaDirector.Id id)
         {
@@ -36,7 +36,7 @@ namespace SRML.SR.Translation
             return this;
         }
 
-        public PediaEntryTranslation SetDescriptionTranslation(string description)  
+        public PediaEntryTranslation SetDescriptionTranslation(string description)
         {
             TranslationPatcher.AddPediaTranslation(DescriptionKey, description);
             return this;

@@ -11,17 +11,17 @@ using UnityEngine;
 namespace SRML.SR.UI
 {
     /// <summary>
-    /// Class used to generate an error message 
+    /// Class used to generate an error message
     /// </summary>
     public class ErrorGUI : BaseUI
     {
         internal static GameObject errorUI;
         internal static GameObject initErrorUI;
-        
+
         public IndividualExceptionUI errorInfo;
         [SerializeField]
         private Transform errorContainer;
-        
+
         private bool continueAfterClose = false;
         internal bool fallback;
 
@@ -64,7 +64,7 @@ namespace SRML.SR.UI
                     CreateBasicError(erroring.First().exception.ToString(), ui);
                 }
                 catch { Application.Quit(); }
-                
+
                 return false;
             }
         }
@@ -169,9 +169,9 @@ namespace SRML.SR.UI
 
         internal void GenerateMessage(SRMod generateFrom)
         {
-            /*title.text = GameContext.Instance.MessageDirector.GetBundle("ui").Xlate(MessageUtil.Compose("e.srml_error_title_base", MessageUtil.Taint(generateFrom.ModInfo.Id ?? "<unknown>"), 
-                $"e.{generateFrom.ModInfo.LoadState.ToString().ToLower()}"));*/
-            title.text = string.Format("{0} during {1}", generateFrom.ModInfo.Id ?? "<unknown>", generateFrom.ModInfo.LoadState.ToString().ToLower().Replace("_error", ""));
+            /*title.text = GameContext.Instance.MessageDirector.GetBundle("ui").Xlate(MessageUtil.Compose("e.srml_error_title_base", MessageUtil.Taint(generateFrom.ModInfo.Id ?? "<unknown>"),
+                $"e.{generateFrom.ModInfo.LoadState.ToString().ToLowerInvariant()}"));*/
+            title.text = string.Format("{0} during {1}", generateFrom.ModInfo.Id ?? "<unknown>", generateFrom.ModInfo.LoadState.ToString().ToLowerInvariant().Replace("_error", ""));
             extended.SetText(generateFrom.exception.ToString());
         }
 

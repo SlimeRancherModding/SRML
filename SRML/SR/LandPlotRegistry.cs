@@ -64,8 +64,8 @@ namespace SRML.SR
             public PediaDirector.Id? pediaId;
             public Func<bool> isUnlocked;
 
-            public string NameKey => "t." + plot.ToString().ToLower();
-            public string DescKey => "m.intro." + plot.ToString().ToLower();
+            public string NameKey => "t." + plot.ToString().ToLowerInvariant();
+            public string DescKey => "m.intro." + plot.ToString().ToLowerInvariant();
         }
     }
 }

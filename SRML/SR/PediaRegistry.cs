@@ -23,13 +23,13 @@ namespace SRML.SR
         internal static Dictionary<PediaDirector.Id, IPediaRenderer> customPediaRenderers = new Dictionary<PediaDirector.Id, IPediaRenderer>();
         internal static Dictionary<PediaCategory, List<IComparer<PediaDirector.Id>>> pediaSorters = new Dictionary<PediaCategory, List<IComparer<PediaDirector.Id>>>();
         internal static Dictionary<PediaTab, SRMod> customTabs = new Dictionary<PediaTab, SRMod>();
-        
+
 
         internal static IPediaRenderer activeRenderer;
         internal static ITabRenderer activeTabRenderer;
 
         static Dictionary<DisplaySetting, DefaultPediaRenderer> defaultRenderers = new Dictionary<DisplaySetting, DefaultPediaRenderer>();
-        
+
         static PediaRegistry()
         {
             ModdedIDRegistry.RegisterIDRegistry(moddedIds);
@@ -46,7 +46,7 @@ namespace SRML.SR
             {
                 renderer = new DefaultPediaRenderer(setting);
                 defaultRenderers.Add(setting, renderer);
-                
+
             }
             return renderer;
         }
@@ -76,14 +76,14 @@ namespace SRML.SR
         /// </summary>
         /// <param name="entry">The <see cref="PediaDirector.IdEntry"/> to register.</param>
         public static void RegisterIdEntry(PediaDirector.IdEntry entry) => customEntries.Add(entry);
-        
+
         /// <summary>
         /// Creates and registers a <see cref="PediaDirector.IdEntry"/>.
         /// </summary>
         /// <param name="id">The <see cref="PediaDirector.Id"/> belonging to the entry.</param>
         /// <param name="icon">The icon belonging to the entry.</param>
         public static void RegisterIdEntry(PediaDirector.Id id, Sprite icon) => RegisterIdEntry(new PediaDirector.IdEntry() { id = id, icon = icon });
-        
+
         /// <summary>
         /// Registers an entry renderer for the Slimepedia.
         /// </summary>
@@ -119,7 +119,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="id">The <see cref="PediaDirector.Id"/> that belongs to the entry.</param>
         public static void RegisterInitialPediaEntry(PediaDirector.Id id) => initialEntries.Add(id);
-        
+
         /// <summary>
         /// Creates a link between an <see cref="Identifiable.Id"/> and a <see cref="PediaDirector.Id"/>.
         /// </summary>
@@ -131,7 +131,7 @@ namespace SRML.SR
         /// </summary>
         /// <param name="pedia">The <see cref="PediaDirector.Id"/> to link.</param>
         /// <param name="ident">The <see cref="Identifiable.Id"/> to link.</param>
-        public static void RegisterIdentifiableMapping(PediaDirector.Id pedia, Identifiable.Id ident) => 
+        public static void RegisterIdentifiableMapping(PediaDirector.Id pedia, Identifiable.Id ident) =>
             RegisterIdentifiableMapping(new PediaDirector.IdentMapEntry() { identId = ident, pediaId = pedia });
 
         static ref PediaDirector.Id[] GetCategory(PediaCategory cat)
@@ -190,11 +190,11 @@ namespace SRML.SR
             public DefaultPediaRenderer(DisplaySetting setting)
             {
                 DisplaySetting = setting;
-                
+
             }
 
-            public virtual string GetLowerName() => CurrentID.ToString().ToLower();
-            
+            public virtual string GetLowerName() => CurrentID.ToString().ToLowerInvariant();
+
             public void OnListingSelected(GameObject panelObj)
             {
                 var pedia = panelObj.GetComponentInParent<PediaUI>();
@@ -263,7 +263,7 @@ namespace SRML.SR
 
         public class PediaTab
         {
-            public string NameKey => "b." + ID.ToString().ToLower();
+            public string NameKey => "b." + ID.ToString().ToLowerInvariant();
             public PediaDirector.Id ID;
             public Func<bool> IsVisible;
             public List<PediaDirector.Id> Entries = new List<PediaDirector.Id>();
