@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Mono.Cecil;
 
 namespace SRMLInstaller
@@ -101,7 +99,7 @@ namespace SRMLInstaller
                 {
                     foreach(var file in Directory.GetFiles(GetAlternateRoot()))
                         File.Delete(file);
-                    
+
                     foreach (var v in Assembly.GetExecutingAssembly().GetManifestResourceNames().Where((x) =>
                         x.Length > embeddedResourceProject.Length &&
                         x.Substring(0, embeddedResourceProject.Length) == embeddedResourceProject))
@@ -137,7 +135,7 @@ namespace SRMLInstaller
                 }
 
                 Console.WriteLine();
-                
+
                 string type = alreadypatched ? "Update" : "Installation";
                 string ending = alreadypatched? "" : $"(old assembly stored as { Path.GetFileNameWithoutExtension(filename)}_old.dll)";
 

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 
 namespace SRML.SR.Patches
@@ -25,8 +26,8 @@ namespace SRML.SR.Patches
             return instructions;
         }
 
-        public static bool IsSnareable(Identifiable.Id identifiable) => Identifiable.IsFood(identifiable.id) // Vanilla behaviour
-            || SnareRegistry.snareables.Contains(identifiable.id) // Simple non food baits
-            || SnareRegistry.baitFuncs.Any(x => x(identifiable.id)); // More complex baits/batch id handling
+        public static bool IsSnareable(Identifiable.Id identifiable) => Identifiable.IsFood(identifiable) // Vanilla behaviour
+            || SnareRegistry.snareables.Contains(identifiable) // Simple non food baits
+            || SnareRegistry.baitFuncs.Any(x => x(identifiable)); // More complex baits/batch id handling
     }
 }

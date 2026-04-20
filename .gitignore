@@ -351,3 +351,6 @@ healthchecksdb
 MigrationBackup/
 
 Libs/
+*Libs*
+
+packages.lock.json

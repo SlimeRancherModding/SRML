@@ -1,6 +1,9 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using MonomiPark.SlimeRancher.DataModel;
+using UnityEngine;
+using System;
 
 namespace SRML.SR.Patches
 {
@@ -8,7 +11,7 @@ namespace SRML.SR.Patches
     [HarmonyPriority(Priority.First)]
     internal static class GordoSnareGetGordoIdPatch
     {
-        private static readonly Func<Zone, bool> HasAccessToZone = ZoneDirector.HasAccessToZone;
+        private static readonly Func<ZoneDirector.Zone, bool> HasAccessToZone = ZoneDirector.HasAccessToZone;
 
         public static bool Prefix(GordoSnare __instance, ref Identifiable.Id __result)
         {
@@ -62,10 +65,10 @@ namespace SRML.SR.Patches
             __result = Randoms.SHARED.Pick(dictionary, pink);
             return false;
         }
-    }
 
-    private static T Pick<T>(this Randoms random, HashSet<T> vals)
-    {
-        return vals.ElementAt(random.GetInt(vals.Count));
+        private static T Pick<T>(this Randoms random, HashSet<T> vals)
+        {
+            return vals.ElementAt(random.GetInt(vals.Count));
+        }
     }
 }

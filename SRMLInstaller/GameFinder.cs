@@ -1,10 +1,8 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace SRMLInstaller
 {
@@ -39,7 +37,7 @@ namespace SRMLInstaller
         }
 
         public static String FindGame()
-        { 
+        {
             if (File.Exists(gameDLL) && CheckForValidDllPath(Path.GetFullPath(gameDLL))) return Path.GetFullPath(gameDLL);
             var managedDLL = Path.Combine("Managed", gameDLL);
             if (File.Exists(managedDLL))
@@ -87,7 +85,7 @@ namespace SRMLInstaller
 
         static T SelectFromList<T>(List<T> elements)
         {
-            
+
             for (int i = 0; i < elements.Count; i++)
             {
                 Console.WriteLine($"{i+1} - {elements[i]}");

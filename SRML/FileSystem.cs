@@ -29,7 +29,6 @@ namespace SRML
             return path;
         }
 
-
         /// <summary>
         /// When called from a mod, gets the base path of that mod
         /// </summary>
@@ -41,7 +40,7 @@ namespace SRML
         }
 
         /// <summary>
-        /// Gets a mods config path 
+        /// Gets a mods config path
         /// </summary>
         /// <param name="mod">The mod whose config path is needed</param>
         /// <returns>The config path</returns>
@@ -56,7 +55,7 @@ namespace SRML
         /// <returns>The config path</returns>
         public static string GetMyConfigPath()
         {
-            return GetConfigPath(SRMod.GetCurrentMod());    
+            return GetConfigPath(SRMod.GetCurrentMod());
         }
     }
 }

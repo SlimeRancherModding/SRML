@@ -51,7 +51,7 @@ namespace SRML
         /// <param name="loadAfter">Mods to load after this mod</param>
         /// <param name="loadBefore">Mods to load before this mod</param>
         /// <param name="dependencies">Mods that this mod depends on, in the format "ID:VERSION"</param>
-        public ModInfoAttribute(Type entryType, string id, string name, string author, string version, 
+        public ModInfoAttribute(Type entryType, string id, string name, string author, string version,
             string description = null, string url = null, string[] loadAfter = null, string[] loadBefore = null, string[] dependencies = null)
         {
             this.entryType = entryType;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
@@ -69,7 +68,7 @@ namespace SRMLInstaller
             var imported = def.ImportReference(method);
             yield return proc.Create(OpCodes.Call, imported);
 
-                
+
             yield return proc.Create(OpCodes.Stloc_0);
             yield return proc.Create(OpCodes.Ldc_I4_0);
             yield return proc.Create(OpCodes.Stloc_1);
@@ -141,7 +140,7 @@ namespace SRMLInstaller
                 HandlerEnd = ret,
                 CatchType = curAssembly.MainModule.ImportReference(typeof(Exception)),
             };
-            
+
 
 
             method.Body.ExceptionHandlers.Add(handler);
@@ -195,7 +194,7 @@ namespace SRMLInstaller
             Dispose();
             File.Move(filename,oldname);
             File.Move(patchedname,filename);
-            
+
         }
 
         public void Dispose()
