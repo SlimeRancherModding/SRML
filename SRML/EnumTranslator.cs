@@ -28,7 +28,7 @@ namespace SRML
         {
             if (!MappedValues.ContainsKey(enumType)) return -1;
             return MappedValues[enumType].Keys.LastOrDefault()-1;
-        }   
+        }
 
         /// <summary>
         /// Generate a translation table for  a list of enumValues
@@ -46,7 +46,6 @@ namespace SRML
                 newDict[i] = Enum.GetName(type, enumValues[-i+startValue]);
             }
         }
-
 
         /// <summary>
         /// Replace missing enum values with default values, or remove them all together
@@ -308,7 +307,7 @@ namespace SRML
         };
 
         /// <summary>
-        /// Register an EnumFixer that allows for objects of type <typeparamref name="T"/> to have their enum values processed by an enumtranslator 
+        /// Register an EnumFixer that allows for objects of type <typeparamref name="T"/> to have their enum values processed by an enumtranslator
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="del"></param>
@@ -454,7 +453,7 @@ namespace SRML
                         keyArray[counter++] = null;
                     }
 
-                    
+
                 }
 
                 counter = 0;
@@ -470,7 +469,7 @@ namespace SRML
                 {
 
                     if (keyArray[i] == null) continue;
-                    dict[keyArray[i]] = valueArray[i]; 
+                    dict[keyArray[i]] = valueArray[i];
                 }
                 DoDefaultTranslationFallbacks = true;
             });

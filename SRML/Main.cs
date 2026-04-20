@@ -146,9 +146,9 @@ namespace SRML
         /// <summary>
         /// Called before GameContext.Awake()
         /// </summary>
-        internal static void PreLoad() 
+        internal static void PreLoad()
         {
-            if (isPreLoaded) 
+            if (isPreLoaded)
                 return;
             isPreLoaded = true;
 
@@ -184,7 +184,7 @@ namespace SRML
         /// </summary>
         internal static void PostLoad()
         {
-            if (isPostLoaded) 
+            if (isPostLoaded)
                 return;
             isPostLoaded = true;
 

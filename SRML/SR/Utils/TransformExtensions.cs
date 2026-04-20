@@ -219,15 +219,15 @@ public static class TransformExtensions
       bool includeInactive = false,
       bool subString = false)
     {
-        name = name.ToLower();
+        name = name.ToLowerInvariant();
         foreach (Transform tran in trans)
         {
             if (!subString)
             {
-                if (tran.name.ToLower() == name && (includeInactive || tran.gameObject.activeInHierarchy))
+                if (tran.name.ToLowerInvariant() == name && (includeInactive || tran.gameObject.activeInHierarchy))
                     return tran;
             }
-            else if (tran.name.ToLower().Contains(name) && (includeInactive || tran.gameObject.activeInHierarchy))
+            else if (tran.name.ToLowerInvariant().Contains(name) && (includeInactive || tran.gameObject.activeInHierarchy))
                 return tran;
             Transform byNameInChildren = tran.GetTransformByNameInChildren(name, includeInactive, subString);
             if (byNameInChildren != null)
@@ -244,13 +244,13 @@ public static class TransformExtensions
     {
         if (trans.parent == null)
             return null;
-        name = name.ToLower();
+        name = name.ToLowerInvariant();
         if (!subString)
         {
-            if (trans.parent.name.ToLower() == name && (includeInactive || trans.gameObject.activeInHierarchy))
+            if (trans.parent.name.ToLowerInvariant() == name && (includeInactive || trans.gameObject.activeInHierarchy))
                 return trans.parent;
         }
-        else if (trans.parent.name.ToLower().Contains(name) && (includeInactive || trans.gameObject.activeInHierarchy))
+        else if (trans.parent.name.ToLowerInvariant().Contains(name) && (includeInactive || trans.gameObject.activeInHierarchy))
             return trans.parent;
         Transform byNameInAncestors = trans.parent.GetTransformByNameInAncestors(name, includeInactive, subString);
         return byNameInAncestors != null ? byNameInAncestors : null;

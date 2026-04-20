@@ -12,6 +12,11 @@ namespace SRML.SR
         internal static readonly HashSet<Func<Identifiable.Id, bool>> baitFuncs = new HashSet<Func<Identifiable.Id, bool>>();
         internal static readonly HashSet<Identifiable.Id> pinkLike = new HashSet<Identifiable.Id>(Identifiable.idComparer);
 
+        static SnareRegistry()
+        {
+            pinkLike.Add(Identifiable.Id.PINK_GORDO); // Pink gordos are pink-like, who could have guessed?
+        }
+
         /// <summary>
         /// Allows an <see cref="Identifiable.Id"/> to go onto a gordo snare.
         /// </summary>

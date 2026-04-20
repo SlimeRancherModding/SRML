@@ -39,7 +39,7 @@ namespace SRML
         }
 
         private static FieldInfo cache;
-        
+
         private static Dictionary<Type, EnumPatch> patches = new Dictionary<Type, EnumPatch>();
 
         static EnumPatcher()
@@ -51,7 +51,7 @@ namespace SRML
         /// <summary>
         /// Add a new enum value to the given <paramref name="T"/> with the first free value
         /// </summary>
-        /// <param name="T">Type of enum to add the value to</param>
+        /// <typeparam name="TEnum">Type of enum to add the value to</typeparam>
         /// <param name="name">Name of the new enum value</param>
         /// <returns>The new enum value</returns>
         public static TEnum AddEnumValue<TEnum>(string name) where TEnum : Enum => (TEnum)AddEnumValue(typeof(TEnum), name);
@@ -70,15 +70,15 @@ namespace SRML
         }
 
         /// <summary>
-        /// Add a new value to the given <paramref name="T"/> 
+        /// Add a new value to the given <paramref name="T"/>
         /// </summary>
-        /// <param name="T">Enum to add the new value to</param>
+        /// <typeparam name="T">Type of enum to add the value to</typeparam>
         /// <param name="value">Value to add to the enum</param>
         /// <param name="name">The name of the new value</param>
         public static void AddEnumValue<T>(object value, string name) => AddEnumValue(typeof(T), value, name);
 
         /// <summary>
-        /// Add a new value to the given <paramref name="enumType"/> 
+        /// Add a new value to the given <paramref name="enumType"/>
         /// </summary>
         /// <param name="enumType">Enum to add the new value to</param>
         /// <param name="value">Value to add to the enum</param>
@@ -137,7 +137,7 @@ namespace SRML
         /// <summary>
         /// Get first undefined value in an enum
         /// </summary>
-        /// <param name="T"></param>
+        /// <typeparam name="TEnum">Type of enum</typeparam>
         /// <returns>The first undefined enum value</returns>
         public static TEnum GetFirstFreeValue<TEnum>() => (TEnum)GetFirstFreeValue(typeof(TEnum));
 
@@ -149,7 +149,7 @@ namespace SRML
         public static object GetFirstFreeValue(Type enumType)
         {
             if (!enumType.IsEnum) throw new ArgumentException("enumType");
-            if (enumType == null) throw new ArgumentNullException("enumType");
+            if (enumType == null) throw new ArgumentNullException(nameof(enumType));
             if (!enumType.IsEnum) throw new Exception($"{enumType} is not a valid Enum!");
 
             var vals = Enum.GetValues(enumType);
@@ -181,7 +181,7 @@ namespace SRML
         {
             cache.SetValue(enumType, null);
         }
-        
+
         internal static bool TryGetRawPatch(Type enumType, out EnumPatch patch)
         {
             return patches.TryGetValue(enumType, out patch);
@@ -194,7 +194,7 @@ namespace SRML
             return false;
         }
 
-        public class EnumPatch 
+        public class EnumPatch
         {
             private Dictionary<ulong, List<string>> values = new Dictionary<ulong, List<string>>();
 
@@ -229,4 +229,3 @@ namespace SRML
         }
     }
 }
-    

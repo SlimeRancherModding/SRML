@@ -92,9 +92,9 @@ public static class LookupDirectorExtension
 		if (director.LargoExists(slimeA, slimeB))
 			return Identifiable.Id.NONE;
 
-		string prefabName = "slime" + 
-			slimeA.ToString().Replace("_SLIME", "").ToUpper()[0] + slimeA.ToString().Replace("_SLIME", "").ToLower().Substring(1) + 
-			slimeB.ToString().Replace("_SLIME", "").ToUpper()[0] + slimeB.ToString().Replace("_SLIME", "").ToLower().Substring(1);
+		string prefabName = "slime" +
+			slimeA.ToString().Replace("_SLIME", "").ToUpperInvariant()[0] + slimeA.ToString().Replace("_SLIME", "").ToLowerInvariant().Substring(1) +
+			slimeB.ToString().Replace("_SLIME", "").ToUpperInvariant()[0] + slimeB.ToString().Replace("_SLIME", "").ToLowerInvariant().Substring(1);
 
 		string name = slimeA.ToString().Replace("_SLIME", "") + slimeB.ToString().Replace("_SLIME", "") + "_LARGO";
 		Identifiable.Id largoID = IdentifiableRegistry.CreateIdentifiableId(EnumPatcher.GetFirstFreeValue(typeof(Identifiable.Id)), name);

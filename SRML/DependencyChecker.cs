@@ -10,7 +10,7 @@ namespace SRML
         {
             foreach (var mod in mods)
             {
-                if (mod.encounteredError != null || !mod.HasDependencies) 
+                if (mod.encounteredError != null || !mod.HasDependencies)
                     continue;
 
                 IEnumerable<Dependency> unmet = mod.parsedDependencies.Where(x => !mods.Any(y => x.SatisfiedBy(y)));

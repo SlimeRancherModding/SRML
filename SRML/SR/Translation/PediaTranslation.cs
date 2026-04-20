@@ -18,7 +18,7 @@ namespace SRML.SR.Translation
 
         public virtual T Key { get; protected set; }
 
-        public virtual string StringKey => Key.ToString().ToLower();
+        public virtual string StringKey => Key.ToString().ToLowerInvariant();
 
         public virtual string NameKey => NamePrefix + StringKey;
 

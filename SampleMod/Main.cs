@@ -17,17 +17,17 @@ namespace SampleMod
         // Called before GameContext.Awake
         // this is where you want to register stuff (like custom enum values or identifiable id's)
         // and patch anything you want to patch with harmony
-        public void PreLoad()
+        public override void PreLoad()
         {
             Debug.Log("We did it!");
-            HarmonyPatcher.GetInstance().PatchAll(Assembly.GetExecutingAssembly());
+            HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
 
 
             // this code registers a callback that's run every time a saved game is loaded
             // in this case it spawns a mosaic boom largo
-            SRCallbacks.OnSaveGameLoaded += (scenecontext) =>
+            SRCallbacks.OnSaveGameLoaded += scenecontext =>
             {
-                   
+
                 var playerModel = SceneContext.Instance.GameModel.GetPlayerModel();
                 SRBehaviour.InstantiateActor(
                     GameContext.Instance.LookupDirector.GetPrefab(Identifiable.Id.MOSAIC_BOOM_LARGO),MonomiPark.SlimeRancher.Regions.RegionRegistry.RegionSetId.UNSET,playerModel.position,
@@ -40,7 +40,7 @@ namespace SampleMod
         // Used to register stuff that needs lookupdirector access
         public override void Load()
         {
-            
+
         }
 
 

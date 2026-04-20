@@ -62,7 +62,7 @@ public static class StringExtensions
         {
             return string.Empty;
         }
-        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLower());
+        return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(title.ToLowerInvariant());
     }
 
     /// <summary>
@@ -92,7 +92,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Get the "message" string with the "surround" string at the both sides 
+    /// Get the "message" string with the "surround" string at the both sides
     /// </summary>
     public static string SurroundedWith(this string message, string surround) => surround + message + surround;
 

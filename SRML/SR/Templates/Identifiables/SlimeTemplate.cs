@@ -189,7 +189,7 @@ namespace SRML.SR.Templates.Identifiables
         /// <param name="name">The translated name</param>
         public override SlimeTemplate SetTranslation(string name)
         {
-            TranslationPatcher.AddActorTranslation("l." + ID.ToString().ToLower(), name);
+            TranslationPatcher.AddActorTranslation("l." + ID.ToString().ToLowerInvariant(), name);
             return this;
         }
 
@@ -454,7 +454,7 @@ namespace SRML.SR.Templates.Identifiables
             if (GameContext.Instance.LookupDirector.LargoExists(slimeA, slimeB))
                 return Identifiable.Id.NONE;
 
-            string prefabName = mainObject.Name + slimeB.ToString().Replace("_SLIME", "").ToUpper()[0] + slimeB.ToString().Replace("_SLIME", "").ToLower().Substring(1);
+            string prefabName = mainObject.Name + slimeB.ToString().Replace("_SLIME", "").ToUpperInvariant()[0] + slimeB.ToString().Replace("_SLIME", "").ToLowerInvariant().Substring(1);
             string name = slimeA.ToString().Replace("_SLIME", "") + slimeB.ToString().Replace("_SLIME", "") + "_LARGO";
             Identifiable.Id largoID = IdentifiableRegistry.CreateIdentifiableId(EnumPatcher.GetFirstFreeValue(typeof(Identifiable.Id)), name);
 
